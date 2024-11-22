@@ -28,8 +28,16 @@ export const Button = forwardRef(({ className, variant = "default", ...props }, 
 })
 Button.displayName = "Button"
 
+
+interface InputProps extends React.ComponentProps<"input"> {
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
+}
+
 // Enhanced Input component
-export const Input = forwardRef(({ className, ...props }, ref) => {
+export const Input = forwardRef(({ className, ...props }: InputProps, ref) => {
   return (
     <BaseInput
       ref={ref}
