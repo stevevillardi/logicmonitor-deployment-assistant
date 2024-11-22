@@ -3,7 +3,7 @@ import { Config, DeviceType } from './types';
 
 // Utility Functions
 export const calculateWeightedScore = (devices: Record<string, DeviceType>, methodWeights: Record<string, number>) => {
-    return Object.entries(devices).reduce((total, [data]) => {
+    return Object.entries(devices).reduce((total, [type,data]) => {
         if (data.count === 0) return total;
 
         const methodScores = Object.entries(data.methods).map(([method, ratio]) => {

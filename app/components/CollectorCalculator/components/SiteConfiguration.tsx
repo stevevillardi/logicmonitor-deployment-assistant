@@ -1,4 +1,3 @@
-import { defaultDeviceTypes } from '../constants';
 import { Site, Config } from '../types';
 import { useState } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
