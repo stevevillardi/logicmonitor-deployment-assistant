@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
-import { Server, Activity, Network } from 'lucide-react';
+import { Server, Activity, Building } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
 import { DeviceTypeCard } from './DeviceTypeCard';
@@ -104,7 +104,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
                         onClick={() => toggleSite(index)}
                     >
                         <div className="flex items-center gap-4">
-                            <Network className="w-6 h-6 text-blue-600" />
+                            <Building className="w-6 h-6 text-blue-600" />
                             <div className="flex items-center gap-2">
                                 <Input
                                     value={site.name}

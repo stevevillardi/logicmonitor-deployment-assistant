@@ -28,7 +28,7 @@
 }
 
 @layer components {
-  /* Button base styles */
+  Button base styles
   .btn-base {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }

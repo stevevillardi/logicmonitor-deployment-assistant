@@ -1,7 +1,7 @@
 import { DeviceType } from '../types';
-import { Server, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu, Calculator, Dumbbell } from 'lucide-react';
+import { Server, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu, Calculator, Weight } from 'lucide-react';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/ui/enhanced-components';
 import { AlertTriangle } from 'lucide-react';
 
 interface DeviceTypeCardProps {
@@ -66,7 +66,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTy
                         type="text"
                         value={data.count}
                         onChange={(e) => onUpdate(parseInt(e.target.value) || 0)}
-                        className="mt-1 bg-white border-gray-200 focus:border-blue-700 focus:ring-blue-700"
+                        className="mt-1 bg-white border-gray-200"
                     />
                 </div>
                 <div className="text-sm">
@@ -99,7 +99,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTy
                                     </span>
                                     <div className="flex items-center gap-1 text-blue-500">
                                         <span>×</span>
-                                        <Dumbbell className="w-3.5 h-3.5" />
+                                        <Weight className="w-3.5 h-3.5" />
                                         <span className="font-semibold">{methodWeights[method]}</span>
                                     </div>
                                 </div>
