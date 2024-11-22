@@ -54,7 +54,7 @@ export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLo
                             : Math.round(
                                 (totalWeight /
                                     pollingConfig.count /
-                                    collectorCapacities[pollingConfig.size].weight) *
+                                    collectorCapacities[pollingConfig.size as keyof typeof collectorCapacities].weight) *
                                 100,
                             ),
                 })),
@@ -74,7 +74,7 @@ export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLo
                             : Math.round(
                                 (totalEPS /
                                     logsConfig.count /
-                                    collectorCapacities[logsConfig.size].eps) *
+                                    collectorCapacities[logsConfig.size as keyof typeof collectorCapacities].eps) *
                                 100,
                             ),
                 })),
