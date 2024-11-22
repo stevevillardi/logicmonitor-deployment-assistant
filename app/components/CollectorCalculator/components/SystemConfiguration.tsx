@@ -41,7 +41,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
     useEffect(() => {
         if (selectedDeviceType && !config.deviceDefaults[selectedDeviceType]) {
             const deviceTypes = Object.keys(config.deviceDefaults);
-            setSelectedDeviceType(deviceTypes.length > 0 ? deviceTypes[0] : null);
+            setSelectedDeviceType(deviceTypes.length > 0 ? deviceTypes[0] : '');
         }
     }, [config.deviceDefaults, selectedDeviceType]);
 
