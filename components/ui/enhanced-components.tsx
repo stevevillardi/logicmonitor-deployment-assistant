@@ -3,7 +3,13 @@ import { Input as BaseInput } from "@/components/ui/input"
 import { forwardRef } from "react"
 
 // Enhanced Button component
-export const Button = forwardRef(({ className, variant = "default", ...props }, ref) => {
+interface ButtonProps extends React.ComponentProps<"button"> {
+  className?: string;
+  variant?: "default" | "destructive" | "outline" | "ghost";
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+export const Button = forwardRef(({ className, variant = "default", ...props }: ButtonProps, ref) => {
   const getVariantStyles = () => {
     switch (variant) {
       case "destructive":
