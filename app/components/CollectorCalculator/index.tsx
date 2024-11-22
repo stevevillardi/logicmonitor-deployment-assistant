@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { defaultMethodWeights, defaultDeviceTypes } from './constants';
-import { SiteConfiguration } from './components/SiteConfiguration';
+import SiteConfiguration from './components/SiteConfiguration';
 import { SystemConfiguration } from './components/SystemConfiguration';
 import SiteOverview from './components/SiteOverview';
 import { Config, Site } from './types';
 import Image from 'next/image';
-
+import { useCallback } from 'react';
 const Logo = () => {
     return (
         <div className="flex items-center gap-2">
@@ -50,38 +50,32 @@ const CollectorCalculator = () => {
         },
     ]);
 
-    const handleConfigUpdate = (newConfig: Config) => {
-        if (!newConfig.deviceDefaults || Object.keys(newConfig.deviceDefaults).length === 0) {
-            newConfig.deviceDefaults = { 
-                "Linux Servers": {
-                    count: 0,
-                    instances: 75,
-                    methods: { script: 1 },
-                }
-            };
-        }
-        
+    const handleConfigUpdate = useCallback((newConfig: Config) => {
+        console.log('Config update triggered:', newConfig);
         setConfig(newConfig);
-        setSites(sites.map(site => {
-            const newDevices = { ...newConfig.deviceDefaults };
-            Object.keys(newDevices).forEach(deviceType => {
-                if (site.devices[deviceType]) {
-                    newDevices[deviceType] = {
-                        ...newDevices[deviceType],
-                        count: site.devices[deviceType].count
-                    };
-                }
-            });
-            return {
-                ...site,
-                devices: newDevices
-            };
-        }));
-    };
+        
+        // Update sites with new device defaults
+        setSites(prevSites => prevSites.map(site => ({
+            ...site,
+            devices: Object.fromEntries(
+                Object.entries(newConfig.deviceDefaults).map(([type, data]) => [
+                    type,
+                    {
+                        ...data,
+                        count: site.devices[type]?.count || 0
+                    }
+                ])
+            )
+        })));
+    }, []);
 
-    const handleSitesUpdate = (newSites: Site[]) => {
+    const handleSitesUpdate = useCallback((newSites: Site[]) => {
+        console.log('Sites update triggered:', newSites);
         setSites(newSites);
-    };
+    }, []);
+
+    console.log('Current state - Sites:', sites);
+    console.log('Current state - Config:', config);
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
@@ -113,7 +107,7 @@ const CollectorCalculator = () => {
                                 value="overview"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
-                                Site Overview
+                                Overview
                             </TabsTrigger>
                         </TabsList>
 
@@ -122,6 +116,7 @@ const CollectorCalculator = () => {
                                 sites={sites}
                                 onUpdateSites={handleSitesUpdate}
                                 config={config}
+                                onUpdateConfig={handleConfigUpdate}
                             />
                         </TabsContent>
 

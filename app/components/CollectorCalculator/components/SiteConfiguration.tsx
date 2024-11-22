@@ -10,14 +10,15 @@ import { DeviceTypeCard } from './DeviceTypeCard';
 import { LogsInput } from './LogsInput';
 import { CollectorVisualization } from './CollectorVisualization';
 import EnhancedCard from '@/components/ui/enhanced-card';
-
+import ConfigurationActions from './ConfigurationActions';
 interface SiteConfigurationProps {
     sites: Site[];
     onUpdateSites: (sites: Site[]) => void;
+    onUpdateConfig: (config: Config) => void;
     config: Config;
 }
 
-export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigurationProps) => {
+export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config }: SiteConfigurationProps) => {
     const resetSite = (index: number, type: string) => {
         const newSites = [...sites];
         if (type === "devices") {
@@ -97,6 +98,12 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
 
     return (
         <div className="space-y-8">
+            <ConfigurationActions 
+            sites={sites}
+            config={config}
+            onUpdateSites={onUpdateSites}
+            onUpdateConfig={onUpdateConfig}
+        />
             {sites.map((site, index) => (
                 <EnhancedCard key={index} className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
                     <CardHeader
@@ -292,3 +299,5 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
         </div>
     );
 };
+
+export default SiteConfiguration;
