@@ -7,6 +7,7 @@ interface ButtonProps extends React.ComponentProps<"button"> {
   className?: string;
   variant?: "default" | "destructive" | "outline" | "ghost";
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  size?: "icon" | "sm" | "md" | "lg";
 }
 
 export const Button = forwardRef(({ className, variant = "default", ...props }: ButtonProps, ref) => {
