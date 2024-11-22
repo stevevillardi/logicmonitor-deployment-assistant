@@ -23,7 +23,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
     const [newDeviceType, setNewDeviceType] = useState('');
     const [newMethodName, setNewMethodName] = useState('');
     const [newMethodWeightName, setNewMethodWeightName] = useState('');
-    const [newMethodWeight, setNewMethodWeight] = useState('');
+    const [newMethodWeight, setNewMethodWeight] = useState('2.5');
     const [errors, setErrors] = useState<{
         methodRatios?: string;
         deviceType?: string;
@@ -255,107 +255,121 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                 </TabsList>
 
                 <TabsContent value="weights">
-                    <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
-                        <CardHeader className="border-b border-gray-200">
-                            <div className="flex items-center gap-3">
-                                <Dumbbell className="w-6 h-6 text-blue-700" />
-                                <CardTitle className="text-gray-900">Protocol Weights</CardTitle>
+            <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                    <div className="flex items-center gap-3">
+                        <Dumbbell className="w-6 h-6 text-blue-700" />
+                        <CardTitle className="text-gray-900">Protocol Weights</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent className="p-6 bg-white">
+                    <div className="mb-8">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-center gap-2 text-blue-700 mb-2">
+                                <Info className="w-5 h-5" />
+                                <span className="font-medium">Protocol Weight Impact</span>
                             </div>
-                        </CardHeader>
-                        <CardContent className="p-6 bg-white">
-                            <div className="mb-8">
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                                    <div className="flex items-center gap-2 text-blue-700 mb-2">
-                                        <Info className="w-5 h-5" />
-                                        <span className="font-medium">Protocol Weight Impact</span>
-                                    </div>
-                                    <p className="text-sm text-blue-600">
-                                        Higher weights indicate protocols that require more collector resources. These values directly affect the calculated load score for each device.
-                                    </p>
+                            <p className="text-sm text-blue-600">
+                                Higher weights indicate protocols that require more collector resources. These values directly affect the calculated load score for each device.
+                            </p>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                            <div className="relative flex-1">
+                                <Input
+                                    placeholder="New protocol name..."
+                                    value={newMethodWeightName}
+                                    onChange={(e) => setNewMethodWeightName(e.target.value)}
+                                    className="w-full bg-white border-gray-200 focus:border-blue-700 pl-10"
+                                />
+                                <Settings className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                            </div>
+                            <div className="relative w-48">
+                                <Label className="text-xs text-gray-500 block mb-1">Weight: {newMethodWeight}</Label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="5"
+                                    step="0.1"
+                                    value={newMethodWeight}
+                                    onChange={(e) => setNewMethodWeight(e.target.value)}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                />
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>0</span>
+                                    <span>2.5</span>
+                                    <span>5</span>
                                 </div>
-                                
-                                <div className="flex gap-2">
-                                    <div className="relative flex-1">
-                                        <Input
-                                            placeholder="New protocol name..."
-                                            value={newMethodWeightName}
-                                            onChange={(e) => setNewMethodWeightName(e.target.value)}
-                                            className="w-full bg-white border-gray-200 focus:border-blue-700 pl-10"
-                                        />
-                                        <Settings className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                            </div>
+                            <Button
+                                onClick={addProtocolWeight}
+                                className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Add Protocol
+                            </Button>
+                        </div>
+                        {errors.methodName && (
+                            <div className="flex items-center gap-2 text-red-500 text-sm mt-2">
+                                <AlertTriangle className="w-4 h-4" />
+                                <p>{errors.methodName}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        {Object.entries(config.methodWeights).map(([method, weight]) => (
+                            <div 
+                                key={method} 
+                                className="flex flex-col gap-2 group bg-gray-50 hover:bg-white border border-gray-200 rounded-lg p-4 transition-all duration-300"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Settings className="w-4 h-4 text-blue-700" />
                                     </div>
-                                    <div className="relative w-32">
-                                        <Input
-                                            type="number"
-                                            placeholder="Weight..."
-                                            value={newMethodWeight}
-                                            onChange={(e) => setNewMethodWeight(e.target.value)}
-                                            className="w-full bg-white border-gray-200 focus:border-blue-700 pl-10"
-                                        />
-                                        <Dumbbell className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                                    <div className="flex-1">
+                                        <Label className="text-xs text-gray-500 block">Protocol</Label>
+                                        <span className="capitalize text-gray-700 font-medium">{method}</span>
                                     </div>
                                     <Button
-                                        onClick={addProtocolWeight}
-                                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => removeProtocolWeight(method)}
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                        title="Remove protocol"
                                     >
-                                        <Plus className="w-4 h-4" />
-                                        Add Protocol
+                                        <Trash2 className="h-4 w-4 text-red-500" />
                                     </Button>
                                 </div>
-                                {errors.methodName && (
-                                    <div className="flex items-center gap-2 text-red-500 text-sm mt-2">
-                                        <AlertTriangle className="w-4 h-4" />
-                                        <p>{errors.methodName}</p>
+                                <div className="w-full">
+                                    <Label className="text-xs text-gray-500 block mb-1">Weight: {weight}</Label>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="5"
+                                        step="0.1"
+                                        value={weight}
+                                        onChange={(e) => {
+                                            const newWeights = {
+                                                ...config.methodWeights,
+                                                [method]: Number(e.target.value)
+                                            };
+                                            onUpdate({ ...config, methodWeights: newWeights });
+                                        }}
+                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>0</span>
+                                        <span>2.5</span>
+                                        <span>5</span>
                                     </div>
-                                )}
+                                </div>
                             </div>
-
-                            <div className="grid grid-cols-3 gap-4">
-                                {Object.entries(config.methodWeights).map(([method, weight]) => (
-                                    <div 
-                                        key={method} 
-                                        className="flex items-center gap-2 group bg-gray-50 hover:bg-white border border-gray-200 rounded-lg p-3 transition-all duration-300"
-                                    >
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <Settings className="w-4 h-4 text-blue-700" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <Label className="text-xs text-gray-500 block">Protocol</Label>
-                                            <span className="capitalize text-gray-700 font-medium">{method}</span>
-                                        </div>
-                                        <div className="w-24">
-                                            <Label className="text-xs text-gray-500 block">Weight</Label>
-                                            <Input
-                                                type="text"
-                                                value={weight.toString()}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    if (/^-?\d*\.?\d*$/.test(value)) {
-                                                        const newWeights = {
-                                                            ...config.methodWeights,
-                                                            [method]: value === '' ? 0 : Number(value)
-                                                        };
-                                                        onUpdate({ ...config, methodWeights: newWeights });
-                                                    }
-                                                }}
-                                                className="bg-white border-gray-200 focus:border-blue-700"
-                                            />
-                                        </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => removeProtocolWeight(method)}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                            title="Remove protocol"
-                                        >
-                                            <Trash2 className="h-4 w-4 text-red-500" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </EnhancedCard>
-                </TabsContent>
+                        ))}
+                    </div>
+                </CardContent>
+            </EnhancedCard>
+        </TabsContent>
 
                 <TabsContent value="devices">
                     <EnhancedCard className="bg-white h-[900px] overflow-hidden shadow-sm border border-gray-200">
@@ -593,30 +607,43 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
 
                                 <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
                                     <div>
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Gauge className="w-5 h-5 text-blue-700" />
-                                            <Label className="text-gray-900 font-medium">Maximum Collector Load (%)</Label>
+                                    <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <Gauge className="w-5 h-5 text-blue-700" />
+                                                <Label className="text-gray-900 font-medium">Maximum Collector Load (%)</Label>
+                                            </div>
+                                            <div className="bg-gray-100 px-3 py-1 rounded-lg">
+                                                <span className="text-gray-900 font-medium">{config.maxLoad}%</span>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <Input
-                                                type="number"
-                                                value={config.maxLoad}
-                                                onChange={(e) =>
-                                                    onUpdate({ ...config, maxLoad: parseInt(e.target.value) || 85 })
-                                                }
-                                                className="w-32"
-                                                min="1"
-                                                max="100"
-                                            />
-                                            <div className="h-2 flex-1 bg-gray-100 rounded-full overflow-hidden">
-                                                <div 
-                                                    className={`h-full transition-all duration-300 ${
-                                                        config.maxLoad >= 80 ? 'bg-red-500' :
-                                                        config.maxLoad >= 60 ? 'bg-yellow-500' :
-                                                        'bg-green-500'
-                                                    }`}
-                                                    style={{ width: `${config.maxLoad}%` }}
+                                        <div className="space-y-2">
+                                            <div className="relative h-2">
+                                                <div className="absolute top-0 left-0 right-0 h-2 bg-gray-100 rounded-full overflow-hidden pointer-events-none">
+                                                    <div 
+                                                        className={`h-full ${
+                                                            config.maxLoad >= 80 ? 'bg-red-500' :
+                                                            config.maxLoad >= 60 ? 'bg-yellow-500' :
+                                                            'bg-green-500'
+                                                        }`}
+                                                        style={{ width: `${config.maxLoad}%` }}
+                                                    />
+                                                </div>
+                                                <input
+                                                    type="range"
+                                                    min="1"
+                                                    max="100"
+                                                    value={config.maxLoad}
+                                                    onChange={(e) =>
+                                                        onUpdate({ ...config, maxLoad: parseInt(e.target.value) || 85 })
+                                                    }
+                                                    className="absolute top-0 left-0 right-0 w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                                    style={{ WebkitAppearance: 'none', appearance: 'none' }}
                                                 />
+                                            </div>
+                                            <div className="flex justify-between text-sm text-gray-500 pt-1">
+                                                <span>1%</span>
+                                                <span>50%</span>
+                                                <span>100%</span>
                                             </div>
                                         </div>
                                     </div>

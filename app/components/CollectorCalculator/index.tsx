@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { defaultMethodWeights, defaultDeviceTypes } from './constants';
 import { SiteConfiguration } from './components/SiteConfiguration';
 import { SystemConfiguration } from './components/SystemConfiguration';
+import SiteOverview from './components/SiteOverview';
 import { Config, Site } from './types';
 import Image from 'next/image';
 
@@ -108,6 +109,12 @@ const CollectorCalculator = () => {
                             >
                                 System Settings
                             </TabsTrigger>
+                            <TabsTrigger 
+                                value="overview"
+                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                            >
+                                Site Overview
+                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="sites" className="mt-6">
@@ -122,6 +129,13 @@ const CollectorCalculator = () => {
                             <SystemConfiguration 
                                 config={config} 
                                 onUpdate={handleConfigUpdate}
+                            />
+                        </TabsContent>
+
+                        <TabsContent value="overview" className="mt-6">
+                            <SiteOverview 
+                                sites={sites}
+                                config={config}
                             />
                         </TabsContent>
                     </Tabs>

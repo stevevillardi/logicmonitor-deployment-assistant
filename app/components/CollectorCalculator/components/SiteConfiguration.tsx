@@ -98,7 +98,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
     return (
         <div className="space-y-8">
             {sites.map((site, index) => (
-                <EnhancedCard key={index} className="bg-white">
+                <EnhancedCard key={index} className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
                     <CardHeader
                         className="flex flex-row items-center justify-between cursor-pointer hover:bg-slate-50"
                         onClick={() => toggleSite(index)}
@@ -212,9 +212,9 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
                     {expandedSites.has(index) && (
                         <CardContent>
                             <Tabs defaultValue="devices">
-                                <TabsList>
-                                    <TabsTrigger value="devices">Devices</TabsTrigger>
-                                    <TabsTrigger value="logs">Logs & NetFlow</TabsTrigger>
+                                <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
+                                    <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="devices">Devices</TabsTrigger>
+                                    <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="logs">Logs & NetFlow</TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="devices" className="mt-4">
