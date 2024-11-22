@@ -4,7 +4,6 @@ import { Card as BaseCard, CardContent, CardHeader, CardTitle } from '@/componen
 export const EnhancedCard = ({ 
   children, 
   className = '', 
-  title,
   glassEffect = true,
   ...props 
 }) => {
@@ -22,11 +21,6 @@ export const EnhancedCard = ({
       `}
       {...props}
     >
-      {title && (
-        <CardHeader className="border-b border-white/10 bg-white/5">
-          <CardTitle className="text-primary font-bold">{title}</CardTitle>
-        </CardHeader>
-      )}
       <CardContent className="p-6">
         {children}
       </CardContent>
