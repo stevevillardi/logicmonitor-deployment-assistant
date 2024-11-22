@@ -452,7 +452,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                                         updateMethodRatio(
                                                                             selectedDeviceType,
                                                                             method,
-                                                                            value === '' ? 0 : Number(value
+                                                                            value === '' ? 0 : Number(value)
                                                                         );
                                                                     }
                                                                 }}
