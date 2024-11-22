@@ -1,9 +1,9 @@
 import { collectorCapacities } from './constants';
-import { DeviceType } from './types';
+import { Config, DeviceType } from './types';
 
 // Utility Functions
 export const calculateWeightedScore = (devices: Record<string, DeviceType>, methodWeights: Record<string, number>) => {
-    return Object.entries(devices).reduce((total, [type, data]) => {
+    return Object.entries(devices).reduce((total, [data]) => {
         if (data.count === 0) return total;
 
         const methodScores = Object.entries(data.methods).map(([method, ratio]) => {

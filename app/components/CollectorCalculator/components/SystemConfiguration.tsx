@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button, Input } from '@/components/ui/enhanced-components'
 import { Config } from '../types';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, Plus, Trash2, AlertTriangle } from 'lucide-react';
-import { defaultDeviceTypes, defaultMethodWeights } from '../constants';
+import { defaultDeviceTypes } from '../constants';
 import { useEffect } from 'react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 interface SystemConfigurationProps {

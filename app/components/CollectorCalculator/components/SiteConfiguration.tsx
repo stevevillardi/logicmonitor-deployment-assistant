@@ -1,7 +1,7 @@
 import { defaultDeviceTypes } from '../constants';
 import { Site, Config } from '../types';
 import { useState } from 'react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
 import { Server, Activity, Network } from 'lucide-react';
@@ -74,12 +74,6 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
     };
 
     const addSite = () => {
-        const blankDevices = Object.fromEntries(
-            Object.entries(defaultDeviceTypes).map(([type, data]) => [
-                type,
-                { ...data, count: 0 },
-            ])
-        );
 
         const newSite = {
             name: `Site ${sites.length + 1}`,
