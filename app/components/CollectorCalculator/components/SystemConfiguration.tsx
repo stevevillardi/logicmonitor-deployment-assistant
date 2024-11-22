@@ -576,11 +576,11 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                 {[
                                                     {
                                                         term: "Instances",
-                                                        def: "Base number of monitoring instances for the device type"
+                                                        def: "Base average number of monitoring instances for the device type"
                                                     },
                                                     {
                                                         term: "Method Weight",
-                                                        def: "The relative weight of each collection method (SNMP, WMI, etc.)"
+                                                        def: "The relative weight of each collection method in terms of collector load impact (SNMP, WMI, etc.)"
                                                     },
                                                     {
                                                         term: "Method Ratio",

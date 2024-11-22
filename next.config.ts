@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: "/logicmonitor-calculator",
+  // basePath: "/logicmonitor-calculator",
   images: {
     unoptimized: true,
   },
