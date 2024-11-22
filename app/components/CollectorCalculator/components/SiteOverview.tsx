@@ -5,7 +5,6 @@ import { calculateCollectors } from '../utils';
 import { Site, Config } from '../types';
 import { Button } from '@/components/ui/enhanced-components';
 import EnhancedCard from '@/components/ui/enhanced-card';
-import { collectorCapacities } from '../constants';
 
 interface SiteOverviewProps {
     sites: Site[];
@@ -30,7 +29,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
     };
 
     const getCollectorSummary = () => {
-        let collectorsBySize = {
+        const collectorsBySize = {
             polling: {} as Record<string, number>,
             logs: {} as Record<string, number>
         };
