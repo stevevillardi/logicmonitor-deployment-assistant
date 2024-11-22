@@ -3,52 +3,52 @@ export const defaultDeviceTypes = {
     "Linux Servers": {
         count: 0,
         instances: 75,
-        methods: { snmpv3: 0.5, script: 0.5 },
+        methods: { SNMPv3: 0.5, Script: 0.5 },
     },
     "SQL Servers (Linux)": {
         count: 0,
-        instances: 5,
-        methods: { jdbc: 0.75, script: 0.25 },
+        instances: 80,
+        methods: { JDBC: 0.75, Script: 0.25 },
     },
     "Windows Servers": {
         count: 0,
         instances: 75,
-        methods: { wmi: 0.5, script: 0.5 },
+        methods: { WMI: 0.5, Script: 0.5 },
     },
     "SQL Servers (Windows)": {
         count: 0,
-        instances: 5,
-        methods: { script: 0.25, jdbc: 0.25, wmi: 0.5 },
+        instances: 80,
+        methods: { Script: 0.25, JDBC: 0.25, WMI: 0.5 },
     },
-    Routers: { count: 0, instances: 120, methods: { snmpv2: 0.5, snmpv3: 0.5 } },
-    Switches: { count: 0, instances: 120, methods: { snmpv2: 0.5, snmpv3: 0.5 } },
+    Routers: { count: 0, instances: 120, methods: { SNMPv2: 0.5, SNMPv3: 0.5 } },
+    Switches: { count: 0, instances: 120, methods: { SNMPv2: 0.5, SNMPv3: 0.5 } },
     Firewalls: {
         count: 0,
         instances: 120,
-        methods: { script: 0.5, snmpv2: 0.25, snmpv3: 0.25 },
+        methods: { Script: 0.5, SNMPv2: 0.25, SNMPv3: 0.25 },
     },
-    "SD-WAN Edges": { count: 0, instances: 15, methods: { script: 1 } },
-    "Access Points": { count: 0, instances: 10, methods: { script: 1 } },
+    "SD-WAN Edges": { count: 0, instances: 15, methods: { Script: 1 } },
+    "Access Points": { count: 0, instances: 10, methods: { Script: 1 } },
     "Storage Arrays": {
         count: 0,
         instances: 150,
-        methods: { snmpv2: 0.5, script: 0.5 },
+        methods: { SNMPv2: 0.5, Script: 0.5 },
     },
-    "vCenter VMs": { count: 0, instances: 18, methods: { script: 1 } },
+    "vCenter VMs": { count: 0, instances: 18, methods: { Script: 1 } },
     "ESXi Hosts": {
         count: 0,
         instances: 18,
-        methods: { script: 1 },
+        methods: { Script: 1 },
     },
 };
 
 export const defaultMethodWeights = {
-    snmpv2: 0.8,
-    snmpv3: 1,
-    wmi: 2,
-    winrm: 2,
-    jdbc: 1.5,
-    script: 5,
+    SNMPv2: 0.8,
+    SNMPv3: 1,
+    WMI: 2,
+    WinRM: 2,
+    JDBC: 1.5,
+    Script: 5,
 };
 
 export const collectorCapacities = {

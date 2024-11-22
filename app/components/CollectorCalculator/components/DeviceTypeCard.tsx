@@ -1,5 +1,5 @@
 import { DeviceType } from '../types';
-import { Server, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu } from 'lucide-react';
+import { Server, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu, Calculator, Dumbbell } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle } from 'lucide-react';
@@ -7,10 +7,11 @@ import { AlertTriangle } from 'lucide-react';
 interface DeviceTypeCardProps {
     type: string;
     data: DeviceType;
+    methodWeights: Record<string, number>;
     onUpdate: (count: number) => void;
 }
 
-export const DeviceTypeCard = ({ type, data, onUpdate }: DeviceTypeCardProps) => {
+export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTypeCardProps) => {
     const getIcon = () => {
         switch (type) {
             case "Linux Servers":
@@ -39,6 +40,14 @@ export const DeviceTypeCard = ({ type, data, onUpdate }: DeviceTypeCardProps) =>
         }
     };
 
+    const calculateSingleDeviceLoad = () => {
+        return Object.entries(data.methods).reduce((total, [method, ratio]) => {
+            return total + (data.instances * ratio * (methodWeights[method] || 0));
+        }, 0);
+    };
+
+    const singleDeviceLoad = calculateSingleDeviceLoad();
+
     return (
         <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200">
             <div className="flex items-center gap-3 mb-3">
@@ -61,22 +70,41 @@ export const DeviceTypeCard = ({ type, data, onUpdate }: DeviceTypeCardProps) =>
                     />
                 </div>
                 <div className="text-sm">
-                    <span className="text-gray-600">Base Instances:</span>
-                    <span className="ml-2 font-medium text-gray-900">
-                        {data.instances}
-                    </span>
-                </div>
-                <div className="text-sm">
-                    <span className="text-gray-600">Collection Methods:</span>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                        {Object.entries(data.methods).map(([method, ratio]) => (
-                            <span
-                                key={method}
-                                className="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-medium hover:bg-blue-100 transition-colors duration-300"
-                            >
-                                {method} ({Math.round(ratio * 100)}%)
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Base Instances:</span>
+                        <span className="font-medium text-gray-900">
+                            {data.instances}
+                        </span>
+                    </div>
+                    <div className="flex justify-between items-center ">
+                        <span className="text-gray-600">Load Score per Device:</span>
+                        <div className="flex items-center gap-2">
+                            <Calculator className="w-4 h-4 text-blue-700" />
+                            <span className="font-medium text-blue-700">
+                                {Math.round(singleDeviceLoad * 10) / 10}
                             </span>
-                        ))}
+                        </div>
+                    </div>
+                    <div className="mt-2 text-sm">
+                        <span className="text-gray-600 font-medium">Collection Methods:</span>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {Object.entries(data.methods).map(([method, ratio]) => (
+                                <div
+                                    key={method}
+                                    className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-medium hover:bg-blue-100 transition-all duration-300 shadow-sm hover:shadow"
+                                >
+                                    <span className="capitalize">{method}</span>
+                                    <span className="px-1.5 py-0.5 bg-blue-100 rounded-md">
+                                        {Math.round(ratio * 100)}%
+                                    </span>
+                                    <div className="flex items-center gap-1 text-blue-500">
+                                        <span>×</span>
+                                        <Dumbbell className="w-3.5 h-3.5" />
+                                        <span className="font-semibold">{methodWeights[method]}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

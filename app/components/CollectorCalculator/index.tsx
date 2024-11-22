@@ -84,7 +84,7 @@ const CollectorCalculator = () => {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
-            <Card className="w-full max-w-7xl bg-white shadow-lg">
+            <Card className="w-full max-w-[1440px] bg-white shadow-lg">
                 <CardHeader className="border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <Logo />

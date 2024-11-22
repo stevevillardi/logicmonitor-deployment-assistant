@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "LogicMonitor Collector Capacity Calculator",
+  title: "LogicMonitor Collector Capacity Planning",
   description: "Calculate the number of LogicMonitor collectors needed for your environment",
 };
 

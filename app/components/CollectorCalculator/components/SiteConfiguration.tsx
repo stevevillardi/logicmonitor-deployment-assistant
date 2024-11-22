@@ -234,6 +234,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
                                                 key={type}
                                                 type={type}
                                                 data={data}
+                                                methodWeights={config.methodWeights}
                                                 onUpdate={(newCount) => {
                                                     const newSites = [...sites];
                                                     newSites[index].devices[type].count = newCount;
@@ -273,6 +274,8 @@ export const SiteConfiguration = ({ sites, onUpdateSites, config }: SiteConfigur
                                 <CollectorVisualization
                                     polling={getSiteResults(site).polling}
                                     logs={getSiteResults(site).logs}
+                                    totalPollingLoad={calculateWeightedScore(site.devices, config.methodWeights)}
+                                    totalLogsLoad={Object.values(site.logs).reduce((sum, eps) => sum + eps, 0)}
                                 />
                             </div>
                         </CardContent>
