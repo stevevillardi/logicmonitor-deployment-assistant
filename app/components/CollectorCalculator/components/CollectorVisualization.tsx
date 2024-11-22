@@ -42,7 +42,7 @@ export const CollectorVisualization = ({ polling, logs }: CollectorVisualization
                                         <span className="text-sm">Load</span>
                                         <span className="font-medium">{collector.load}%</span>
                                     </div>
-                                    <div className="w-full bg-white/50 rounded-full h-2">
+                                    <div className="w-full bg-white/80 border border-gray-200 rounded-full h-2.5">
                                         <div
                                             className={`h-2 rounded-full transition-all duration-500 ${collector.load >= 80
                                                     ? "bg-red-500"
