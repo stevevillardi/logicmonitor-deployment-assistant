@@ -7,10 +7,10 @@ interface ButtonProps extends React.ComponentProps<"button"> {
   className?: string;
   variant?: "default" | "destructive" | "outline" | "ghost";
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  size?: "icon" | "sm" | "md" | "lg";
+  size?: "default" | "icon" | "sm" | "lg" | null;
 }
 
-export const Button = forwardRef(({ className, variant = "default", ...props }: ButtonProps, ref) => {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant = "default", ...props }, ref) => {
   const getVariantStyles = () => {
     switch (variant) {
       case "destructive":
@@ -44,7 +44,7 @@ interface InputProps extends React.ComponentProps<"input"> {
 }
 
 // Enhanced Input component
-export const Input = forwardRef(({ className, ...props }: InputProps, ref) => {
+export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, ...props }, ref) => {
   return (
     <BaseInput
       ref={ref}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Card as BaseCard, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const EnhancedCard = ({ 
@@ -6,6 +6,10 @@ export const EnhancedCard = ({
   className = '', 
   glassEffect = true,
   ...props 
+}: {
+  children: ReactNode;
+  className?: string;
+  glassEffect?: boolean;
 }) => {
   return (
     <BaseCard 
