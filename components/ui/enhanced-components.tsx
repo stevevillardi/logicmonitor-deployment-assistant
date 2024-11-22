@@ -40,7 +40,7 @@ interface InputProps extends React.ComponentProps<"input"> {
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value?: string;
+  value?: string | number;
 }
 
 // Enhanced Input component
