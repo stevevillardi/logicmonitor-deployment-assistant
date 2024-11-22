@@ -297,7 +297,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                 if (/^-?\d*\.?\d*$/.test(value)) {
                                                     const newWeights = {
                                                         ...config.methodWeights,
-                                                        [method]: value === '' ? 0 : value
+                                                        [method]: value === '' ? 0 :  Number(value)
                                                     };
                                                     onUpdate({ ...config, methodWeights: newWeights });
                                                 }
