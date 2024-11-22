@@ -13,10 +13,10 @@ const Logo = () => {
     return (
         <div className="flex items-center gap-2">
             <Image 
-                src="logicmonitor-logo-yellow.svg" 
+                src="lmlogo.webp" 
                 alt="LogicMonitor"
-                width={50}
-                height={50}
+                width={250}
+                height={250}
                 priority
             />
         </div>
@@ -89,7 +89,7 @@ const CollectorCalculator = () => {
                     <div className="flex items-center justify-between">
                         <Logo />
                         <CardTitle className="text-3xl text-[#040F4B]">
-                            LogicMonitor Collector Capacity Calculator
+                            Collector Capacity Planning
                         </CardTitle>
                     </div>
                 </CardHeader>
