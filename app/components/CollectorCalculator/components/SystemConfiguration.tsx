@@ -275,7 +275,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                     />
                                     <Button
                                         onClick={addProtocolWeight}
-                                        className="bg-blue-700 hover:bg-blue-800 text-white"
+                                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
                                     >
                                         Add Protocol
                                     </Button>
@@ -550,28 +550,28 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                             <CardTitle className="text-gray-900">Load Formula Calculation</CardTitle>
                         </CardHeader>
                         <CardContent className="p-6">
-                            <div className="space-y-6">
-                                <div className="bg-secondary/30 border border-primary/30 rounded-xl p-6">
+                        <div className="space-y-6">
+                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
                                     <div className="flex items-center gap-2 mb-4">
-                                        <Info className="h-5 w-5 text-primary" />
-                                        <p className="text-lg text-primary font-medium">Formula Overview</p>
+                                        <Info className="h-5 w-5 text-blue-700" />
+                                        <p className="text-lg text-gray-900 font-medium">Formula Overview</p>
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="bg-background/50 rounded-lg p-6 font-mono text-lg border border-white/10">
-                                            <p className="text-primary mb-1">
+                                        <div className="bg-white rounded-lg p-6 font-mono text-lg border border-blue-100 shadow-sm">
+                                            <p className="text-gray-900 mb-1">
                                                 Device Load = Instances × Method Weight × Method Ratio
                                             </p>
-                                            <p className="text-primary mb-1">
+                                            <p className="text-gray-900 mb-1">
                                                 Total Load = Σ(Device Load × Device Count)
                                             </p>
-                                            <p className="text-primary">
+                                            <p className="text-gray-900">
                                                 Collector Load % = (Total Load / (Collector Capacity × Max Load %)) × 100
                                             </p>
                                         </div>
 
                                         <div className="mt-6">
-                                            <p className="text-primary mb-3 font-medium">Variables Explained:</p>
+                                            <p className="text-gray-900 mb-3 font-medium">Variables Explained:</p>
                                             <div className="grid gap-2">
                                                 {[
                                                     {
@@ -599,9 +599,9 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                         def: "Maximum desired load percentage (default 85%)"
                                                     }
                                                 ].map(({ term, def }) => (
-                                                    <div key={term} className="bg-background/30 p-4 rounded-lg border border-white/10">
-                                                        <span className="text-primary font-semibold">{term}:</span>
-                                                        <span className="ml-2 text-card-foreground">{def}</span>
+                                                    <div key={term} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                                                        <span className="text-blue-700 font-semibold">{term}:</span>
+                                                        <span className="ml-2 text-gray-700">{def}</span>
                                                     </div>
                                                 ))}
                                             </div>

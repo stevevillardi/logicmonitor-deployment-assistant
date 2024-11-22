@@ -88,7 +88,7 @@ const CollectorCalculator = () => {
                 <CardHeader className="border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <Logo />
-                        <CardTitle className="text-2xl text-gray-900">
+                        <CardTitle className="text-3xl text-[#040F4B]">
                             LogicMonitor Collector Capacity Calculator
                         </CardTitle>
                     </div>

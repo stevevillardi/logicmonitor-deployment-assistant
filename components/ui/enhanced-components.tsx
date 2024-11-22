@@ -20,7 +20,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, v
       case "ghost":
         return "hover:bg-gray-50 text-gray-700"
       default:
-        return "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+        return "bg-[#040F4B] text-white hover:bg-[#0A1B6F] shadow-sm"
     }
   }
 
