@@ -189,7 +189,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
 
     const calculateDeviceGroupMetrics = (site: Site, deviceType: string, data: any) => {
         const totalLoad = Object.entries(data.methods).reduce((total, [method, ratio]) => {
-            return total + (data.instances * ratio * config.methodWeights[method] * data.count);
+            return total + (data.instances * (ratio as number) * config.methodWeights[method] * data.count);
         }, 0);
 
         const totalInstances = data.instances * data.count;
