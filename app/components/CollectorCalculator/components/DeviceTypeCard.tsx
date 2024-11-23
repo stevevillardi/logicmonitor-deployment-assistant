@@ -1,5 +1,5 @@
 import { DeviceType } from '../types';
-import { Server, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu, Calculator, Weight } from 'lucide-react';
+import { Server, Component, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu, Calculator, Weight } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
 import { AlertTriangle } from 'lucide-react';
@@ -69,44 +69,54 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTy
                         className="mt-1 bg-white border-gray-200"
                     />
                 </div>
-                <div className="text-sm">
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600">Base Instances:</span>
-                        <span className="font-medium text-gray-900">
-                            {data.instances}
-                        </span>
-                    </div>
-                    <div className="flex justify-between items-center ">
-                        <span className="text-gray-600">Load Score per Device:</span>
-                        <div className="flex items-center gap-2">
-                            <Calculator className="w-4 h-4 text-blue-700" />
-                            <span className="font-medium text-blue-700">
-                                {Math.round(singleDeviceLoad * 10) / 10}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="mt-2 text-sm">
-                        <span className="text-gray-600 font-medium">Collection Methods:</span>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                            {Object.entries(data.methods).map(([method, ratio]) => (
-                                <div
-                                    key={method}
-                                    className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-medium hover:bg-blue-100 transition-all duration-300 shadow-sm hover:shadow"
-                                >
-                                    <span className="capitalize">{method}</span>
-                                    <span className="px-1.5 py-0.5 bg-blue-100 rounded-md">
-                                        {Math.round(ratio * 100)}%
-                                    </span>
-                                    <div className="flex items-center gap-1 text-blue-500">
-                                        <span>×</span>
-                                        <Weight className="w-3.5 h-3.5" />
-                                        <span className="font-semibold">{methodWeights[method]}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                <div className="space-y-4">
+    {/* Metrics Section */}
+    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <Component className="w-4 h-4 text-blue-700" />
+                <span className="text-gray-600">Base Instances</span>
+            </div>
+            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                {data.instances}
+            </div>
+        </div>
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-blue-700" />
+                <span className="text-gray-600">Load Score per Device</span>
+            </div>
+            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                {Math.round(singleDeviceLoad * 10) / 10}
+            </div>
+        </div>
+    </div>
+
+    {/* Collection Methods Section */}
+    <div>
+        <div className="flex items-center gap-2 mb-2">
+            <Settings className="w-4 h-4 text-blue-700" />
+            <span className="text-gray-900 font-medium">Collection Methods</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+            {Object.entries(data.methods).map(([method, ratio]) => (
+                <div
+                    key={method}
+                    className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all duration-300"
+                >
+                    <span className="capitalize text-gray-900 text-sm">{method}</span>
+                    <span className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                        {Math.round(ratio * 100)}%
+                    </span>
+                    <div className="flex items-center gap-1 text-gray-500 text-xs">
+                        <Weight className="w-3 h-3" />
+                        <span className="font-medium">{methodWeights[method]}</span>
                     </div>
                 </div>
+            ))}
+        </div>
+    </div>
+</div>
             </div>
         </div>
     );

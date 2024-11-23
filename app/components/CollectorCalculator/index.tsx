@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { defaultMethodWeights, defaultDeviceTypes } from './constants';
+import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from './constants';
 import SiteConfiguration from './components/SiteConfiguration';
 import { SystemConfiguration } from './components/SystemConfiguration';
 import SiteOverview from './components/SiteOverview';
 import { Config, Site } from './types';
 import Image from 'next/image';
 import { useCallback } from 'react';
+import { KeyRound, Server, MessageCircleQuestion } from 'lucide-react';
+
 const Logo = () => {
     return (
         <div className="flex items-center gap-2">
@@ -31,11 +33,12 @@ const CollectorCalculator = () => {
         enablePollingFailover: true,
         enableLogsFailover: false,
         deviceDefaults: { ...defaultDeviceTypes },
+        collectorCapacities: { ...collectorCapacities },
     });
 
     const [sites, setSites] = useState<Site[]>([
         {
-            name: "Default Site",
+            name: "Site 1",
             devices: Object.fromEntries(
                 Object.entries(config.deviceDefaults).map(([type, data]) => [
                     type,
@@ -80,12 +83,35 @@ const CollectorCalculator = () => {
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
             <Card className="w-full max-w-[1440px] bg-white shadow-lg">
-                <CardHeader className="border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                        <Logo />
-                        <CardTitle className="text-3xl text-[#040F4B]">
-                            Collector Capacity Planning
-                        </CardTitle>
+            <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-white to-blue-50/50">
+                    <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-8">
+                            <Logo />
+                            <div className="h-8 w-px bg-gray-200"></div>
+                            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                                Collector Capacity Planning
+                            </CardTitle>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <a 
+                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                            >
+                                <KeyRound className="w-5 h-5 text-blue-700" />
+                                <span className="text-sm font-medium text-blue-700">Collector Credentials</span>
+                            </a>
+                            <a 
+                                href="https://www.logicmonitor.com/support/collectors/collector-overview/about-the-logicmonitor-collector" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                            >
+                                <MessageCircleQuestion className="w-5 h-5 text-blue-700" />
+                                <span className="text-sm font-medium text-blue-700">Collector FAQs</span>
+                            </a>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="p-6 bg-gray-50">
@@ -107,7 +133,7 @@ const CollectorCalculator = () => {
                                 value="overview"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
-                                Overview
+                               Site Overview
                             </TabsTrigger>
                         </TabsList>
 

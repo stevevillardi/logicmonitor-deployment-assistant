@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/enhanced-components';
 import { Site, Config } from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState, useRef } from 'react';
-
+import { Plus } from 'lucide-react';
 interface ConfigurationActionsProps {
     sites: Site[];
     config: Config;
     onUpdateSites: (sites: Site[]) => void;
     onUpdateConfig: (config: Config) => void;
+    onSiteExpand: (expandedSites: Set<number>) => void;
 }
 
 interface SimplifiedSite {
@@ -37,7 +38,7 @@ interface ValidationResult {
     warnings: string[];
 }
 
-const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: ConfigurationActionsProps) => {
+const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, onSiteExpand }: ConfigurationActionsProps) => {
     const [error, setError] = useState<string | null>(null);
     const [warnings, setWarnings] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -272,29 +273,31 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                     </AlertDescription>
                 </Alert>
             )}
-            <div className="flex gap-4">
-                <Button
-                    onClick={handleExportConfig}
-                    className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
-                >
-                    <Download className="w-4 h-4" />
-                    Export Configuration
-                </Button>
-                <Button
-                    onClick={handleImportClick}
-                    variant="outline"
-                    className="gap-2"
-                >
-                    <Upload className="w-4 h-4" />
-                    Import Configuration
-                </Button>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImportConfig}
-                    accept=".json"
-                    className="hidden"
-                />
+            <div className="flex items-center justify-between">
+                <div className="flex gap-4">
+                    <Button
+                        onClick={handleExportConfig}
+                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export Configuration
+                    </Button>
+                    <Button
+                        onClick={handleImportClick}
+                        variant="outline"
+                        className="gap-2"
+                    >
+                        <Upload className="w-4 h-4" />
+                        Import Configuration
+                    </Button>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleImportConfig}
+                        accept=".json"
+                        className="hidden"
+                    />
+                </div>
             </div>
         </div>
     );

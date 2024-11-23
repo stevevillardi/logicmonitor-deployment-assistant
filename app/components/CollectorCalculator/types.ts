@@ -21,4 +21,10 @@ export interface Config {
     enablePollingFailover: boolean;
     enableLogsFailover: boolean;
     deviceDefaults: Record<string, DeviceType>;
+    collectorCapacities: Record<string, CollectorCapacity>;
+}
+
+export interface CollectorCapacity {
+    weight: number;
+    eps: number;
 }
