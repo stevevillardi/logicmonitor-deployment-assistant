@@ -109,43 +109,43 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
         const totalWeight = calculateWeightedScore(site.devices, config.methodWeights);
         const totalEPS = getTotalEPS(site);
         const results = calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
-    
+
         const collectorsBySize = {
             polling: {} as Record<string, number>,
             logs: {} as Record<string, number>
         };
-    
+
         // Count polling collectors by size
         results.polling.collectors
             .filter(c => c.type === "Primary")
             .forEach(collector => {
                 collectorsBySize.polling[collector.size] = (collectorsBySize.polling[collector.size] || 0) + 1;
             });
-    
+
         // Count logs collectors by size
         results.logs.collectors
             .filter(c => c.type === "Primary")
             .forEach(collector => {
                 collectorsBySize.logs[collector.size] = (collectorsBySize.logs[collector.size] || 0) + 1;
             });
-    
+
         // Add N+1 collectors if enabled
         if (config.enablePollingFailover) {
             const redundantCollector = results.polling.collectors.find(c => c.type === "N+1 Redundancy");
             if (redundantCollector) {
-                collectorsBySize.polling[redundantCollector.size] = 
+                collectorsBySize.polling[redundantCollector.size] =
                     (collectorsBySize.polling[redundantCollector.size] || 0) + 1;
             }
         }
-    
+
         if (config.enableLogsFailover) {
             const redundantCollector = results.logs.collectors.find(c => c.type === "N+1 Redundancy");
             if (redundantCollector) {
-                collectorsBySize.logs[redundantCollector.size] = 
+                collectorsBySize.logs[redundantCollector.size] =
                     (collectorsBySize.logs[redundantCollector.size] || 0) + 1;
             }
         }
-    
+
         return {
             totalWeight,
             totalEPS,
@@ -248,104 +248,104 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                 </div>
             </div>
 
-{/* Global Collector Distribution */}
-<EnhancedCard className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-    <div className="border-b border-gray-200 bg-gray-50 p-6 rounded-lg">
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <Earth className="w-6 h-6 text-blue-700" />
-                <h2 className="text-xl font-bold text-gray-900">Global Collector Distribution</h2>
-            </div>
-            <Button
-                onClick={() => window.print()}
-                className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
-            >
-                <Download className="w-4 h-4" />
-                Export PDF
-            </Button>
-        </div>
-    </div>
-    <div className="p-6">
-        <div className="grid grid-cols-2 gap-6">
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-4">
-                    <Server className="w-5 h-5 text-blue-700" />
-                    <h3 className="font-medium text-gray-900">Polling Collectors</h3>
-                </div>
-                <div className="space-y-2">
-                    {Object.keys(globalCollectorSummary.polling).length > 0 ? (
-                        <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-                            {Object.entries(globalCollectorSummary.polling)
-                                .sort(([sizeA], [sizeB]) => {
-                                    const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
-                                    return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
-                                })
-                                .map(([size, count]) => (
-                                    <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                                <Server className="w-4 h-4 text-blue-700" />
-                                            </div>
-                                            <span className="font-medium text-gray-900">{size}</span>
-                                        </div>
-                                        <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                            {count} {count === 1 ? 'collector' : 'collectors'}
-                                        </div>
-                                    </div>
-                                ))}
+            {/* Global Collector Distribution */}
+            <EnhancedCard className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
+                <div className="border-b border-gray-200 bg-gray-50 p-6 rounded-lg">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Earth className="w-6 h-6 text-blue-700" />
+                            <h2 className="text-xl font-bold text-gray-900">Global Collector Distribution</h2>
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
-                            <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
-                                <Server className="w-6 h-6 text-gray-400" />
+                        <Button
+                            onClick={() => window.print()}
+                            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                        >
+                            <Download className="w-4 h-4" />
+                            Export PDF
+                        </Button>
+                    </div>
+                </div>
+                <div className="p-6">
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Server className="w-5 h-5 text-blue-700" />
+                                <h3 className="font-medium text-gray-900">Polling Collectors</h3>
                             </div>
-                            <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
-                            <p className="text-gray-500 text-sm text-center">Add devices to sites to see collector requirements</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-4">
-                    <Activity className="w-5 h-5 text-blue-700" />
-                    <h3 className="font-medium text-gray-900">Logs/NetFlow Collectors</h3>
-                </div>
-                <div className="space-y-2">
-                    {Object.keys(globalCollectorSummary.logs).length > 0 ? (
-                        <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-                            {Object.entries(globalCollectorSummary.logs)
-                                .sort(([sizeA], [sizeB]) => {
-                                    const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
-                                    return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
-                                })
-                                .map(([size, count]) => (
-                                    <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                                <Activity className="w-4 h-4 text-blue-700" />
-                                            </div>
-                                            <span className="font-medium text-gray-900">{size}</span>
-                                        </div>
-                                        <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                            {count} {count === 1 ? 'collector' : 'collectors'}
-                                        </div>
+                            <div className="space-y-2">
+                                {Object.keys(globalCollectorSummary.polling).length > 0 ? (
+                                    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                                        {Object.entries(globalCollectorSummary.polling)
+                                            .sort(([sizeA], [sizeB]) => {
+                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                            })
+                                            .map(([size, count]) => (
+                                                <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                                            <Server className="w-4 h-4 text-blue-700" />
+                                                        </div>
+                                                        <span className="font-medium text-gray-900">{size}</span>
+                                                    </div>
+                                                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                        {count} {count === 1 ? 'collector' : 'collectors'}
+                                                    </div>
+                                                </div>
+                                            ))}
                                     </div>
-                                ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
-                            <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
-                                <Activity className="w-6 h-6 text-gray-400" />
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                                            <Server className="w-6 h-6 text-gray-400" />
+                                        </div>
+                                        <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
+                                        <p className="text-gray-500 text-sm text-center">Add devices to sites to see collector requirements</p>
+                                    </div>
+                                )}
                             </div>
-                            <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
-                            <p className="text-gray-500 text-sm text-center">Configure logs collection to see requirements</p>
                         </div>
-                    )}
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Activity className="w-5 h-5 text-blue-700" />
+                                <h3 className="font-medium text-gray-900">Logs/NetFlow Collectors</h3>
+                            </div>
+                            <div className="space-y-2">
+                                {Object.keys(globalCollectorSummary.logs).length > 0 ? (
+                                    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                                        {Object.entries(globalCollectorSummary.logs)
+                                            .sort(([sizeA], [sizeB]) => {
+                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                            })
+                                            .map(([size, count]) => (
+                                                <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                                            <Activity className="w-4 h-4 text-blue-700" />
+                                                        </div>
+                                                        <span className="font-medium text-gray-900">{size}</span>
+                                                    </div>
+                                                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                        {count} {count === 1 ? 'collector' : 'collectors'}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                                            <Activity className="w-6 h-6 text-gray-400" />
+                                        </div>
+                                        <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
+                                        <p className="text-gray-500 text-sm text-center">Configure logs collection to see requirements</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</EnhancedCard>
+            </EnhancedCard>
 
             {/* Site Details */}
             <div className="space-y-6">
@@ -423,97 +423,97 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                         </div>
                                     </div>
 
-{/* Site Collector Distribution */}
-<div className="grid grid-cols-2 gap-4">
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-4">
-            <Server className="w-5 h-5 text-blue-700" />
-            <h3 className="font-medium text-gray-900">Polling Collectors</h3>
-        </div>
-        <div className="space-y-2">
-            {metrics.avgPollingLoad > 0 ? (
-                <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-                    {Object.entries(metrics.collectorsBySize?.polling || {})
-                        .sort(([sizeA], [sizeB]) => {
-                            const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
-                            return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
-                        })
-                        .map(([size, count]) => (
-                            <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <Server className="w-4 h-4 text-blue-700" />
+                                    {/* Site Collector Distribution */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <Server className="w-5 h-5 text-blue-700" />
+                                                <h3 className="font-medium text-gray-900">Polling Collectors</h3>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {metrics.avgPollingLoad > 0 ? (
+                                                    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                                                        {Object.entries(metrics.collectorsBySize?.polling || {})
+                                                            .sort(([sizeA], [sizeB]) => {
+                                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                                            })
+                                                            .map(([size, count]) => (
+                                                                <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                                                            <Server className="w-4 h-4 text-blue-700" />
+                                                                        </div>
+                                                                        <span className="font-medium text-gray-900">{size}</span>
+                                                                    </div>
+                                                                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                                        {count} {count === 1 ? 'collector' : 'collectors'}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        {config.enablePollingFailover && (
+                                                            <div className="flex items-center gap-2 mt-2 p-2 text-sm text-blue-700 bg-blue-50 rounded-lg">
+                                                                <Info className="w-4 h-4" />
+                                                                <span>Includes N+1 redundancy collector</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                                                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                                                            <Server className="w-6 h-6 text-gray-400" />
+                                                        </div>
+                                                        <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
+                                                        <p className="text-gray-500 text-sm text-center">Add devices to see collector requirements</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <Activity className="w-5 h-5 text-blue-700" />
+                                                <h3 className="font-medium text-gray-900">Logs/NetFlow Collectors</h3>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {metrics.avgLogsLoad > 0 ? (
+                                                    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                                                        {Object.entries(metrics.collectorsBySize?.logs || {})
+                                                            .sort(([sizeA], [sizeB]) => {
+                                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                                            })
+                                                            .map(([size, count]) => (
+                                                                <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                                                            <Activity className="w-4 h-4 text-blue-700" />
+                                                                        </div>
+                                                                        <span className="font-medium text-gray-900">{size}</span>
+                                                                    </div>
+                                                                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                                        {count} {count === 1 ? 'collector' : 'collectors'}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        {config.enableLogsFailover && (
+                                                            <div className="flex items-center gap-2 mt-2 p-2 text-sm text-blue-700 bg-blue-50 rounded-lg">
+                                                                <Info className="w-4 h-4" />
+                                                                <span>Includes N+1 redundancy collector</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                                                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                                                            <Activity className="w-6 h-6 text-gray-400" />
+                                                        </div>
+                                                        <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
+                                                        <p className="text-gray-500 text-sm text-center">Configure logs collection to see requirements</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span className="font-medium text-gray-900">{size}</span>
-                                </div>
-                                <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                    {count} {count === 1 ? 'collector' : 'collectors'}
-                                </div>
-                            </div>
-                        ))}
-                    {config.enablePollingFailover && (
-                        <div className="flex items-center gap-2 mt-2 p-2 text-sm text-blue-700 bg-blue-50 rounded-lg">
-                            <Info className="w-4 h-4" />
-                            <span>Includes N+1 redundancy collector</span>
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
-                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
-                        <Server className="w-6 h-6 text-gray-400" />
-                    </div>
-                    <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
-                    <p className="text-gray-500 text-sm text-center">Add devices to see collector requirements</p>
-                </div>
-            )}
-        </div>
-    </div>
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-blue-700" />
-            <h3 className="font-medium text-gray-900">Logs/NetFlow Collectors</h3>
-        </div>
-        <div className="space-y-2">
-            {metrics.avgLogsLoad > 0 ? (
-                <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-                    {Object.entries(metrics.collectorsBySize?.logs || {})
-                        .sort(([sizeA], [sizeB]) => {
-                            const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
-                            return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
-                        })
-                        .map(([size, count]) => (
-                            <div key={size} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <Activity className="w-4 h-4 text-blue-700" />
-                                    </div>
-                                    <span className="font-medium text-gray-900">{size}</span>
-                                </div>
-                                <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                    {count} {count === 1 ? 'collector' : 'collectors'}
-                                </div>
-                            </div>
-                        ))}
-                    {config.enableLogsFailover && (
-                        <div className="flex items-center gap-2 mt-2 p-2 text-sm text-blue-700 bg-blue-50 rounded-lg">
-                            <Info className="w-4 h-4" />
-                            <span>Includes N+1 redundancy collector</span>
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
-                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
-                        <Activity className="w-6 h-6 text-gray-400" />
-                    </div>
-                    <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
-                    <p className="text-gray-500 text-sm text-center">Configure logs collection to see requirements</p>
-                </div>
-            )}
-        </div>
-    </div>
-</div>
 
                                     {/* Device Types */}
                                     <div>

@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { Dumbbell, Settings, Shield, Server, Activity, Variable } from 'lucide-react';
 import { PcCase, Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
+import sliderStyles from '../../../styles';
 
 interface SystemConfigurationProps {
     config: Config;
@@ -242,7 +243,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                     <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">General Settings</TabsTrigger>
                     <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Device Defaults</TabsTrigger>
                     <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Protocol Weights</TabsTrigger>
-                    <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Load Formula</TabsTrigger>
+                    <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Load Calculation Formula</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="weights">
@@ -276,6 +277,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                         <Settings className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
                                     </div>
                                     <div className="relative w-48">
+                                        <style>{sliderStyles}</style>
                                         <Label className="text-xs text-gray-500 block mb-1">Weight: {newMethodWeight}</Label>
                                         <input
                                             type="range"
@@ -542,6 +544,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                                     </Button>
                                                                 </div>
                                                                 <div className="space-y-2">
+                                                                    <style>{sliderStyles}</style>
                                                                     <Label className="text-xs text-gray-500 block">Ratio: {(ratio * 100).toFixed(1)}%</Label>
                                                                     <input
                                                                         type="range"
@@ -610,6 +613,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                         </div>
                                         <div className="space-y-2">
                                             <div className="relative h-2">
+                                                <style>{sliderStyles}</style>
                                                 <div className="absolute top-0 left-0 right-0 h-2 bg-gray-100 rounded-full overflow-hidden pointer-events-none">
                                                     <div
                                                         className={`h-full ${config.maxLoad >= 80 ? 'bg-red-500' :
@@ -771,7 +775,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                         <CardHeader className="border-b border-gray-200 bg-white">
                             <div className="flex items-center gap-3">
                                 <Calculator className="w-6 h-6 text-blue-700" />
-                                <CardTitle className="text-gray-900">Load Formula Calculation</CardTitle>
+                                <CardTitle className="text-gray-900">Load Calculation Formula</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">

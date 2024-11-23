@@ -1,9 +1,13 @@
 import CollectorCalculator from './components/CollectorCalculator/index';
+import { Footer } from './components/CollectorCalculator/components/Footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#040F4B] p-8">
-      <CollectorCalculator />
-    </main>
+    <div className="min-h-screen bg-[#040F4B] flex flex-col">
+      <main className="flex-grow p-8">
+        <CollectorCalculator />
+      </main>
+      <Footer />
+    </div>
   );
 }

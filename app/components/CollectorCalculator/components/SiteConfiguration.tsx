@@ -18,9 +18,11 @@ interface SiteConfigurationProps {
     onUpdateSites: (sites: Site[]) => void;
     onUpdateConfig: (config: Config) => void;
     config: Config;
+    onSiteExpand: (expandedSites: Set<number>) => void;
+    expandedSites: Set<number>;
 }
 
-export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config }: SiteConfigurationProps) => {
+export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config, onSiteExpand }: SiteConfigurationProps) => {
     const resetSite = (index: number, type: string) => {
         const newSites = [...sites];
         if (type === "devices") {
@@ -76,7 +78,6 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     };
 
     const addSite = () => {
-
         const newSite = {
             name: `Site ${sites.length + 1}`,
             devices: Object.fromEntries(
@@ -91,7 +92,17 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 traps: 0,
             },
         };
+        
+        // Clear all expanded sites
+        setExpandedSites(new Set());
+        
+        // Add new site and expand only it
         onUpdateSites([...sites, newSite]);
+        
+        // After a brief delay, expand the new site
+        setTimeout(() => {
+            setExpandedSites(new Set([sites.length]));
+        }, 100);
     };
 
     const deleteSite = (index: number) => {
@@ -101,7 +112,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     return (
         <div className="space-y-8 min-h-[900px]">
             <div className="flex items-center justify-between">
-                <ConfigurationActions 
+                <ConfigurationActions
                     sites={sites}
                     config={config}
                     onUpdateSites={onUpdateSites}
@@ -142,7 +153,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     )}
                 </div>
             </div>
-            
+
             {sites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
                     <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
@@ -187,7 +198,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
@@ -209,7 +220,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             <Activity className="w-4 h-4 text-blue-600" />
                                         </div>
                                         <span className="text-sm font-medium text-gray-600">
-                                            x{getSiteResults(site).logs.collectors.filter(c => c.type === "Primary").length} Netflow-Logs
+                                            x{getSiteResults(site).logs.collectors.filter(c => c.type === "Primary").length} Netflow/Logs
                                         </span>
                                         {config.enableLogsFailover && (
                                             <span className="text-sm text-gray-500">
@@ -217,14 +228,13 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             </span>
                                         )}
                                     </div>
-                                    
-                                    <div className={`px-3 py-1.5 rounded-lg flex items-center gap-2 ${
-                                        calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
+
+                                    <div className={`px-3 py-1.5 rounded-lg flex items-center gap-2 ${calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
                                             ? "bg-red-50 text-red-700 border border-red-200"
                                             : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                            ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                    }`}>
+                                                ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                                                : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                        }`}>
                                         <span className="text-sm font-medium">Avg Load</span>
                                         <span className="text-sm">
                                             {calculateAverageLoad(getSiteResults(site).polling.collectors)}%

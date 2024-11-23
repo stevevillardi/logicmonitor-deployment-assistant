@@ -37,6 +37,8 @@ const CollectorCalculator = () => {
         collectorCapacities: { ...collectorCapacities },
     });
 
+    const [expandedSites, setExpandedSites] = useState<Set<number>>(new Set());
+
     const [sites, setSites] = useState<Site[]>([
         {
             name: "Site 1",
@@ -162,6 +164,8 @@ const CollectorCalculator = () => {
                                 onUpdateSites={handleSitesUpdate}
                                 config={config}
                                 onUpdateConfig={handleConfigUpdate}
+                                onSiteExpand={setExpandedSites}
+                                expandedSites={expandedSites}
                             />
                         </TabsContent>
 
