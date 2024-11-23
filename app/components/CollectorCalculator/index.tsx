@@ -7,6 +7,7 @@ import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from '.
 import SiteConfiguration from './components/SiteConfiguration';
 import { SystemConfiguration } from './components/SystemConfiguration';
 import SiteOverview from './components/SiteOverview';
+import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
 import { useCallback } from 'react';
@@ -101,6 +102,15 @@ const CollectorCalculator = () => {
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
+                                <Server className="w-5 h-5 text-blue-700" />
+                                <span className="text-sm font-medium text-blue-700">Installing a Collector</span>
+                            </a>
+                            <a 
+                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                            >
                                 <KeyRound className="w-5 h-5 text-blue-700" />
                                 <span className="text-sm font-medium text-blue-700">Collector Credentials</span>
                             </a>
@@ -126,17 +136,24 @@ const CollectorCalculator = () => {
                                 Site Configuration
                             </TabsTrigger>
                             <TabsTrigger 
+                                value="overview"
+                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                            >
+                               Site Overview
+                            </TabsTrigger>
+
+                            <TabsTrigger 
                                 value="system"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
                                 System Settings
                             </TabsTrigger>
                             <TabsTrigger 
-                                value="overview"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
-                            >
-                               Site Overview
-                            </TabsTrigger>
+        value="collector-info"
+        className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+    >
+        Collector Info
+    </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="sites" className="mt-6">
@@ -161,6 +178,9 @@ const CollectorCalculator = () => {
                                 config={config}
                             />
                         </TabsContent>
+                        <TabsContent value="collector-info" className="mt-6">
+    <CollectorInfo />
+</TabsContent>
                     </Tabs>
                 </CardContent>
             </Card>
