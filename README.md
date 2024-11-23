@@ -49,13 +49,13 @@ The LogicMonitor Collector Calculator is designed to help users:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/logicmonitor/collector-calculator.git
+git clone https://github.com/stevevillardi/logicmonitor-calculator.git
 ```
 
 2. Install dependencies:
 
 ```bash
-cd collector-calculator
+cd logicmonitor-calculator
 npm install
 ```
 
