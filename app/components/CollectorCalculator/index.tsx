@@ -86,7 +86,9 @@ const CollectorCalculator = () => {
             <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-white to-blue-50/50">
                     <div className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-8">
-                            <Logo />
+                            <a href="https://www.logicmonitor.com" target="_blank" rel="noopener noreferrer">
+                                <Logo />
+                            </a>
                             <div className="h-8 w-px bg-gray-200"></div>
                             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
                                 Collector Capacity Planning

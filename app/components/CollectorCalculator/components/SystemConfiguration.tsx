@@ -236,7 +236,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto">
             <Tabs defaultValue="general">
                 <TabsList className="mb-4 bg-white border border-gray-200">
                     <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">General Settings</TabsTrigger>
@@ -363,7 +363,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                 </TabsContent>
 
                 <TabsContent value="devices">
-                    <EnhancedCard className="bg-white h-[900px] overflow-hidden shadow-sm border border-gray-200">
+                    <EnhancedCard className="bg-white h-[1100px] overflow-hidden shadow-sm border border-gray-200">
                         <CardHeader className="border-b border-gray-200 bg-white">
                             <div className="flex items-center gap-3">
                                 <Server className="w-6 h-6 text-blue-700" />
@@ -415,8 +415,8 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                     <div
                                                         key={type}
                                                         className={`p-3 rounded-lg cursor-pointer group flex items-center gap-3 transition-all ${selectedDeviceType === type
-                                                                ? 'bg-blue-100 text-blue-900 border border-blue-200'
-                                                                : 'hover:bg-slate-50 text-gray-900 hover:text-slate-900 border border-transparent'
+                                                            ? 'bg-blue-100 text-blue-900 border border-blue-200'
+                                                            : 'hover:bg-slate-50 text-gray-900 hover:text-slate-900 border border-transparent'
                                                             }`}
                                                         onClick={() => setSelectedDeviceType(type)}
                                                     >
@@ -578,7 +578,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                 </TabsContent>
 
                 <TabsContent value="general">
-                    <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                    <EnhancedCard className="bg-white h-[1500px] overflow-y-auto shadow-sm border border-gray-200">
                         <CardHeader className="border-b border-gray-200">
                             <div className="flex items-center gap-3">
                                 <Settings className="w-6 h-6 text-blue-700" />
@@ -613,8 +613,8 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                 <div className="absolute top-0 left-0 right-0 h-2 bg-gray-100 rounded-full overflow-hidden pointer-events-none">
                                                     <div
                                                         className={`h-full ${config.maxLoad >= 80 ? 'bg-red-500' :
-                                                                config.maxLoad >= 60 ? 'bg-yellow-500' :
-                                                                    'bg-green-500'
+                                                            config.maxLoad >= 60 ? 'bg-yellow-500' :
+                                                                'bg-green-500'
                                                             }`}
                                                         style={{ width: `${config.maxLoad}%` }}
                                                     />
