@@ -45,7 +45,7 @@ export const Footer = () => {
                             rel="noopener noreferrer"
                             className="text-sm text-gray-600 hover:text-blue-700 flex items-center gap-1"
                         >
-                            Support <ExternalLink className="w-3 h-3" />
+                            Product Support <ExternalLink className="w-3 h-3" />
                         </a>
                     </div>
                 </div>

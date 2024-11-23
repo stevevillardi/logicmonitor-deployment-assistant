@@ -11,8 +11,9 @@ import { LogsInput } from './LogsInput';
 import { CollectorVisualization } from './CollectorVisualization';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import ConfigurationActions from './ConfigurationActions';
-import { Plus, ChevronUp, ChevronDown, HardDrive } from 'lucide-react';
-
+import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle } from 'lucide-react';
+import { FirstTimeVisit } from './FirstTimeVisit';
+import { useEffect } from 'react';
 interface SiteConfigurationProps {
     sites: Site[];
     onUpdateSites: (sites: Site[]) => void;
@@ -41,6 +42,8 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
         }
         onUpdateSites(newSites);
     };
+
+    const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
     const getSiteResults = (site: Site) => {
         const totalWeight = calculateWeightedScore(
@@ -92,13 +95,13 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 traps: 0,
             },
         };
-        
+
         // Clear all expanded sites
         setExpandedSites(new Set());
-        
+
         // Add new site and expand only it
         onUpdateSites([...sites, newSite]);
-        
+
         // After a brief delay, expand the new site
         setTimeout(() => {
             setExpandedSites(new Set([sites.length]));
@@ -111,6 +114,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
     return (
         <div className="space-y-8 min-h-[900px]">
+            <FirstTimeVisit
+                isOpen={helpDialogOpen}
+                onOpenChange={setHelpDialogOpen}
+            />
             <div className="flex items-center justify-between">
                 <ConfigurationActions
                     sites={sites}
@@ -126,6 +133,14 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     >
                         <Plus className="w-4 h-4" />
                         Add New Site
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => setHelpDialogOpen(true)}
+                        className="gap-2"
+                    >
+                        <HelpCircle className="w-4 h-4" />
+                        Help Guide
                     </Button>
                     {sites.length > 0 && (
                         <Button
@@ -230,10 +245,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     </div>
 
                                     <div className={`px-3 py-1.5 rounded-lg flex items-center gap-2 ${calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
-                                            ? "bg-red-50 text-red-700 border border-red-200"
-                                            : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                                ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                                                : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                        ? "bg-red-50 text-red-700 border border-red-200"
+                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
+                                            ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                                         }`}>
                                         <span className="text-sm font-medium">Avg Load</span>
                                         <span className="text-sm">

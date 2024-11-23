@@ -11,7 +11,9 @@ import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
 import { useCallback } from 'react';
-import { KeyRound, Server, MessageCircleQuestion } from 'lucide-react';
+import { KeyRound, Server, MessageCircleQuestion, HelpCircle } from 'lucide-react';
+import { useEffect } from 'react';
+import { FirstTimeVisit } from './components/FirstTimeVisit';
 
 const Logo = () => {
     return (
@@ -36,6 +38,16 @@ const CollectorCalculator = () => {
         deviceDefaults: { ...defaultDeviceTypes },
         collectorCapacities: { ...collectorCapacities },
     });
+
+    const [helpDialogOpen, setHelpDialogOpen] = useState(false);
+    
+    useEffect(() => {
+        const hasVisited = localStorage.getItem('hasVisitedCollectorCalculator');
+        if (!hasVisited) {
+            setHelpDialogOpen(true);
+            localStorage.setItem('hasVisitedCollectorCalculator', 'true');
+        }
+    }, []);
 
     const [expandedSites, setExpandedSites] = useState<Set<number>>(new Set());
 
@@ -85,6 +97,10 @@ const CollectorCalculator = () => {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
+                        <FirstTimeVisit 
+                isOpen={helpDialogOpen}
+                onOpenChange={setHelpDialogOpen}
+            />
             <Card className="w-full max-w-[1440px] bg-white shadow-lg">
                 <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-white to-blue-50/50">
                     <div className="flex items-center justify-between py-2">
