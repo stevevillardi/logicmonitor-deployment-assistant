@@ -16,8 +16,8 @@ import { KeyRound, Server, MessageCircleQuestion } from 'lucide-react';
 const Logo = () => {
     return (
         <div className="flex items-center gap-2">
-            <Image 
-                src="lmlogo.webp" 
+            <Image
+                src="lmlogo.webp"
                 alt="LogicMonitor"
                 width={250}
                 height={250}
@@ -59,7 +59,7 @@ const CollectorCalculator = () => {
     const handleConfigUpdate = useCallback((newConfig: Config) => {
         console.log('Config update triggered:', newConfig);
         setConfig(newConfig);
-        
+
         // Update sites with new device defaults
         setSites(prevSites => prevSites.map(site => ({
             ...site,
@@ -86,7 +86,7 @@ const CollectorCalculator = () => {
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
             <Card className="w-full max-w-[1440px] bg-white shadow-lg">
-            <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-white to-blue-50/50">
+                <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-white to-blue-50/50">
                     <div className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-8">
                             <a href="https://www.logicmonitor.com" target="_blank" rel="noopener noreferrer">
@@ -98,27 +98,27 @@ const CollectorCalculator = () => {
                             </CardTitle>
                         </div>
                         <div className="flex items-center gap-4">
-                            <a 
-                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials" 
-                                target="_blank" 
+                            <a
+                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials"
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
                                 <Server className="w-5 h-5 text-blue-700" />
                                 <span className="text-sm font-medium text-blue-700">Installing a Collector</span>
                             </a>
-                            <a 
-                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials" 
-                                target="_blank" 
+                            <a
+                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials"
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
                                 <KeyRound className="w-5 h-5 text-blue-700" />
                                 <span className="text-sm font-medium text-blue-700">Collector Credentials</span>
                             </a>
-                            <a 
-                                href="https://www.logicmonitor.com/support/collectors/collector-overview/about-the-logicmonitor-collector" 
-                                target="_blank" 
+                            <a
+                                href="https://www.logicmonitor.com/support/collectors/collector-overview/about-the-logicmonitor-collector"
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
@@ -131,31 +131,31 @@ const CollectorCalculator = () => {
                 <CardContent className="p-6 bg-gray-50">
                     <Tabs defaultValue="sites" className="space-y-6">
                         <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
-                            <TabsTrigger 
-                                value="sites" 
+                            <TabsTrigger
+                                value="sites"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
                                 Site Configuration
                             </TabsTrigger>
-                            <TabsTrigger 
+                            <TabsTrigger
                                 value="overview"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
-                               Site Overview
+                                Site Overview
                             </TabsTrigger>
 
-                            <TabsTrigger 
+                            <TabsTrigger
                                 value="system"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
                                 System Settings
                             </TabsTrigger>
-                            <TabsTrigger 
-        value="collector-info"
-        className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
-    >
-        Collector Info
-    </TabsTrigger>
+                            <TabsTrigger
+                                value="collector-info"
+                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                            >
+                                Collector Info
+                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="sites" className="mt-6">
@@ -170,21 +170,21 @@ const CollectorCalculator = () => {
                         </TabsContent>
 
                         <TabsContent value="system" className="mt-6">
-                            <SystemConfiguration 
-                                config={config} 
+                            <SystemConfiguration
+                                config={config}
                                 onUpdate={handleConfigUpdate}
                             />
                         </TabsContent>
 
                         <TabsContent value="overview" className="mt-6">
-                            <SiteOverview 
+                            <SiteOverview
                                 sites={sites}
                                 config={config}
                             />
                         </TabsContent>
                         <TabsContent value="collector-info" className="mt-6">
-    <CollectorInfo />
-</TabsContent>
+                            <CollectorInfo />
+                        </TabsContent>
                     </Tabs>
                 </CardContent>
             </Card>
