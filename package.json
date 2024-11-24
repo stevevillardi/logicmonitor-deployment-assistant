@@ -20,7 +20,7 @@
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "swagger-ui-dist": "^5.18.2",
+    "swagger-ui-react": "^5.18.2",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "yaml": "^2.6.1"

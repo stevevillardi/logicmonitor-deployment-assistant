@@ -3,7 +3,7 @@ import { Info, ExternalLink, Terminal } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
-
+import ApiDocumentationBanner from './ApiDocumentationBanner';
 const SwaggerUIComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -52,40 +52,7 @@ const SwaggerUIComponent = () => {
             </CardHeader>
 
             <CardContent className="p-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <div className="flex items-center gap-2 text-blue-700 mb-2">
-                        <Info className="w-5 h-5" />
-                        <span className="font-medium">API Documentation</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                            <p className="text-sm text-blue-600 leading-relaxed">
-                                Explore and test LogicMonitor API endpoints. Authentication is handled via{' '}
-                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-mono text-xs font-medium">
-                                    LMv1
-                                </span>{' '}
-                                access tokens or{' '}
-                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-mono text-xs font-medium">
-                                    Bearer
-                                </span>{' '}
-                                tokens. When using the LogicMonitor API, you must include an{' '}
-                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-mono text-xs font-medium">
-                                    X-Version: 3
-                                </span>{' '}
-                                header, failure to do so will result in using the deprecated v1 API.
-                            </p>
-                        </div>
-                        <a
-                            href="https://www.logicmonitor.com/support/rest-api-developers-guide/overview/using-rest-api"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
-                        >
-                            <span>View Documentation</span>
-                            <ExternalLink className="w-4 h-4" />
-                        </a>
-                    </div>
-                </div>
+            <ApiDocumentationBanner />
 
                 <div className="min-h-[600px] relative">
                     {isLoading ? (
