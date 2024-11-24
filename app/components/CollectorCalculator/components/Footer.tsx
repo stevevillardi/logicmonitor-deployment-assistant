@@ -8,7 +8,7 @@ export const Footer = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <span className="text-sm text-gray-600">
-                            © {new Date().getFullYear()} LogicMonitor
+                            © {new Date().getFullYear()} LogicMonitor | Steve Villardi
                         </span>
                         <div className="h-4 w-px bg-gray-200" />
                         <a 
