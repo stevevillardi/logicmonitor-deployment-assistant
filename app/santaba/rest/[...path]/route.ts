@@ -2,30 +2,34 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ): Promise<Response> {
-  return handleRequest(request, params.path);
+  const resolvedParams = await params;
+  return handleRequest(request, resolvedParams.path);
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ): Promise<Response> {
-  return handleRequest(request, params.path);
+  const resolvedParams = await params;
+  return handleRequest(request, resolvedParams.path);
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ): Promise<Response> {
-  return handleRequest(request, params.path);
+  const resolvedParams = await params;
+  return handleRequest(request, resolvedParams.path);
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ): Promise<Response> {
-  return handleRequest(request, params.path);
+  const resolvedParams = await params;
+  return handleRequest(request, resolvedParams.path);
 }
 
 async function handleRequest(request: NextRequest, pathSegments: string[]) {
