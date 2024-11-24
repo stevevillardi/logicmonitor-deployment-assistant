@@ -94,8 +94,8 @@ const CollectorCalculator = () => {
         setSites(newSites);
     }, []);
 
-    console.log('Current state - Sites:', sites);
-    console.log('Current state - Config:', config);
+    // console.log('Current state - Sites:', sites);
+    // console.log('Current state - Config:', config);
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
