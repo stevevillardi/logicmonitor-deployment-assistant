@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "LogicMonitor Collector Capacity Planning",
-  description: "Calculate the number of LogicMonitor collectors needed for your environment",
+  title: "LogicMonitor Deployment Assistant",
+  description: "Help estimate the number of LogicMonitor collectors needed for your environment, explore the LogicMonitor API, and more.",
 };
 
 export default function RootLayout({
