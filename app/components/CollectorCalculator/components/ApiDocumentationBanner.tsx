@@ -34,7 +34,7 @@ const ApiDocumentationBanner = () => {
                         asChild
                     >
                         <a
-                            href="https://www.logicmonitor.com/support/rest-api-developers-guide/overview/using-rest-api"
+                            href="https://www.logicmonitor.com/support/rest-api-developers-guide/overview/using-logicmonitors-rest-api"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
