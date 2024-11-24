@@ -240,10 +240,10 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
         <div className="space-y-6 overflow-y-auto">
             <Tabs defaultValue="general">
                 <TabsList className="mb-4 bg-white border border-gray-200">
-                    <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">General Settings</TabsTrigger>
-                    <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Device Defaults</TabsTrigger>
-                    <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Protocol Weights</TabsTrigger>
-                    <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Load Calculation Formula</TabsTrigger>
+                    <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Settings className="w-5 h-5 pr-1" />General Settings</TabsTrigger>
+                    <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Server className="w-5 h-5 pr-1" />Device Defaults</TabsTrigger>
+                    <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Dumbbell className="w-5 h-5 pr-1" />Protocol Weights</TabsTrigger>
+                    <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Calculator className="w-5 h-5 pr-1" />Load Calculation Formula</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="weights">

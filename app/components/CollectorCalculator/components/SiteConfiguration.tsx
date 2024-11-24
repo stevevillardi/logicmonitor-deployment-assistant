@@ -13,7 +13,8 @@ import EnhancedCard from '@/components/ui/enhanced-card';
 import ConfigurationActions from './ConfigurationActions';
 import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle } from 'lucide-react';
 import { FirstTimeVisit } from './FirstTimeVisit';
-import { useEffect } from 'react';
+import DeploymentNameInput from './DeploymentNameInput';
+
 interface SiteConfigurationProps {
     sites: Site[];
     onUpdateSites: (sites: Site[]) => void;
@@ -168,7 +169,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     )}
                 </div>
             </div>
-
+            <DeploymentNameInput
+                value={config.deploymentName}
+                onChange={(name) => onUpdateConfig({ ...config, deploymentName: name })}
+            />
             {sites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
                     <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">

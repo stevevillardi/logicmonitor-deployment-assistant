@@ -16,6 +16,7 @@ export interface Site {
 }
 
 export interface Config {
+    deploymentName: string;
     methodWeights: Record<string, number>;
     maxLoad: number;
     enablePollingFailover: boolean;

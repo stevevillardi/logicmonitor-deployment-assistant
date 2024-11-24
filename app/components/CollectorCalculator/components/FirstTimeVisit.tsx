@@ -40,7 +40,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
             <DialogContent className="max-w-2xl bg-blue-50">
                 <DialogHeader className="border-b border-blue-100 pb-4">
                     <DialogTitle className="text-2xl font-bold text-[#040F4B]">
-                        Welcome to the LogicMonitor Collector Capacity Planner
+                        Welcome to the LogicMonitor Deployment Assistant
                     </DialogTitle>
                 </DialogHeader>
                 

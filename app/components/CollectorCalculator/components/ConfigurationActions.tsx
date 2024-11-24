@@ -24,6 +24,7 @@ interface SimplifiedSite {
 }
 
 interface ExportData {
+    deploymentName: string;
     sites: SimplifiedSite[];
     methodWeights: Record<string, number>;
     deviceDefaults: Config['deviceDefaults'];
@@ -61,6 +62,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
         }));
 
         const exportData: ExportData = {
+            deploymentName: config.deploymentName,
             sites: simplifiedSites,
             methodWeights: config.methodWeights,
             deviceDefaults: config.deviceDefaults,
@@ -91,6 +93,12 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
 
         if (!data || typeof data !== 'object') {
             return { isValid: false, sites: [], config: config, warnings: ['Invalid data format'] };
+        }
+
+        // Validate deployment name
+    if (!data.deploymentName) {
+        warnings.push('Deployment name missing, using default');
+            data.deploymentName = 'New Deployment';
         }
 
         // Validate basic structure

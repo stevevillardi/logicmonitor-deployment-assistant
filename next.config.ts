@@ -1,15 +1,12 @@
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  output: "export",
-  // basePath: "/logicmonitor-calculator",
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     unoptimized: true,
   },
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
-};
+}
 
-export default nextConfig;
+module.exports = nextConfig;

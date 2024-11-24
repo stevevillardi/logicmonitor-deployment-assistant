@@ -43,6 +43,78 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
         return sites.reduce((sum, site) => sum + getEstimatedInstanceCount(site), 0);
     };
 
+    const handleExportPDF = () => {
+        // Add report header before printing
+        const printHeader = document.createElement('div');
+        printHeader.className = 'report-header print-only';
+        printHeader.style.display = 'none';
+
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        printHeader.innerHTML = `
+        <h1 class="text-2xl font-bold text-[#040F4B] mb-2">Deployment Assistant Report</h1>
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-8">
+            <img src="/lmlogo.webp" alt="LogicMonitor" class="h-12" />
+            <div>
+                <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        ${currentDate}
+                    </div>
+                    <div class="h-4 w-px bg-gray-300"></div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        ${sites.length} Site${sites.length !== 1 ? 's' : ''}
+                    </div>
+                    <div class="h-4 w-px bg-gray-300"></div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                        ${getTotalDevicesBySites().toLocaleString()} Device${getTotalDevicesBySites() !== 1 ? 's' : ''}
+                    </div>
+                    <div class="h-4 w-px bg-gray-300"></div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Load Score: ${Math.round(getTotalLoadScore()).toLocaleString()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-blue-50/50 p-4 border-b border-t border-blue-200">
+        <div class="flex items-center gap-2 text-sm text-blue-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            This report provides a comprehensive overview of your LogicMonitor collector deployment configuration and recommendations.
+        </div>
+    </div>
+`;
+
+        // Add print-specific elements
+        document.body.prepend(printHeader);
+
+        // Trigger print
+        window.print();
+
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(printHeader);
+        }, 0);
+    };
+
     const getCollectorSummary = () => {
         const collectorsBySize = {
             polling: {} as Record<string, number>,
@@ -201,52 +273,6 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
 
     return (
         <div className="space-y-6">
-            {/* Global Summary */}
-            <div className="grid grid-cols-5 gap-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Building className="w-5 h-5 text-blue-700" />
-                        <h3 className="font-medium text-blue-900">Total Sites</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-blue-700">{sites.length}</p>
-                </div>
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Database className="w-5 h-5 text-emerald-700" />
-                        <h3 className="font-medium text-emerald-900">Total Devices</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-emerald-700">
-                        {getTotalDevicesBySites().toLocaleString()}
-                    </p>
-                </div>
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Server className="w-5 h-5 text-purple-700" />
-                        <h3 className="font-medium text-purple-900">Estimated Load Score</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-purple-700">
-                        {Math.round(getTotalLoadScore()).toLocaleString()}
-                    </p>
-                </div>
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Activity className="w-5 h-5 text-orange-700" />
-                        <h3 className="font-medium text-orange-900">Estimated EPS</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-orange-700">
-                        {getTotalEPSBySites().toLocaleString()}
-                    </p>
-                </div>
-                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Component className="w-5 h-5 text-indigo-700" />
-                        <h3 className="font-medium text-indigo-900">Estimated Instances</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-indigo-700">
-                        {getTotalInstanceCount().toLocaleString()}
-                    </p>
-                </div>
-            </div>
 
             {/* Global Collector Distribution */}
             <EnhancedCard className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
@@ -254,17 +280,69 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <Earth className="w-6 h-6 text-blue-700" />
-                            <h2 className="text-xl font-bold text-gray-900">Global Collector Distribution</h2>
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900">
+                                    {config.deploymentName}
+                                </h2>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    Global Collector Distribution
+                                </p>
+                            </div>
                         </div>
                         <Button
-                            onClick={() => window.print()}
-                            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                            onClick={handleExportPDF}
+                            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 no-print"
                         >
                             <Download className="w-4 h-4" />
                             Export PDF
                         </Button>
                     </div>
                 </div>
+                <div className="grid grid-cols-5 gap-4 print-grid mt-5">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 stat-card">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Building className="w-5 h-5 text-blue-700" />
+                        <h3 className="font-medium text-blue-900">Total Sites</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-700 stat-value">{sites.length}</p>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 stat-card">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Database className="w-5 h-5 text-emerald-700" />
+                        <h3 className="font-medium text-emerald-900">Total Devices</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-emerald-700 stat-value">
+                        {getTotalDevicesBySites().toLocaleString()}
+                    </p>
+                </div>
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 stat-card">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Server className="w-5 h-5 text-purple-700" />
+                        <h3 className="font-medium text-purple-900">Estimated Load Score</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-700 stat-value">
+                        {Math.round(getTotalLoadScore()).toLocaleString()}
+                    </p>
+                </div>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 stat-card">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Activity className="w-5 h-5 text-orange-700" />
+                        <h3 className="font-medium text-orange-900">Estimated EPS</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-orange-700 stat-value">
+                        {getTotalEPSBySites().toLocaleString()}
+                    </p>
+                </div>
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 stat-card">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Component className="w-5 h-5 text-indigo-700" />
+                        <h3 className="font-medium text-indigo-900">Estimated Instances</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-indigo-700 stat-value">
+                        {getTotalInstanceCount().toLocaleString()}
+                    </p>
+                </div>
+            </div>
                 <div className="p-6">
                     <div className="grid grid-cols-2 gap-6">
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -363,8 +441,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                             <div className="p-6">
                                 <div className="space-y-6">
                                     {/* Site Metrics */}
-                                    {/* Site Metrics */}
-                                    <div className="grid grid-cols-5 gap-4">
+                                    <div className="grid grid-cols-5 gap-4 print-grid">
                                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Calculator className="w-5 h-5 text-blue-700" />
@@ -518,7 +595,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                     {/* Device Types */}
                                     <div>
                                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Device Distribution</h3>
-                                        <div className="grid grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-3 gap-4 print-grid">
                                             {Object.entries(site.devices)
                                                 .filter(([_, data]) => data.count > 0)
                                                 .map(([type, data]) => {
@@ -561,6 +638,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                     );
                                                 })}
                                         </div>
