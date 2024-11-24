@@ -1,35 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-type RouteContext = {
-  params: { path: string[] }
-}
-
 export async function GET(
   request: NextRequest,
-  context: RouteContext
-) {
-  return handleRequest(request, context.params.path);
+  { params }: { params: { path: string[] } }
+): Promise<Response> {
+  return handleRequest(request, params.path);
 }
 
 export async function POST(
   request: NextRequest,
-  context: RouteContext
-) {
-  return handleRequest(request, context.params.path);
+  { params }: { params: { path: string[] } }
+): Promise<Response> {
+  return handleRequest(request, params.path);
 }
 
 export async function PUT(
   request: NextRequest,
-  context: RouteContext
-) {
-  return handleRequest(request, context.params.path);
+  { params }: { params: { path: string[] } }
+): Promise<Response> {
+  return handleRequest(request, params.path);
 }
 
 export async function DELETE(
   request: NextRequest,
-  context: RouteContext
-) {
-  return handleRequest(request, context.params.path);
+  { params }: { params: { path: string[] } }
+): Promise<Response> {
+  return handleRequest(request, params.path);
 }
 
 async function handleRequest(request: NextRequest, pathSegments: string[]) {
