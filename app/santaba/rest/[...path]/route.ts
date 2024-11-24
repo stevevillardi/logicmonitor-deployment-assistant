@@ -47,7 +47,7 @@ async function handleRequest(request: NextRequest, pathSegments: string[]) {
   } catch (error) {
     console.error('Proxy error:', error);
     return NextResponse.json(
-      { error: 'Failed to proxy request', details: error?.message },
+      { error: 'Failed to proxy request', details: (error as Error).message },
       { status: 500 }
     );
   }
