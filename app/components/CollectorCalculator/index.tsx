@@ -16,6 +16,8 @@ import { useEffect } from 'react';
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import APIExplorer from './components/SwaggerUI';
 import DeviceOnboarding from './components/DeviceOnboarding';
+import { useRouter, usePathname } from 'next/navigation';
+
 const Logo = () => {
     return (
         <div className="flex items-center gap-2">
@@ -30,6 +32,16 @@ const Logo = () => {
     );
 };
 
+// Map URL paths to tab values
+const TAB_PATHS: Record<string, string> = {
+    '/': 'sites',
+    '/overview': 'overview',
+    '/system': 'system',
+    '/collector-info': 'collector-info',
+    '/api-explorer': 'api-explorer',
+    '/device-onboarding': 'device-onboarding'
+};
+
 const CollectorCalculator = () => {
     const [config, setConfig] = useState<Config>({
         deploymentName: 'New Deployment',
@@ -40,6 +52,33 @@ const CollectorCalculator = () => {
         deviceDefaults: { ...defaultDeviceTypes },
         collectorCapacities: { ...collectorCapacities },
     });
+
+    const router = useRouter();
+    const pathname = usePathname();
+    
+    // Get the active tab based on the current pathname
+    const getActiveTab = (path: string) => {
+        return TAB_PATHS[path] || 'sites';
+    };
+
+    const [activeTab, setActiveTab] = useState(getActiveTab(pathname));
+
+    // Update the URL when tab changes
+    const handleTabChange = (value: string) => {
+        // Only update URL if it's different from current tab
+        if (value !== activeTab) {
+            const path = Object.entries(TAB_PATHS).find(([_, tabValue]) => tabValue === value)?.[0] || '/';
+            router.push(path, { scroll: false });
+        }
+    };
+
+    // Update active tab when pathname changes
+    useEffect(() => {
+        const newTab = getActiveTab(pathname);
+        if (newTab !== activeTab) {
+            setActiveTab(newTab);
+        }
+    }, [pathname, activeTab]);
 
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
@@ -147,7 +186,7 @@ const CollectorCalculator = () => {
                     </div>
                 </CardHeader>
                 <CardContent className="p-6 bg-gray-50">
-                    <Tabs defaultValue="sites" className="space-y-6">
+                    <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
                         <TabsList className="bg-white border border-gray-200 p-1 rounded-lg no-print">
                             <TabsTrigger
                                 value="sites"
