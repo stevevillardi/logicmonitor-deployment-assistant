@@ -110,6 +110,10 @@ const SwaggerUIComponent = () => {
                 order: 1;
                 }
 
+                code[class*="language-"], pre[class*="language-"] {
+                    color: white !important;
+                }
+
                 .swagger-ui .info .main .info__contact {
                 order: 2;
                 }
