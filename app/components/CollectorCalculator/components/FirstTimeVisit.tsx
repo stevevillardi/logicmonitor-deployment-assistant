@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, Info } from 'lucide-react';
+import { ArrowRight, Bot, CheckCircle2, Terminal, Info, Users } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -30,6 +30,25 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
             title: "Review Results",
             description: "View recommended collector distribution",
             icon: <CheckCircle2 className="w-4 h-4 text-blue-600" />,
+        }
+    ];
+
+    const additionalActions = [
+        {
+            title: "Explore the REST API",
+            description: "Learn how to use the LogicMonitor REST API to automate device onboarding",
+            icon: <Terminal className="w-4 h-4 text-blue-600" />,
+        },
+        {
+            title: "Explore the different onboarding options",
+            description: "Learn about the different ways to add devices to LogicMonitor",
+            icon: <Bot className="w-4 h-4 text-blue-600" />,
+            
+        },
+        {
+            title: "Explore collector types and configurations",
+            description: "Learn about the different collector types and configurations",
+            icon: <Users className="w-4 h-4 text-blue-600" />,
         },
     ];
 
@@ -48,6 +67,20 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                         <h3 className="text-base font-semibold text-gray-900">Quick Start Guide</h3>
                         <div className="grid gap-2">
                             {steps.map((step, index) => (
+                                <div key={index} className="flex items-start gap-2 p-2 bg-white rounded-lg border border-blue-100 shadow-sm">
+                                    {step.icon}
+                                    <div>
+                                        <h4 className="font-medium text-sm text-gray-900">{step.title}</h4>
+                                        <p className="text-xs text-gray-600">{step.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-3">
+                        <h3 className="text-base font-semibold text-gray-900">Additional Resources</h3>
+                        <div className="grid gap-2">
+                            {additionalActions.map((step, index) => (
                                 <div key={index} className="flex items-start gap-2 p-2 bg-white rounded-lg border border-blue-100 shadow-sm">
                                     {step.icon}
                                     <div>
