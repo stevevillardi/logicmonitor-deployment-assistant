@@ -163,13 +163,12 @@ const CollectorCalculator = () => {
                                 <BookText className="w-5 h-5 pr-1" />
                                 Deployment Overview
                             </TabsTrigger>
-
                             <TabsTrigger
-                                value="system"
+                                value="device-onboarding"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
-                                <Settings className="w-5 h-5 pr-1" />
-                                System Settings
+                                <Bot className="w-5 h-5 pr-1" />
+                                Device Onboarding
                             </TabsTrigger>
                             <TabsTrigger
                                 value="collector-info"
@@ -186,11 +185,11 @@ const CollectorCalculator = () => {
                                 API Explorer
                             </TabsTrigger>
                             <TabsTrigger
-                                value="device-onboarding"
+                                value="system"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
-                                <Bot className="w-5 h-5 pr-1" />
-                                Device Onboarding
+                                <Settings className="w-5 h-5 pr-1" />
+                                System Settings
                             </TabsTrigger>
                         </TabsList>
 
