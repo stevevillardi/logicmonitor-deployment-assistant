@@ -1,10 +1,11 @@
 import React from 'react';
-import {CodeSamples } from './CodeSamples';
+import { CodeSamples } from './CodeSamples';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     FileSpreadsheet,
     Wand2,
     Cloud,
+    Container,
     Terminal,
     Puzzle,
     Workflow,
@@ -28,7 +29,7 @@ interface MethodRef {
 const methodRefs: MethodRef[] = [
     {
         id: 'csv-import',
-        title: 'CSV Import',
+        title: 'PowerShell CSV Import',
         icon: FileSpreadsheet,
         shortDesc: 'for bulk device onboarding'
     },
@@ -48,7 +49,13 @@ const methodRefs: MethodRef[] = [
         id: 'cloud',
         title: 'Cloud Integration',
         icon: Cloud,
-        shortDesc: 'for auto-discovery'
+        shortDesc: 'for auto-discovery of cloud resources'
+    },
+    {
+        id: 'containers',
+        title: 'Kubernetes Integration',
+        icon: Container,
+        shortDesc: 'for monitoring containerized workloads'
     },
     {
         id: 'api',
@@ -58,31 +65,31 @@ const methodRefs: MethodRef[] = [
     }
 ];
 
-const MethodLink: React.FC<{ method: MethodRef }> = ({ method }) => {
-    const handleClick = (e: React.MouseEvent, id: string) => {
+const MethodLink: React.FC<{ methodId: string; icon: React.ElementType; title: string; description: string }> = ({
+    methodId,
+    icon: Icon,
+    title,
+    description
+}) => {
+    const scrollToSection = (e: React.MouseEvent) => {
         e.preventDefault();
-        const element = document.getElementById(id);
+        const element = document.getElementById(methodId);
         if (element) {
-            element.scrollIntoView({ 
-                behavior: 'smooth', 
+            element.scrollIntoView({
+                behavior: 'smooth',
                 block: 'start'
             });
-            // Add a highlight effect
-            element.classList.add('highlight-section');
-            setTimeout(() => {
-                element.classList.remove('highlight-section');
-            }, 2000);
         }
     };
 
     return (
         <button
-            onClick={(e) => handleClick(e, method.id)}
-            className="flex items-start gap-2 group hover:bg-blue-100/50 p-2 rounded-lg transition-colors"
+            onClick={scrollToSection}
+            className="flex items-start gap-2 group hover:bg-blue-100/50 p-2 rounded-lg transition-colors w-full text-left"
         >
-            <method.icon className="w-4 h-4 text-blue-700 mt-1" />
+            <Icon className="w-4 h-4 text-blue-700 mt-1 flex-shrink-0" />
             <span className="text-sm text-blue-700">
-                Use <span className="font-medium group-hover:text-blue-900 transition-colors">{method.title}</span> {method.shortDesc}
+                Use <span className="font-medium group-hover:text-blue-900 transition-colors">{title}</span> {description}
             </span>
         </button>
     );
@@ -104,15 +111,21 @@ const MethodsOverview: React.FC = () => {
                             Select the most appropriate method based on your requirements:
                         </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         {methodRefs.map((method) => (
-                            <MethodLink key={method.id} method={method} />
+                            <MethodLink
+                                key={method.id}
+                                methodId={method.id}
+                                icon={method.icon}
+                                title={method.title}
+                                description={method.shortDesc}
+                            />
                         ))}
                     </div>
                     <div className="flex items-center gap-2 pt-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-700" />
                         <p className="text-sm text-blue-700">
-                            Need help choosing? Contact <a href="#" className="font-medium underline hover:text-blue-800">LogicMonitor Support</a>
+                            Need help choosing? Contact <a href="mailto:saleseng@logicmonitor.com" className="font-medium underline hover:text-blue-800">LogicMonitor Sales Engineering</a>
                         </p>
                     </div>
                 </div>
@@ -135,15 +148,15 @@ interface ResourceLinkProps {
     title: string;
 }
 
-const OnboardingMethod: React.FC<OnboardingMethodProps> = ({ 
+const OnboardingMethod: React.FC<OnboardingMethodProps> = ({
     id,
-    icon: Icon, 
-    title, 
-    description, 
-    recommended, 
-    children 
+    icon: Icon,
+    title,
+    description,
+    recommended,
+    children
 }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-6">
+    <div id={id} className="bg-white border border-gray-200 rounded-lg p-6 space-y-6 scroll-mt-6">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
@@ -190,61 +203,7 @@ const DeviceOnboarding: React.FC = () => {
                 </CardHeader>
                 <CardContent className="p-6">
                     <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 border border-blue-200 rounded-lg p-6 mb-6">
-    <div className="flex gap-4">
-        <div className="flex-shrink-0">
-            <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
-                <Info className="w-5 h-5 text-blue-700" />
-            </div>
-        </div>
-        <div className="space-y-3">
-            <div>
-                <h3 className="text-lg font-semibold text-blue-900">Choose Your Onboarding Method</h3>
-                <p className="text-blue-700 mt-1">
-                    Select the most appropriate method based on your requirements:
-                </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-start gap-2">
-                    <FileSpreadsheet className="w-4 h-4 text-blue-700 mt-1" />
-                    <span className="text-sm text-blue-700">
-                        Use <span className="font-medium">CSV Import</span> for bulk device onboarding
-                    </span>
-                </div>
-                <div className="flex items-start gap-2">
-                    <Scroll className="w-4 h-4 text-blue-700 mt-1" />
-                    <span className="text-sm text-blue-700">
-                        Use <span className="font-medium">NetScan Import</span> for scheduled device onboarding
-                    </span>
-                </div>
-                <div className="flex items-start gap-2">
-                    <Wand2 className="w-4 h-4 text-blue-700 mt-1" />
-                    <span className="text-sm text-blue-700">
-                        Use <span className="font-medium">Wizard</span> for guided individual setup
-                    </span>
-                </div>
-                <div className="flex items-start gap-2">
-                    <Cloud className="w-4 h-4 text-blue-700 mt-1" />
-                    <span className="text-sm text-blue-700">
-                        Use <span className="font-medium">Cloud Integration</span> for auto-discovery
-                    </span>
-                </div>
-                <div className="flex items-start gap-2">
-                    <Terminal className="w-4 h-4 text-blue-700 mt-1" />
-                    <span className="text-sm text-blue-700">
-                        Use <span className="font-medium">API/Automation</span> for programmatic control
-                    </span>
-                </div>
-            </div>
-            <div className="flex items-center gap-2 pt-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-700" />
-                <p className="text-sm text-blue-700">
-                    Need help choosing? Contact <a href="#" className="font-medium underline hover:text-blue-800">LogicMonitor Support</a>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
+                            <MethodsOverview />
                         <OnboardingMethod
                             id="csv-import"
                             icon={FileSpreadsheet}
@@ -273,17 +232,17 @@ const DeviceOnboarding: React.FC = () => {
                             <div className="space-y-2">
                                 <h4 className="font-medium text-gray-900">Resources</h4>
                                 <div className="space-y-1">
-                                    <ResourceLink 
-                                        href="https://docs.google.com/document/d/1I1flixdli-MXWL13_0riU4FZIdmfVXG7Im6Q6uesPRA/edit?usp=sharing" 
-                                        title="PowerShell CSV Import Preparation Guide" 
+                                    <ResourceLink
+                                        href="https://docs.google.com/document/d/1I1flixdli-MXWL13_0riU4FZIdmfVXG7Im6Q6uesPRA/edit?usp=sharing"
+                                        title="PowerShell CSV Import Preparation Guide"
                                     />
-                                    <ResourceLink 
-                                        href="https://github.com/logicmonitor/lm-powershell-module" 
-                                        title="PowerShell Module Github" 
+                                    <ResourceLink
+                                        href="https://github.com/logicmonitor/lm-powershell-module"
+                                        title="PowerShell Module Github"
                                     />
                                 </div>
                             </div>
-                            <VideoGuide 
+                            <VideoGuide
                                 title="PowerShell CSV Import Walkthrough"
                                 description="Learn how to prepare and import a CSV file, including property mapping and validation steps."
                                 videoId="mMGadMsu1Qo"
@@ -314,20 +273,20 @@ const DeviceOnboarding: React.FC = () => {
                             <div className="space-y-2">
                                 <h4 className="font-medium text-gray-900">Resources</h4>
                                 <div className="space-y-1">
-                                    <ResourceLink 
-                                        href="https://www.logicmonitor.com/support/creating-netscans" 
-                                        title="NetScan Documentation" 
+                                    <ResourceLink
+                                        href="https://www.logicmonitor.com/support/creating-netscans"
+                                        title="NetScan Documentation"
                                     />
-                                    <ResourceLink 
-                                        href="https://www.logicmonitor.com/support/enhanced-script-netscan" 
-                                        title="Enhanced Scripted NetScan" 
+                                    <ResourceLink
+                                        href="https://www.logicmonitor.com/support/enhanced-script-netscan"
+                                        title="Enhanced Scripted NetScan"
                                     />
                                 </div>
                             </div>
                         </OnboardingMethod>
 
 
-                        <OnboardingMethod   
+                        <OnboardingMethod
                             id="wizard"
                             icon={Wand2}
                             title="Onboarding Wizard"
@@ -354,13 +313,13 @@ const DeviceOnboarding: React.FC = () => {
                             <div className="space-y-2">
                                 <h4 className="font-medium text-gray-900">Resources</h4>
                                 <div className="space-y-1">
-                                    <ResourceLink 
-                                        href="https://www.logicmonitor.com/support/devices/adding-managing-devices/how-do-i-add-devices" 
-                                        title="Onboarding Wizard Guide" 
+                                    <ResourceLink
+                                        href="https://www.logicmonitor.com/support/devices/adding-managing-devices/how-do-i-add-devices"
+                                        title="Onboarding Wizard Guide"
                                     />
-                                    <ResourceLink 
-                                        href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials" 
-                                        title="Defining Authentication Credentials" 
+                                    <ResourceLink
+                                        href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials"
+                                        title="Defining Authentication Credentials"
                                     />
                                 </div>
                             </div>
@@ -373,35 +332,122 @@ const DeviceOnboarding: React.FC = () => {
                             description="Automated discovery and monitoring of cloud resources and SaaS applications."
                             recommended
                         >
-                            <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div className="grid grid-cols-4 gap-4 mb-4">
                                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                                     <h4 className="font-medium text-blue-900 mb-2">AWS</h4>
                                     <div className="space-y-2">
-                                        <ResourceLink 
-                                            href="https://www.logicmonitor.com/support/aws-monitoring-setup" 
-                                            title="AWS Integration Guide" 
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/aws-monitoring-setup"
+                                            title="AWS Integration Guide"
                                         />
                                     </div>
                                 </div>
                                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                                     <h4 className="font-medium text-blue-900 mb-2">Azure</h4>
                                     <div className="space-y-2">
-                                        <ResourceLink 
-                                            href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-microsoft-azure-cloud-monitoring" 
-                                            title="Azure Integration Guide" 
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-microsoft-azure-cloud-monitoring"
+                                            title="Azure Integration Guide"
                                         />
                                     </div>
                                 </div>
                                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                                     <h4 className="font-medium text-blue-900 mb-2">GCP</h4>
                                     <div className="space-y-2">
-                                        <ResourceLink 
-                                            href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-your-gcp-environment-into-logicmonitor" 
-                                            title="GCP Integration Guide" 
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-your-gcp-environment-into-logicmonitor"
+                                            title="GCP Integration Guide"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <h4 className="font-medium text-blue-900 mb-2">SaaS</h4>
+                                    <div className="space-y-2">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/saas/saas-lite-monitoring"
+                                            title="SaaS Lite Monitoring Guide"
                                         />
                                     </div>
                                 </div>
                             </div>
+                            <div className="space-y-2 gap-4">
+                                <h4 className="font-medium text-gray-900">Resources</h4>
+                                <div className="space-y-1 grid grid-cols-3">
+                                    <div className="col-span-1">
+                                    <ResourceLink
+                                        href="https://www.logicmonitor.com/support/monitoring/applications-databases/microsoft-office-365-monitoring"
+                                            title="Office365 Monitoring"
+                                        />
+                                    </div>
+                                    <div className="col-span-1">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/monitoring/applications-databases/salesforce-monitoring"
+                                            title="Salesforce Monitoring"
+                                        />
+                                    </div>
+                                    <div className="col-span-1">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/monitoring/applications-databases/zoom-monitoring"
+                                            title="Zoom Monitoring"
+                                        />
+                                    </div>
+                                    <div className="col-span-1">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/webex-monitoring"
+                                            title="Webex Monitoring"
+                                        />
+                                    </div>
+                                    <div className="col-span-1">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/slack-monitoring"
+                                            title="Slack Monitoring"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </OnboardingMethod>
+
+                        <OnboardingMethod
+                            id="containers"
+                            icon={Container}
+                            title="Kubernetes & OpenShift Monitoring"
+                            description="Automated discovery and monitoring of containerized workloads."
+                            recommended
+                        >
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <h4 className="font-medium text-gray-900 mb-2">Key Features</h4>
+                                    <ul className="space-y-2 text-sm text-gray-600">
+                                        <li>• Onboarding K8s & OpenShift clusters</li>
+                                        <li>• Full lifecycle management of K8s & OpenShift clusters</li>
+                                        <li>• Automated discovery of workloads and nodes</li>
+                                        <li>• Integration with existing LogicMonitor LogicModules</li>
+                                    </ul>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <h4 className="font-medium text-blue-900 mb-2">Collector Sizing</h4>
+                                    <div className="space-y-2">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/resource-sizing-for-performance-optimization-and-tuning-recommendations"
+                                            title="Resource Sizing Recommendations"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <h4 className="font-medium text-blue-900 mb-2">Installation Methods</h4>
+                                    <div className="space-y-2">
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/adding-kubernetes-cluster-using-logicmonitor-web-portal"
+                                            title="Installing LM Container using Web Portal"
+                                        />
+                                        <ResourceLink
+                                            href="https://www.logicmonitor.com/support/installing-lm-container-chart-using-cli"
+                                            title="Installing LM Container using CLI"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
                         </OnboardingMethod>
 
                         <OnboardingMethod
@@ -418,13 +464,13 @@ const DeviceOnboarding: React.FC = () => {
                                             <h4 className="font-medium text-gray-900">SDKs & Modules</h4>
                                         </div>
                                         <div className="space-y-2">
-                                            <ResourceLink 
-                                                href="https://www.logicmonitor.com/support/logicmonitor-v3-sdk" 
-                                                title="LogicMonitor v3 Python & Go SDKs" 
+                                            <ResourceLink
+                                                href="https://www.logicmonitor.com/support/logicmonitor-v3-sdk"
+                                                title="LogicMonitor v3 Python & Go SDKs"
                                             />
-                                            <ResourceLink 
-                                                href="https://github.com/logicmonitor/lm-powershell-module" 
-                                                title="PowerShell Module" 
+                                            <ResourceLink
+                                                href="https://github.com/logicmonitor/lm-powershell-module"
+                                                title="PowerShell Module"
                                             />
                                         </div>
                                     </div>
@@ -434,13 +480,13 @@ const DeviceOnboarding: React.FC = () => {
                                             <h4 className="font-medium text-gray-900">Automation Integrations</h4>
                                         </div>
                                         <div className="space-y-2">
-                                        <ResourceLink 
-                                                href="https://www.logicmonitor.com/support/terraform-integration" 
-                                                title="Terraform Integration" 
+                                            <ResourceLink
+                                                href="https://www.logicmonitor.com/support/terraform-integration"
+                                                title="Terraform Integration"
                                             />
-                                            <ResourceLink 
-                                                href="https://www.logicmonitor.com/support/ansible-integration" 
-                                                title="Ansible Integration" 
+                                            <ResourceLink
+                                                href="https://www.logicmonitor.com/support/ansible-integration"
+                                                title="Ansible Integration"
                                             />
                                         </div>
                                     </div>

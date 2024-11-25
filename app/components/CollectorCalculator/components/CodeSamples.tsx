@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-
+import EnhancedCodeBlock from './EnhancedCodeBlock';
 interface CodeExampleProps {
     title: string;
     language: string;
@@ -45,14 +45,38 @@ const CodeExample: React.FC<CodeExampleProps> = ({ title, language, code }) => {
     );
 };
 
-const pythonCode = `# Example device creation
-import requests
+const pythonCode = `
+import logicmonitor_sdk
+from logicmonitor_sdk.rest import ApiException
 
-response = requests.post(
-    "https://company.logicmonitor.com/santaba/rest/device/devices",
-    headers=headers,
-    json={"name": "device1.company.com"}
-)`;
+def add_device():
+    # Configure API authentication
+    configuration = logicmonitor_sdk.Configuration()
+    configuration.company = 'your_company'
+    configuration.access_id = 'your_access_id'
+    configuration.access_key = 'your_access_key'
+
+    # Create API instance
+    api_instance = logicmonitor_sdk.LMApi(logicmonitor_sdk.ApiClient(configuration))
+
+    # Create device with minimal required fields
+    device = logicmonitor_sdk.models.Device(
+        display_name="My Test Device",          # How device appears in UI
+        name="test-device-01",                  # System name for the device
+        preferred_collector_id=1,               # Replace with your collector ID
+        description="Test device description"   # Optional but recommended
+    )
+
+    try:
+        # Add the device
+        response = api_instance.add_device(device)
+        print("Device added successfully:", response)
+    except ApiException as e:
+        print(f"Error adding device: {e}\n")
+
+if __name__ == "__main__":
+    add_device()
+`;
 
 const terraformCode = `resource "logicmonitor_device" "host" {
     name = "device1.company.com"
@@ -62,6 +86,9 @@ const terraformCode = `resource "logicmonitor_device" "host" {
 }`;
 
 const powershellCode = `
+#Connect to LogicMonitor
+Connect-LM -AccessID $accessID -AccessKey $accessKey -AccountName $accountDomain
+
 # Create an array of device configurations
 $devices = @(
     @{
@@ -88,6 +115,55 @@ $devices | ForEach-Object {
 }
 `;
 
+const goCode = `
+package main
+
+import (
+    "fmt"
+    "github.com/logicmonitor/lm-sdk-go/client"
+    "github.com/logicmonitor/lm-sdk-go/client/lm"
+    "github.com/logicmonitor/lm-sdk-go/models"
+)
+
+func main() {
+    // Configure API client
+    domain := "yourcompany.logicmonitor.com"
+    accessID := "your_access_id"
+    accessKey := "your_access_key"
+
+    // Create client configuration
+    config := client.NewConfig()
+    config.SetAccountDomain(&domain)
+    config.SetAccessID(&accessID)
+    config.SetAccessKey(&accessKey)
+
+    // Initialize client
+    client := client.New(config)
+
+    // Create new device parameters
+    params := lm.NewAddDeviceParams()
+    
+    // Create device body with minimal required fields
+    device := &models.Device{
+        DisplayName:          "My Test Device",
+        Name:                "test-device-01",
+        PreferredCollectorID: 1,  // Replace with your collector ID
+    }
+    
+    // Assign device to parameters
+    params.Body = device
+
+    // Add the device
+    resp, err := client.LM.AddDevice(params)
+    if err != nil {
+        fmt.Printf("Error creating device: %v\n", err)
+        return
+    }
+
+    fmt.Printf("Device created successfully: %v\n", resp)
+}
+`;
+
 const curlCode = `curl -X POST https://company.logicmonitor.com/santaba/rest/device/devices \\
      -H "Authorization: Bearer \${token}" \\
      -H "Content-Type: application/json" \\
@@ -103,10 +179,11 @@ interface CodeSamplesProps {
 }
 
 const defaultExamples = [
-    { title: 'Python', language: 'python', code: pythonCode },
-    { title: 'Terraform', language: 'hcl', code: terraformCode },
-    { title: 'PowerShell', language: 'powershell', code: powershellCode },
-    { title: 'Curl', language: 'bash', code: curlCode },
+    { title: 'Python', language: 'python', code: pythonCode , key: 'python' },
+    { title: 'Go', language: 'go', code: goCode , key: 'go' },
+    { title: 'Terraform', language: 'hcl', code: terraformCode , key: 'terraform' },
+    { title: 'PowerShell', language: 'powershell', code: powershellCode , key: 'powershell' },
+    { title: 'Curl', language: 'bash', code: curlCode , key: 'curl' },
 ];
 
 const CodeSamples: React.FC<CodeSamplesProps> = ({ 
@@ -130,14 +207,15 @@ const CodeSamples: React.FC<CodeSamplesProps> = ({
             </div>
             {examples.map((example) => (
                 <TabsContent
-                    key={example.language}
+                    key={example.key}
                     value={example.language}
                     className="mt-0"
                 >
-                    <CodeExample
+                    <EnhancedCodeBlock
                         title={example.title}
                         language={example.language}
                         code={example.code}
+                        showLineNumbers={true}
                     />
                 </TabsContent>
             ))}

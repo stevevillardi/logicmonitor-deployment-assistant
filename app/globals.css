@@ -203,3 +203,59 @@
 .highlight-section {
   animation: highlight 2s ease-out;
 }
+
+/* PrismJS styles */
+code[class*="language-"],
+pre[class*="language-"] {
+    color: #383a42;
+    background: none;
+    font-family: var(--font-geist-mono), Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    tab-size: 4;
+    hyphens: none;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #a0a1a7;
+    font-style: italic;
+}
+
+.token.function {
+    color: #4078f2;
+}
+
+.token.keyword {
+    color: #a626a4;
+}
+
+.token.string {
+    color: #50a14f;
+}
+
+.token.number {
+    color: #986801;
+}
+
+.token.boolean {
+    color: #0184bc;
+}
+
+.token.operator {
+    color: #383a42;
+}
+
+.token.property {
+    color: #e45649;
+}
+
+.token.constant {
+    color: #0184bc;
+}
