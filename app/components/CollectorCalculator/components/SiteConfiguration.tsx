@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
-import { Server, Activity, Building } from 'lucide-react';
+import { Server, Activity, Building, Trash2 } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
 import { DeviceTypeCard } from './DeviceTypeCard';
@@ -11,7 +11,7 @@ import { LogsInput } from './LogsInput';
 import { CollectorVisualization } from './CollectorVisualization';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import ConfigurationActions from './ConfigurationActions';
-import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle } from 'lucide-react';
+import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle, Bolt } from 'lucide-react';
 import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
 
@@ -170,9 +170,13 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 </div>
             </div>
             <DeploymentNameInput
-                value={config.deploymentName}
-                onChange={(name) => onUpdateConfig({ ...config, deploymentName: name })}
-            />
+    value={config.deploymentName}
+    onChange={(name) => onUpdateConfig({ ...config, deploymentName: name })}
+    onUpdateConfig={onUpdateConfig}
+    onUpdateSites={onUpdateSites}
+    onSiteExpand={onSiteExpand}
+    config={config}
+/>
             {sites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
                     <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
@@ -280,6 +284,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     }}
                                     className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
                                 >
+                                    <Trash2 className="w-4 h-4" />
                                     Remove Site
                                 </Button>
                             </div>

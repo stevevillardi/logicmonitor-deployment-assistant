@@ -299,50 +299,50 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                     </div>
                 </div>
                 <div className="grid grid-cols-5 gap-4 print-grid mt-5">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 stat-card">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Building className="w-5 h-5 text-blue-700" />
-                        <h3 className="font-medium text-blue-900">Total Sites</h3>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Building className="w-5 h-5 text-blue-700" />
+                            <h3 className="font-medium text-blue-900">Total Sites</h3>
+                        </div>
+                        <p className="text-2xl font-bold text-blue-700 stat-value">{sites.length}</p>
                     </div>
-                    <p className="text-2xl font-bold text-blue-700 stat-value">{sites.length}</p>
-                </div>
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 stat-card">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Database className="w-5 h-5 text-emerald-700" />
-                        <h3 className="font-medium text-emerald-900">Total Devices</h3>
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Database className="w-5 h-5 text-emerald-700" />
+                            <h3 className="font-medium text-emerald-900">Total Devices</h3>
+                        </div>
+                        <p className="text-2xl font-bold text-emerald-700 stat-value">
+                            {getTotalDevicesBySites().toLocaleString()}
+                        </p>
                     </div>
-                    <p className="text-2xl font-bold text-emerald-700 stat-value">
-                        {getTotalDevicesBySites().toLocaleString()}
-                    </p>
-                </div>
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 stat-card">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Server className="w-5 h-5 text-purple-700" />
-                        <h3 className="font-medium text-purple-900">Estimated Load Score</h3>
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Server className="w-5 h-5 text-purple-700" />
+                            <h3 className="font-medium text-purple-900">Estimated Load Score</h3>
+                        </div>
+                        <p className="text-2xl font-bold text-purple-700 stat-value">
+                            {Math.round(getTotalLoadScore()).toLocaleString()}
+                        </p>
                     </div>
-                    <p className="text-2xl font-bold text-purple-700 stat-value">
-                        {Math.round(getTotalLoadScore()).toLocaleString()}
-                    </p>
-                </div>
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 stat-card">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Activity className="w-5 h-5 text-orange-700" />
-                        <h3 className="font-medium text-orange-900">Estimated EPS</h3>
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Activity className="w-5 h-5 text-orange-700" />
+                            <h3 className="font-medium text-orange-900">Estimated EPS</h3>
+                        </div>
+                        <p className="text-2xl font-bold text-orange-700 stat-value">
+                            {getTotalEPSBySites().toLocaleString()}
+                        </p>
                     </div>
-                    <p className="text-2xl font-bold text-orange-700 stat-value">
-                        {getTotalEPSBySites().toLocaleString()}
-                    </p>
-                </div>
-                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 stat-card">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Component className="w-5 h-5 text-indigo-700" />
-                        <h3 className="font-medium text-indigo-900">Estimated Instances</h3>
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Component className="w-5 h-5 text-indigo-700" />
+                            <h3 className="font-medium text-indigo-900">Estimated Instances</h3>
+                        </div>
+                        <p className="text-2xl font-bold text-indigo-700 stat-value">
+                            {getTotalInstanceCount().toLocaleString()}
+                        </p>
                     </div>
-                    <p className="text-2xl font-bold text-indigo-700 stat-value">
-                        {getTotalInstanceCount().toLocaleString()}
-                    </p>
                 </div>
-            </div>
                 <div className="p-6">
                     <div className="grid grid-cols-2 gap-6">
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -351,7 +351,8 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                 <h3 className="font-medium text-gray-900">Polling Collectors</h3>
                             </div>
                             <div className="space-y-2">
-                                {Object.keys(globalCollectorSummary.polling).length > 0 ? (
+                                {Object.keys(globalCollectorSummary.polling).length > 0 &&
+                                    (Object.entries(globalCollectorSummary.polling).reduce((sum, [_, count]) => sum + count, 0) > (config.enablePollingFailover ? 1 : 0)) ? (
                                     <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
                                         {Object.entries(globalCollectorSummary.polling)
                                             .sort(([sizeA], [sizeB]) => {
@@ -389,7 +390,8 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                 <h3 className="font-medium text-gray-900">Logs/NetFlow Collectors</h3>
                             </div>
                             <div className="space-y-2">
-                                {Object.keys(globalCollectorSummary.logs).length > 0 ? (
+                                {Object.keys(globalCollectorSummary.logs).length > 0 &&
+                                    (Object.entries(globalCollectorSummary.logs).reduce((sum, [_, count]) => sum + count, 0) > (config.enableLogsFailover ? 1 : 0)) ? (
                                     <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
                                         {Object.entries(globalCollectorSummary.logs)
                                             .sort(([sizeA], [sizeB]) => {

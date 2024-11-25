@@ -11,11 +11,11 @@ import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
 import { useCallback } from 'react';
-import { KeyRound, Server, MessageCircleQuestion, HelpCircle, Settings, BookText, Info, Terminal, Bolt } from 'lucide-react';
+import { KeyRound, Server, MessageCircleQuestion, HelpCircle, Settings, BookText, Info, Terminal, Bolt, Bot } from 'lucide-react';
 import { useEffect } from 'react';
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import APIExplorer from './components/SwaggerUI';
-
+import DeviceOnboarding from './components/DeviceOnboarding';
 const Logo = () => {
     return (
         <div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ const CollectorCalculator = () => {
     });
 
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
-    
+
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedCollectorCalculator');
         if (!hasVisited) {
@@ -99,7 +99,7 @@ const CollectorCalculator = () => {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
-                        <FirstTimeVisit 
+            <FirstTimeVisit
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
             />
@@ -185,6 +185,13 @@ const CollectorCalculator = () => {
                                 <Terminal className="w-5 h-5 pr-1" />
                                 API Explorer
                             </TabsTrigger>
+                            <TabsTrigger
+                                value="device-onboarding"
+                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                            >
+                                <Bot className="w-5 h-5 pr-1" />
+                                Device Onboarding
+                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="sites" className="mt-6">
@@ -216,6 +223,9 @@ const CollectorCalculator = () => {
                         </TabsContent>
                         <TabsContent value="api-explorer" className="mt-6">
                             <APIExplorer />
+                        </TabsContent>
+                        <TabsContent value="device-onboarding" className="mt-6">
+                            <DeviceOnboarding />
                         </TabsContent>
                     </Tabs>
                 </CardContent>
