@@ -5,7 +5,7 @@ import { Site, Config, CollectorCapacity } from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState, useRef } from 'react';
 import { ListRestart } from 'lucide-react';
-
+import { devLog } from '@/utils/debug';
 interface ConfigurationActionsProps {
     sites: Site[];
     config: Config;
@@ -92,7 +92,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
         const warnings: string[] = [];
         let isValid = true;
 
-        console.log('Validating imported data:', data);
+        devLog('Validating imported data:', data);
 
         if (!data || typeof data !== 'object') {
             return { isValid: false, sites: [], config: config, warnings: ['Invalid data format'] };
@@ -192,7 +192,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
             };
         });
 
-        console.log('Reconstructed sites:', reconstructedSites);
+        devLog('Reconstructed sites:', reconstructedSites);
 
         return {
             isValid: true,
@@ -215,13 +215,13 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
 
         try {
             const text = await file.text();
-            console.log('Imported text:', text.substring(0, 200) + '...'); // Log first 200 chars of imported text
+            devLog('Imported text:', text.substring(0, 200) + '...'); // Log first 200 chars of imported text
             
             const importedData = JSON.parse(text);
-            console.log('Parsed data:', importedData);
+            devLog('Parsed data:', importedData);
 
             const validationResult = validateImportedData(importedData);
-            console.log('Validation result:', validationResult);
+            devLog('Validation result:', validationResult);
 
             if (!validationResult.isValid) {
                 throw new Error('Invalid configuration file format');
@@ -246,7 +246,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
                 logs: site.logs
             }));
 
-            console.log('Final reconstructed sites:', reconstructedSites);
+            devLog('Final reconstructed sites:', reconstructedSites);
 
             // Update the configurations
             const updatedConfig = {

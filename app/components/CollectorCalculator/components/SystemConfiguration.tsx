@@ -14,7 +14,7 @@ import { Dumbbell, Settings, Shield, Server, Activity, Variable } from 'lucide-r
 import { PcCase, Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
 import sliderStyles from '../../../styles';
 import { CollectorCapacitySection } from './CollectorCapacity';
-
+import { devLog } from '@/utils/debug';
 interface SystemConfigurationProps {
     config: Config;
     onUpdate: (config: Config) => void;
@@ -65,15 +65,20 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
             return;
         }
 
-        const newDefaults = {
-            ...config.deviceDefaults,
-            [newDeviceType]: {
-                instances: 0,
-                count: 0,
-                methods: { script: 1 } // Default to script with 100%
+        const updatedConfig: Config = {
+            ...config,
+            deviceDefaults: {
+                ...config.deviceDefaults,
+                [newDeviceType]: {
+                    instances: 0,
+                    count: 0,
+                    methods: { script: 1 }
+                }
             }
         };
-        onUpdate({ ...config, deviceDefaults: newDefaults });
+        devLog('Updating config in SystemConfiguration:', updatedConfig);
+        onUpdate(updatedConfig);
+        
         setNewDeviceType('');
         setErrors(prev => ({ ...prev, deviceType: undefined }));
         setSelectedDeviceType(newDeviceType);
@@ -91,12 +96,14 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
         }
 
         const weight = parseFloat(newMethodWeight) || 1;
-        const newWeights = {
-            ...config.methodWeights,
-            [newMethodWeightName]: weight
+        const updatedConfig: Config = {
+            ...config,
+            methodWeights: {
+                ...config.methodWeights,
+                [newMethodWeightName]: weight
+            }
         };
-
-        onUpdate({ ...config, methodWeights: newWeights });
+        onUpdate(updatedConfig);
         setNewMethodWeightName('');
         setNewMethodWeight('');
         setErrors(prev => ({ ...prev, methodName: undefined }));
@@ -141,7 +148,6 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
     };
 
     const removeDeviceType = (type: string) => {
-        // Don't allow deletion if it's the last device type
         if (Object.keys(config.deviceDefaults).length <= 1) {
             setErrors(prev => ({
                 ...prev,
@@ -152,14 +158,8 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
 
         const newDefaults = { ...config.deviceDefaults };
         delete newDefaults[type];
-
-        // If we're deleting the currently selected type, select another one
-        if (type === selectedDeviceType) {
-            const newSelectedType = Object.keys(newDefaults)[0];
-            setSelectedDeviceType(newSelectedType);
-        }
-
-        onUpdate({ ...config, deviceDefaults: newDefaults });
+        const updatedConfig: Config = { ...config, deviceDefaults: newDefaults };
+        onUpdate(updatedConfig);
         setErrors(prev => ({ ...prev, deviceType: undefined }));
     };
 
@@ -181,34 +181,36 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
             [newMethodName]: 0
         };
 
-        const newDefaults = {
-            ...config.deviceDefaults,
-            [deviceType]: {
-                ...config.deviceDefaults[deviceType],
-                methods: newMethods
+        const updatedConfig: Config = {
+            ...config,
+            deviceDefaults: {
+                ...config.deviceDefaults,
+                [deviceType]: {
+                    ...config.deviceDefaults[deviceType],
+                    methods: newMethods
+                }
             }
         };
-
-        onUpdate({ ...config, deviceDefaults: newDefaults });
+        onUpdate(updatedConfig);
         setNewMethodName('');
         setErrors(prev => ({ ...prev, methodName: undefined }));
     };
 
     const removeCollectionMethod = (deviceType: string, method: string) => {
-        const currentMethods = config.deviceDefaults[deviceType].methods;
-        const removedRatio = currentMethods[method];
-        const remainingMethods = { ...currentMethods };
+        const remainingMethods = { ...config.deviceDefaults[deviceType].methods };
         delete remainingMethods[method];
 
-        const newDefaults = {
-            ...config.deviceDefaults,
-            [deviceType]: {
-                ...config.deviceDefaults[deviceType],
-                methods: remainingMethods
+        const updatedConfig: Config = {
+            ...config,
+            deviceDefaults: {
+                ...config.deviceDefaults,
+                [deviceType]: {
+                    ...config.deviceDefaults[deviceType],
+                    methods: remainingMethods
+                }
             }
         };
-
-        onUpdate({ ...config, deviceDefaults: newDefaults });
+        onUpdate(updatedConfig);
     };
 
     const updateMethodRatio = (deviceType: string, method: string, value: number) => {
@@ -226,15 +228,17 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
             setErrors(prev => ({ ...prev, methodRatios: undefined }));
         }
 
-        const newDefaults = {
-            ...config.deviceDefaults,
-            [deviceType]: {
-                ...config.deviceDefaults[deviceType],
-                methods: newMethods
+        const updatedConfig: Config = {
+            ...config,
+            deviceDefaults: {
+                ...config.deviceDefaults,
+                [deviceType]: {
+                    ...config.deviceDefaults[deviceType],
+                    methods: newMethods
+                }
             }
         };
-
-        onUpdate({ ...config, deviceDefaults: newDefaults });
+        onUpdate(updatedConfig);
     };
 
     return (
@@ -344,11 +348,14 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                 step="0.1"
                                                 value={weight}
                                                 onChange={(e) => {
-                                                    const newWeights = {
-                                                        ...config.methodWeights,
-                                                        [method]: Number(e.target.value)
+                                                    const updatedConfig: Config = {
+                                                        ...config,
+                                                        methodWeights: {
+                                                            ...config.methodWeights,
+                                                            [method]: Number(e.target.value)
+                                                        }
                                                     };
-                                                    onUpdate({ ...config, methodWeights: newWeights });
+                                                    onUpdate(updatedConfig);
                                                 }}
                                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
                                             />
@@ -629,9 +636,13 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                     min="1"
                                                     max="100"
                                                     value={config.maxLoad}
-                                                    onChange={(e) =>
-                                                        onUpdate({ ...config, maxLoad: parseInt(e.target.value) || 85 })
-                                                    }
+                                                    onChange={(e) => {
+                                                        const updatedConfig: Config = {
+                                                            ...config,
+                                                            maxLoad: parseInt(e.target.value) || 85
+                                                        };
+                                                        onUpdate(updatedConfig);
+                                                    }}
                                                     className="absolute top-0 left-0 right-0 w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer accent-blue-700"
                                                     style={{ WebkitAppearance: 'none', appearance: 'none' }}
                                                 />
@@ -671,9 +682,13 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                         type="checkbox"
                                                         id="pollingFailover"
                                                         checked={config.enablePollingFailover}
-                                                        onChange={(e) =>
-                                                            onUpdate({ ...config, enablePollingFailover: e.target.checked })
-                                                        }
+                                                        onChange={(e) => {
+                                                            const updatedConfig: Config = {
+                                                                ...config,
+                                                                enablePollingFailover: e.target.checked
+                                                            };
+                                                            onUpdate(updatedConfig);
+                                                        }}
                                                         className="h-6 w-6 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
                                                     />
                                                 </div>
@@ -693,9 +708,13 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                         type="checkbox"
                                                         id="logsFailover"
                                                         checked={config.enableLogsFailover}
-                                                        onChange={(e) =>
-                                                            onUpdate({ ...config, enableLogsFailover: e.target.checked })
-                                                        }
+                                                        onChange={(e) => {
+                                                            const updatedConfig: Config = {
+                                                                ...config,
+                                                                enableLogsFailover: e.target.checked
+                                                            };
+                                                            onUpdate(updatedConfig);
+                                                        }}
                                                         className="h-6 w-6 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
                                                     />
                                                 </div>

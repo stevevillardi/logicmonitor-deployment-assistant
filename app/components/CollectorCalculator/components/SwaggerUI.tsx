@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 import ApiDocumentationBanner from './ApiDocumentationBanner';
+import { devLog } from '@/utils/debug';
 
 const SwaggerUIComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +27,7 @@ const SwaggerUIComponent = () => {
 
         // Check if this is a LogicMonitor API call
         if (originalUrl.includes('logicmonitor.com')) {
-            console.log('Intercepting LogicMonitor API call:', originalUrl.toString());
+            devLog('Intercepting LogicMonitor API call:', originalUrl.toString());
             // Extract the path after /santaba/rest/
             const pathMatch = originalUrl.match(/\/santaba\/rest\/(.*)/);
             if (pathMatch) {
@@ -40,8 +41,8 @@ const SwaggerUIComponent = () => {
                     req.headers['x-lm-company'] = companyMatch[1];
                 }
 
-                console.log('Rewritten URL:', req.url);
-                console.log('Added company header:', companyMatch ? companyMatch[1] : 'none');
+                devLog('Rewritten URL:', req.url);
+                devLog('Added company header:', companyMatch ? companyMatch[1] : 'none');
             }
         }
         return req;

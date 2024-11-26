@@ -16,6 +16,8 @@ import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dist/shared/lib/dynamic';
 import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
+import { devLog } from '@/utils/debug';
+
 const Logo = () => {
     return (
         <div className="flex items-center gap-2">
@@ -131,8 +133,9 @@ const CollectorCalculator = () => {
     }, []);
 
     const handleConfigUpdate = useCallback((newConfig: Config) => {
-        console.log('Config update triggered:', newConfig);
+        devLog('Config update triggered:', newConfig);
         setConfig(newConfig);
+        localStorage.setItem('collectorConfig', JSON.stringify(newConfig));
     }, []);
 
     const handleSitesUpdate = useCallback((newSites: Site[]) => {

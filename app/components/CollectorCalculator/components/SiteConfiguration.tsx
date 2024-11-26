@@ -1,5 +1,5 @@
 import { Site, Config } from '../types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
@@ -14,7 +14,7 @@ import ConfigurationActions from './ConfigurationActions';
 import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle, Bolt } from 'lucide-react';
 import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
-
+import { devLog } from '@/utils/debug';
 interface SiteConfigurationProps {
     sites: Site[];
     onUpdateSites: (sites: Site[]) => void;
@@ -25,6 +25,7 @@ interface SiteConfigurationProps {
 }
 
 export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config, onSiteExpand }: SiteConfigurationProps) => {
+    devLog('SiteConfiguration received config:', config);
     const resetSite = (index: number, type: string) => {
         const newSites = [...sites];
         if (type === "devices") {
@@ -47,15 +48,24 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
     const getSiteResults = (site: Site) => {
+        devLog('Getting site results for:', site.name);
+        
         const totalWeight = calculateWeightedScore(
             site.devices,
             config.methodWeights
         );
+        devLog('Calculated total weight:', totalWeight);
+        
         const totalEPS = Object.values(site.logs).reduce(
             (sum, eps) => sum + eps,
             0
         );
-        return calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
+        devLog('Calculated total EPS:', totalEPS);
+        
+        const results = calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
+        devLog('Collector calculation results:', results);
+        
+        return results;
     };
 
     const calculateAverageLoad = (collectors: Array<any>) => {
@@ -112,6 +122,23 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     const deleteSite = (index: number) => {
         onUpdateSites(sites.filter((_, i) => i !== index));
     };
+
+    useEffect(() => {
+        // Update all sites with the new device defaults from config
+        const updatedSites = sites.map(site => ({
+            ...site,
+            devices: Object.fromEntries(
+                Object.entries(config.deviceDefaults).map(([type, data]) => [
+                    type,
+                    {
+                        ...data,
+                        count: site.devices[type]?.count || 0, // Preserve existing device counts
+                    }
+                ])
+            )
+        }));
+        onUpdateSites(updatedSites);
+    }, [config.deviceDefaults]); // Only trigger when device defaults change
 
     return (
         <div className="space-y-8 min-h-[900px]">
@@ -351,12 +378,39 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     <h3 className="text-xl font-bold text-white-900 mb-4">
                                         {site.name} Collectors
                                     </h3>
-                                    <CollectorVisualization
-                                        polling={getSiteResults(site).polling}
-                                        logs={getSiteResults(site).logs}
-                                        totalPollingLoad={calculateWeightedScore(site.devices, config.methodWeights)}
-                                        totalLogsLoad={Object.values(site.logs).reduce((sum, eps) => sum + eps, 0)}
-                                    />
+                                    {(() => {
+                                        const siteResults = getSiteResults(site);
+                                        const totalPollingLoad = calculateWeightedScore(site.devices, config.methodWeights);
+                                        const totalLogsLoad = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
+                                        
+                                        devLog('Site Results Detail:', {
+                                            polling: {
+                                                collectors: siteResults.polling.collectors.map(c => ({
+                                                    size: c.size,
+                                                    type: c.type,
+                                                    load: c.load
+                                                })),
+                                                totalLoad: totalPollingLoad
+                                            },
+                                            logs: {
+                                                collectors: siteResults.logs.collectors.map(c => ({
+                                                    size: c.size,
+                                                    type: c.type,
+                                                    load: c.load
+                                                })),
+                                                totalLoad: totalLogsLoad
+                                            }
+                                        });
+                                        
+                                        return (
+                                            <CollectorVisualization
+                                                polling={siteResults.polling}
+                                                logs={siteResults.logs}
+                                                totalPollingLoad={totalPollingLoad}
+                                                totalLogsLoad={totalLogsLoad}
+                                            />
+                                        );
+                                    })()}
                                 </div>
                             </CardContent>
                         )}

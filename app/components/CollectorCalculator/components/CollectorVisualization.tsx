@@ -1,6 +1,7 @@
 import React from 'react';
 import { Server, Activity, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { devLog } from '@/utils/debug';
 
 interface CollectorVisualizationProps {
     polling: { collectors: Array<any> };
@@ -10,6 +11,25 @@ interface CollectorVisualizationProps {
 }
 
 export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, totalLogsLoad = 0 }: CollectorVisualizationProps) => {
+    devLog('CollectorVisualization Received:', {
+        polling: {
+            collectors: polling.collectors.map(c => ({
+                size: c.size,
+                type: c.type,
+                load: c.load
+            })),
+            totalLoad: totalPollingLoad
+        },
+        logs: {
+            collectors: logs.collectors.map(c => ({
+                size: c.size,
+                type: c.type,
+                load: c.load
+            })),
+            totalLoad: totalLogsLoad
+        }
+    });
+
     const getLoadColor = (load: number) => {
         if (load >= 80) return "bg-red-50 border-red-200 text-red-700";
         if (load >= 60) return "bg-yellow-50 border-yellow-200 text-yellow-700";
@@ -21,6 +41,13 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
         const avgLoad = primaryCollectors.length > 0
             ? Math.round(primaryCollectors.reduce((sum, c) => sum + c.load, 0) / primaryCollectors.length)
             : 0;
+
+        devLog('Calculated metrics:', {
+            collectors,
+            primaryCollectors,
+            avgLoad,
+            size: collectors[0]?.size || 'N/A'
+        });
 
         return {
             avgLoad,

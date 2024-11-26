@@ -10,28 +10,20 @@ export const handleCapacityChange = (
     size: string,
     field: 'weight' | 'eps',
     value: string
-  ) => {
+) => {
     const numValue = parseInt(value) || 0;
-    console.log('Before update:', config.collectorCapacities[size][field]); // Debug log
-    
-    const newCapacities = {
-      ...config.collectorCapacities,
-      [size]: {
-        ...config.collectorCapacities[size],
-        [field]: numValue
-      }
+    const updatedConfig: Config = {
+        ...config,
+        collectorCapacities: {
+            ...config.collectorCapacities,
+            [size]: {
+                ...config.collectorCapacities[size],
+                [field]: numValue
+            }
+        }
     };
-  
-    const newConfig = {
-      ...config,
-      collectorCapacities: newCapacities
-    };
-  
-    console.log('After update:', newCapacities[size][field]); // Debug log
-    console.log('New config:', newConfig); // Debug log
-    
-    onUpdate(newConfig);
-  };
+    onUpdate(updatedConfig);
+};
 
 interface CollectorCapacitySectionProps {
   config: Config;
