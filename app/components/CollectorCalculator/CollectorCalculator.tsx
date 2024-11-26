@@ -138,10 +138,10 @@ const CollectorCalculator = () => {
     const handleConfigUpdate = useCallback((newConfig: Config) => {
         devLog('Config update triggered:', newConfig);
         setConfig(newConfig);
-        localStorage.setItem('collectorConfig', JSON.stringify(newConfig));
     }, []);
 
     const handleSitesUpdate = useCallback((newSites: Site[]) => {
+        devLog('Sites update triggered:', newSites);
         setSites(newSites);
     }, []);
 
@@ -266,6 +266,8 @@ const CollectorCalculator = () => {
                             <SystemConfiguration
                                 config={config}
                                 onUpdate={handleConfigUpdate}
+                                sites={sites}
+                                onUpdateSites={handleSitesUpdate}
                             />
                         </TabsContent>
 

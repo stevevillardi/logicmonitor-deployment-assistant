@@ -21,9 +21,11 @@ import { RiAdminLine } from "react-icons/ri";
 interface SystemConfigurationProps {
     config: Config;
     onUpdate: (config: Config) => void;
+    sites: any[];
+    onUpdateSites: (sites: any[]) => void;
 }
 
-export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationProps) => {
+export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: SystemConfigurationProps) => {
     const [selectedDeviceType, setSelectedDeviceType] = useState(Object.keys(defaultDeviceTypes)[0]);
     const [newDeviceType, setNewDeviceType] = useState('');
     const [newMethodName, setNewMethodName] = useState('');
@@ -68,6 +70,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
             return;
         }
 
+        // First update the config
         const updatedConfig: Config = {
             ...config,
             deviceDefaults: {
@@ -79,12 +82,60 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                 }
             }
         };
-        devLog('Updating config in SystemConfiguration:', updatedConfig);
+
+        // Update all existing sites to include the new device type
+        const updatedSites = sites.map(site => ({
+            ...site,
+            devices: {
+                ...site.devices,
+                [newDeviceType]: {
+                    instances: 0,
+                    count: 0,
+                    methods: { script: 1 }
+                }
+            }
+        }));
+
+        // Update both config and sites
         onUpdate(updatedConfig);
+        onUpdateSites(updatedSites);
 
         setNewDeviceType('');
         setErrors(prev => ({ ...prev, deviceType: undefined }));
         setSelectedDeviceType(newDeviceType);
+    };
+
+    const handleDeviceDefaultUpdate = (deviceType: string, newData: any) => {
+        // Create a single update for both config and sites
+        const updatedConfig = {
+            ...config,
+            deviceDefaults: {
+                ...config.deviceDefaults,
+                [deviceType]: {
+                    ...config.deviceDefaults[deviceType],
+                    ...newData
+                }
+            }
+        };
+
+        // Update sites in a single operation
+        const updatedSites = sites.map(site => ({
+            ...site,
+            devices: {
+                ...site.devices,
+                [deviceType]: {
+                    ...site.devices[deviceType],
+                    instances: newData.instances,
+                    methods: newData.methods,
+                    // Preserve the count from the site
+                    count: site.devices[deviceType].count
+                }
+            }
+        }));
+
+        // Batch the updates together
+        onUpdate(updatedConfig);
+        onUpdateSites(updatedSites);
     };
 
     const addProtocolWeight = () => {
@@ -222,6 +273,13 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
             [method]: value
         };
 
+        // Update the methods regardless of validation
+        handleDeviceDefaultUpdate(deviceType, {
+            ...config.deviceDefaults[deviceType],
+            methods: newMethods
+        });
+
+        // Show warning if ratios don't sum to 1, but don't block the update
         if (!validateMethodRatios(newMethods)) {
             setErrors(prev => ({
                 ...prev,
@@ -230,18 +288,13 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
         } else {
             setErrors(prev => ({ ...prev, methodRatios: undefined }));
         }
+    };
 
-        const updatedConfig: Config = {
-            ...config,
-            deviceDefaults: {
-                ...config.deviceDefaults,
-                [deviceType]: {
-                    ...config.deviceDefaults[deviceType],
-                    methods: newMethods
-                }
-            }
-        };
-        onUpdate(updatedConfig);
+    const handleInstancesChange = (deviceType: string, value: number) => {
+        handleDeviceDefaultUpdate(deviceType, {
+            ...config.deviceDefaults[deviceType],
+            instances: value
+        });
     };
 
     return (
@@ -512,16 +565,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                                     <Input
                                                                         type="number"
                                                                         value={config.deviceDefaults[selectedDeviceType].instances}
-                                                                        onChange={(e) => {
-                                                                            const newDefaults = {
-                                                                                ...config.deviceDefaults,
-                                                                                [selectedDeviceType]: {
-                                                                                    ...config.deviceDefaults[selectedDeviceType],
-                                                                                    instances: parseInt(e.target.value) || 0
-                                                                                }
-                                                                            };
-                                                                            onUpdate({ ...config, deviceDefaults: newDefaults });
-                                                                        }}
+                                                                        onChange={(e) => handleInstancesChange(selectedDeviceType, parseInt(e.target.value) || 0)}
                                                                         className="w-32"
                                                                     />
                                                                     <div className="ml-4 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">

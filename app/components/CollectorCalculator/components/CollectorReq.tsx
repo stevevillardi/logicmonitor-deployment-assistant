@@ -64,8 +64,8 @@ const CollectorReq = () => {
                             <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-gray-900">Support Policy</h4>
                                 <p className="text-sm text-gray-600">
-                                    LogicMonitor follows the Microsoft Lifecycle Policy for the "Extended Support End Date" and
-                                    the Red Hat Enterprise Linux Life Cycle for the "End of Maintenance Support 2 (Product retirement)"
+                                    LogicMonitor follows the Microsoft Lifecycle Policy for the &quot;Extended Support End Date&quot; and
+                                    the Red Hat Enterprise Linux Life Cycle for the &quot;End of Maintenance Support 2 (Product retirement)&quot;
                                     date to determine supported operating systems for Collector installation.
                                 </p>
                             </div>

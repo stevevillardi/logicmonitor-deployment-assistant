@@ -1,5 +1,5 @@
 import { Site, Config } from '../types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
@@ -51,26 +51,11 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
-    const getSiteResults = (site: Site) => {
-        devLog('Getting site results for:', site.name);
-
-        const totalWeight = calculateWeightedScore(
-            site.devices,
-            config.methodWeights
-        );
-        devLog('Calculated total weight:', totalWeight);
-
-        const totalEPS = Object.values(site.logs).reduce(
-            (sum, eps) => sum + eps,
-            0
-        );
-        devLog('Calculated total EPS:', totalEPS);
-
-        const results = calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
-        devLog('Collector calculation results:', results);
-
-        return results;
-    };
+    const getSiteResults = useCallback((site: Site) => {
+        const totalWeight = calculateWeightedScore(site.devices, config.methodWeights);
+        const totalEPS = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
+        return calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
+    }, [config]);
 
     const calculateAverageLoad = (collectors: Array<any>) => {
         const primaryCollectors = collectors.filter((c) => c.type === "Primary");
@@ -126,23 +111,6 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     const deleteSite = (index: number) => {
         onUpdateSites(sites.filter((_, i) => i !== index));
     };
-
-    useEffect(() => {
-        // Update all sites with the new device defaults from config
-        const updatedSites = sites.map(site => ({
-            ...site,
-            devices: Object.fromEntries(
-                Object.entries(config.deviceDefaults).map(([type, data]) => [
-                    type,
-                    {
-                        ...data,
-                        count: site.devices[type]?.count || 0, // Preserve existing device counts
-                    }
-                ])
-            )
-        }));
-        onUpdateSites(updatedSites);
-    }, [config.deviceDefaults]); // Only trigger when device defaults change
 
     useEffect(() => {
         console.log('Config updated in SiteConfiguration:', config);
