@@ -9,9 +9,10 @@ interface DeviceTypeCardProps {
     data: DeviceType;
     methodWeights: Record<string, number>;
     onUpdate: (count: number) => void;
+    showDetails: boolean;
 }
 
-export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTypeCardProps) => {
+export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetails = false }: DeviceTypeCardProps) => {
     const getIcon = () => {
         switch (type) {
             case "Linux Servers":
@@ -33,10 +34,11 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTy
             case "Storage Arrays":
                 return <HardDrive className="w-6 h-6 text-blue-700" />;
             case "vCenter VMs":
-            case "ESXi Hosts":
                 return <Monitor className="w-6 h-6 text-blue-700" />;
-            default:
+            case "ESXi Hosts":
                 return <Cpu className="w-6 h-6 text-blue-700" />;
+            default:
+                return <Server className="w-6 h-6 text-blue-700" />;
         }
     };
 
@@ -69,54 +71,58 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate }: DeviceTy
                         className="mt-1 bg-white border-gray-200"
                     />
                 </div>
-                <div className="space-y-4">
-    {/* Metrics Section */}
-    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <Component className="w-4 h-4 text-blue-700" />
-                <span className="text-gray-600">Base Instances</span>
-            </div>
-            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                {data.instances}
-            </div>
-        </div>
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <Calculator className="w-4 h-4 text-blue-700" />
-                <span className="text-gray-600">Load Score per Device</span>
-            </div>
-            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                {Math.round(singleDeviceLoad * 10) / 10}
-            </div>
-        </div>
-    </div>
+                {showDetails && (
+                    <>
+                                        <div className="space-y-4">
+                    {/* Metrics Section */}
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Component className="w-4 h-4 text-blue-700" />
+                                <span className="text-gray-600">Base Instances</span>
+                            </div>
+                            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                {data.instances}
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Calculator className="w-4 h-4 text-blue-700" />
+                                <span className="text-gray-600">Load Score per Device</span>
+                            </div>
+                            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                {Math.round(singleDeviceLoad * 10) / 10}
+                            </div>
+                        </div>
+                    </div>
 
-    {/* Collection Methods Section */}
-    <div>
-        <div className="flex items-center gap-2 mb-2">
-            <Settings className="w-4 h-4 text-blue-700" />
-            <span className="text-gray-900 font-medium">Collection Methods</span>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-            {Object.entries(data.methods).map(([method, ratio]) => (
-                <div
-                    key={method}
-                    className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all duration-300"
-                >
-                    <span className="capitalize text-gray-900 text-sm">{method}</span>
-                    <span className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
-                        {Math.round(ratio * 100)}%
-                    </span>
-                    <div className="flex items-center gap-1 text-gray-500 text-xs">
-                        <Weight className="w-3 h-3" />
-                        <span className="font-medium">{methodWeights[method]}</span>
+                    {/* Collection Methods Section */}
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <Settings className="w-4 h-4 text-blue-700" />
+                            <span className="text-gray-900 font-medium">Collection Methods</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {Object.entries(data.methods).map(([method, ratio]) => (
+                                <div
+                                    key={method}
+                                    className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all duration-300"
+                                >
+                                    <span className="capitalize text-gray-900 text-sm">{method}</span>
+                                    <span className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                                        {Math.round(ratio * 100)}%
+                                    </span>
+                                    <div className="flex items-center gap-1 text-gray-500 text-xs">
+                                        <Weight className="w-3 h-3" />
+                                        <span className="font-medium">{methodWeights[method]}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            ))}
-        </div>
-    </div>
-</div>
+                    </>
+                )}
             </div>
         </div>
     );

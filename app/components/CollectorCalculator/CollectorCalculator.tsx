@@ -10,7 +10,7 @@ import SiteOverview from './components/SiteOverview';
 import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
-import { HandHelping, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Info, Terminal, Bolt, Bot, HelpingHand } from 'lucide-react';
+import { HandHelping, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Info, Terminal, Bolt, Bot, HelpingHand, HelpCircle } from 'lucide-react';
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -18,6 +18,7 @@ import dynamic from 'next/dynamic';
 import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
 import { devLog } from '@/utils/debug';
 import { BiSupport } from 'react-icons/bi';
+import { Button } from '@/components/ui/button';
 
 const Logo = () => {
     return (
@@ -163,6 +164,14 @@ const CollectorCalculator = () => {
                             </CardTitle>
                         </div>
                         <div className="flex items-center gap-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => setHelpDialogOpen(true)}
+                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                            >
+                                <HelpCircle className="w-5 h-5 text-blue-700" />
+                                <span className="text-sm font-medium text-blue-700">Help Guide</span>
+                                </Button>
                             <a
                                 href="https://support.logicmonitor.com/"
                                 target="_blank"

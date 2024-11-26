@@ -251,6 +251,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
             // Update the configurations
             const updatedConfig = {
                 ...config,
+                deploymentName: importedData.deploymentName,
                 methodWeights: importedData.methodWeights,
                 deviceDefaults: importedData.deviceDefaults
             };
@@ -299,7 +300,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
                         className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
                     >
                         <Download className="w-4 h-4" />
-                        Export Configuration
+                        Export Deployment
                     </Button>
                     <Button
                         onClick={handleImportClick}
@@ -307,7 +308,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
                         className="gap-2"
                     >
                         <Upload className="w-4 h-4" />
-                        Import Configuration
+                        Import Deployment
                     </Button>
                     <input
                         type="file"

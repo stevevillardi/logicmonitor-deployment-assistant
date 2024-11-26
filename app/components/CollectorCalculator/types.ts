@@ -3,6 +3,7 @@ export interface DeviceType {
     count: number;
     instances: number;
     methods: Record<string, number>;
+    icon?: React.ElementType;
 }
 
 export interface Site {
@@ -23,6 +24,7 @@ export interface Config {
     enableLogsFailover: boolean;
     deviceDefaults: Record<string, DeviceType>;
     collectorCapacities: Record<string, CollectorCapacity>;
+    showDetails: boolean;
     showAdvancedSettings: boolean;
 }
 

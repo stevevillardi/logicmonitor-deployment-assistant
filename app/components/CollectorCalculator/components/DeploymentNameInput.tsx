@@ -1,20 +1,83 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building2, ListRestart } from 'lucide-react';
+import { Building2, ListRestart, Info, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Config, Site } from '../types';
-import { defaultMethodWeights, collectorCapacities } from '../constants';
+import { defaultMethodWeights, collectorCapacities, defaultDeviceTypes } from '../constants';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { RxReset } from "react-icons/rx";
+
 interface DeploymentNameInputProps {
     value: string;
-    onChange: (name: string) => void;
+    onDeploymentNameChange: (name: string) => void;
     config: Config;
     onUpdateConfig: (config: Config) => void;
     onUpdateSites: (sites: Site[]) => void;
     onSiteExpand: (expandedSites: Set<number>) => void;
+    showDetails?: boolean;  
+    onShowDetailsChange?: (show: boolean) => void;  
+    onShowAdvancedSettingsChange: (show: boolean) => void;
 }
 
-const DeploymentNameInput = ({ value, onChange, config, onUpdateConfig, onUpdateSites, onSiteExpand }: DeploymentNameInputProps) => {
+const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateConfig, onUpdateSites, onSiteExpand, showDetails, onShowDetailsChange, onShowAdvancedSettingsChange }: DeploymentNameInputProps) => {
+    const handleReset = () => {
+        console.log('Reset initiated');
+        
+        const defaultConfig: Config = {
+            deploymentName: '',
+            methodWeights: defaultMethodWeights,
+            maxLoad: 85,
+            enablePollingFailover: true,
+            enableLogsFailover: false,
+            deviceDefaults: defaultDeviceTypes,
+            collectorCapacities: collectorCapacities,
+            showAdvancedSettings: false,
+            showDetails: false
+        };
+
+        // First update sites and expansion as they don't affect config
+        onUpdateSites([]);
+        onSiteExpand(new Set());
+        
+        // Now update the config once with all changes
+        onUpdateConfig(defaultConfig);
+    };
+
+    // Handle show details change
+    const handleShowDetailsChange = (show: boolean) => {
+        onUpdateConfig({
+            ...config,
+            showDetails: show,
+            deploymentName: config.deploymentName // Preserve deployment name
+        });
+    };
+
+    // Add a useEffect to monitor value changes
+    React.useEffect(() => {
+        console.log('Deployment name value changed to:', value);
+    }, [value]);
+
+    // Add this effect to track prop changes
+    useEffect(() => {
+        console.log('DeploymentNameInput props updated:', {
+            value,
+            config: config.deploymentName,
+            showDetails,
+            showAdvancedSettings: config.showAdvancedSettings
+        });
+    }, [value, config, showDetails]);
+
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
             <div className="flex items-center justify-between mb-6">
@@ -31,48 +94,78 @@ const DeploymentNameInput = ({ value, onChange, config, onUpdateConfig, onUpdate
                         </p>
                     </div>
                 </div>
-                <Button
-                    onClick={() => {
-                        const defaultConfig = {
-                            deploymentName: 'New Deployment',
-                            methodWeights: { ...config.methodWeights },
-                            maxLoad: 85,
-                            enablePollingFailover: true,
-                            enableLogsFailover: false,
-                            deviceDefaults: { ...config.deviceDefaults },
-                            collectorCapacities: { ...collectorCapacities },
-                        };
-
-                        const defaultSite = {
-                            name: "Site 1",
-                            devices: Object.fromEntries(
-                                Object.entries(config.deviceDefaults).map(([type, data]) => [
-                                    type,
-                                    { ...data, count: 0 },
-                                ])
-                            ),
-                            logs: {
-                                netflow: 0,
-                                syslog: 0,
-                                traps: 0,
-                            },
-                        };
-
-                        onUpdateConfig(defaultConfig);
-                        onUpdateSites([defaultSite]);
-                        onSiteExpand(new Set([0]));
-                    }}
-                    variant="destructive"
-                    className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                >
-                    <ListRestart className="w-4 h-4" />
-                    Reset Deployment
-                </Button>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="showDetails"
+                            checked={showDetails}
+                            onChange={(e) => handleShowDetailsChange(e.target.checked)}
+                            className="h-4 w-4 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
+                        />
+                        <label
+                            htmlFor="showDetails"
+                            className="text-sm text-gray-600 cursor-pointer"
+                        >
+                            Show device details
+                        </label>
+                    </div>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700"
+                            >
+                                <RxReset className="w-4 h-4 mr-2" />
+                                Reset Deployment
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-lg bg-blue-50 sm:max-w-2xl">
+                            <AlertDialogHeader className="border-b border-blue-100 pb-3">
+                                <AlertDialogTitle className="text-xl font-bold text-[#040F4B]">
+                                    Reset Deployment Configuration
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-gray-600">
+                                    This will reset all configuration settings to their default values. This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <div className="py-3">
+                                <div className="bg-white border border-blue-100 rounded-lg p-3">
+                                    <div className="flex gap-2 text-sm text-blue-700">
+                                        <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                                        <div>
+                                            <p className="text-sm">The following will be reset:</p>
+                                            <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1 mt-2">
+                                                <li>Deployment name</li>
+                                                <li>All site configurations</li>
+                                                <li>Device counts and settings</li>
+                                                <li>System configurations</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <AlertDialogFooter className="border-t border-blue-100 pt-3">
+                                <AlertDialogCancel className="border-[#040F4B] bg-white">
+                                    Cancel
+                                </AlertDialogCancel>
+                                <AlertDialogAction 
+                                    onClick={handleReset}
+                                    className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+                                >
+                                    Reset Configuration
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
             </div>
+
             <div className="relative">
                 <Input
                     value={value}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={(e) => onDeploymentNameChange(e.target.value)}
                     placeholder="Enter deployment name..."
                     className="bg-white border-gray-200 focus:border-blue-700 h-11 text-base"
                 />

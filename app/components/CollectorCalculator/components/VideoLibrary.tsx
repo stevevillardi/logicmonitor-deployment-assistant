@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/enhanced-components';
-import { PlayCircle, Filter, AlertTriangle } from 'lucide-react';
+import { PlayCircle, Filter, AlertTriangle, Icon, CircleHelp } from 'lucide-react';
 import VideoGuide from './VideoGuide';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Server, Bot, SquareActivity, Terminal } from 'lucide-react';
+import { RiAdminLine } from "react-icons/ri";
+
 interface Video {
     id: string;
     title: string;
@@ -18,16 +21,17 @@ interface VideoCategory {
     id: string;
     name: string;
     description: string;
+    icon: React.ElementType;
 }
 
 const categories: VideoCategory[] = [
-    { id: 'getting-started', name: 'Getting Started', description: 'Basic setup and configuration' },
-    { id: 'device-management', name: 'Device Management', description: 'Adding and managing devices' },
-    { id: 'collectors', name: 'Collectors', description: 'Collector setup and management' },
-    { id: 'monitoring', name: 'Monitoring', description: 'Setting up monitoring and alerts' },
-    { id: 'automation', name: 'Automation', description: 'API and automation tasks' },
-    { id: 'troubleshooting', name: 'Troubleshooting', description: 'Common issues and solutions' },
-    { id: 'advanced', name: 'Advanced', description: 'Advanced topics and features' },
+    { id: 'getting-started', name: 'Getting Started', description: 'Basic setup and configuration', icon: CircleHelp },
+    { id: 'resource-management', name: 'Resource Management', description: 'Adding and managing devices', icon: Server },
+    { id: 'collectors', name: 'Collectors', description: 'Collector setup and management', icon: Bot },
+    { id: 'monitoring', name: 'Monitoring', description: 'Setting up monitoring and alerts', icon: SquareActivity },
+    { id: 'automation', name: 'Automation', description: 'API and automation tasks', icon: Terminal },
+    { id: 'troubleshooting', name: 'Troubleshooting', description: 'Common issues and solutions', icon: AlertTriangle },
+    { id: 'advanced', name: 'Advanced', description: 'Advanced topics and features', icon: RiAdminLine },
 ];
 
 const videos: Video[] = [
@@ -36,21 +40,24 @@ const videos: Video[] = [
         title: 'PowerShell Series: Setting up LogicMonitor with multiple SSH/SNMP Credentials',
         description: 'Learn how to setup LogicMonitor with multiple SSH/SNMP credentials',
         category: 'monitoring',
-        videoId: 'DR63mbIXeB0'
+        videoId: 'DR63mbIXeB0',
+        thumbnailUrl: 'https://img.youtube.com/vi/DR63mbIXeB0/0.jpg'
     },
     {
         id: '2',
         title: 'PowerShell Series: Filtering and Delta Usage',
         description: 'Learn how to use PowerShell module for advanced filtering and delta usage',
         category: 'automation',
-        videoId: 'tJqbfAd9sqU'
+        videoId: 'tJqbfAd9sqU',
+        thumbnailUrl: 'https://img.youtube.com/vi/tJqbfAd9sqU/0.jpg'
     },
     {
         id: '3',
         title: 'PowerShell Series: Onboarding and Configuring Devices',
         description: 'Learn how to use PowerShell module for onboarding and configuring devices',
-        category: 'device-management',
-        videoId: 'mMGadMsu1Qo'
+        category: 'resource-management',
+        videoId: 'mMGadMsu1Qo',
+        thumbnailUrl: 'https://img.youtube.com/vi/mMGadMsu1Qo/0.jpg'
     },
     // Add more videos as needed
 ];
@@ -109,11 +116,14 @@ const VideoLibrary: React.FC = () => {
                                 onChange={(e) => setSelectedCategory(e.target.value)}
                             >
                                 <option value="all">All Categories</option>
-                                {categories.map(category => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))}
+                                {categories.map(category => {
+                                    const IconComponent = category.icon;
+                                    return (
+                                        <option key={category.id} value={category.id}>
+                                            <IconComponent className="w-4 h-4" /> {category.name}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                     </div>
@@ -139,7 +149,11 @@ const VideoLibrary: React.FC = () => {
                                 return (
                                     <div key={category.id} className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-semibold text-gray-900">
+                                            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                                {(() => {
+                                                    const IconComponent = category.icon;
+                                                    return <IconComponent className="w-5 h-5 text-blue-700" />;
+                                                })()}
                                                 {category.name}
                                             </h3>
                                             <span className="text-sm text-gray-500">

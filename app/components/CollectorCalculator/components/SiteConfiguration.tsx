@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
-import { Server, Activity, Building, Trash2 } from 'lucide-react';
+import { Server, Activity, Building, Trash2, RotateCcw } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
 import { DeviceTypeCard } from './DeviceTypeCard';
@@ -15,6 +15,8 @@ import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle, Bolt } from 'lucid
 import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
 import { devLog } from '@/utils/debug';
+import { RxReset } from "react-icons/rx";
+
 interface SiteConfigurationProps {
     sites: Site[];
     onUpdateSites: (sites: Site[]) => void;
@@ -110,12 +112,12 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
         // Clear all expanded sites
         setExpandedSites(new Set());
 
-        // Add new site and expand only it
-        onUpdateSites([...sites, newSite]);
+        // Add new site to the beginning of the array
+        onUpdateSites([newSite, ...sites]);
 
-        // After a brief delay, expand the new site
+        // After a brief delay, expand the new site (now at index 0)
         setTimeout(() => {
-            setExpandedSites(new Set([sites.length]));
+            setExpandedSites(new Set([0]));
         }, 100);
     };
 
@@ -140,6 +142,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
         onUpdateSites(updatedSites);
     }, [config.deviceDefaults]); // Only trigger when device defaults change
 
+    useEffect(() => {
+        console.log('Config updated in SiteConfiguration:', config);
+    }, [config]);
+
     return (
         <div className="space-y-8 min-h-[900px]">
             <FirstTimeVisit
@@ -147,13 +153,6 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 onOpenChange={setHelpDialogOpen}
             />
             <div className="flex items-center justify-between">
-                <ConfigurationActions
-                    sites={sites}
-                    config={config}
-                    onUpdateSites={onUpdateSites}
-                    onUpdateConfig={onUpdateConfig}
-                    onSiteExpand={setExpandedSites}
-                />
                 <div className="flex items-center gap-3">
                     <Button
                         onClick={addSite}
@@ -161,14 +160,6 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     >
                         <Plus className="w-4 h-4" />
                         Add New Site
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => setHelpDialogOpen(true)}
-                        className="gap-2"
-                    >
-                        <HelpCircle className="w-4 h-4" />
-                        Help Guide
                     </Button>
                     {sites.length > 0 && (
                         <Button
@@ -195,14 +186,32 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                         </Button>
                     )}
                 </div>
+                <ConfigurationActions
+                    sites={sites}
+                    config={config}
+                    onUpdateSites={onUpdateSites}
+                    onUpdateConfig={onUpdateConfig}
+                    onSiteExpand={setExpandedSites}
+                />
             </div>
             <DeploymentNameInput
                 value={config.deploymentName}
-                onChange={(name) => onUpdateConfig({ ...config, deploymentName: name })}
+                onDeploymentNameChange={(name) => {
+                    const newConfig = {
+                        ...config,
+                        deploymentName: name
+                    };
+                    console.log('Updating config with new deployment name:', newConfig);
+                    onUpdateConfig(newConfig);
+                }}
+                onShowAdvancedSettingsChange={(show) => {
+                    onUpdateConfig({ ...config, showAdvancedSettings: show });
+                }}
                 onUpdateConfig={onUpdateConfig}
                 onUpdateSites={onUpdateSites}
                 onSiteExpand={onSiteExpand}
                 config={config}
+                showDetails={config.showDetails}
             />
             {sites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
@@ -221,15 +230,15 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 </div>
             ) : (
                 sites.map((site, index) => (
-                    <EnhancedCard key={index} className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-                        <CardHeader
-                            className="flex flex-row items-center justify-between cursor-pointer hover:bg-slate-50"
-                            onClick={() => toggleSite(index)}
-                        >
+                    <EnhancedCard key={index} className="bg-white border border-gray-200">
+                        <CardHeader className="flex flex-row items-center justify-between">
                             <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-4">
+                                <div onClick={() => toggleSite(index)} className={`w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex cursor-pointer items-center justify-center transition-colors ${expandedSites.has(index) ? 'bg-blue-50 text-blue-600' : 'text-gray-400'}`}>
+                                            {expandedSites.has(index) ? "▼" : "▶"}
+                                        </div>
                                     <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                        <Building className="w-6 h-6 text-blue-600" />
+                                        <Building onClick={() => toggleSite(index)} className="w-6 h-6 text-blue-600 cursor-pointer" />
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Input
@@ -243,9 +252,6 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             className="w-64"
                                             onClick={(e) => e.stopPropagation()}
                                         />
-                                        <div className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${expandedSites.has(index) ? 'bg-blue-50 text-blue-600' : 'text-gray-400'}`}>
-                                            {expandedSites.has(index) ? "▼" : "▶"}
-                                        </div>
                                     </div>
                                 </div>
 
@@ -332,6 +338,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 variant="outline"
                                                 className="text-red-600 hover:text-red-700"
                                             >
+                                                <RxReset className="w-4 h-4 mr-2" />
                                                 Reset Devices
                                             </Button>
                                         </div>
@@ -347,6 +354,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                         newSites[index].devices[type].count = newCount;
                                                         onUpdateSites(newSites);
                                                     }}
+                                                    showDetails={config.showDetails}
                                                 />
                                             ))}
                                         </div>

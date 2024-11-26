@@ -3,42 +3,42 @@ export const defaultDeviceTypes = {
     "Linux Servers": {
         count: 0,
         instances: 75,
-        methods: { SNMPv3: 0.5, Script: 0.5 },
+        methods: { SNMPv3: 0.5, Script: 0.5 }
     },
     "SQL Servers (Linux)": {
         count: 0,
         instances: 80,
-        methods: { JDBC: 0.75, Script: 0.25 },
+        methods: { JDBC: 0.75, Script: 0.25 }
     },
     "Windows Servers": {
         count: 0,
         instances: 75,
-        methods: { WMI: 0.5, Script: 0.5 },
+        methods: { WMI: 0.5, Script: 0.5 }
     },
     "SQL Servers (Windows)": {
         count: 0,
         instances: 80,
-        methods: { Script: 0.25, JDBC: 0.25, WMI: 0.5 },
+        methods: { Script: 0.25, JDBC: 0.25, WMI: 0.5 }
     },
-    Routers: { count: 0, instances: 120, methods: { SNMPv2: 0.5, SNMPv3: 0.5 } },
-    Switches: { count: 0, instances: 120, methods: { SNMPv2: 0.5, SNMPv3: 0.5 } },
+    Routers: { count: 0, instances: 120, methods: { SNMPv2: 0.5, SNMPv3: 0.5 }},
+    Switches: { count: 0, instances: 120, methods: { SNMPv2: 0.5, SNMPv3: 0.5  }},
     Firewalls: {
         count: 0,
         instances: 120,
-        methods: { Script: 0.5, SNMPv2: 0.25, SNMPv3: 0.25 },
+        methods: { Script: 0.5, SNMPv2: 0.25, SNMPv3: 0.25 }
     },
     "SD-WAN Edges": { count: 0, instances: 15, methods: { Script: 1 } },
     "Access Points": { count: 0, instances: 10, methods: { Script: 1 } },
     "Storage Arrays": {
         count: 0,
         instances: 150,
-        methods: { SNMPv2: 0.5, Script: 0.5 },
+        methods: { SNMPv2: 0.5, Script: 0.5 }
     },
     "vCenter VMs": { count: 0, instances: 18, methods: { Script: 1 } },
     "ESXi Hosts": {
         count: 0,
         instances: 18,
-        methods: { Script: 1 },
+        methods: { Script: 1 }
     },
 };
 
