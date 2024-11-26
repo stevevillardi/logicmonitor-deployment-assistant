@@ -1,4 +1,4 @@
-import { Server } from 'lucide-react';
+import { Bot, Server } from 'lucide-react';
 import { Info } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { defaultDeviceTypes } from '../constants';
@@ -51,7 +51,7 @@ const CollectorReq = () => {
             <EnhancedCard className="bg-white border border-gray-200">
                 <div className="border-b border-gray-200 bg-gray-50 p-4 rounded-t-lg">
                     <div className="flex items-center gap-3">
-                        <Server className="w-5 h-5 text-blue-700" />
+                        <Bot className="w-5 h-5 text-blue-700" />
                         <h2 className="text-lg font-bold text-gray-900">Collector Operating System Support</h2>
                     </div>
                 </div>

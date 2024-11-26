@@ -214,7 +214,7 @@ const CollectorCalculator = () => {
                                 value="collector-info"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
-                                <Info className="w-5 h-5 pr-1" />
+                                <Bot className="w-5 h-5 pr-1" />
                                 Collector Information
                             </TabsTrigger>
                             <TabsTrigger
