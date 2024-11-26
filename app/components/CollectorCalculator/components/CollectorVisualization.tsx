@@ -65,6 +65,9 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
     ) => {
         const metrics = calculateMetrics(collectors);
         const loadColor = getLoadColor(metrics.avgLoad);
+        const primaryCollectors = collectors.filter(c => c.type === "Primary");
+        const hasOnlyRedundancy = collectors.length === 1 && collectors[0].type === "N+1 Redundancy";
+        const showNA = primaryCollectors.length === 0 || hasOnlyRedundancy;
 
         return (
             <div className={`border rounded-lg p-6 bg-white shadow-sm ${borderColor}`}>
@@ -77,62 +80,82 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
                     <div className="grid grid-cols-4 gap-4 mb-4">
                         <div className={`p-4 rounded-lg ${loadColor}`}>
                             <p className="text-sm font-medium mb-1">Total Load Score</p>
-                            <p className="text-2xl font-bold">{Math.round(totalLoad).toLocaleString()}</p>
+                            <p className="text-2xl font-bold">{showNA ? "0" : Math.round(totalLoad).toLocaleString()}</p>
                         </div>
-                        <div className="bg-blue-50 border-blue-200 text-blue-700 p-4 rounded-lg">
+                        <div className="p-4 rounded-lg bg-blue-50 border-blue-200 text-blue-700">
                             <p className="text-sm font-medium mb-1">Primary Collectors</p>
-                            <p className="text-2xl font-bold">{metrics.primaryCount}</p>
+                            <p className="text-2xl font-bold">{showNA ? "N/A" : metrics.primaryCount}</p>
                         </div>
-                        <div className="bg-gray-50 border-gray-200 text-gray-700 p-4 rounded-lg">
+                        <div className="p-4 rounded-lg bg-gray-50 border-gray-200 text-gray-700">
                             <p className="text-sm font-medium mb-1">Collector Size</p>
-                            <p className="text-2xl font-bold">{metrics.size}</p>
+                            <p className="text-2xl font-bold">{showNA ? "0" : metrics.size}</p>
                         </div>
                         <div className={`p-4 rounded-lg ${loadColor}`}>
                             <p className="text-sm font-medium mb-1">Avg Load Per Collector</p>
-                            <p className="text-2xl font-bold">{metrics.avgLoad}%</p>
+                            <p className="text-2xl font-bold">{showNA ? "0" : `${metrics.avgLoad}%`}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
-                    {collectors.map((collector, idx) => (
-                        <div
-                            key={idx}
-                            className={`border rounded-lg p-4 ${collector.type === "N+1 Redundancy"
-                                    ? "bg-blue-50 border-blue-200 text-blue-700"
-                                    : getLoadColor(collector.load)
-                                } transition-all duration-300 hover:shadow-sm`}
-                        >
-                            <div className="flex items-center gap-2 mb-3">
-                                <Server className="w-5 h-5" />
-                                <p className="font-semibold">
-                                    {collector.size} Collector {idx + 1}
-                                </p>
+                    {primaryCollectors.length === 0 || hasOnlyRedundancy ? (
+                        <div className="col-span-3 flex flex-col items-center justify-center p-8 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                            <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                                {React.cloneElement(icon as React.ReactElement, {
+                                    className: "w-6 h-6 text-gray-400"
+                                })}
                             </div>
-                            <div className="space-y-2">
-                                <p className="text-sm opacity-90">{collector.type}</p>
-                                {collector.type !== "N+1 Redundancy" && (
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm">Load</span>
-                                            <span className="font-medium">{collector.load}%</span>
-                                        </div>
-                                        <div className="w-full bg-white/80 border border-gray-200 rounded-full h-2.5">
-                                            <div
-                                                className={`h-2 rounded-full transition-all duration-500 ${collector.load >= 80
-                                                        ? "bg-red-500"
-                                                        : collector.load >= 60
-                                                            ? "bg-yellow-500"
-                                                            : "bg-emerald-500"
-                                                    }`}
-                                                style={{ width: `${collector.load}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                            <p className="text-gray-600 font-medium mb-1">
+                                {title.includes("Polling") 
+                                    ? "No Polling Collectors Required" 
+                                    : "No Logs/NetFlow Collectors Required"}
+                            </p>
+                            <p className="text-gray-500 text-sm text-center">
+                                {title.includes("Polling") 
+                                    ? "Add devices to see collector requirements" 
+                                    : "Add logs/netflow to see collector requirements"}
+                            </p>
                         </div>
-                    ))}
+                    ) : (
+                        collectors.map((collector, idx) => (
+                            <div
+                                key={idx}
+                                className={`border rounded-lg p-4 ${collector.type === "N+1 Redundancy"
+                                        ? "bg-blue-50 border-blue-200 text-blue-700"
+                                        : getLoadColor(collector.load)
+                                    } transition-all duration-300 hover:shadow-sm`}
+                            >
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Server className="w-5 h-5" />
+                                    <p className="font-semibold">
+                                        {collector.size} Collector {idx + 1}
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm opacity-90">{collector.type}</p>
+                                    {collector.type !== "N+1 Redundancy" && (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-sm">Load</span>
+                                                <span className="font-medium">{collector.load}%</span>
+                                            </div>
+                                            <div className="w-full bg-white/80 border border-gray-200 rounded-full h-2.5">
+                                                <div
+                                                    className={`h-2 rounded-full transition-all duration-500 ${collector.load >= 80
+                                                            ? "bg-red-500"
+                                                            : collector.load >= 60
+                                                                ? "bg-yellow-500"
+                                                                : "bg-emerald-500"
+                                                        }`}
+                                                    style={{ width: `${collector.load}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         );

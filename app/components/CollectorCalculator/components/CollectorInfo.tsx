@@ -6,7 +6,7 @@ import { Config } from '../types';
 import { collectorCapacities as defaultCapacities } from '../constants';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, AlertTriangle } from 'lucide-react';
-
+import NetworkRequirements from './NetworkRequirements';
 interface CollectorInfoProps {
     config: Config;
 }
@@ -145,32 +145,7 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
             </EnhancedCard>
 
             {/* Network Requirements */}
-            <EnhancedCard className="bg-white border border-gray-200">
-                <div className="border-b border-gray-200 bg-gray-50 p-4 rounded-t-lg">
-                    <div className="flex items-center gap-3">
-                        <Network className="w-5 h-5 text-blue-700" />
-                        <h2 className="text-lg font-bold text-gray-900">Network Requirements</h2>
-                    </div>
-                </div>
-                <div className="p-4">
-                    <div className="bg-white rounded-lg border border-gray-200">
-                        <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 rounded-t-lg border-b border-gray-200">
-                            <div className="font-medium text-gray-900">Port</div>
-                            <div className="font-medium text-gray-900">Direction</div>
-                            <div className="col-span-2 font-medium text-gray-900">Description</div>
-                            <div className="font-medium text-gray-900">Protocol</div>
-                        </div>
-                        {networkPorts.map((port, index) => (
-                            <div key={index} className="grid grid-cols-5 gap-4 p-3 border-b last:border-b-0 border-gray-200">
-                                <div className="text-blue-700 font-medium">{port.port}</div>
-                                <div className="text-gray-600">{port.direction}</div>
-                                <div className="col-span-2 text-gray-600">{port.description}</div>
-                                <div className="text-gray-600">{port.protocol}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </EnhancedCard>
+            <NetworkRequirements />
         </div>
     );
 };

@@ -378,7 +378,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
                                             <Server className="w-6 h-6 text-gray-400" />
                                         </div>
-                                        <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
+                                        <p className="text-gray-600 font-medium mb-1">No Polling Collectors Required</p>
                                         <p className="text-gray-500 text-sm text-center">Add devices to sites to see collector requirements</p>
                                     </div>
                                 )}
@@ -417,8 +417,8 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
                                             <Activity className="w-6 h-6 text-gray-400" />
                                         </div>
-                                        <p className="text-gray-600 font-medium mb-1">No Collectors Required</p>
-                                        <p className="text-gray-500 text-sm text-center">Configure logs collection to see requirements</p>
+                                        <p className="text-gray-600 font-medium mb-1">No Logs/NetFlow Collectors Required</p>
+                                        <p className="text-gray-500 text-sm text-center">Configure logs/netflow collection to see requirements</p>
                                     </div>
                                 )}
                             </div>

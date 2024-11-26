@@ -10,7 +10,7 @@ import SiteOverview from './components/SiteOverview';
 import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
-import { KeyRound, PlayCircle, Server, MessageCircleQuestion, HelpCircle, Settings, BookText, Info, Terminal, Bolt, Bot } from 'lucide-react';
+import { HandHelping, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Info, Terminal, Bolt, Bot, HelpingHand } from 'lucide-react';
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -162,31 +162,22 @@ const CollectorCalculator = () => {
                         </div>
                         <div className="flex items-center gap-4">
                             <a
-                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials"
+                                href="https://support.logicmonitor.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
-                                <Server className="w-5 h-5 text-blue-700" />
-                                <span className="text-sm font-medium text-blue-700">Installing a Collector</span>
+                                <HandHelping className="w-5 h-5 text-blue-700" />
+                                <span className="text-sm font-medium text-blue-700">Support</span>
                             </a>
                             <a
-                                href="https://www.logicmonitor.com/support/getting-started/advanced-logicmonitor-setup/defining-authentication-credentials"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-                            >
-                                <KeyRound className="w-5 h-5 text-blue-700" />
-                                <span className="text-sm font-medium text-blue-700">Collector Credentials</span>
-                            </a>
-                            <a
-                                href="https://www.logicmonitor.com/support/collectors/collector-overview/about-the-logicmonitor-collector"
+                                href="https://community.logicmonitor.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
                                 <MessageCircleQuestion className="w-5 h-5 text-blue-700" />
-                                <span className="text-sm font-medium text-blue-700">Collector FAQs</span>
+                                <span className="text-sm font-medium text-blue-700">Community Forum</span>
                             </a>
                         </div>
                     </div>
@@ -217,14 +208,14 @@ const CollectorCalculator = () => {
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
                                 <Bot className="w-5 h-5 pr-1" />
-                                Device Onboarding
+                                Device Information
                             </TabsTrigger>
                             <TabsTrigger
                                 value="collector-info"
                                 className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
                             >
                                 <Info className="w-5 h-5 pr-1" />
-                                Collector Info
+                                Collector Information
                             </TabsTrigger>
                             <TabsTrigger
                                 value="api-explorer"

@@ -8,10 +8,10 @@ export const Footer = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <span className="text-sm text-gray-600">
-                            © {new Date().getFullYear()} Steve Villardi
+                            © {new Date().getFullYear()} LogicMonitor | Steve Villardi
                         </span>
                         <div className="h-4 w-px bg-gray-200" />
-                        {/* <a 
+                        <a 
                             href="https://www.logicmonitor.com/legal" 
                             target="_blank" 
                             rel="noopener noreferrer"
@@ -26,7 +26,7 @@ export const Footer = () => {
                             className="text-sm text-gray-600 hover:text-blue-700 flex items-center gap-1"
                         >
                             Privacy <ExternalLink className="w-3 h-3" />
-                        </a> */}
+                        </a>
                     </div>
                     <div className="flex items-center gap-4">
                         <a 

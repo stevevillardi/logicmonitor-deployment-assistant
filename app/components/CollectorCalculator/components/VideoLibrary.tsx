@@ -33,17 +33,24 @@ const categories: VideoCategory[] = [
 const videos: Video[] = [
     {
         id: '1',
-        title: 'Getting Started with LogicMonitor',
-        description: 'Learn the basics of navigating and using the LogicMonitor platform',
-        category: 'getting-started',
-        videoId: 'dQw4w9WgXcQ'
+        title: 'PowerShell Series: Setting up LogicMonitor with multiple SSH/SNMP Credentials',
+        description: 'Learn how to setup LogicMonitor with multiple SSH/SNMP credentials',
+        category: 'monitoring',
+        videoId: 'DR63mbIXeB0'
     },
     {
         id: '2',
-        title: 'Collector Installation Guide',
-        description: 'Step-by-step guide for installing and configuring collectors',
-        category: 'collectors',
-        videoId: 'dQw4w9WgXcQ'
+        title: 'PowerShell Series: Filtering and Delta Usage',
+        description: 'Learn how to use PowerShell module for advanced filtering and delta usage',
+        category: 'automation',
+        videoId: 'tJqbfAd9sqU'
+    },
+    {
+        id: '3',
+        title: 'PowerShell Series: Onboarding and Configuring Devices',
+        description: 'Learn how to use PowerShell module for onboarding and configuring devices',
+        category: 'device-management',
+        videoId: 'mMGadMsu1Qo'
     },
     // Add more videos as needed
 ];
