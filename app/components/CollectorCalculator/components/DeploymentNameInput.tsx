@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Building2, ListRestart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Config, Site } from '../types';
+import { defaultMethodWeights, collectorCapacities } from '../constants';
 interface DeploymentNameInputProps {
     value: string;
     onChange: (name: string) => void;
@@ -39,7 +40,7 @@ const DeploymentNameInput = ({ value, onChange, config, onUpdateConfig, onUpdate
                             enablePollingFailover: true,
                             enableLogsFailover: false,
                             deviceDefaults: { ...config.deviceDefaults },
-                            collectorCapacities: { ...config.collectorCapacities },
+                            collectorCapacities: { ...collectorCapacities },
                         };
 
                         const defaultSite = {

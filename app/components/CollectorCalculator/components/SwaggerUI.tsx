@@ -4,10 +4,20 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 import ApiDocumentationBanner from './ApiDocumentationBanner';
+
 const SwaggerUIComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [specUrl, setSpecUrl] = useState('');
+
+    // Use effect to set loading to false after initial render
+    useEffect(() => {
+        // Small delay to ensure SwaggerUI has initialized
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     // Define a request interceptor function
     const requestInterceptor = (req: any) => {
@@ -37,11 +47,6 @@ const SwaggerUIComponent = () => {
         return req;
     };
 
-    useEffect(() => {
-        setSpecUrl('/api-specs/logicmonitor-api.yaml');
-        setIsLoading(false);
-    }, []);
-
     return (
         <Card className="bg-white border-gray-200 h-full">
             <CardHeader className="border-b border-gray-200">
@@ -65,17 +70,18 @@ const SwaggerUIComponent = () => {
                         </div>
                     ) : (
                         <SwaggerUI
-                            url={specUrl}
+                            url="/api-specs/logicmonitor-api.yaml"
                             docExpansion="list"
-                            deepLinking={true}
+                            deepLinking={false}
                             defaultModelsExpandDepth={-1}
-                            displayOperationId={true}
-                            filter={true}
-                            showExtensions={true}
-                            showCommonExtensions={true}
+                            displayOperationId={false}
+                            filter={false}
+                            showExtensions={false}
+                            showCommonExtensions={false}
                             tryItOutEnabled={true}
-                            onComplete={() => setIsLoading(false)}
                             requestInterceptor={requestInterceptor}
+                            layout="BaseLayout"
+                            persistAuthorization={true}
                         />
                     )}
                 </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download, Upload, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/enhanced-components';
-import { Site, Config } from '../types';
+import { Site, Config, CollectorCapacity } from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState, useRef } from 'react';
 import { ListRestart } from 'lucide-react';
@@ -29,6 +29,7 @@ interface ExportData {
     sites: SimplifiedSite[];
     methodWeights: Record<string, number>;
     deviceDefaults: Config['deviceDefaults'];
+    collectorCapacities: Config['collectorCapacities'];
     timestamp: string;
     version: string;
 }
@@ -67,6 +68,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
             sites: simplifiedSites,
             methodWeights: config.methodWeights,
             deviceDefaults: config.deviceDefaults,
+            collectorCapacities: config.collectorCapacities,
             timestamp: new Date().toISOString(),
             version: "1.0"
         };
@@ -148,6 +150,14 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
             });
         } else {
             warnings.push('Invalid device defaults format');
+            isValid = false;
+        }
+
+        // Validate collector capacities
+        if (data.collectorCapacities && typeof data.collectorCapacities === 'object') {
+            // TODO: Implement collector capacities validation
+        } else {
+            warnings.push('Invalid collector capacities format');
             isValid = false;
         }
 

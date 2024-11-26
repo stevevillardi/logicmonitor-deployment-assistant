@@ -171,6 +171,7 @@ const curlCode = `curl -X POST https://company.logicmonitor.com/santaba/rest/dev
 
 interface CodeSamplesProps {
     examples?: Array<{
+        key: string;
         title: string;
         language: string;
         code: string;

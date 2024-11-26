@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import CollectorCalculator from '../components/CollectorCalculator';
+import CollectorCalculator from '../components/CollectorCalculator/CollectorCalculator';
 import { Footer } from '../components/CollectorCalculator/components/Footer';
 
 const ApiExplorerPage = memo(function ApiExplorerPage() {

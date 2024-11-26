@@ -2,7 +2,7 @@ import { memo } from 'react';
 import CollectorCalculator from '../components/CollectorCalculator/CollectorCalculator';
 import { Footer } from '../components/CollectorCalculator/components/Footer';
 
-const CollectorInfoPage = memo(function CollectorInfoPage() {
+const VideoLibraryPage = memo(function VideoLibraryPage() {
   return (
     <div className="min-h-screen bg-[#040F4B] flex flex-col">
       <main className="flex-grow p-8">
@@ -13,5 +13,4 @@ const CollectorInfoPage = memo(function CollectorInfoPage() {
   );
 });
 
-
-export default CollectorInfoPage;
+export default VideoLibraryPage;

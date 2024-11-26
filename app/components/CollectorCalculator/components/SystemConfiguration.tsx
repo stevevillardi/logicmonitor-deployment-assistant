@@ -13,6 +13,7 @@ import EnhancedCard from '@/components/ui/enhanced-card';
 import { Dumbbell, Settings, Shield, Server, Activity, Variable } from 'lucide-react';
 import { PcCase, Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
 import sliderStyles from '../../../styles';
+import { CollectorCapacitySection } from './CollectorCapacity';
 
 interface SystemConfigurationProps {
     config: Config;
@@ -647,70 +648,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                             <Database className="w-5 h-5 text-blue-700" />
                                             <Label className="text-gray-900 font-medium">Collector Capacities</Label>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {Object.entries(config.collectorCapacities).map(([size, capacity]) => (
-                                                <div key={size} className="bg-gray-50 rounded-lg p-4 space-y-4 hover:bg-gray-100 transition-all">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                                                <Database className="w-4 h-4 text-blue-700" />
-                                                            </div>
-                                                            <span className="font-medium text-gray-900">{size}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="space-y-4">
-                                                        <div>
-                                                            <Label className="text-sm text-gray-600 mb-2 block">Weighted Capacity</Label>
-                                                            <div className="relative">
-                                                                <Input
-                                                                    type="number"
-                                                                    value={capacity.weight}
-                                                                    onChange={(e) => {
-                                                                        const newCapacities = {
-                                                                            ...config.collectorCapacities,
-                                                                            [size]: {
-                                                                                ...capacity,
-                                                                                weight: parseInt(e.target.value) || 0
-                                                                            }
-                                                                        };
-                                                                        onUpdate({
-                                                                            ...config,
-                                                                            collectorCapacities: newCapacities
-                                                                        });
-                                                                    }}
-                                                                    className="pl-8 bg-white"
-                                                                />
-                                                                <Weight className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" />
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <Label className="text-sm text-gray-600 mb-2 block">Events Per Second (EPS) Capacity</Label>
-                                                            <div className="relative">
-                                                                <Input
-                                                                    type="number"
-                                                                    value={capacity.eps}
-                                                                    onChange={(e) => {
-                                                                        const newCapacities = {
-                                                                            ...config.collectorCapacities,
-                                                                            [size]: {
-                                                                                ...capacity,
-                                                                                eps: parseInt(e.target.value) || 0
-                                                                            }
-                                                                        };
-                                                                        onUpdate({
-                                                                            ...config,
-                                                                            collectorCapacities: newCapacities
-                                                                        });
-                                                                    }}
-                                                                    className="pl-8 bg-white"
-                                                                />
-                                                                <Activity className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <CollectorCapacitySection config={config} onUpdate={onUpdate} />
                                     </div>
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
