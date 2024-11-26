@@ -250,13 +250,14 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                 <div className="flex items-center justify-between">
                     <TabsList className="mb-4 bg-white border border-gray-200">
                         <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Settings className="w-5 h-5 pr-1" />General Settings</TabsTrigger>
+                        <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Calculator className="w-5 h-5 pr-1" />Load Calculation Formula</TabsTrigger>
                         {config.showAdvancedSettings && (
                             <>
                                 <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Server className="w-5 h-5 pr-1" />Device Defaults</TabsTrigger>
                                 <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Dumbbell className="w-5 h-5 pr-1" />Protocol Weights</TabsTrigger>
+                                <TabsTrigger value="collector-capacities" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Database className="w-5 h-5 pr-1" />Collector Capacities</TabsTrigger>
                             </>
                         )}
-                        <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Calculator className="w-5 h-5 pr-1" />Load Calculation Formula</TabsTrigger>
                     </TabsList>
                 </div>
 
@@ -326,15 +327,6 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                             </div>
                                         </div>
                                     </div>
-                                    {config.showAdvancedSettings && (
-                                        <div className="mt-8 space-y-4">
-                                            <div className="flex items-center gap-2">
-                                                <Database className="w-5 h-5 text-blue-700" />
-                                                <Label className="text-gray-900 font-medium">Collector Capacities</Label>
-                                            </div>
-                                            <CollectorCapacitySection config={config} onUpdate={onUpdate} />
-                                        </div>
-                                    )}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <Shield className="w-5 h-5 text-blue-700" />
@@ -764,6 +756,22 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                             </div>
                                         ))}
                                     </div>
+                                </CardContent>
+                            </EnhancedCard>
+                        </TabsContent>
+
+                        <TabsContent value="collector-capacities">
+                            <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                                <CardHeader className="border-b border-gray-200">
+                                    <div className="flex items-center gap-3">
+                                        <Database className="w-6 h-6 text-blue-700" />
+                                        <CardTitle className="text-gray-900">Collector Capacities</CardTitle>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 bg-white">
+
+                                            <CollectorCapacitySection config={config} onUpdate={onUpdate} />
+
                                 </CardContent>
                             </EnhancedCard>
                         </TabsContent>
