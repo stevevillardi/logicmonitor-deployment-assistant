@@ -49,7 +49,7 @@ const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
     return acc;
 }, {} as Record<string, string>);
 
-const LazyAPIExplorer = dynamic(() => import('./components/SwaggerUI'), { 
+const LazyAPIExplorer = dynamic(() => import('./components/SwaggerUI'), {
     ssr: false
 });
 
@@ -65,6 +65,7 @@ const CollectorCalculator = () => {
             enableLogsFailover: false,
             deviceDefaults: { ...defaultDeviceTypes },
             collectorCapacities: { ...collectorCapacities },
+            showAdvancedSettings: false,
         };
     });
 

@@ -23,6 +23,7 @@ export interface Config {
     enableLogsFailover: boolean;
     deviceDefaults: Record<string, DeviceType>;
     collectorCapacities: Record<string, CollectorCapacity>;
+    showAdvancedSettings: boolean;
 }
 
 export interface CollectorCapacity {

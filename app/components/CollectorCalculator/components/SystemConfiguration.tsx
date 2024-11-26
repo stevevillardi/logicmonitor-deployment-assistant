@@ -15,6 +15,9 @@ import { PcCase, Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, 
 import sliderStyles from '../../../styles';
 import { CollectorCapacitySection } from './CollectorCapacity';
 import { devLog } from '@/utils/debug';
+import { RiAdminLine } from "react-icons/ri";
+
+
 interface SystemConfigurationProps {
     config: Config;
     onUpdate: (config: Config) => void;
@@ -78,7 +81,7 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
         };
         devLog('Updating config in SystemConfiguration:', updatedConfig);
         onUpdate(updatedConfig);
-        
+
         setNewDeviceType('');
         setErrors(prev => ({ ...prev, deviceType: undefined }));
         setSelectedDeviceType(newDeviceType);
@@ -243,361 +246,30 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
 
     return (
         <div className="space-y-6 overflow-y-auto">
-            <Tabs defaultValue="general">
-                <TabsList className="mb-4 bg-white border border-gray-200">
-                    <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Settings className="w-5 h-5 pr-1" />General Settings</TabsTrigger>
-                    <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Server className="w-5 h-5 pr-1" />Device Defaults</TabsTrigger>
-                    <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Dumbbell className="w-5 h-5 pr-1" />Protocol Weights</TabsTrigger>
-                    <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Calculator className="w-5 h-5 pr-1" />Load Calculation Formula</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="weights">
-                    <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
-                        <CardHeader className="border-b border-gray-200">
-                            <div className="flex items-center gap-3">
-                                <Dumbbell className="w-6 h-6 text-blue-700" />
-                                <CardTitle className="text-gray-900">Protocol Weights</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-6 bg-white">
-                            <div className="mb-8">
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                                    <div className="flex items-center gap-2 text-blue-700 mb-2">
-                                        <Info className="w-5 h-5" />
-                                        <span className="font-medium">Protocol Weight Impact</span>
-                                    </div>
-                                    <p className="text-sm text-blue-600">
-                                        Higher weights indicate protocols that require more collector resources. These values directly affect the calculated load score for each device.
-                                    </p>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <div className="relative flex-1">
-                                        <Input
-                                            placeholder="New protocol name..."
-                                            value={newMethodWeightName}
-                                            onChange={(e) => setNewMethodWeightName(e.target.value)}
-                                            className="w-full bg-white border-gray-200 focus:border-blue-700 pl-10"
-                                        />
-                                        <Settings className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
-                                    </div>
-                                    <div className="relative w-48">
-                                        <style>{sliderStyles}</style>
-                                        <Label className="text-xs text-gray-500 block mb-1">Weight: {newMethodWeight}</Label>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="5"
-                                            step="0.1"
-                                            value={newMethodWeight}
-                                            onChange={(e) => setNewMethodWeight(e.target.value)}
-                                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
-                                        />
-                                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                            <span>0</span>
-                                            <span>2.5</span>
-                                            <span>5</span>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        onClick={addProtocolWeight}
-                                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
-                                    >
-                                        <Plus className="w-4 h-4" />
-                                        Add Protocol
-                                    </Button>
-                                </div>
-                                {errors.methodName && (
-                                    <div className="flex items-center gap-2 text-red-500 text-sm mt-2">
-                                        <AlertTriangle className="w-4 h-4" />
-                                        <p>{errors.methodName}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-4">
-                                {Object.entries(config.methodWeights).map(([method, weight]) => (
-                                    <div
-                                        key={method}
-                                        className="flex flex-col gap-2 group bg-gray-50 hover:bg-white border border-gray-200 rounded-lg p-4 transition-all duration-300"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                                <Settings className="w-4 h-4 text-blue-700" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <Label className="text-xs text-gray-500 block">Protocol</Label>
-                                                <span className="capitalize text-gray-700 font-medium">{method}</span>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => removeProtocolWeight(method)}
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                                title="Remove protocol"
-                                            >
-                                                <Trash2 className="h-4 w-4 text-red-500" />
-                                            </Button>
-                                        </div>
-                                        <div className="w-full">
-                                            <Label className="text-xs text-gray-500 block mb-1">Weight: {weight}</Label>
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="5"
-                                                step="0.1"
-                                                value={weight}
-                                                onChange={(e) => {
-                                                    const updatedConfig: Config = {
-                                                        ...config,
-                                                        methodWeights: {
-                                                            ...config.methodWeights,
-                                                            [method]: Number(e.target.value)
-                                                        }
-                                                    };
-                                                    onUpdate(updatedConfig);
-                                                }}
-                                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
-                                            />
-                                            <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                                <span>0</span>
-                                                <span>2.5</span>
-                                                <span>5</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </EnhancedCard>
-                </TabsContent>
-
-                <TabsContent value="devices">
-                    <EnhancedCard className="bg-white h-[1100px] overflow-hidden shadow-sm border border-gray-200">
-                        <CardHeader className="border-b border-gray-200 bg-white">
-                            <div className="flex items-center gap-3">
-                                <Server className="w-6 h-6 text-blue-700" />
-                                <CardTitle className="text-gray-900">Device Defaults</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                                <div className="flex items-center gap-2 text-blue-700 mb-2">
-                                    <Info className="w-5 h-5" />
-                                    <span className="font-medium">Device Configuration</span>
-                                </div>
-                                <p className="text-sm text-blue-600">
-                                    Configure base instances and collection methods for each device type. These settings will be used as defaults when adding devices to sites.
-                                </p>
-                            </div>
-
-                            <div className="flex gap-6">
-                                <div className="w-[350px] shrink-0">
-                                    <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
-                                        <div className="flex gap-2">
-                                            <Input
-                                                placeholder="New device type..."
-                                                value={newDeviceType}
-                                                onChange={(e) => setNewDeviceType(e.target.value)}
-                                                className="flex-1 bg-white"
-                                            />
-                                            <Button
-                                                onClick={addDeviceType}
-                                                size="icon"
-                                                className="shrink-0 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
-                                            >
-                                                <Plus className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        {errors.deviceType && (
-                                            <div className="flex items-center gap-2 text-red-500 text-sm mt-2">
-                                                <AlertTriangle className="h-4 w-4" />
-                                                <p>{errors.deviceType}</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="bg-white rounded-lg border border-gray-200 p-4">
-                                        <Label className="text-sm text-gray-600 mb-3 block">Device Types</Label>
-                                        <ScrollArea className="h-[600px] pr-4">
-                                            <div className="space-y-2">
-                                                {Object.keys(config.deviceDefaults || {}).map((type) => (
-                                                    <div
-                                                        key={type}
-                                                        className={`p-3 rounded-lg cursor-pointer group flex items-center gap-3 transition-all ${selectedDeviceType === type
-                                                            ? 'bg-blue-100 text-blue-900 border border-blue-200'
-                                                            : 'hover:bg-slate-50 text-gray-900 hover:text-slate-900 border border-transparent'
-                                                            }`}
-                                                        onClick={() => setSelectedDeviceType(type)}
-                                                    >
-                                                        <PcCase className="h-4 w-4 text-blue-700" />
-                                                        <span className="flex-1">{type}</span>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                removeDeviceType(type);
-                                                            }}
-                                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            <Trash2 className="h-4 w-4 text-red-500" />
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </ScrollArea>
-                                    </div>
-                                </div>
-
-                                <div className="col-span-3 w-full">
-                                    {selectedDeviceType && config.deviceDefaults && config.deviceDefaults[selectedDeviceType] && (
-                                        <div className="bg-white rounded-lg border border-gray-200 p-6">
-                                            <div className="space-y-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex-1">
-                                                        <Label className="text-gray-600 mb-2 block">Base Instances</Label>
-                                                        <div className="flex items-center gap-3">
-                                                            <Input
-                                                                type="number"
-                                                                value={config.deviceDefaults[selectedDeviceType].instances}
-                                                                onChange={(e) => {
-                                                                    const newDefaults = {
-                                                                        ...config.deviceDefaults,
-                                                                        [selectedDeviceType]: {
-                                                                            ...config.deviceDefaults[selectedDeviceType],
-                                                                            instances: parseInt(e.target.value) || 0
-                                                                        }
-                                                                    };
-                                                                    onUpdate({ ...config, deviceDefaults: newDefaults });
-                                                                }}
-                                                                className="w-32"
-                                                            />
-                                                            <div className="ml-4 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
-                                                                <Calculator className="w-4 h-4 text-blue-700" />
-                                                                <span className="text-sm text-blue-700">
-                                                                    Load Score per Device: <span className="font-medium">
-                                                                        {Math.round(Object.entries(config.deviceDefaults[selectedDeviceType].methods)
-                                                                            .reduce((total, [method, ratio]) =>
-                                                                                total + (config.deviceDefaults[selectedDeviceType].instances * ratio * (config.methodWeights[method] || 0)), 0) * 10) / 10}
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <div className="flex items-center justify-between mb-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <Settings className="w-5 h-5 text-blue-700" />
-                                                            <Label className="text-gray-900">Collection Methods</Label>
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <select
-                                                                value={newMethodName}
-                                                                onChange={(e) => setNewMethodName(e.target.value)}
-                                                                className="w-40 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                            >
-                                                                <option value="">Select protocol...</option>
-                                                                {Object.keys(config.methodWeights).map((method) => (
-                                                                    <option key={method} value={method}>
-                                                                        {method}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                            <Button
-                                                                onClick={() => selectedDeviceType && addCollectionMethod(selectedDeviceType)}
-                                                                className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
-                                                            >
-                                                                <Plus className="h-4 w-4 mr-2" />
-                                                                Add Method
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                    {errors.methodName && (
-                                                        <div className="flex items-center gap-2 text-red-500 text-sm mb-2">
-                                                            <AlertTriangle className="h-4 w-4" />
-                                                            <p>{errors.methodName}</p>
-                                                        </div>
-                                                    )}
-                                                    {errors.methodRatios && (
-                                                        <Alert variant="destructive" className="mb-4">
-                                                            <AlertTriangle className="h-4 w-4" />
-                                                            <AlertDescription>{errors.methodRatios}</AlertDescription>
-                                                        </Alert>
-                                                    )}
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        {Object.entries(
-                                                            config.deviceDefaults[selectedDeviceType].methods
-                                                        ).map(([method, ratio]) => (
-                                                            <div
-                                                                key={method}
-                                                                className="flex flex-col p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                                                            >
-                                                                <div className="flex items-center justify-between mb-4">
-                                                                    <div className="flex items-center gap-3">
-                                                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                                                            <Settings className="w-4 h-4 text-blue-700" />
-                                                                        </div>
-                                                                        <Label className="capitalize text-gray-900">{method}</Label>
-                                                                    </div>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        onClick={() => selectedDeviceType && removeCollectionMethod(selectedDeviceType, method)}
-                                                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                                                    >
-                                                                        <Trash2 className="h-4 w-4 text-red-500" />
-                                                                    </Button>
-                                                                </div>
-                                                                <div className="space-y-2">
-                                                                    <style>{sliderStyles}</style>
-                                                                    <Label className="text-xs text-gray-500 block">Ratio: {(ratio * 100).toFixed(1)}%</Label>
-                                                                    <input
-                                                                        type="range"
-                                                                        min="0"
-                                                                        max="1"
-                                                                        step="0.05"
-                                                                        value={ratio}
-                                                                        onChange={(e) => {
-                                                                            updateMethodRatio(
-                                                                                selectedDeviceType,
-                                                                                method,
-                                                                                parseFloat(e.target.value)
-                                                                            );
-                                                                        }}
-                                                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
-                                                                    />
-                                                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                                                        <span>0%</span>
-                                                                        <span>50%</span>
-                                                                        <span>100%</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </CardContent>
-                    </EnhancedCard>
-                </TabsContent>
+            <Tabs defaultValue="general" className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <TabsList className="mb-4 bg-white border border-gray-200">
+                        <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Settings className="w-5 h-5 pr-1" />General Settings</TabsTrigger>
+                        {config.showAdvancedSettings && (
+                            <>
+                                <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Server className="w-5 h-5 pr-1" />Device Defaults</TabsTrigger>
+                                <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Dumbbell className="w-5 h-5 pr-1" />Protocol Weights</TabsTrigger>
+                            </>
+                        )}
+                        <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Calculator className="w-5 h-5 pr-1" />Load Calculation Formula</TabsTrigger>
+                    </TabsList>
+                </div>
 
                 <TabsContent value="general">
-                    <EnhancedCard className="bg-white h-[1500px] overflow-y-auto shadow-sm border border-gray-200">
-                        <CardHeader className="border-b border-gray-200">
+                    <EnhancedCard>
+                        <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Settings className="w-6 h-6 text-blue-700" />
-                                <CardTitle className="text-gray-900">General Settings</CardTitle>
+                                <CardTitle>General Settings</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                     <div className="flex items-center gap-2 text-blue-700 mb-2">
                                         <Info className="w-5 h-5" />
@@ -654,17 +326,19 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mt-8 space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <Database className="w-5 h-5 text-blue-700" />
-                                            <Label className="text-gray-900 font-medium">Collector Capacities</Label>
+                                    {config.showAdvancedSettings && (
+                                        <div className="mt-8 space-y-4">
+                                            <div className="flex items-center gap-2">
+                                                <Database className="w-5 h-5 text-blue-700" />
+                                                <Label className="text-gray-900 font-medium">Collector Capacities</Label>
+                                            </div>
+                                            <CollectorCapacitySection config={config} onUpdate={onUpdate} />
                                         </div>
-                                        <CollectorCapacitySection config={config} onUpdate={onUpdate} />
-                                    </div>
+                                    )}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <Shield className="w-5 h-5 text-blue-700" />
-                                            <Label className="text-gray-900 font-medium">Redundancy Settings</Label>
+                                            <Label className="text-gray-900 font-medium">Additional Settings</Label>
                                         </div>
                                         <div className="grid gap-4">
                                             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -719,6 +393,34 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                                                     />
                                                 </div>
                                             </div>
+                                            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                <div className="flex items-center gap-3 flex-1">
+                                                    <RiAdminLine className="w-5 h-5 text-blue-700" />
+                                                    <div>
+                                                        <Label className="text-gray-900" htmlFor="advanced-settings">
+                                                            Show Advanced Settings
+                                                        </Label>
+                                                        <p className="text-sm text-gray-500">Show additional settings for device/collector defaults and protocol weights</p>
+                                                    </div>
+                                                </div>
+                                                <div className="relative">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="advanced-settings"
+                                                        checked={config.showAdvancedSettings}
+                                                        onChange={(e) => {
+                                                            const updatedConfig: Config = {
+                                                                ...config,
+                                                                showAdvancedSettings: e.target.checked
+                                                            };
+                                                            onUpdate(updatedConfig);
+                                                        }}
+                                                        className="h-6 w-6 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-2 mb-6 pb-6 border-b border-gray-200">
                                         </div>
                                     </div>
                                 </div>
@@ -727,6 +429,347 @@ export const SystemConfiguration = ({ config, onUpdate }: SystemConfigurationPro
                     </EnhancedCard>
                 </TabsContent>
 
+                {config.showAdvancedSettings && (
+                    <>
+                        <TabsContent value="devices">
+                            <EnhancedCard className="bg-white h-[1100px] overflow-hidden shadow-sm border border-gray-200">
+                                <CardHeader className="border-b border-gray-200 bg-white">
+                                    <div className="flex items-center gap-3">
+                                        <Server className="w-6 h-6 text-blue-700" />
+                                        <CardTitle className="text-gray-900">Device Defaults</CardTitle>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6">
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                        <div className="flex items-center gap-2 text-blue-700 mb-2">
+                                            <Info className="w-5 h-5" />
+                                            <span className="font-medium">Device Configuration</span>
+                                        </div>
+                                        <p className="text-sm text-blue-600">
+                                            Configure base instances and collection methods for each device type. These settings will be used as defaults when adding devices to sites.
+                                        </p>
+                                    </div>
+
+                                    <div className="flex gap-6">
+                                        <div className="w-[350px] shrink-0">
+                                            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        placeholder="New device type..."
+                                                        value={newDeviceType}
+                                                        onChange={(e) => setNewDeviceType(e.target.value)}
+                                                        className="flex-1 bg-white"
+                                                    />
+                                                    <Button
+                                                        onClick={addDeviceType}
+                                                        size="icon"
+                                                        className="shrink-0 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
+                                                    >
+                                                        <Plus className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                                {errors.deviceType && (
+                                                    <div className="flex items-center gap-2 text-red-500 text-sm mt-2">
+                                                        <AlertTriangle className="h-4 w-4" />
+                                                        <p>{errors.deviceType}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="bg-white rounded-lg border border-gray-200 p-4">
+                                                <Label className="text-sm text-gray-600 mb-3 block">Device Types</Label>
+                                                <ScrollArea className="h-[600px] pr-4">
+                                                    <div className="space-y-2">
+                                                        {Object.keys(config.deviceDefaults || {}).map((type) => (
+                                                            <div
+                                                                key={type}
+                                                                className={`p-3 rounded-lg cursor-pointer group flex items-center gap-3 transition-all ${selectedDeviceType === type
+                                                                    ? 'bg-blue-100 text-blue-900 border border-blue-200'
+                                                                    : 'hover:bg-slate-50 text-gray-900 hover:text-slate-900 border border-transparent'
+                                                                    }`}
+                                                                onClick={() => setSelectedDeviceType(type)}
+                                                            >
+                                                                <PcCase className="h-4 w-4 text-blue-700" />
+                                                                <span className="flex-1">{type}</span>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        removeDeviceType(type);
+                                                                    }}
+                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                                                </Button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </ScrollArea>
+                                            </div>
+                                        </div>
+
+                                        <div className="col-span-3 w-full">
+                                            {selectedDeviceType && config.deviceDefaults && config.deviceDefaults[selectedDeviceType] && (
+                                                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                                    <div className="space-y-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="flex-1">
+                                                                <Label className="text-gray-600 mb-2 block">Base Instances</Label>
+                                                                <div className="flex items-center gap-3">
+                                                                    <Input
+                                                                        type="number"
+                                                                        value={config.deviceDefaults[selectedDeviceType].instances}
+                                                                        onChange={(e) => {
+                                                                            const newDefaults = {
+                                                                                ...config.deviceDefaults,
+                                                                                [selectedDeviceType]: {
+                                                                                    ...config.deviceDefaults[selectedDeviceType],
+                                                                                    instances: parseInt(e.target.value) || 0
+                                                                                }
+                                                                            };
+                                                                            onUpdate({ ...config, deviceDefaults: newDefaults });
+                                                                        }}
+                                                                        className="w-32"
+                                                                    />
+                                                                    <div className="ml-4 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                                                                        <Calculator className="w-4 h-4 text-blue-700" />
+                                                                        <span className="text-sm text-blue-700">
+                                                                            Load Score per Device: <span className="font-medium">
+                                                                                {Math.round(Object.entries(config.deviceDefaults[selectedDeviceType].methods)
+                                                                                    .reduce((total, [method, ratio]) =>
+                                                                                        total + (config.deviceDefaults[selectedDeviceType].instances * ratio * (config.methodWeights[method] || 0)), 0) * 10) / 10}
+                                                                            </span>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Settings className="w-5 h-5 text-blue-700" />
+                                                                    <Label className="text-gray-900">Collection Methods</Label>
+                                                                </div>
+                                                                <div className="flex gap-2">
+                                                                    <select
+                                                                        value={newMethodName}
+                                                                        onChange={(e) => setNewMethodName(e.target.value)}
+                                                                        className="w-40 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                                    >
+                                                                        <option value="">Select protocol...</option>
+                                                                        {Object.keys(config.methodWeights).map((method) => (
+                                                                            <option key={method} value={method}>
+                                                                                {method}
+                                                                            </option>
+                                                                        ))}
+                                                                    </select>
+                                                                    <Button
+                                                                        onClick={() => selectedDeviceType && addCollectionMethod(selectedDeviceType)}
+                                                                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
+                                                                    >
+                                                                        <Plus className="h-4 w-4 mr-2" />
+                                                                        Add Method
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                            {errors.methodName && (
+                                                                <div className="flex items-center gap-2 text-red-500 text-sm mb-2">
+                                                                    <AlertTriangle className="h-4 w-4" />
+                                                                    <p>{errors.methodName}</p>
+                                                                </div>
+                                                            )}
+                                                            {errors.methodRatios && (
+                                                                <Alert variant="destructive" className="mb-4">
+                                                                    <AlertTriangle className="h-4 w-4" />
+                                                                    <AlertDescription>{errors.methodRatios}</AlertDescription>
+                                                                </Alert>
+                                                            )}
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                {Object.entries(
+                                                                    config.deviceDefaults[selectedDeviceType].methods
+                                                                ).map(([method, ratio]) => (
+                                                                    <div
+                                                                        key={method}
+                                                                        className="flex flex-col p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                                                                    >
+                                                                        <div className="flex items-center justify-between mb-4">
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                                                    <Settings className="w-4 h-4 text-blue-700" />
+                                                                                </div>
+                                                                                <Label className="capitalize text-gray-900">{method}</Label>
+                                                                            </div>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={() => selectedDeviceType && removeCollectionMethod(selectedDeviceType, method)}
+                                                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                            >
+                                                                                <Trash2 className="h-4 w-4 text-red-500" />
+                                                                            </Button>
+                                                                        </div>
+                                                                        <div className="space-y-2">
+                                                                            <style>{sliderStyles}</style>
+                                                                            <Label className="text-xs text-gray-500 block">Ratio: {(ratio * 100).toFixed(1)}%</Label>
+                                                                            <input
+                                                                                type="range"
+                                                                                min="0"
+                                                                                max="1"
+                                                                                step="0.05"
+                                                                                value={ratio}
+                                                                                onChange={(e) => {
+                                                                                    updateMethodRatio(
+                                                                                        selectedDeviceType,
+                                                                                        method,
+                                                                                        parseFloat(e.target.value)
+                                                                                    );
+                                                                                }}
+                                                                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                                                            />
+                                                                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                                                                <span>0%</span>
+                                                                                <span>50%</span>
+                                                                                <span>100%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </EnhancedCard>
+                        </TabsContent>
+
+                        <TabsContent value="weights">
+                            <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                                <CardHeader className="border-b border-gray-200">
+                                    <div className="flex items-center gap-3">
+                                        <Dumbbell className="w-6 h-6 text-blue-700" />
+                                        <CardTitle className="text-gray-900">Protocol Weights</CardTitle>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 bg-white">
+                                    <div className="mb-8">
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                            <div className="flex items-center gap-2 text-blue-700 mb-2">
+                                                <Info className="w-5 h-5" />
+                                                <span className="font-medium">Protocol Weight Impact</span>
+                                            </div>
+                                            <p className="text-sm text-blue-600">
+                                                Higher weights indicate protocols that require more collector resources. These values directly affect the calculated load score for each device.
+                                            </p>
+                                        </div>
+
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <Input
+                                                    placeholder="New protocol name..."
+                                                    value={newMethodWeightName}
+                                                    onChange={(e) => setNewMethodWeightName(e.target.value)}
+                                                    className="w-full bg-white border-gray-200 focus:border-blue-700 pl-10"
+                                                />
+                                                <Settings className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                                            </div>
+                                            <div className="relative w-48">
+                                                <style>{sliderStyles}</style>
+                                                <Label className="text-xs text-gray-500 block mb-1">Weight: {newMethodWeight}</Label>
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max="5"
+                                                    step="0.1"
+                                                    value={newMethodWeight}
+                                                    onChange={(e) => setNewMethodWeight(e.target.value)}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                                />
+                                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                                    <span>0</span>
+                                                    <span>2.5</span>
+                                                    <span>5</span>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={addProtocolWeight}
+                                                className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                                Add Protocol
+                                            </Button>
+                                        </div>
+                                        {errors.methodName && (
+                                            <div className="flex items-center gap-2 text-red-500 text-sm mt-2">
+                                                <AlertTriangle className="w-4 h-4" />
+                                                <p>{errors.methodName}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-4">
+                                        {Object.entries(config.methodWeights).map(([method, weight]) => (
+                                            <div
+                                                key={method}
+                                                className="flex flex-col gap-2 group bg-gray-50 hover:bg-white border border-gray-200 rounded-lg p-4 transition-all duration-300"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <Settings className="w-4 h-4 text-blue-700" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <Label className="text-xs text-gray-500 block">Protocol</Label>
+                                                        <span className="capitalize text-gray-700 font-medium">{method}</span>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => removeProtocolWeight(method)}
+                                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        title="Remove protocol"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                                    </Button>
+                                                </div>
+                                                <div className="w-full">
+                                                    <Label className="text-xs text-gray-500 block mb-1">Weight: {weight}</Label>
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="5"
+                                                        step="0.1"
+                                                        value={weight}
+                                                        onChange={(e) => {
+                                                            const updatedConfig: Config = {
+                                                                ...config,
+                                                                methodWeights: {
+                                                                    ...config.methodWeights,
+                                                                    [method]: Number(e.target.value)
+                                                                }
+                                                            };
+                                                            onUpdate(updatedConfig);
+                                                        }}
+                                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                                    />
+                                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                                        <span>0</span>
+                                                        <span>2.5</span>
+                                                        <span>5</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </EnhancedCard>
+                        </TabsContent>
+
+                    </>
+                )}
                 <TabsContent value="formula">
                     <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
                         <CardHeader className="border-b border-gray-200 bg-white">

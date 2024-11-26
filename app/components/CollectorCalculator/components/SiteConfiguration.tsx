@@ -49,22 +49,22 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
     const getSiteResults = (site: Site) => {
         devLog('Getting site results for:', site.name);
-        
+
         const totalWeight = calculateWeightedScore(
             site.devices,
             config.methodWeights
         );
         devLog('Calculated total weight:', totalWeight);
-        
+
         const totalEPS = Object.values(site.logs).reduce(
             (sum, eps) => sum + eps,
             0
         );
         devLog('Calculated total EPS:', totalEPS);
-        
+
         const results = calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
         devLog('Collector calculation results:', results);
-        
+
         return results;
     };
 
@@ -197,13 +197,13 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 </div>
             </div>
             <DeploymentNameInput
-    value={config.deploymentName}
-    onChange={(name) => onUpdateConfig({ ...config, deploymentName: name })}
-    onUpdateConfig={onUpdateConfig}
-    onUpdateSites={onUpdateSites}
-    onSiteExpand={onSiteExpand}
-    config={config}
-/>
+                value={config.deploymentName}
+                onChange={(name) => onUpdateConfig({ ...config, deploymentName: name })}
+                onUpdateConfig={onUpdateConfig}
+                onUpdateSites={onUpdateSites}
+                onSiteExpand={onSiteExpand}
+                config={config}
+            />
             {sites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
                     <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
@@ -382,7 +382,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                         const siteResults = getSiteResults(site);
                                         const totalPollingLoad = calculateWeightedScore(site.devices, config.methodWeights);
                                         const totalLogsLoad = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
-                                        
+
                                         devLog('Site Results Detail:', {
                                             polling: {
                                                 collectors: siteResults.polling.collectors.map(c => ({
@@ -401,7 +401,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 totalLoad: totalLogsLoad
                                             }
                                         });
-                                        
+
                                         return (
                                             <CollectorVisualization
                                                 polling={siteResults.polling}
