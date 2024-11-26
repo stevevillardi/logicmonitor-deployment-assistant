@@ -1,4 +1,4 @@
-import { Bot, Server } from 'lucide-react';
+import { Bot, Shield, Server } from 'lucide-react';
 import { Info } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { defaultDeviceTypes } from '../constants';
@@ -58,15 +58,19 @@ const CollectorReq = () => {
                 <div className="p-4">
                     <div className="space-y-6">
                         {/* OS Support Info */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-blue-700 mb-2">
-                                <span className="font-medium">Support Policy</span>
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="bg-gray-50 p-4 rounded-t-lg">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-medium text-gray-900">Support Policy</h3>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        LogicMonitor follows the Microsoft Lifecycle Policy for the &quot;Extended Support End Date&quot; and
+                                        the Red Hat Enterprise Linux Life Cycle for the &quot;End of Maintenance Support 2 (Product retirement)&quot;
+                                        date to determine supported operating systems for Collector installation.
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-sm text-blue-600 mb-4">
-                                LogicMonitor follows the Microsoft Lifecycle Policy for the &quot;Extended Support End Date&quot; and
-                                the Red Hat Enterprise Linux Life Cycle for the &quot;End of Maintenance Support 2 (Product retirement)&quot;
-                                date to determine supported operating systems for Collector installation.
-                            </p>
                         </div>
 
                         {/* Supported OS Grid */}
@@ -109,8 +113,8 @@ const CollectorReq = () => {
                         </div>
 
                         {/* Recommendation Section */}
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h3 className="font-semibold text-blue-700 mb-3 flex items-center gap-2">
                                 <Info className="w-4 h-4" />
                                 Collector OS Recommendation
                             </h3>
