@@ -1,6 +1,11 @@
 import React from 'react';
 import { CodeSamples } from './CodeSamples';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FaAws, FaSlack } from "react-icons/fa6";
+import { SiMicrosoftazure, SiPowershell } from "react-icons/si";
+import { FaGoogle } from "react-icons/fa";
+import { SiKubernetes } from "react-icons/si";
+
 import {
     FileSpreadsheet,
     Wand2,
@@ -35,7 +40,7 @@ const methodRefs: MethodRef[] = [
     {
         id: 'csv-import',
         title: 'PowerShell CSV Import',
-        icon: FileSpreadsheet,
+        icon: SiPowershell,
         shortDesc: 'for bulk device onboarding'
     },
     {
@@ -59,7 +64,7 @@ const methodRefs: MethodRef[] = [
     {
         id: 'containers',
         title: 'Kubernetes Integration',
-        icon: Container,
+        icon: SiKubernetes,
         shortDesc: 'for monitoring containerized workloads'
     },
     {
@@ -232,7 +237,7 @@ const DeviceOnboarding: React.FC = () => {
                                             <div className="space-y-6">
                                                 <OnboardingMethod
                                                     id="csv-import"
-                                                    icon={FileSpreadsheet}
+                                                    icon={SiPowershell}
                                                     title="PowerShell Module - CSV Import"
                                                     description="Bulk import devices using a CSV file with predefined properties and resource configurations."
                                                     recommended
@@ -360,7 +365,10 @@ const DeviceOnboarding: React.FC = () => {
                                                 >
                                                     <div className="grid grid-cols-4 gap-4 mb-4">
                                                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                            <h4 className="font-medium text-blue-900 mb-2">AWS</h4>
+                                                            <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                                                                <FaAws className="w-4 h-4" />
+                                                                <span>AWS</span>
+                                                            </h4>
                                                             <div className="space-y-2">
                                                                 <ResourceLink
                                                                     href="https://www.logicmonitor.com/support/aws-monitoring-setup"
@@ -369,7 +377,10 @@ const DeviceOnboarding: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                            <h4 className="font-medium text-blue-900 mb-2">Azure</h4>
+                                                            <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                                                                <SiMicrosoftazure className="w-4 h-4" />
+                                                                <span>Azure</span>
+                                                            </h4>
                                                             <div className="space-y-2">
                                                                 <ResourceLink
                                                                     href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-microsoft-azure-cloud-monitoring"
@@ -378,7 +389,10 @@ const DeviceOnboarding: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                            <h4 className="font-medium text-blue-900 mb-2">GCP</h4>
+                                                        <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+    <FaGoogle className="w-4 h-4" /> 
+    <span>GCP</span>
+</h4>
                                                             <div className="space-y-2">
                                                                 <ResourceLink
                                                                     href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-your-gcp-environment-into-logicmonitor"
@@ -387,7 +401,10 @@ const DeviceOnboarding: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                            <h4 className="font-medium text-blue-900 mb-2">SaaS</h4>
+                                                            <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                                                                <FaSlack className="w-4 h-4" />
+                                                                <span>SaaS</span>
+                                                            </h4>
                                                             <div className="space-y-2">
                                                                 <ResourceLink
                                                                     href="https://www.logicmonitor.com/support/saas/saas-lite-monitoring"
@@ -435,7 +452,7 @@ const DeviceOnboarding: React.FC = () => {
 
                                                 <OnboardingMethod
                                                     id="containers"
-                                                    icon={Container}
+                                                    icon={SiKubernetes}
                                                     title="Kubernetes & OpenShift Monitoring"
                                                     description="Automated discovery and monitoring of containerized workloads."
                                                     recommended

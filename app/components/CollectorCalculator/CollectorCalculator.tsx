@@ -17,6 +17,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
 import { devLog } from '@/utils/debug';
+import { BiSupport } from 'react-icons/bi';
 
 const Logo = () => {
     return (
@@ -167,7 +168,7 @@ const CollectorCalculator = () => {
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                             >
-                                <HandHelping className="w-5 h-5 text-blue-700" />
+                                <BiSupport className="w-5 h-5 text-blue-700" />
                                 <span className="text-sm font-medium text-blue-700">Support</span>
                             </a>
                             <a

@@ -4,6 +4,8 @@ import EnhancedCard from '@/components/ui/enhanced-card';
 import { defaultDeviceTypes } from '../constants';
 import { useEffect, useState } from 'react';
 import { Site } from '../types';
+import { IoLogoWindows } from "react-icons/io";
+import { FaLinux } from "react-icons/fa";
 
 const CollectorReq = () => {
     // Get the config from localStorage
@@ -38,11 +40,11 @@ const CollectorReq = () => {
     const recommendation = hasWindowsDevices ? {
         recommended: 'Windows',
         reason: 'Windows Collector is required for monitoring Windows-based devices.',
-        icon: <Server className="w-4 h-4 text-blue-700" />
+        icon: <IoLogoWindows className="w-4 h-4 text-blue-700" />
     } : {
         recommended: 'Linux',
         reason: 'Linux Collector is recommended for better performance and resource utilization.',
-        icon: <Server className="w-4 h-4 text-emerald-700" />
+        icon: <FaLinux className="w-4 h-4 text-emerald-700" />
     };
 
     return (
@@ -77,7 +79,7 @@ const CollectorReq = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                    <Server className="w-4 h-4 text-blue-700" />
+                                    <IoLogoWindows className="w-4 h-4 text-blue-700" />
                                     Windows Support
                                 </h3>
                                 <div className="space-y-2">
@@ -96,7 +98,7 @@ const CollectorReq = () => {
 
                             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                    <Server className="w-4 h-4 text-emerald-700" />
+                                    <FaLinux className="w-4 h-4 text-emerald-700" />
                                     Linux Support
                                 </h3>
                                 <div className="space-y-2">
