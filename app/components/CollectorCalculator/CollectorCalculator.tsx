@@ -120,7 +120,7 @@ const CollectorCalculator = () => {
         if (newTab !== activeTab) {
             setActiveTab(newTab);
         }
-    }, [pathname]);
+    }, [pathname, activeTab]);
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedCollectorCalculator');

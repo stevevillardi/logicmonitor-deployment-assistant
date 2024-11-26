@@ -63,8 +63,8 @@ const CollectorReq = () => {
                                 <span className="font-medium">Support Policy</span>
                             </div>
                             <p className="text-sm text-blue-600 mb-4">
-                                LogicMonitor follows the Microsoft Lifecycle Policy for the "Extended Support End Date" and
-                                the Red Hat Enterprise Linux Life Cycle for the "End of Maintenance Support 2 (Product retirement)"
+                                LogicMonitor follows the Microsoft Lifecycle Policy for the &quot;Extended Support End Date&quot; and
+                                the Red Hat Enterprise Linux Life Cycle for the &quot;End of Maintenance Support 2 (Product retirement)&quot;
                                 date to determine supported operating systems for Collector installation.
                             </p>
                         </div>
@@ -78,7 +78,7 @@ const CollectorReq = () => {
                                 </h3>
                                 <div className="space-y-2">
                                     <p className="text-sm text-gray-600">
-                                        Supported versions follow Microsoft's Extended Support lifecycle
+                                        Supported versions follow Microsoft&apos;s Extended Support lifecycle
                                     </p>
                                     <div className="space-y-1">
                                         {['Windows Server 2012 R2 and newer', 'Windows Server Core 2012 R2 and newer'].map((os) => (
