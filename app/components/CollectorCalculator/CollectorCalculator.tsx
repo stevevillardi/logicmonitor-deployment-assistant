@@ -14,7 +14,7 @@ import { KeyRound, PlayCircle, Server, MessageCircleQuestion, HelpCircle, Settin
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
-import dynamic from 'next/dist/shared/lib/dynamic';
+import dynamic from 'next/dynamic';
 import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
 import { devLog } from '@/utils/debug';
 
