@@ -88,7 +88,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Calculator className="w-4 h-4 text-blue-700" />
-                                <span className="text-gray-600">Load Score per Device</span>
+                                <span className="text-gray-600">Load Score</span>
                             </div>
                             <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
                                 {Math.round(singleDeviceLoad * 10) / 10}

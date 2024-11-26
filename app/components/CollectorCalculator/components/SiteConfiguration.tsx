@@ -16,6 +16,8 @@ import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
 import { devLog } from '@/utils/debug';
 import { RxReset } from "react-icons/rx";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Info } from 'lucide-react';
 
 interface SiteConfigurationProps {
     sites: Site[];
@@ -95,7 +97,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
     const addSite = () => {
         const newSite = {
-            name: `Site ${sites.length + 1}`,
+            name: "",
             devices: Object.fromEntries(
                 Object.entries(config.deviceDefaults).map(([type, data]) => [
                     type,
@@ -251,6 +253,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             }}
                                             className="w-64"
                                             onClick={(e) => e.stopPropagation()}
+                                            placeholder="Enter site name..."
                                         />
                                     </div>
                                 </div>
@@ -309,17 +312,54 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     </div>
                                 </div>
 
-                                <Button
-                                    variant="destructive"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        deleteSite(index);
-                                    }}
-                                    className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                    Remove Site
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700"
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-2" />
+                                            Remove Site
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent className="max-w-lg bg-blue-50 sm:max-w-2xl">
+                                        <AlertDialogHeader className="border-b border-blue-100 pb-3">
+                                            <AlertDialogTitle className="text-xl font-bold text-[#040F4B]">
+                                                Remove Site
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription className="text-gray-600">
+                                                Are you sure you want to remove this site? This action cannot be undone.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <div className="py-3">
+                                            <div className="bg-white border border-blue-100 rounded-lg p-3">
+                                                <div className="flex gap-2 text-sm text-blue-700">
+                                                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-sm">The following will be removed:</p>
+                                                        <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1 mt-2">
+                                                            <li>Site configuration</li>
+                                                            <li>Device counts and settings</li>
+                                                            <li>Log and NetFlow settings</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <AlertDialogFooter className="border-t border-blue-100 pt-3">
+                                            <AlertDialogCancel className="border-[#040F4B] bg-white">
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => deleteSite(index)}
+                                                className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+                                            >
+                                                Remove Site
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </CardHeader>
                         {expandedSites.has(index) && (
@@ -342,7 +382,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 Reset Devices
                                             </Button>
                                         </div>
-                                        <div className="grid grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-4 gap-4">
                                             {Object.entries(site.devices).map(([type, data]) => (
                                                 <DeviceTypeCard
                                                     key={type}

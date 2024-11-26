@@ -59,7 +59,7 @@ const CollectorCalculator = () => {
         // Try to get the config from localStorage
         const savedConfig = typeof window !== 'undefined' ? localStorage.getItem('collectorConfig') : null;
         return savedConfig ? JSON.parse(savedConfig) : {
-            deploymentName: 'New Deployment',
+            deploymentName: '',
             methodWeights: { ...defaultMethodWeights },
             maxLoad: 85,
             enablePollingFailover: true,
@@ -74,7 +74,7 @@ const CollectorCalculator = () => {
         // Try to get the sites from localStorage
         const savedSites = typeof window !== 'undefined' ? localStorage.getItem('collectorSites') : null;
         return savedSites ? JSON.parse(savedSites) : [{
-            name: "Site 1",
+            name: "",
             devices: Object.fromEntries(
                 Object.entries(defaultDeviceTypes).map(([type, data]) => [
                     type,
@@ -199,55 +199,55 @@ const CollectorCalculator = () => {
                         onValueChange={handleTabChange}
                         className="space-y-6"
                     >
-                        <TabsList className="bg-white border border-gray-200 p-1 rounded-lg no-print">
+                        <TabsList className="bg-[#040F4B] w-full p-0 no-print">
                             <TabsTrigger
                                 value="sites"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <Bolt className="w-5 h-5 pr-1" />
-                                Deployment Configuration
+                                <Bolt className="w-4 h-4" />
+                                <span className="font-medium">Deployment Configuration</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="overview"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <BookText className="w-5 h-5 pr-1" />
-                                Deployment Overview
+                                <BookText className="w-4 h-4" />
+                                <span className="font-medium">Deployment Overview</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="device-onboarding"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <Server className="w-5 h-5 pr-1" />
-                                Device Information
+                                <Server className="w-4 h-4" />
+                                <span className="font-medium">Device Information</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="collector-info"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <Bot className="w-5 h-5 pr-1" />
-                                Collector Information
+                                <Bot className="w-4 h-4" />
+                                <span className="font-medium">Collector Information</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="api-explorer"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <Terminal className="w-5 h-5 pr-1" />
-                                API Explorer
+                                <Terminal className="w-4 h-4" />
+                                <span className="font-medium">API Explorer</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="video-library"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <PlayCircle className="w-5 h-5 pr-1" />
-                                Video Library
+                                <PlayCircle className="w-4 h-4" />
+                                <span className="font-medium">Video Library</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="system"
-                                className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                className="flex items-center gap-2 px-6 py-3 text-white/85 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
                             >
-                                <Settings className="w-5 h-5 pr-1" />
-                                System Settings
+                                <Settings className="w-4 h-4" />
+                                <span className="font-medium">System Settings</span>
                             </TabsTrigger>
                         </TabsList>
 

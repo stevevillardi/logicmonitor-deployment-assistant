@@ -25,7 +25,7 @@ export const EnhancedCard = ({
       `}
       {...props}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-0">
         {children}
       </CardContent>
     </BaseCard>

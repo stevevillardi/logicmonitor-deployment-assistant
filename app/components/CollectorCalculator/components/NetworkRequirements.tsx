@@ -132,13 +132,13 @@ export const NetworkRequirements = () => {
 
     return (
         <EnhancedCard className="bg-white border border-gray-200">
-            <div className="border-b border-gray-200 bg-gray-50 p-4 rounded-t-lg">
+            <div className="border-gray-200 p-4 rounded-t-lg">
                 <div className="flex items-center gap-3">
-                    <Network className="w-5 h-5 text-blue-700" />
-                    <h2 className="text-lg font-bold text-gray-900">Network Requirements (Ports)</h2>
+                    <Network className="w-7 h-7 text-blue-700" />
+                    <h2 className="text-xl font-bold text-gray-900">Network Requirements (Ports)</h2>
                 </div>
             </div>
-            <div className="p-4">
+            <div className="pl-4 pr-4">
                 <div className="bg-white rounded-lg border border-gray-200">
                     <div className="grid grid-cols-6 gap-4 p-3 bg-gray-50 rounded-t-lg border-b border-gray-200">
                         <div className="font-medium text-gray-900">Category</div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Server, Network, Cpu, HardDrive, MemoryStick, MessageCircleWarning } from 'lucide-react';
+import { Server, Network, Cpu, HardDrive, MemoryStick, MessageCircleWarning, Weight, Activity } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import CollectorReq from './CollectorReq';
 import { Config } from '../types';
@@ -27,19 +27,9 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
         .map(([size]) => size);
 
     const collectorRequirements = {
-        XXL: {
-            cpu: '16 cores',
-            memory: '32GB',
-            disk: '35GB',
-        },
-        XL: {
-            cpu: '8 cores',
-            memory: '16GB',
-            disk: '35GB',
-        },
-        LARGE: {
-            cpu: '4 cores',
-            memory: '8GB',
+        SMALL: {
+            cpu: '1 core',
+            memory: '2GB',
             disk: '35GB',
         },
         MEDIUM: {
@@ -47,9 +37,19 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
             memory: '4GB',
             disk: '35GB',
         },
-        SMALL: {
-            cpu: '1 core',
-            memory: '2GB',
+        LARGE: {
+            cpu: '4 cores',
+            memory: '8GB',
+            disk: '35GB',
+        },
+        XL: {
+            cpu: '8 cores',
+            memory: '16GB',
+            disk: '35GB',
+        },
+        XXL: {
+            cpu: '16 cores',
+            memory: '32GB',
             disk: '35GB',
         }
     };
@@ -73,27 +73,25 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
     ];
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto">
             {/* Collector Requirements */}
             <CollectorReq />
             {/* Collector Sizes */}
             <EnhancedCard className="bg-white border border-gray-200">
-                <div className="border-b border-gray-200 bg-gray-50 p-4 rounded-t-lg">
-                    <div className="flex items-center gap-3">
-                        <Server className="w-5 h-5 text-blue-700" />
-                        <h2 className="text-lg font-bold text-gray-900">Collector Sizes</h2>
-                    </div>
-                </div>
                 <div className="p-4">
-                    <div className="grid grid-cols-1 gap-2">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Server className="w-6 h-6 text-blue-700" />
+                        <h2 className="text-xl font-semibold text-gray-900">Collector Sizes</h2>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
                         {Object.entries(collectorRequirements).map(([size, requirements]) => (
                             <div key={size} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-10">
                                         <div className="w-16">
                                             <span className="font-bold text-blue-700">{size}</span>
                                         </div>
-                                        <div className="flex items-center gap-6 text-sm">
+                                        <div className="flex items-center gap-9 text-sm">
                                             <div className="flex items-center gap-1">
                                                 <Cpu className="w-4 h-4 text-blue-700" />
                                                 <span className="text-gray-700">{requirements.cpu}</span>
@@ -108,10 +106,15 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                                    <span>Max Weight: {config.collectorCapacities[size as keyof typeof collectorRequirements].weight.toLocaleString()}</span>
-                                        <span className="mx-2">|</span>
-                                        <span>EPS: {config.collectorCapacities[size as keyof typeof collectorRequirements].eps.toLocaleString()}</span>
+                                    <div className=" pl-6 flex items-center gap-6 text-sm">
+                                        <div className="flex items-center gap-1">
+                                            <Weight className="w-4 h-4 text-blue-700" />
+                                            <span className="text-gray-700">{config.collectorCapacities[size as keyof typeof collectorRequirements].weight.toLocaleString()}</span>
+                                        </div>
+                                        <div className="border-l border-gray-400 pl-6 flex items-center gap-1">
+                                            <Activity className="w-4 h-4 text-blue-700" />
+                                            <span className="text-gray-700">{config.collectorCapacities[size as keyof typeof collectorRequirements].eps.toLocaleString()}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

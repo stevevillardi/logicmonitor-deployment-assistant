@@ -302,15 +302,19 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
     const globalCollectorSummary = getCollectorSummary();
 
     return (
-        <EnhancedCard className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
+        <div className="space-y-6 overflow-y-auto min-h-[800px]">
+        <EnhancedCard className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300 ">
             <div className="p-6 space-y-6">
                 {/* Global Section */}
                 <div className="space-y-6">
                     {/* Global Header */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Earth className="w-7 h-7 text-blue-700" />
-                            <h2 className="text-2xl font-semibold text-gray-900">{config.deploymentName + " - "} Global Collector Distribution</h2>
+                        <div className="flex items-start gap-3">
+                            <Earth className="w-7 h-7 text-blue-700 mt-1" />
+                            <div>
+                                <h2 className="text-2xl font-semibold text-gray-900">{config.deploymentName || "Deployment Configuration"}</h2>
+                                <p className="text-sm text-gray-500 mt-1">Global Collector Distribution</p>
+                            </div>
                         </div>
                         <Button
                             onClick={handleExportPDF}
@@ -322,16 +326,16 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                     </div>
 
                     {/* Global Content with Border */}
-                    <div className="border border-gray-200 rounded-lg p-6 space-y-6">
+                    <div className="border border-blue-200 rounded-lg p-6 space-y-6">
                         {/* Global Metrics */}
                         <div className="grid grid-cols-5 gap-2">
                             {/* Total Sites */}
-                            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <Building className="w-4 h-4 text-green-700" />
-                                    <span className="text-sm text-green-900">Sites</span>
+                                    <Building className="w-4 h-4 text-blue-700" />
+                                    <span className="text-sm text-blue-900">Sites</span>
                                 </div>
-                                <p className="text-lg font-bold text-green-700">
+                                <p className="text-lg font-bold text-blue-700">
                                     {sites.length.toLocaleString()}
                                 </p>
                             </div>
@@ -373,7 +377,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Activity className="w-4 h-4 text-orange-700" />
-                                    <span className="text-sm text-orange-900">EPS</span>
+                                    <span className="text-sm text-orange-900">Events Per Second</span>
                                 </div>
                                 <p className="text-lg font-bold text-orange-700">
                                     {getTotalEPSBySites().toLocaleString()}
@@ -538,7 +542,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <Activity className="w-4 h-4 text-orange-700" />
-                                                    <span className="text-sm text-orange-900">EPS</span>
+                                                    <span className="text-sm text-orange-900">Events Per Second</span>
                                                 </div>
                                                 <p className="text-lg font-bold text-orange-700">
                                                     {getTotalEPS(site).toLocaleString()}
@@ -546,9 +550,9 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                             </div>
 
                                             {/* Polling Load */}
-                                            <div className={`rounded-lg p-3 ${getLoadColor(metrics.avgPollingLoad).includes('text-red') ? 'bg-red-50 border-red-200' :
-                                                getLoadColor(metrics.avgPollingLoad).includes('text-yellow') ? 'bg-yellow-50 border-yellow-200' :
-                                                    'bg-emerald-50 border-emerald-200'}`}>
+                                            <div className={`rounded-lg p-3 ${getLoadColor(metrics.avgPollingLoad).includes('text-red') ? 'bg-red-50 border border-red-200' :
+                                                getLoadColor(metrics.avgPollingLoad).includes('text-yellow') ? 'bg-yellow-50 border border-yellow-200' :
+                                                    'bg-emerald-50 border-emerald-200 border'}`}>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <Server className="w-4 h-4 text-gray-700" />
                                                     <span className="text-sm text-gray-900">Polling Load</span>
@@ -559,9 +563,9 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                             </div>
 
                                             {/* Logs Load */}
-                                            <div className={`rounded-lg p-3 ${getLoadColor(metrics.avgLogsLoad).includes('text-red') ? 'bg-red-50 border-red-200' :
-                                                getLoadColor(metrics.avgLogsLoad).includes('text-yellow') ? 'bg-yellow-50 border-yellow-200' :
-                                                    'bg-emerald-50 border-emerald-200'}`}>
+                                            <div className={`rounded-lg p-3 ${getLoadColor(metrics.avgLogsLoad).includes('text-red') ? 'bg-red-50 border border-red-200' :
+                                                getLoadColor(metrics.avgLogsLoad).includes('text-yellow') ? 'bg-yellow-50 border border-yellow-200' :
+                                                    'bg-emerald-50 border border-emerald-200'}`}>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <Activity className="w-4 h-4 text-gray-700" />
                                                     <span className="text-sm text-gray-900">Logs Load</span>
@@ -710,6 +714,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                 </div>
             </div>
         </EnhancedCard>
+        </div>
     );
 };
 

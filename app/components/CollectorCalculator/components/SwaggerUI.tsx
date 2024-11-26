@@ -49,7 +49,7 @@ const SwaggerUIComponent = () => {
     };
 
     return (
-        <Card className="bg-white border-gray-200 h-full">
+        <Card className="bg-white border-gray-200 h-full min-h-[800px]">
             <CardHeader className="border-b border-gray-200">
                 <div className="flex items-center gap-3">
                     <Terminal className="w-6 h-6 text-blue-700" />
@@ -60,7 +60,7 @@ const SwaggerUIComponent = () => {
             <CardContent className="p-6">
             <ApiDocumentationBanner />
 
-                <div className="min-h-[600px] relative">
+                <div className="min-h-[800px] relative">
                     {isLoading ? (
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />

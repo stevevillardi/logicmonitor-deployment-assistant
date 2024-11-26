@@ -111,19 +111,18 @@ const VideoLibrary: React.FC = () => {
                         <div className="flex items-center gap-2">
                             <Filter className="w-4 h-4 text-gray-500" />
                             <select
-                                className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
+                                className="border border-gray-200 rounded-md px-3 py-1.5 text-sm"
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
                             >
                                 <option value="all">All Categories</option>
-                                {categories.map(category => {
-                                    const IconComponent = category.icon;
-                                    return (
-                                        <option key={category.id} value={category.id}>
-                                            <IconComponent className="w-4 h-4" /> {category.name}
-                                        </option>
-                                    );
-                                })}
+                                <option value="getting-started">Getting Started</option>
+                                <option value="configuration">Configuration</option>
+                                <option value="troubleshooting">Troubleshooting</option>
+                                <option value="automation">Automation</option>
+                                <option value="monitoring">Monitoring</option>
+                                <option value="resource-management">Resource Management</option>
+                                <option value="advanced">Advanced</option>
                             </select>
                         </div>
                     </div>
