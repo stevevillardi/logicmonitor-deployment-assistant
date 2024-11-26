@@ -16,6 +16,7 @@ import {
     FileJson,
     Bot,
     Scroll,
+    Server,
     Key
 } from 'lucide-react';
 import VideoGuide from './VideoGuide';
@@ -201,7 +202,7 @@ const DeviceOnboarding: React.FC = () => {
             <Tabs defaultValue="onboarding">
             <TabsList className="mb-4 bg-white border border-gray-200">
                         <TabsTrigger value="onboarding" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-                            <Bot className="w-4 h-4 mr-2" />
+                            <Server className="w-4 h-4 mr-2" />
                             Onboarding Methods
                         </TabsTrigger>
                         <TabsTrigger value="credentials" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
@@ -218,7 +219,7 @@ const DeviceOnboarding: React.FC = () => {
                     <Card>
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
-                                <Bot className="w-6 h-6 text-blue-700" />
+                                <Server className="w-6 h-6 text-blue-700" />
                                 <CardTitle>Device Onboarding Methods</CardTitle>
                             </div>
                         </CardHeader>
