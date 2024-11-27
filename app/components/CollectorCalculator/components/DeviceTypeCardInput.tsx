@@ -3,6 +3,12 @@ import { Server, Component, Database, Router, Network, Settings, Activity, Wifi,
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
 import { AlertTriangle } from 'lucide-react';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface DeviceTypeCardProps {
     type: string;
@@ -56,8 +62,17 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                 {getIcon()}
                 <h3 className="font-semibold text-gray-900">{type}</h3>
                 {Object.values(data.methods).reduce((sum, ratio) => sum + ratio, 0) !== 1 && (
-                    <div className="ml-auto" title="Collection method ratios do not sum to 100%">
-                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                    <div className="ml-auto">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                </TooltipTrigger>
+                                <TooltipContent className='bg-white border border-gray-200'>
+                                    <p>Warning: The sum of the ratios for this device type is not 100%. This may cause inaccuracies in the collector load calculation.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 )}
             </div>

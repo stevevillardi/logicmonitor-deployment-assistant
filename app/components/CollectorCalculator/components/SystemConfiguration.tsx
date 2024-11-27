@@ -16,6 +16,7 @@ import sliderStyles from '../../../styles';
 import { CollectorCapacitySection } from './CollectorCapacity';
 import { devLog } from '@/utils/debug';
 import { RiAdminLine } from "react-icons/ri";
+import { Switch } from "@/components/ui/switch"
 
 
 interface SystemConfigurationProps {
@@ -396,21 +397,18 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                         <p className="text-sm text-gray-500">Add N+1 redundancy for polling collectors</p>
                                                     </div>
                                                 </div>
-                                                <div className="relative">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="pollingFailover"
-                                                        checked={config.enablePollingFailover}
-                                                        onChange={(e) => {
-                                                            const updatedConfig: Config = {
-                                                                ...config,
-                                                                enablePollingFailover: e.target.checked
-                                                            };
-                                                            onUpdate(updatedConfig);
-                                                        }}
-                                                        className="h-6 w-6 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
-                                                    />
-                                                </div>
+                                                <Switch
+                                                    id="pollingFailover"
+                                                    checked={config.enablePollingFailover}
+                                                    onCheckedChange={(checked) => {
+                                                        const updatedConfig: Config = {
+                                                            ...config,
+                                                            enablePollingFailover: checked
+                                                        };
+                                                        onUpdate(updatedConfig);
+                                                    }}
+                                                    className="data-[state=checked]:bg-blue-500 border-2 border-gray-300 transition-colors duration-200"
+                                                />
                                             </div>
                                             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                                 <div className="flex items-center gap-3 flex-1">
@@ -422,21 +420,18 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                         <p className="text-sm text-gray-500">Add N+1 redundancy for log collectors</p>
                                                     </div>
                                                 </div>
-                                                <div className="relative">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="logsFailover"
-                                                        checked={config.enableLogsFailover}
-                                                        onChange={(e) => {
-                                                            const updatedConfig: Config = {
-                                                                ...config,
-                                                                enableLogsFailover: e.target.checked
-                                                            };
-                                                            onUpdate(updatedConfig);
-                                                        }}
-                                                        className="h-6 w-6 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
-                                                    />
-                                                </div>
+                                                <Switch
+                                                    id="logsFailover"
+                                                    checked={config.enableLogsFailover}
+                                                    onCheckedChange={(checked) => {
+                                                        const updatedConfig: Config = {
+                                                            ...config,
+                                                            enableLogsFailover: checked
+                                                        };
+                                                        onUpdate(updatedConfig);
+                                                    }}
+                                                    className="data-[state=checked]:bg-blue-500 border-2 border-gray-300 transition-colors duration-200"
+                                                />
                                             </div>
                                             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                                 <div className="flex items-center gap-3 flex-1">
@@ -448,21 +443,18 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                         <p className="text-sm text-gray-500">Show additional settings for device/collector defaults and protocol weights</p>
                                                     </div>
                                                 </div>
-                                                <div className="relative">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="advanced-settings"
-                                                        checked={config.showAdvancedSettings}
-                                                        onChange={(e) => {
-                                                            const updatedConfig: Config = {
-                                                                ...config,
-                                                                showAdvancedSettings: e.target.checked
-                                                            };
-                                                            onUpdate(updatedConfig);
-                                                        }}
-                                                        className="h-6 w-6 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
-                                                    />
-                                                </div>
+                                                <Switch
+                                                    id="advanced-settings"
+                                                    checked={config.showAdvancedSettings}
+                                                    onCheckedChange={(checked) => {
+                                                        const updatedConfig: Config = {
+                                                            ...config,
+                                                            showAdvancedSettings: checked
+                                                        };
+                                                        onUpdate(updatedConfig);
+                                                    }}
+                                                    className="data-[state=checked]:bg-blue-500 border-2 border-gray-300 transition-colors duration-200"
+                                                />
                                             </div>
                                         </div>
                                         <div className="flex items-center space-x-2 mb-6 pb-6 border-b border-gray-200">
