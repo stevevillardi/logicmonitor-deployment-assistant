@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ExternalLink, ChevronRight, Info, ChevronLeft } from 'lucide-react';
+import { Search, Filter, ExternalLink, ChevronRight, Info, ChevronLeft, Link } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -29,46 +29,53 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { technologies } from '../deviceData';
-import { Technology } from '../types';
+
+import { transformCredentialData } from '../data/credentialData';
+import { CredentialType } from '../types/credentials';
+
 const DeviceCatalog = () => {
     const router = useRouter();
     const [search, setSearch] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [selectedTechnology, setSelectedTechnology] = useState<Technology | null>(null);
+    const [selectedCredential, setSelectedCredential] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
 
-    const categories = useMemo(() =>
-        Array.from(new Set(technologies.map(tech => tech.category))),
-        []
-    );
+    // Initialize the credential data
+    const credentialData = useMemo(() => transformCredentialData(), []);
 
-    const filteredTechnologies = useMemo(() => {
-        return technologies.filter(tech => {
+    // Get list of credential names for the filter
+    const credentialNames = useMemo(() => {
+        const allCredentials = Object.values(credentialData);
+        return ['All Credentials', ...allCredentials.map(cred => cred.name).sort()];
+    }, [credentialData]);
+
+    const filteredCredentials = useMemo(() => {
+        const allCredentials = Object.values(credentialData);
+
+        return allCredentials.filter(cred => {
             const matchesSearch = search.length === 0 ||
-                tech.name.toLowerCase().includes(search.toLowerCase()) ||
-                tech.description.toLowerCase().includes(search.toLowerCase()) ||
-                tech.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()));
+                cred.name.toLowerCase().includes(search.toLowerCase()) ||
+                cred.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()));
 
-            const matchesCategory = selectedCategory === 'All Technologies' || !selectedCategory || tech.category === selectedCategory;
+            const matchesSelected = !selectedCredential || 
+                selectedCredential === 'All Credentials' ||
+                cred.name === selectedCredential;
 
-            return matchesSearch && matchesCategory;
+            return matchesSearch && matchesSelected;
         });
-    }, [search, selectedCategory]);
+    }, [search, selectedCredential, credentialData]);
 
-    const paginatedTechnologies = useMemo(() => {
+    const paginatedCredentials = useMemo(() => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return filteredTechnologies.slice(startIndex, endIndex);
-    }, [filteredTechnologies, currentPage]);
+        return filteredCredentials.slice(startIndex, endIndex);
+    }, [filteredCredentials, currentPage]);
 
-    const totalPages = Math.ceil(filteredTechnologies.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredCredentials.length / itemsPerPage);
 
-    const TechnologyDialog = ({ technology }: { technology: Technology }) => {
-        const Icon = technology.icon;
+    const CredentialDialog = ({ credential }: { credential: CredentialType }) => {
+        const Icon = credential.icon;
 
         return (
             <Dialog>
@@ -82,15 +89,15 @@ const DeviceCatalog = () => {
                                     </div>
                                 )}
                                 <div>
-                                    <CardTitle className="text-lg">{technology.name}</CardTitle>
-                                    <p className="text-sm text-gray-600 mt-1">{technology.description}</p>
+                                    <CardTitle className="text-lg">{credential.name}</CardTitle>
+                                    <p className="text-sm text-gray-600 mt-1">{credential.description}</p>
                                 </div>
                             </div>
                             <div className="flex flex-wrap gap-2 mt-3">
                                 <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
-                                    {technology.category}
+                                    {credential.category}
                                 </Badge>
-                                {technology.tags?.map(tag => (
+                                {credential.tags?.map(tag => (
                                     <Badge 
                                         key={tag} 
                                         variant="outline"
@@ -104,106 +111,127 @@ const DeviceCatalog = () => {
                     </Card>
                 </DialogTrigger>
                 <DialogContent className="max-w-lg bg-blue-50 sm:max-w-2xl">
-        <DialogHeader className="border-b border-blue-100 pb-3">
-            <DialogTitle className="text-xl font-bold text-[#040F4B]">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        {Icon && <Icon className="w-6 h-6 text-blue-700" />}
-                        <span>{technology.name}</span>
-                    </div>
-                </div>
-            </DialogTitle>
-            <p className="text-sm text-gray-600 mt-1">{technology.description}</p>
-        </DialogHeader>
-
-        <div className="space-y-4 py-3">
-            {/* Properties Section */}
-            <div className="space-y-3">
-                <h3 className="text-base font-semibold text-gray-900">Required Properties</h3>
-                <div className="grid gap-2">
-                    {technology.properties.map(prop => (
-                        <PropRow key={prop.name} prop={prop} />
-                    ))}
-                </div>
-            </div>
-
-            {/* Permissions Section */}
-            <div className="space-y-3">
-                <h3 className="text-base font-semibold text-gray-900">Required Permissions</h3>
-                <div className="grid gap-2">
-                    {technology.permissions.map(perm => (
-                        <div 
-                            key={perm.name}
-                            className="flex items-start gap-2 p-2 bg-white rounded-lg border border-blue-200 shadow-sm"
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                    <h4 className="font-medium text-sm text-gray-900">{perm.name}</h4>
-                                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
-                                        {perm.type}
-                                    </Badge>
+                    <DialogHeader className="border-b border-blue-100 pb-3">
+                        <DialogTitle className="text-xl font-bold text-[#040F4B]">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    {Icon && <Icon className="w-6 h-6 text-blue-700" />}
+                                    <span>{credential.name}</span>
                                 </div>
-                                <p className="text-xs text-gray-600">{perm.description}</p>
+                            </div>
+                        </DialogTitle>
+                        <p className="text-sm text-gray-600 mt-1">{credential.description}</p>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-3">
+                        {/* Properties Section */}
+                        <div className="space-y-3">
+                            <h3 className="text-base font-semibold text-gray-900">Required Properties</h3>
+                            <div className="grid gap-2">
+                                {credential.properties.map(prop => (
+                                    <PropRow key={prop.name} prop={prop} />
+                                ))}
                             </div>
                         </div>
-                    ))}
-                </div>
-            </div>
 
-            {/* Onboarding Methods Section */}
-            <div className="space-y-3">
-                <h3 className="text-base font-semibold text-gray-900">Recommended Onboarding Methods</h3>
-                <div className="flex flex-wrap gap-2">
-                    {technology.recommendedOnboarding.map(method => (
-                        <Badge 
-                            key={method} 
-                            variant="secondary" 
-                            className="bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        >
-                            {method.toUpperCase()}
-                        </Badge>
-                    ))}
-                </div>
-            </div>
+                        {/* Permissions Section */}
+                        {credential.permissions && credential.permissions.length > 0 && (
+                            <div className="space-y-3">
+                                <h3 className="text-base font-semibold text-gray-900">Required Permissions</h3>
+                                <div className="grid gap-2">
+                                    {credential.permissions.map(perm => (
+                                        <div 
+                                            key={perm.name}
+                                            className="flex items-start gap-2 p-2 bg-white rounded-lg border border-blue-200 shadow-sm"
+                                        >
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="font-medium text-sm text-gray-900">{perm.name}</h4>
+                                                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                                        {perm.type}
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-xs text-gray-600">{perm.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-            {/* Info Note */}
-            <div className="bg-white border border-blue-100 rounded-lg p-3">
-                <div className="flex gap-2 text-sm text-blue-700">
-                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                    <div>
-                        <p className="text-sm mb-2">
-                            Additional Documentation and Resources
-                        </p>
-                        
-                        <a
-                            href={technology.documentationUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs flex items-center gap-1 text-blue-700 hover:text-blue-800"
-                        >
-                            View Documentation
-                            <ExternalLink className="w-3 h-3" />
-                        </a>
+                        {/* Onboarding Methods Section */}
+                        {credential.recommendedOnboarding && credential.recommendedOnboarding.length > 0 && (
+                            <div className="space-y-3">
+                                <h3 className="text-base font-semibold text-gray-900">Recommended Onboarding Methods</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {credential.recommendedOnboarding.map(method => (
+                                        <Badge 
+                                            key={method} 
+                                            variant="secondary" 
+                                            className="bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                        >
+                                            {method.toUpperCase()}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Documentation Link */}
+                        {credential.documentationUrl && (
+                            <div className="bg-white border border-blue-100 rounded-lg p-3">
+                                <div className="flex gap-2 text-sm text-blue-700">
+                                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="text-sm mb-2">
+                                            Additional Documentation and Resources
+                                        </p>
+                                        <a
+                                            href={credential.documentationUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-xs flex items-center gap-1 text-blue-700 hover:text-blue-800"
+                                        >
+                                            View Documentation
+                                            <ExternalLink className="w-3 h-3" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <DialogFooter className="border-t border-blue-100 pt-3">
-            <Button
-                onClick={() => router.push(technology.documentationUrl)}
-                className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
-            >
-                Go to Documentation
-            </Button>
-        </DialogFooter>
-    </DialogContent>
+                    <DialogFooter className="border-t border-blue-100 pt-3">
+                        {credential.documentationUrl && (
+                            <Button
+                                onClick={() => {
+                                    window.open(credential.documentationUrl, '_blank');
+                                }}
+                                className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+                            >
+                                Go to Documentation
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
             </Dialog>
         );
     };
 
     return (
         <div className="space-y-6 min-h-[600px]">
+            <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-2 text-blue-700 mb-2">
+                        <Info className="w-5 h-5" />
+                        <span className="font-medium">Resource Credential and Property Details</span>
+                    </div>
+                    <p className="text-sm text-blue-600">
+                        This section contains the required properties and permissions for a list of common technologies. Click on a technology to view more details about what is required to onboard it. For the full list of LogicMontior's 3000+ supported technologies, please see the <a className="font-medium text-blue-700 hover:text-blue-800" href="https://www.logicmonitor.com/integrations">Integrations</a> page.
+                    </p>
+                </div>
+            </div>
+
             {/* Search and Filter Bar */}
             <div className="flex items-center gap-4">
                 <div className="relative flex-1">
@@ -219,33 +247,25 @@ const DeviceCatalog = () => {
                     <PopoverTrigger asChild>
                         <Button 
                             variant="outline" 
-                            className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-[180px] justify-between"
+                            className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-[220px] justify-between"
                         >
                             <div className="flex items-center gap-2">
                                 <Filter className="w-4 h-4" />
-                                <span className="truncate">{selectedCategory || 'All Categories'}</span>
+                                <span className="truncate">{selectedCredential || 'All Credentials'}</span>
                             </div>
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[180px] p-0 bg-white border border-gray-200">
+                    <PopoverContent className="w-[220px] p-0 bg-white border border-gray-200 max-h-[300px] overflow-y-auto">
                         <div className="p-2">
-                            <div
-                                className={`px-2 py-1.5 cursor-pointer rounded hover:bg-gray-100 ${
-                                    selectedCategory === 'All Technologies' ? 'bg-gray-100' : ''
-                                }`}
-                                onClick={() => setSelectedCategory('All Technologies')}
-                            >
-                                All Technologies
-                            </div>
-                            {categories.map((category, index) => (
+                            {credentialNames.map((name, index) => (
                                 <div
                                     key={index}
                                     className={`px-2 py-1.5 cursor-pointer rounded hover:bg-gray-100 ${
-                                        selectedCategory === category ? 'bg-gray-100' : ''
+                                        selectedCredential === name ? 'bg-gray-100' : ''
                                     }`}
-                                    onClick={() => setSelectedCategory(category)}
+                                    onClick={() => setSelectedCredential(name)}
                                 >
-                                    {category}
+                                    {name}
                                 </div>
                             ))}
                         </div>
@@ -254,16 +274,16 @@ const DeviceCatalog = () => {
             </div>
 
             {/* Results Grid */}
-            <div className="flex flex-col min-h-[800px] justify-between">
+            <div className="flex flex-col min-h-[600px] justify-between">
                 <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {paginatedTechnologies.map((tech) => (
-                            <TechnologyDialog key={tech.id} technology={tech} />
+                        {paginatedCredentials.map((credential) => (
+                            <CredentialDialog key={credential.id} credential={credential} />
                         ))}
                     </div>
 
                     {/* No Results State */}
-                    {filteredTechnologies.length === 0 && (
+                    {filteredCredentials.length === 0 && (
                         <div className="text-center py-12">
                             <h3 className="text-lg font-semibold text-gray-900">No results found</h3>
                             <p className="text-gray-600 mt-1">
@@ -305,7 +325,8 @@ interface PropRowProps {
         name: string;
         description: string;
         required?: boolean;
-        prop_name?: string;
+        defaultValue?: string;
+        validValues?: string[];
     };
 }
 
@@ -313,8 +334,8 @@ const PropRow = ({ prop }: PropRowProps) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        if (prop.prop_name) {
-            navigator.clipboard.writeText(prop.prop_name);
+        if (prop.name) {
+            navigator.clipboard.writeText(prop.name);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
@@ -337,9 +358,9 @@ const PropRow = ({ prop }: PropRowProps) => {
                 </div>
                 <p className="text-xs text-gray-600">{prop.description}</p>
             </div>
-            {prop.prop_name && (
+            {prop.name && (
                 <p className="text-sm text-gray-600 ml-auto pl-4 flex-shrink-0 pr-2">
-                    <span className="text-blue-700 font-medium">{prop.prop_name}</span>
+                    <span className="text-blue-700 font-medium">{prop.name}</span>
                     {copied && <span className="ml-2 text-green-600">Copied!</span>}
                 </p>
             )}

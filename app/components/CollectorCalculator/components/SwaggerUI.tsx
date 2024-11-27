@@ -50,10 +50,10 @@ const SwaggerUIComponent = () => {
 
     return (
         <Card className="bg-white border-gray-200 h-full min-h-[800px]">
-            <CardHeader className="border-b border-gray-200">
+            <CardHeader className="border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center gap-3">
                     <Terminal className="w-6 h-6 text-blue-700" />
-                    <CardTitle className="text-gray-900">LogicMonitor API Explorer</CardTitle>
+                    <CardTitle>LogicMonitor API Explorer</CardTitle>
                 </div>
             </CardHeader>
 

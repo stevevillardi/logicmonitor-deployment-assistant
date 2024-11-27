@@ -212,11 +212,7 @@ const DeviceOnboarding: React.FC = () => {
                     </TabsTrigger>
                     <TabsTrigger value="credentials" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
                         <Key className="w-4 h-4 mr-2" />
-                        Credential Requirements
-                    </TabsTrigger>
-                    <TabsTrigger value="templates" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-                        <FileSpreadsheet className="w-4 h-4 mr-2" />
-                        Templates & Examples (WIP)
+                        Common Credential Requirements
                     </TabsTrigger>
                 </TabsList>
 
@@ -225,7 +221,7 @@ const DeviceOnboarding: React.FC = () => {
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Server className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Resource Onboarding Methods</CardTitle>
+                                <CardTitle>Onboarding Methods</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
@@ -559,30 +555,12 @@ const DeviceOnboarding: React.FC = () => {
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Key className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Resource Credential Requirements</CardTitle>
+                                <CardTitle>Common Credential Requirements</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
-                            {/* Add your credential requirements content here */}
                             <div className="space-y-6">
                                 <DeviceCatalog />
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="templates">
-                    <Card>
-                        <CardHeader className="border-b border-gray-200 bg-gray-50">
-                            <div className="flex items-center gap-3">
-                                <FileSpreadsheet className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Templates & Examples</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            {/* Add your templates content here */}
-                            <div className="space-y-6">
-                                <TemplatesAndExamples />
                             </div>
                         </CardContent>
                     </Card>
