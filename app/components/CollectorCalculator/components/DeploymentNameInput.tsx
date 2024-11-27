@@ -17,6 +17,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { RxReset } from "react-icons/rx";
+import { Switch } from "@/components/ui/switch"
 
 interface DeploymentNameInputProps {
     value: string;
@@ -94,19 +95,18 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                             type="text"
                         />
                         <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
+                            <Switch
                                 id="showDetails"
                                 checked={showDetails}
-                                onChange={(e) => handleShowDetailsChange(e.target.checked)}
-                                className="h-4 w-4 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
+                                onCheckedChange={handleShowDetailsChange}
+                                className="data-[state=checked]:bg-blue-600 border-2 border-gray-300 transition-colors duration-200"
                             />
-                            <label
+                            <Label
                                 htmlFor="showDetails"
                                 className="text-sm text-gray-600 cursor-pointer whitespace-nowrap"
                             >
                                 Show device details
-                            </label>
+                            </Label>
                         </div>
                     </div>
                 </div>

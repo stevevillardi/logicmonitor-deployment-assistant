@@ -19,6 +19,15 @@ import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
 import { devLog } from '@/utils/debug';
 import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
 
 const Logo = () => {
     return (
@@ -53,6 +62,112 @@ const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
 const LazyAPIExplorer = dynamic(() => import('./components/SwaggerUI'), {
     ssr: false
 });
+
+const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (value: string) => void }) => {
+    return (
+        <NavigationMenu className="max-w-full w-full bg-[#040F4B] px-4 py-2">
+            <NavigationMenuList className="w-full justify-start gap-4">
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'sites' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('sites')}
+                    >
+                        <Bolt className="w-4 h-4 mr-2" />
+                        Deployment Configuration
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'overview' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('overview')}
+                    >
+                        <BookText className="w-4 h-4 mr-2" />
+                        Deployment Overview
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'device-onboarding' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('device-onboarding')}
+                    >
+                        <Server className="w-4 h-4 mr-2" />
+                        Device Information
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'collector-info' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('collector-info')}
+                    >
+                        <Bot className="w-4 h-4 mr-2" />
+                        Collector Information
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'api-explorer' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('api-explorer')}
+                    >
+                        <Terminal className="w-4 h-4 mr-2" />
+                        API Explorer
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'video-library' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('video-library')}
+                    >
+                        <PlayCircle className="w-4 h-4 mr-2" />
+                        Video Library
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink
+                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
+                            ${activeTab === 'system' 
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
+                            }`}
+                        onClick={() => onTabChange('system')}
+                    >
+                        <Settings className="w-4 h-4 mr-2" />
+                        System Settings
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+            </NavigationMenuList>
+        </NavigationMenu>
+    )
+}
 
 const CollectorCalculator = () => {
     const [config, setConfig] = useState<Config>(() => {
@@ -199,57 +314,7 @@ const CollectorCalculator = () => {
                         onValueChange={handleTabChange}
                         className="space-y-6"
                     >
-                        <TabsList className="bg-[#040F4B] w-full p-0 no-print">
-                            <TabsTrigger
-                                value="sites"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <Bolt className="w-4 h-4" />
-                                <span className="font-medium">Deployment Configuration</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="overview"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <BookText className="w-4 h-4" />
-                                <span className="font-medium">Deployment Overview</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="device-onboarding"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <Server className="w-4 h-4" />
-                                <span className="font-medium">Device Information</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="collector-info"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <Bot className="w-4 h-4" />
-                                <span className="font-medium">Collector Information</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="api-explorer"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <Terminal className="w-4 h-4" />
-                                <span className="font-medium">API Explorer</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="video-library"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 border-r border-white/10 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <PlayCircle className="w-4 h-4" />
-                                <span className="font-medium">Video Library</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="system"
-                                className="flex items-center gap-2 px-6 py-3 text-white/85 data-[state=active]:bg-[#0A1B6F] data-[state=active]:text-white hover:text-white transition-colors"
-                            >
-                                <Settings className="w-4 h-4" />
-                                <span className="font-medium">System Settings</span>
-                            </TabsTrigger>
-                        </TabsList>
+                        <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
 
                         <TabsContent value="sites" className="mt-6">
                             <SiteConfiguration

@@ -32,3 +32,11 @@ export interface CollectorCapacity {
     weight: number;
     eps: number;
 }
+
+export interface VideoGuideData {
+    title: string;
+    description: string;
+    videoId?: string;
+    videoUrl?: string;
+    duration?: string;
+}
