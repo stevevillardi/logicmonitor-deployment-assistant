@@ -227,7 +227,7 @@ const DeviceCatalog = () => {
                         <span className="font-medium">Resource Credential and Property Details (Work in Progress)</span>
                     </div>
                     <p className="text-sm text-blue-600">
-                        This section contains the required properties and permissions for a list of common technologies. Click on a technology to view more details about what is required to onboard it. For the full list of LogicMontior's 3000+ supported technologies, please see the <a className="font-medium text-blue-700 hover:text-blue-800" href="https://www.logicmonitor.com/integrations">Integrations</a> page.
+                        This section contains the required properties and permissions for a list of common technologies. Click on a technology to view more details about what is required to onboard it. For the full list of LogicMontior&apos;s 3000+ supported technologies, please see the <a className="font-medium text-blue-700 hover:text-blue-800" href="https://www.logicmonitor.com/integrations">Integrations</a> page.
                     </p>
                 </div>
             </div>
