@@ -9,7 +9,7 @@ import SiteOverview from './components/SiteOverview';
 import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
-import { HandHelping, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Info, Terminal, Bolt, Bot, HelpingHand, HelpCircle } from 'lucide-react';
+import { HandHelping, ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Info, Terminal, Bolt, Bot, HelpingHand, HelpCircle } from 'lucide-react';
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -63,110 +63,78 @@ const LazyAPIExplorer = dynamic(() => import('./components/SwaggerUI'), {
 });
 
 const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (value: string) => void }) => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const navigationItems = [
+        { id: 'sites', label: 'Deployment Configuration', icon: <Bolt className="w-4 h-4" /> },
+        { id: 'overview', label: 'Deployment Overview', icon: <BookText className="w-4 h-4" /> },
+        { id: 'device-onboarding', label: 'Device Information', icon: <Server className="w-4 h-4" /> },
+        { id: 'collector-info', label: 'Collector Information', icon: <Bot className="w-4 h-4" /> },
+        { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
+        { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
+        { id: 'system', label: 'System Settings', icon: <Settings className="w-4 h-4" /> },
+    ];
+
     return (
-        <NavigationMenu className="max-w-full w-full bg-[#040F4B] px-4 py-2">
-            <NavigationMenuList className="w-full justify-start gap-4">
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'sites'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('sites')}
-                    >
-                        <Bolt className="w-4 h-4 mr-2" />
-                        Deployment Configuration
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
+        <>
+            {/* Desktop Navigation */}
+            <div className="hidden lg:block rounded-lg w-full bg-[#040F4B] px-4 py-2">
+                <div className="flex flex-wrap justify-center gap-2">
+                    {navigationItems.map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => onTabChange(item.id)}
+                            className={`flex items-center text-sm  gap-2 px-4 py-2 font-medium rounded-lg transition-colors whitespace-nowrap
+                                ${activeTab === item.id 
+                                    ? 'bg-[#1a2b7f] text-white' 
+                                    : 'text-white/85 hover:bg-[#0A1B6F] hover:text-white'}`}
+                        >
+                            {item.icon}
+                            <span>{item.label}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
 
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'overview'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('overview')}
+            {/* Mobile Navigation */}
+            <div className="lg:hidden w-full bg-[#040F4B] px-4 py-2">
+                <div className="relative">
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="w-full flex items-center justify-between px-4 py-2 text-white bg-[#1a2b7f] rounded-lg"
                     >
-                        <BookText className="w-4 h-4 mr-2" />
-                        Deployment Overview
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
+                        <div className="flex items-center gap-2">
+                            {navigationItems.find(item => item.id === activeTab)?.icon}
+                            <span>{navigationItems.find(item => item.id === activeTab)?.label}</span>
+                        </div>
+                        <ChevronDown className={`w-5 h-5 transition-transform ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
 
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'device-onboarding'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('device-onboarding')}
-                    >
-                        <Server className="w-4 h-4 mr-2" />
-                        Device Information
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'collector-info'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('collector-info')}
-                    >
-                        <Bot className="w-4 h-4 mr-2" />
-                        Collector Information
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'api-explorer'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('api-explorer')}
-                    >
-                        <Terminal className="w-4 h-4 mr-2" />
-                        API Explorer
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'video-library'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('video-library')}
-                    >
-                        <PlayCircle className="w-4 h-4 mr-2" />
-                        Video Library
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                    <NavigationMenuLink
-                        className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'system'
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
-                                : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
-                            }`}
-                        onClick={() => onTabChange('system')}
-                    >
-                        <Settings className="w-4 h-4 mr-2" />
-                        System Settings
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-        </NavigationMenu>
-    )
-}
+                    {isMobileMenuOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-2 py-2 bg-[#040F4B] rounded-lg shadow-lg z-50">
+                            {navigationItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => {
+                                        onTabChange(item.id);
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className={`w-full flex items-center gap-2 px-4 py-2 transition-colors
+                                        ${activeTab === item.id 
+                                            ? 'bg-[#1a2b7f] text-white' 
+                                            : 'text-white/85 hover:bg-[#0A1B6F] hover:text-white'}`}
+                                >
+                                    {item.icon}
+                                    <span>{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </>
+    );
+};
 
 const CollectorCalculator = () => {
     const [config, setConfig] = useState < Config > (() => {
