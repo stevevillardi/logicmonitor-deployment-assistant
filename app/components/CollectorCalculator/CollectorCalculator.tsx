@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from './constants';
 import SiteConfiguration from './components/SiteConfiguration';
 import { SystemConfiguration } from './components/SystemConfiguration';
@@ -70,8 +69,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'sites' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'sites'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('sites')}
@@ -84,8 +83,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'overview' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'overview'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('overview')}
@@ -98,8 +97,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'device-onboarding' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'device-onboarding'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('device-onboarding')}
@@ -112,8 +111,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'collector-info' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'collector-info'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('collector-info')}
@@ -126,8 +125,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'api-explorer' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'api-explorer'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('api-explorer')}
@@ -140,8 +139,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'video-library' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'video-library'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('video-library')}
@@ -154,8 +153,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <NavigationMenuItem>
                     <NavigationMenuLink
                         className={`${navigationMenuTriggerStyle()} cursor-pointer 
-                            ${activeTab === 'system' 
-                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white' 
+                            ${activeTab === 'system'
+                                ? 'bg-[#1a2b7f] hover:bg-[#1a2b7f] text-white hover:text-white'
                                 : 'text-white/85 hover:text-white hover:bg-[#0A1B6F]'
                             }`}
                         onClick={() => onTabChange('system')}
@@ -170,7 +169,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
 }
 
 const CollectorCalculator = () => {
-    const [config, setConfig] = useState<Config>(() => {
+    const [config, setConfig] = useState < Config > (() => {
         // Try to get the config from localStorage
         const savedConfig = typeof window !== 'undefined' ? localStorage.getItem('collectorConfig') : null;
         return savedConfig ? JSON.parse(savedConfig) : {
@@ -185,7 +184,7 @@ const CollectorCalculator = () => {
         };
     });
 
-    const [sites, setSites] = useState<Site[]>(() => {
+    const [sites, setSites] = useState < Site[] > (() => {
         // Try to get the sites from localStorage
         const savedSites = typeof window !== 'undefined' ? localStorage.getItem('collectorSites') : null;
         return savedSites ? JSON.parse(savedSites) : [{
@@ -213,7 +212,7 @@ const CollectorCalculator = () => {
     };
 
     const [activeTab, setActiveTab] = useState(getActiveTab(pathname));
-    const [expandedSites, setExpandedSites] = useState<Set<number>>(new Set());
+    const [expandedSites, setExpandedSites] = useState < Set < number >> (new Set());
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
     // Save state to localStorage whenever it changes
@@ -286,7 +285,7 @@ const CollectorCalculator = () => {
                             >
                                 <HelpCircle className="w-5 h-5 text-blue-700" />
                                 <span className="text-sm font-medium text-blue-700">Help Guide</span>
-                                </Button>
+                            </Button>
                             <a
                                 href="https://support.logicmonitor.com/"
                                 target="_blank"
@@ -309,52 +308,66 @@ const CollectorCalculator = () => {
                     </div>
                 </CardHeader>
                 <CardContent className="p-6 bg-gray-50">
-                    <Tabs
-                        value={activeTab}
-                        onValueChange={handleTabChange}
-                        className="space-y-6"
-                    >
+                    <div className="space-y-6">
                         <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
 
-                        <TabsContent value="sites" className="mt-6">
-                            <SiteConfiguration
-                                sites={sites}
-                                onUpdateSites={handleSitesUpdate}
-                                config={config}
-                                onUpdateConfig={handleConfigUpdate}
-                                onSiteExpand={setExpandedSites}
-                                expandedSites={expandedSites}
-                            />
-                        </TabsContent>
+                        {activeTab === 'sites' && (
+                            <div className="mt-6">
+                                <SiteConfiguration
+                                    sites={sites}
+                                    onUpdateSites={handleSitesUpdate}
+                                    config={config}
+                                    onUpdateConfig={handleConfigUpdate}
+                                    onSiteExpand={setExpandedSites}
+                                    expandedSites={expandedSites}
+                                />
+                            </div>
+                        )}
 
-                        <TabsContent value="system" className="mt-6">
-                            <SystemConfiguration
-                                config={config}
-                                onUpdate={handleConfigUpdate}
-                                sites={sites}
-                                onUpdateSites={handleSitesUpdate}
-                            />
-                        </TabsContent>
+                        {activeTab === 'system' && (
+                            <div className="mt-6">
+                                <SystemConfiguration
+                                    config={config}
+                                    onUpdate={handleConfigUpdate}
+                                    sites={sites}
+                                    onUpdateSites={handleSitesUpdate}
+                                />
+                            </div>
+                        )}
 
-                        <TabsContent value="overview" className="mt-6">
-                            <SiteOverview
-                                sites={sites}
-                                config={config}
-                            />
-                        </TabsContent>
-                        <TabsContent value="collector-info" className="mt-6">
-                            <CollectorInfo config={config} />
-                        </TabsContent>
-                        <TabsContent value="api-explorer" className="mt-6">
-                            {activeTab === 'api-explorer' && <LazyAPIExplorer />}
-                        </TabsContent>
-                        <TabsContent value="device-onboarding" className="mt-6">
-                            <DeviceOnboarding />
-                        </TabsContent>
-                        <TabsContent value="video-library" className="mt-6">
-                            <VideoLibrary />
-                        </TabsContent>
-                    </Tabs>
+                        {activeTab === 'overview' && (
+                            <div className="mt-6">
+                                <SiteOverview
+                                    sites={sites}
+                                    config={config}
+                                />
+                            </div>
+                        )}
+
+                        {activeTab === 'collector-info' && (
+                            <div className="mt-6">
+                                <CollectorInfo config={config} />
+                            </div>
+                        )}
+
+                        {activeTab === 'api-explorer' && (
+                            <div className="mt-6">
+                                <LazyAPIExplorer />
+                            </div>
+                        )}
+
+                        {activeTab === 'device-onboarding' && (
+                            <div className="mt-6">
+                                <DeviceOnboarding />
+                            </div>
+                        )}
+
+                        {activeTab === 'video-library' && (
+                            <div className="mt-6">
+                                <VideoLibrary />
+                            </div>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </div>
