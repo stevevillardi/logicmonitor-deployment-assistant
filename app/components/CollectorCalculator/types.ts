@@ -40,3 +40,31 @@ export interface VideoGuideData {
     videoUrl?: string;
     duration?: string;
 }
+
+export interface DeviceProperty {
+    name: string;
+    description: string;
+    required: boolean;
+    prop_name?: string;
+}
+
+export interface Permission {
+    name: string;
+    description: string;
+    type: 'windows' | 'linux' | 'network' | 'api' | 'cloud' | 'container' | 'database';
+}
+
+export type OnboardingMethod = 'wizard' | 'csv' | 'netscan' | 'api';
+
+export interface Technology {
+    id: string;
+    name: string;
+    description: string;
+    category: 'Network' | 'Container' | 'Server' | 'Storage' | 'Cloud' | 'Database' | 'Virtualization' | 'Security' | 'Application';
+    icon?: React.ElementType;
+    properties: DeviceProperty[];
+    permissions: Permission[];
+    recommendedOnboarding: OnboardingMethod[];
+    documentationUrl: string;
+    tags?: string[];
+}

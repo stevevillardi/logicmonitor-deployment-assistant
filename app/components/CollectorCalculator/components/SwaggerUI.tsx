@@ -15,7 +15,7 @@ const SwaggerUIComponent = () => {
         // Small delay to ensure SwaggerUI has initialized
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 1000);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);

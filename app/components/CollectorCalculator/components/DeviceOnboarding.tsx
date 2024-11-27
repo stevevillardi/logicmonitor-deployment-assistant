@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import VideoGuide from './VideoGuide';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import CredentialRequirements from './CredentialRequirements';
+import DeviceCatalog from './DeviceCatalog';
 import TemplatesAndExamples from './TemplatesAndExamples';
 
 interface MethodRef {
@@ -212,7 +212,7 @@ const DeviceOnboarding: React.FC = () => {
                     </TabsTrigger>
                     <TabsTrigger value="credentials" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
                         <Key className="w-4 h-4 mr-2" />
-                        Credential Requirements (WIP)
+                        Credential Requirements
                     </TabsTrigger>
                     <TabsTrigger value="templates" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
                         <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -225,7 +225,7 @@ const DeviceOnboarding: React.FC = () => {
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Server className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Device Onboarding Methods</CardTitle>
+                                <CardTitle>Resource Onboarding Methods</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
@@ -277,6 +277,7 @@ const DeviceOnboarding: React.FC = () => {
                                                         title="PowerShell CSV Import Walkthrough"
                                                         description="Learn how to prepare and import a CSV file, including property mapping and validation steps."
                                                         videoId="mMGadMsu1Qo"
+                                                        duration="12:11"
                                                     />
                                                 </OnboardingMethod>
                                                 <OnboardingMethod
@@ -558,13 +559,13 @@ const DeviceOnboarding: React.FC = () => {
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Key className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Credential Requirements</CardTitle>
+                                <CardTitle>Resource Credential Requirements</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
                             {/* Add your credential requirements content here */}
                             <div className="space-y-6">
-                                <CredentialRequirements />
+                                <DeviceCatalog />
                             </div>
                         </CardContent>
                     </Card>
