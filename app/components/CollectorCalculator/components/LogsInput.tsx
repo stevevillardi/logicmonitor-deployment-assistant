@@ -41,8 +41,8 @@ export const LogsInput = ({ logs, onUpdate }: LogsInputProps) => {
     return (
         <div className="grid grid-cols-3 gap-6">
             {Object.entries(logs).map(([type, eps]) => (
-                <div 
-                    key={type} 
+                <div
+                    key={type}
                     className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                     <div className="flex items-center gap-3 mb-4">

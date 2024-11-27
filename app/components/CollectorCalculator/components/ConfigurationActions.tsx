@@ -99,8 +99,8 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
         }
 
         // Validate deployment name
-    if (!data.deploymentName) {
-        warnings.push('Deployment name missing, using default');
+        if (!data.deploymentName) {
+            warnings.push('Deployment name missing, using default');
             data.deploymentName = 'New Deployment';
         }
 
@@ -209,14 +209,14 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
     const handleImportConfig = async (event: React.ChangeEvent<HTMLInputElement>) => {
         setError(null);
         setWarnings([]);
-        
+
         const file = event.target.files?.[0];
         if (!file) return;
 
         try {
             const text = await file.text();
             devLog('Imported text:', text.substring(0, 200) + '...'); // Log first 200 chars of imported text
-            
+
             const importedData = JSON.parse(text);
             devLog('Parsed data:', importedData);
 

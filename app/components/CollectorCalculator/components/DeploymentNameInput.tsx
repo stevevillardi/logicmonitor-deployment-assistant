@@ -25,15 +25,15 @@ interface DeploymentNameInputProps {
     onUpdateConfig: (config: Config) => void;
     onUpdateSites: (sites: Site[]) => void;
     onSiteExpand: (expandedSites: Set<number>) => void;
-    showDetails?: boolean;  
-    onShowDetailsChange?: (show: boolean) => void;  
+    showDetails?: boolean;
+    onShowDetailsChange?: (show: boolean) => void;
     onShowAdvancedSettingsChange: (show: boolean) => void;
 }
 
 const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateConfig, onUpdateSites, onSiteExpand, showDetails, onShowDetailsChange, onShowAdvancedSettingsChange }: DeploymentNameInputProps) => {
     const handleReset = () => {
         console.log('Reset initiated');
-        
+
         const defaultConfig: Config = {
             deploymentName: '',
             methodWeights: defaultMethodWeights,
@@ -49,7 +49,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
         // First update sites and expansion as they don't affect config
         onUpdateSites([]);
         onSiteExpand(new Set());
-        
+
         // Now update the config once with all changes
         onUpdateConfig(defaultConfig);
     };
@@ -112,8 +112,8 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                 </div>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             size="sm"
                             className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700"
                         >
@@ -150,7 +150,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                             <AlertDialogCancel className="border-[#040F4B] bg-white">
                                 Cancel
                             </AlertDialogCancel>
-                            <AlertDialogAction 
+                            <AlertDialogAction
                                 onClick={handleReset}
                                 className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
                             >

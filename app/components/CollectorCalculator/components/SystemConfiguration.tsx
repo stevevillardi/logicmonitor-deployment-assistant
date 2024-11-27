@@ -814,7 +814,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                 </CardHeader>
                                 <CardContent className="p-6 bg-white">
 
-                                            <CollectorCapacitySection config={config} onUpdate={onUpdate} />
+                                    <CollectorCapacitySection config={config} onUpdate={onUpdate} />
 
                                 </CardContent>
                             </EnhancedCard>

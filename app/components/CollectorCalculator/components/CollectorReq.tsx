@@ -17,7 +17,7 @@ const CollectorReq = () => {
             if (!savedSites) return false;
 
             const sites = JSON.parse(savedSites);
-            
+
             return sites.some((site: Site) => {
                 return Object.entries(site.devices).some(([deviceType, data]) => {
                     const isWindowsDevice = deviceType.toLowerCase().includes('windows');

@@ -56,15 +56,15 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                         Welcome to the LogicMonitor Deployment Assistant
                     </DialogTitle>
                 </DialogHeader>
-                
+
                 {/* Quick Start Guide */}
                 <div className="space-y-4 py-3">
                     <div className="space-y-3">
                         <h3 className="text-base font-semibold text-gray-900">Deployment Assistant Features</h3>
                         <div className="grid gap-2">
                             {actions.map((step, index) => (
-                                <a 
-                                    key={index} 
+                                <a
+                                    key={index}
                                     href={step.link}
                                     className="flex items-start gap-2 p-2 bg-white rounded-lg border border-blue-200 shadow-sm hover:bg-blue-50 transition-colors duration-200 group cursor-pointer"
                                 >
@@ -87,7 +87,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                             <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                             <div>
                                 <p className="text-sm mb-2">
-                                    Recommendations are estimates based on typical usage patterns. 
+                                    Recommendations are estimates based on typical usage patterns.
                                     Actual requirements may vary based on:
                                 </p>
                                 <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1">
@@ -101,7 +101,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                 </div>
 
                 <DialogFooter className="border-t border-blue-100 pt-3">
-                    <Button 
+                    <Button
                         onClick={() => onOpenChange(false)}
                         className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
                     >

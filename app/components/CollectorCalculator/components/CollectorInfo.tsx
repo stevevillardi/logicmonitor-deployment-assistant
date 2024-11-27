@@ -55,20 +55,20 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
     };
 
     const networkPorts = [
-        { port: 443, direction: 'Outbound-External', description: 'HTTPS connection to LogicMonitor Platform',protocol: 'TCP/TLS' },
-        { port: 162, direction: 'Inbound-Internal', description: 'SNMP Traps',protocol: 'UDP' },
-        { port: 514, direction: 'Inbound-Internal', description: 'Syslog',protocol: 'UDP' },
-        { port: 2055, direction: 'Inbound-Internal', description: 'Netflow/IPFIX',protocol: 'UDP' },
-        { port: 6343, direction: 'Inbound-Internal', description: 'SFlow/JFlow',protocol: 'UDP' },
-        { port: 7214, direction: 'Inbound-Internal', description: 'Optional: Communication from custom JobMonitors to Collector',protocol: 'TCP' },
-        { port: 161, direction: 'Outbound-Internal', description: 'SNMP monitoring',protocol: 'UDP' },
-        { port: 22, direction: 'Outbound-Internal', description: 'SSH monitoring',protocol: 'TCP' },
-        { port: 135, direction: 'Outbound-Internal', description: 'WMI/Powershell monitoring',protocol: 'TCP' },
-        { port: "49152-65635", direction: 'Outbound-Internal', description: 'RPC Dynamic Ports for WMI/DCOM',protocol: 'TCP' },
-        { port: "80,443", direction: 'Outbound-Internal', description: 'HTTP/S server/web/api monitoring',protocol: 'TCP' },
-        { port: "5985,5986", direction: 'Outbound-Internal  ', description: 'WinRM',protocol: 'TCP' },
-        { port: "1433,1434", direction: 'Outbound-Internal  ', description: 'SQL Server monitoring',protocol: 'TCP' },
-        { port: 623, direction: 'Outbound-Internal  ', description: 'IPMI monitoring',protocol: 'UDP' }
+        { port: 443, direction: 'Outbound-External', description: 'HTTPS connection to LogicMonitor Platform', protocol: 'TCP/TLS' },
+        { port: 162, direction: 'Inbound-Internal', description: 'SNMP Traps', protocol: 'UDP' },
+        { port: 514, direction: 'Inbound-Internal', description: 'Syslog', protocol: 'UDP' },
+        { port: 2055, direction: 'Inbound-Internal', description: 'Netflow/IPFIX', protocol: 'UDP' },
+        { port: 6343, direction: 'Inbound-Internal', description: 'SFlow/JFlow', protocol: 'UDP' },
+        { port: 7214, direction: 'Inbound-Internal', description: 'Optional: Communication from custom JobMonitors to Collector', protocol: 'TCP' },
+        { port: 161, direction: 'Outbound-Internal', description: 'SNMP monitoring', protocol: 'UDP' },
+        { port: 22, direction: 'Outbound-Internal', description: 'SSH monitoring', protocol: 'TCP' },
+        { port: 135, direction: 'Outbound-Internal', description: 'WMI/Powershell monitoring', protocol: 'TCP' },
+        { port: "49152-65635", direction: 'Outbound-Internal', description: 'RPC Dynamic Ports for WMI/DCOM', protocol: 'TCP' },
+        { port: "80,443", direction: 'Outbound-Internal', description: 'HTTP/S server/web/api monitoring', protocol: 'TCP' },
+        { port: "5985,5986", direction: 'Outbound-Internal  ', description: 'WinRM', protocol: 'TCP' },
+        { port: "1433,1434", direction: 'Outbound-Internal  ', description: 'SQL Server monitoring', protocol: 'TCP' },
+        { port: 623, direction: 'Outbound-Internal  ', description: 'IPMI monitoring', protocol: 'UDP' }
 
     ];
 
@@ -135,7 +135,7 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                                                 <span className="font-medium">{modifiedCollectors.join(', ')}</span>
                                             </p>
                                             <p className="text-sm mt-2">
-                                                Warning: Modifying collector capacities will affect the accuracy of deployment estimates. 
+                                                Warning: Modifying collector capacities will affect the accuracy of deployment estimates.
                                                 Only modify these values if you have specific requirements and understand the implications.
                                             </p>
                                         </div>

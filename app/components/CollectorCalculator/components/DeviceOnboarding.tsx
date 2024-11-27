@@ -205,20 +205,20 @@ const DeviceOnboarding: React.FC = () => {
     return (
         <div className="space-y-6 overflow-y-auto">
             <Tabs defaultValue="onboarding">
-            <TabsList className="mb-4 bg-white border border-gray-200">
-                        <TabsTrigger value="onboarding" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-                            <Server className="w-4 h-4 mr-2" />
-                            Onboarding Methods
-                        </TabsTrigger>
-                        <TabsTrigger value="credentials" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-                            <Key className="w-4 h-4 mr-2" />
-                            Credential Requirements (WIP)
-                        </TabsTrigger>
-                        <TabsTrigger value="templates" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-                            <FileSpreadsheet className="w-4 h-4 mr-2" />
-                            Templates & Examples (WIP)
-                        </TabsTrigger>
-                    </TabsList>
+                <TabsList className="mb-4 bg-white border border-gray-200">
+                    <TabsTrigger value="onboarding" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+                        <Server className="w-4 h-4 mr-2" />
+                        Onboarding Methods
+                    </TabsTrigger>
+                    <TabsTrigger value="credentials" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+                        <Key className="w-4 h-4 mr-2" />
+                        Credential Requirements (WIP)
+                    </TabsTrigger>
+                    <TabsTrigger value="templates" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+                        <FileSpreadsheet className="w-4 h-4 mr-2" />
+                        Templates & Examples (WIP)
+                    </TabsTrigger>
+                </TabsList>
 
                 <TabsContent value="onboarding">
                     <Card>
@@ -389,10 +389,10 @@ const DeviceOnboarding: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                        <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
-    <FaGoogle className="w-4 h-4" /> 
-    <span>GCP</span>
-</h4>
+                                                            <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                                                                <FaGoogle className="w-4 h-4" />
+                                                                <span>GCP</span>
+                                                            </h4>
                                                             <div className="space-y-2">
                                                                 <ResourceLink
                                                                     href="https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/adding-your-gcp-environment-into-logicmonitor"

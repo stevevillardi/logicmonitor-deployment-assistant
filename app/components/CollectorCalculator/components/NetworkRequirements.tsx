@@ -149,10 +149,10 @@ export const NetworkRequirements = () => {
                     </div>
                     {sortedNetworkPorts.map((port, index, array) => {
                         const isNewDirection = index === 0 || port.direction !== array[index - 1].direction;
-                        const isNewCategory = index === 0 || 
-                            port.category !== array[index - 1].category || 
+                        const isNewCategory = index === 0 ||
+                            port.category !== array[index - 1].category ||
                             port.direction !== array[index - 1].direction;
-                        
+
                         return (
                             <React.Fragment key={index}>
                                 {isNewDirection && (
@@ -172,11 +172,10 @@ export const NetworkRequirements = () => {
                                     </div>
                                     <div className="text-gray-600 font-mono text-sm">{port.protocol}</div>
                                     <div>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                            port.direction.includes('Inbound') 
-                                                ? 'bg-green-100 text-green-700' 
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${port.direction.includes('Inbound')
+                                                ? 'bg-green-100 text-green-700'
                                                 : 'bg-blue-100 text-blue-700'
-                                        }`}>
+                                            }`}>
                                             {port.direction}
                                         </span>
                                     </div>

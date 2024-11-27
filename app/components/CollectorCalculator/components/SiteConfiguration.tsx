@@ -6,7 +6,7 @@ import { Button, Input } from '@/components/ui/enhanced-components'
 import { Server, Activity, Building, Trash2, RotateCcw } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
-import { DeviceTypeCard } from './DeviceTypeCard';
+import { DeviceTypeCard } from './DeviceTypeCardInput';
 import { LogsInput } from './LogsInput';
 import { CollectorVisualization } from './CollectorVisualization';
 import EnhancedCard from '@/components/ui/enhanced-card';
@@ -204,9 +204,9 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-4">
-                                <div onClick={() => toggleSite(index)} className={`w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex cursor-pointer items-center justify-center transition-colors ${expandedSites.has(index) ? 'bg-blue-50 text-blue-600' : 'text-gray-400'}`}>
-                                            {expandedSites.has(index) ? "▼" : "▶"}
-                                        </div>
+                                    <div onClick={() => toggleSite(index)} className={`w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex cursor-pointer items-center justify-center transition-colors ${expandedSites.has(index) ? 'bg-blue-50 text-blue-600' : 'text-gray-400'}`}>
+                                        {expandedSites.has(index) ? "▼" : "▶"}
+                                    </div>
                                     <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
                                         <Building onClick={() => toggleSite(index)} className="w-6 h-6 text-blue-600 cursor-pointer" />
                                     </div>

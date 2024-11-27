@@ -117,8 +117,8 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
                                         className: "w-5 h-5 text-gray-400"
                                     })}
                                     <span className="text-sm">
-                                        {title.includes("Polling") 
-                                            ? "No Polling Collectors Required" 
+                                        {title.includes("Polling")
+                                            ? "No Polling Collectors Required"
                                             : "No Logs/NetFlow Collectors Required"}
                                     </span>
                                 </div>
@@ -127,11 +127,10 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
                             collectors.map((collector, idx) => (
                                 <div
                                     key={idx}
-                                    className={`flex items-center justify-between px-4 py-2 border rounded-lg ${
-                                        collector.type === "N+1 Redundancy"
+                                    className={`flex items-center justify-between px-4 py-2 border rounded-lg ${collector.type === "N+1 Redundancy"
                                             ? "bg-blue-50 border-blue-200 text-blue-700"
                                             : getLoadColor(collector.load)
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <Server className="w-4 h-4" />
@@ -143,13 +142,12 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
                                             <span className="text-xs">Load:</span>
                                             <div className="w-16 bg-white/80 border border-gray-200 rounded-full h-1.5">
                                                 <div
-                                                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                                                        collector.load >= 80
+                                                    className={`h-1.5 rounded-full transition-all duration-500 ${collector.load >= 80
                                                             ? "bg-red-500"
                                                             : collector.load >= 60
                                                                 ? "bg-yellow-500"
                                                                 : "bg-emerald-500"
-                                                    }`}
+                                                        }`}
                                                     style={{ width: `${collector.load}%` }}
                                                 />
                                             </div>
