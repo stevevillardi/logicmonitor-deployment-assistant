@@ -50,7 +50,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[90vw] sm:max-w-lg bg-blue-50 lg:max-w-2xl mx-4 sm:mx-auto">
+            <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
                 <DialogHeader className="border-b border-blue-100 pb-3">
                     <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
                         Welcome to the LogicMonitor Deployment Assistant
