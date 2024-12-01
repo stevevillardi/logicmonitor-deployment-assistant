@@ -45,20 +45,15 @@ const getIconForCredential = (id: string): LucideIcon => {
     return iconMap[id] || Server; // Default to Server icon if no match
 };
 
-const isValidPermissionType = (type: string): type is PermissionType => {
-    const validTypes = ['windows', 'cloud', 'api', 'linux', 'network', 'database', 'web', 'hardware', 'system'];
-    return validTypes.includes(type);
-};
-
-export const transformCredentialData = () => {
-    const credentialList = require('./credential-list.json');
+export const transformCredentialData = async () => {
+    const credentialList = await import('./credential-list.json');
     const transformedData: { [key: string]: CredentialType } = {};
 
     // Transform system credentials
-    Object.entries(credentialList.systemCredentials).forEach(([id, cred]: [string, any]) => {
+    Object.entries(credentialList.default.systemCredentials).forEach(([id, cred]: [string, any]) => {
         transformedData[id] = {
             id,
-            type: 'system', // Set type based on section
+            type: 'system',
             name: cred.name,
             description: cred.description,
             category: cred.category,
@@ -72,10 +67,10 @@ export const transformCredentialData = () => {
     });
 
     // Transform protocol credentials
-    Object.entries(credentialList.protocolCredentials).forEach(([id, cred]: [string, any]) => {
+    Object.entries(credentialList.default.protocolCredentials).forEach(([id, cred]: [string, any]) => {
         transformedData[id] = {
             id,
-            type: 'protocol', // Set type based on section
+            type: 'protocol',
             name: cred.name,
             description: cred.description,
             category: cred.category,
@@ -90,18 +85,3 @@ export const transformCredentialData = () => {
 
     return transformedData;
 };
-
-const mapToSpecificType = (type: string): "windows" | "cloud" | "api" | "linux" | "network" | "database" => {
-    // Implement logic to map the generic type to a specific one
-    switch (type) {
-        case "windows":
-        case "cloud":
-        case "api":
-        case "linux":
-        case "network":
-        case "database":
-            return type;
-        default:
-            throw new Error(`Invalid type: ${type}`);
-    }
-}; 
