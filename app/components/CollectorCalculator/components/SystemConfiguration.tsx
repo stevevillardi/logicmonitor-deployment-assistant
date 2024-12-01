@@ -302,21 +302,51 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
         <div className="space-y-6 overflow-y-auto">
             <Tabs defaultValue="general" className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <TabsList className="mb-4 bg-white border border-gray-200">
-                        <TabsTrigger value="general" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Settings className="w-5 h-5 pr-1" />General Settings</TabsTrigger>
-                        <TabsTrigger value="formula" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Calculator className="w-5 h-5 pr-1" />Load Calculation Formula</TabsTrigger>
+                    <TabsList className="grid grid-cols-1 sm:flex w-full h-full p-0 bg-gray-50 rounded-lg border border-gray-200 mb-6">
+                        <TabsTrigger 
+                            value="general" 
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                        >
+                            <Settings className="w-4 h-4" />
+                            General Settings
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            value="formula" 
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                        >
+                            <Calculator className="w-4 h-4" />
+                            Load Calculation Formula
+                        </TabsTrigger>
                         {config.showAdvancedSettings && (
                             <>
-                                <TabsTrigger value="devices" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Server className="w-5 h-5 pr-1" />Device Defaults</TabsTrigger>
-                                <TabsTrigger value="weights" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Dumbbell className="w-5 h-5 pr-1" />Protocol Weights</TabsTrigger>
-                                <TabsTrigger value="collector-capacities" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"><Database className="w-5 h-5 pr-1" />Collector Capacities</TabsTrigger>
+                                <TabsTrigger 
+                                    value="devices" 
+                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                                >
+                                    <Server className="w-4 h-4" />
+                                    Device Defaults
+                                </TabsTrigger>
+                                <TabsTrigger 
+                                    value="weights" 
+                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                                >
+                                    <Dumbbell className="w-4 h-4" />
+                                    Protocol Weights
+                                </TabsTrigger>
+                                <TabsTrigger 
+                                    value="collector-capacities" 
+                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors"
+                                >
+                                    <Database className="w-4 h-4" />
+                                    Collector Capacities
+                                </TabsTrigger>
                             </>
                         )}
                     </TabsList>
                 </div>
 
                 <TabsContent value="general">
-                    <EnhancedCard>
+                    <EnhancedCard className="bg-white h-[700px] overflow-y-auto shadow-sm border border-gray-200">
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Settings className="w-6 h-6 text-blue-700" />
@@ -457,8 +487,6 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                 />
                                             </div>
                                         </div>
-                                        <div className="flex items-center space-x-2 mb-6 pb-6 border-b border-gray-200">
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -470,25 +498,25 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                     <>
                         <TabsContent value="devices">
                             <EnhancedCard className="bg-white h-[1100px] overflow-hidden shadow-sm border border-gray-200">
-                                <CardHeader className="border-b border-gray-200 bg-white">
+                                <CardHeader className="border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center gap-3">
                                         <Server className="w-6 h-6 text-blue-700" />
                                         <CardTitle className="text-gray-900">Device Defaults</CardTitle>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6">
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
                                         <div className="flex items-center gap-2 text-blue-700 mb-2">
-                                            <Info className="w-5 h-5" />
-                                            <span className="font-medium">Device Configuration</span>
+                                            <Info className="w-4 h-4 sm:w-5 sm:h-5" />
+                                            <span className="font-medium text-sm sm:text-base">Device Configuration</span>
                                         </div>
-                                        <p className="text-sm text-blue-600">
+                                        <p className="text-xs sm:text-sm text-blue-600">
                                             Configure base instances and collection methods for each device type. These settings will be used as defaults when adding devices to sites.
                                         </p>
                                     </div>
 
-                                    <div className="flex gap-6">
-                                        <div className="w-[350px] shrink-0">
+                                    <div className="flex flex-col lg:flex-row gap-6">
+                                        <div className="w-full lg:w-[350px] lg:shrink-0">
                                             <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
                                                 <div className="flex gap-2">
                                                     <Input
@@ -677,7 +705,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
 
                         <TabsContent value="weights">
                             <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
-                                <CardHeader className="border-b border-gray-200">
+                                <CardHeader className="border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center gap-3">
                                         <Dumbbell className="w-6 h-6 text-blue-700" />
                                         <CardTitle className="text-gray-900">Protocol Weights</CardTitle>
@@ -695,7 +723,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                             </p>
                                         </div>
 
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col sm:flex-row gap-2">
                                             <div className="relative flex-1">
                                                 <Input
                                                     placeholder="New protocol name..."
@@ -798,7 +826,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
 
                         <TabsContent value="collector-capacities">
                             <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
-                                <CardHeader className="border-b border-gray-200">
+                                <CardHeader className="border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center gap-3">
                                         <Database className="w-6 h-6 text-blue-700" />
                                         <CardTitle className="text-gray-900">Collector Capacities</CardTitle>
@@ -816,7 +844,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                 )}
                 <TabsContent value="formula">
                     <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
-                        <CardHeader className="border-b border-gray-200 bg-white">
+                        <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Calculator className="w-6 h-6 text-blue-700" />
                                 <CardTitle className="text-gray-900">Load Calculation Formula</CardTitle>
@@ -832,18 +860,18 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="bg-white rounded-xl p-6 font-mono text-lg border border-blue-100 shadow-sm space-y-4">
-                                            <div className="flex items-center gap-3 text-gray-900">
-                                                <ArrowRight className="w-5 h-5 text-blue-700 flex-shrink-0" />
-                                                <p>Device Load = <span className="text-blue-700">Instances</span> × <span className="text-green-600">Method Weight</span> × <span className="text-purple-600">Method Ratio</span></p>
+                                        <div className="bg-white rounded-xl p-4 sm:p-6 font-mono text-sm sm:text-lg border border-blue-100 shadow-sm space-y-4">
+                                            <div className="flex items-start sm:items-center gap-3 text-gray-900">
+                                                <ArrowRight className="w-5 h-5 text-blue-700 flex-shrink-0 mt-1 sm:mt-0" />
+                                                <p className="flex-1">Device Load = <span className="text-blue-700">Instances</span> × <span className="text-green-600">Method Weight</span> × <span className="text-purple-600">Method Ratio</span></p>
                                             </div>
-                                            <div className="flex items-center gap-3 text-gray-900">
-                                                <ArrowRight className="w-5 h-5 text-blue-700 flex-shrink-0" />
-                                                <p>Total Load = Σ(<span className="text-orange-600">Device Load</span> × <span className="text-red-600">Device Count</span>)</p>
+                                            <div className="flex items-start sm:items-center gap-3 text-gray-900">
+                                                <ArrowRight className="w-5 h-5 text-blue-700 flex-shrink-0 mt-1 sm:mt-0" />
+                                                <p className="flex-1">Total Load = Σ(<span className="text-orange-600">Device Load</span> × <span className="text-red-600">Device Count</span>)</p>
                                             </div>
-                                            <div className="flex items-center gap-3 text-gray-900">
-                                                <ArrowRight className="w-5 h-5 text-blue-700 flex-shrink-0" />
-                                                <p>Collector Load % = (<span className="text-blue-600">Total Load</span> ÷ (<span className="text-green-600">Collector Capacity</span> × <span className="text-purple-600">Max Load %</span>)) × 100</p>
+                                            <div className="flex items-start sm:items-center gap-3 text-gray-900">
+                                                <ArrowRight className="w-5 h-5 text-blue-700 flex-shrink-0 mt-1 sm:mt-0" />
+                                                <p className="flex-1">Collector Load % = (<span className="text-blue-600">Total Load</span> ÷ (<span className="text-green-600">Collector Capacity</span> × <span className="text-purple-600">Max Load %</span>)) × 100</p>
                                             </div>
                                         </div>
 
@@ -853,7 +881,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                 <Variable className="h-5 w-5 text-blue-700" />
                                                 <p className="text-lg text-gray-900 font-medium">Variables Explained</p>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 {[
                                                     {
                                                         term: "Instances",
@@ -886,15 +914,12 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                         icon: <Gauge className="w-4 h-4 text-blue-700" />
                                                     }
                                                 ].map(({ term, def, icon }) => (
-                                                    <div key={term}
-                                                        className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 flex gap-3">
-                                                        <div className="mt-0.5">
+                                                    <div key={term} className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                                                        <div className="flex items-center gap-2 mb-1">
                                                             {icon}
+                                                            <span className="font-medium text-sm sm:text-base text-gray-900">{term}</span>
                                                         </div>
-                                                        <div>
-                                                            <span className="text-blue-700 font-semibold block mb-1">{term}</span>
-                                                            <span className="text-gray-600 text-sm">{def}</span>
-                                                        </div>
+                                                        <p className="text-xs sm:text-sm text-gray-600 ml-6">{def}</p>
                                                     </div>
                                                 ))}
                                             </div>

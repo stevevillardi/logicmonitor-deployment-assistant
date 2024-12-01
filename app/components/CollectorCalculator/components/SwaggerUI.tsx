@@ -50,15 +50,15 @@ const SwaggerUIComponent = () => {
 
     return (
         <Card className="bg-white border-gray-200 h-full min-h-[800px]">
-            <CardHeader className="border-b border-gray-200 bg-gray-50">
+            <CardHeader className="border-b border-gray-200 bg-gray-50 p-4sm:p-6">
                 <div className="flex items-center gap-3">
-                    <Terminal className="w-6 h-6 text-blue-700" />
-                    <CardTitle>LogicMonitor API Explorer</CardTitle>
+                    <Terminal className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700" />
+                    <CardTitle className="text-base sm:text-lg">LogicMonitor API Explorer</CardTitle>
                 </div>
             </CardHeader>
 
-            <CardContent className="p-6">
-            <ApiDocumentationBanner />
+            <CardContent className="p-2 sm:p-6">
+                <ApiDocumentationBanner />
 
                 <div className="min-h-[800px] relative">
                     {isLoading ? (
@@ -66,7 +66,7 @@ const SwaggerUIComponent = () => {
                             <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />
                         </div>
                     ) : error ? (
-                        <div className="absolute inset-0 flex items-center justify-center text-red-600">
+                        <div className="absolute inset-0 flex items-center justify-center text-red-600 text-sm sm:text-base p-4">
                             {error}
                         </div>
                     ) : (
@@ -89,234 +89,178 @@ const SwaggerUIComponent = () => {
             </CardContent>
 
             <style jsx global>{`
-                /* Base wrapper styles */
+                /* Base responsive styles */
                 .swagger-ui .wrapper {
-                padding: 0;
-                margin: 0;
-                max-width: none;
+                    padding: 0;
+                    margin: 0;
+                    max-width: none;
+                    overflow-x: auto;
                 }
 
-                /* Info section alignment */
+                /* Mobile-first info section */
                 .swagger-ui .info {
-                margin: 20px 0;
+                    margin: 10px 0;
+                    padding: 0 10px;
                 }
 
-                .swagger-ui .info > div {
-                margin: 0 !important;
-                padding: 0 !important;
+                @media (min-width: 640px) {
+                    .swagger-ui .info {
+                        margin: 20px 0;
+                        padding: 0;
+                    }
                 }
 
-                .swagger-ui .info .main > div {
-                display: flex;
-                flex-direction: row;
-                align-items: flex-start;
-                gap: 2rem;
-                }
-
-                .swagger-ui .info .main .info__tos {
-                order: 1;
-                }
-
-                code[class*="language-"], pre[class*="language-"] {
-                    color: white !important;
-                }
-
-                .swagger-ui .info .main .info__contact {
-                order: 2;
-                }
-
-                .swagger-ui .info .main .info__license {
-                order: 3;
-                }
-
-                /* Scheme container */
-                .swagger-ui .scheme-container {
-                background: transparent;
-                box-shadow: none;
-                padding: 0;
-                margin: 0;
-                position: sticky;
-                top: 0;
-                z-index: 10;
-                }
-
-                /* Improve server dropdown styling */
-                .swagger-ui .servers-title {
-                margin-bottom: 8px;
-                color: #1e293b;
-                font-size: 14px;
-                }
-
-
-                .swagger-ui .servers-title {
-                margin: 0 0 8px 0;
-                text-align: left;
-                }
-
-                .swagger-ui .servers > label {
-                margin: 0;
-                }
-
+                /* Responsive server selection */
                 .swagger-ui .servers select {
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 6px;
-                padding: 6px 12px;
-                font-size: 14px;
-                color: #1e293b;
-                width: 300px;
+                    width: 100%;
+                    max-width: 300px;
+                    font-size: 14px;
                 }
 
-                .swagger-ui .servers select:focus {
-                outline: none;
-                border-color: #2563eb;
-                box-shadow: 0 0 0 1px #2563eb;
-                }
-
-
-                /* Operation blocks */
+                /* Operation blocks responsive styling */
                 .swagger-ui .opblock {
-                border-radius: 8px;
-                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-                margin: 0 0 16px 0;
+                    margin: 0 0 12px 0;
+                    border-radius: 6px;
                 }
 
-                /* Operation summary row */
                 .swagger-ui .opblock .opblock-summary {
-                padding: 8px 16px;
-                gap: 1rem;
-                align-items: center;
+                    padding: 8px;
                 }
 
-                .swagger-ui .opblock .opblock-summary > * {
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
+                @media (min-width: 640px) {
+                    .swagger-ui .opblock .opblock-summary {
+                        padding: 8px 16px;
+                    }
                 }
 
+                /* Responsive operation summary */
                 .swagger-ui .opblock .opblock-summary-path {
-                flex-grow: 0;
-                flex-shrink: 0;
-                max-width: none;
-                padding: 0;
-                white-space: nowrap;
-                overflow: visible;
-                color: #1a365d;
-                font-weight: 500;
+                    font-size: 13px;
+                    word-break: break-all;
                 }
 
+                @media (min-width: 640px) {
+                    .swagger-ui .opblock .opblock-summary-path {
+                        font-size: 14px;
+                        word-break: normal;
+                    }
+                }
+
+                /* Responsive description */
                 .swagger-ui .opblock .opblock-summary-description {
-                text-align: left;
-                flex-grow: 1;
-                font-size: 0.875rem;
-                color: #4a5568;
-                padding: 0;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                    font-size: 12px;
+                    display: none;
                 }
 
-                .swagger-ui .opblock .opblock-summary-operation-id {
-                flex-grow: 0;
-                flex-shrink: 0;
-                font-size: 0.875rem;
-                color: #718096;
-                padding: 0;
+                @media (min-width: 640px) {
+                    .swagger-ui .opblock .opblock-summary-description {
+                        display: block;
+                        font-size: 14px;
+                    }
                 }
 
-                /* Form inputs */
+                /* Form inputs responsive */
                 .swagger-ui select,
                 .swagger-ui input[type=text],
                 .swagger-ui textarea {
-                background-color: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
+                    max-width: 100%;
+                    font-size: 14px;
                 }
 
-                /* Tags and headings */
-                .swagger-ui .opblock-tag {
-                color: #1a365d;
-                font-weight: 600;
-                border: none;
-                margin-top: 24px;
-                }
-
-                /* Method colors */
-                .swagger-ui .opblock-get {
-                background: rgba(97, 175, 254, .1);
-                border-color: #61affe;
-                }
-
-                .swagger-ui .opblock-post {
-                background: rgba(73, 204, 144, .1);
-                border-color: #49cc90;
-                }
-
-                .swagger-ui .opblock-put {
-                background: rgba(252, 161, 48, .1);
-                border-color: #fca130;
-                }
-
-                .swagger-ui .opblock-delete {
-                background: rgba(249, 62, 62, .1);
-                border-color: #f93e3e;
-                }
-
-                .swagger-ui .servers .computed-url {
-                    margin: 1em 0;
-                }
-
-                .swagger-ui .opblock-patch {
-                background: rgba(80, 227, 194, .1);
-                border-color: #50e3c2;
-                }
-
-                /* Hide top bar */
-                .swagger-ui .topbar {
-                display: none;
-                }
-
-                /* Layout fixes */
-                .swagger-ui {
-                height: 100%;
-                overflow: auto;
-                }
-
-
-                /* Font overrides */
-                .swagger-ui,
-                .swagger-ui .opblock-tag,
-                .swagger-ui .opblock-description-wrapper p,
-                .swagger-ui .opblock-external-docs-wrapper p,
-                .swagger-ui .opblock-title_normal p {
-                font-family: inherit;
-                }
-
-                /* Clean up margins and paddings */
-                .swagger-ui .wrapper > .block {
-                padding: 0;
-                }
-
-                .swagger-ui .info .title {
-                margin: 0;
-                color: #1a365d;
-                }
-
-                .swagger-ui .info .title small {
-                background: #e2e8f0;
-                }
-
-                /* Response section */
+                /* Response section responsive */
                 .swagger-ui .responses-wrapper {
-                padding: 16px;
+                    padding: 8px;
+                    overflow-x: auto;
                 }
 
-                .swagger-ui table.responses-table {
-                margin: 0;
+                @media (min-width: 640px) {
+                    .swagger-ui .responses-wrapper {
+                        padding: 16px;
+                    }
                 }
 
-                .swagger-ui .response-col_status {
-                width: 100px;
+                /* Table responsive */
+                .swagger-ui table {
+                    display: block;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
                 }
+
+                /* Parameters section */
+                .swagger-ui .parameters-container {
+                    overflow-x: auto;
+                }
+
+                .swagger-ui .parameter__name {
+                    font-size: 12px;
+                }
+
+                @media (min-width: 640px) {
+                    .swagger-ui .parameter__name {
+                        font-size: 14px;
+                    }
+                }
+
+                /* Request body section */
+                .swagger-ui .opblock-description-wrapper {
+                    padding: 8px;
+                }
+
+                @media (min-width: 640px) {
+                    .swagger-ui .opblock-description-wrapper {
+                        padding: 15px;
+                    }
+                }
+
+                /* Authorization section */
+                .swagger-ui .auth-wrapper {
+                    padding: 8px;
+                }
+
+                @media (min-width: 640px) {
+                    .swagger-ui .auth-wrapper {
+                        padding: 16px;
+                    }
+                }
+
+                /* Models section */
+                .swagger-ui section.models {
+                    padding: 8px;
+                }
+
+                @media (min-width: 640px) {
+                    .swagger-ui section.models {
+                        padding: 16px;
+                    }
+                }
+
+                /* Try it out button */
+                .swagger-ui .try-out__btn {
+                    padding: 4px 8px;
+                    font-size: 12px;
+                }
+
+                @media (min-width: 640px) {
+                    .swagger-ui .try-out__btn {
+                        padding: 6px 12px;
+                        font-size: 14px;
+                    }
+                }
+
+                /* Execute button */
+                .swagger-ui .btn.execute {
+                    padding: 6px 12px;
+                    font-size: 12px;
+                }
+
+                @media (min-width: 640px) {
+                    .swagger-ui .btn.execute {
+                        padding: 8px 16px;
+                        font-size: 14px;
+                    }
+                }
+
+                /* ... rest of your existing styles ... */
             `}</style>
         </Card>
     );

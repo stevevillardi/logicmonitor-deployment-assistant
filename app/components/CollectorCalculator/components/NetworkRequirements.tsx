@@ -138,9 +138,9 @@ export const NetworkRequirements = () => {
                     <h2 className="text-xl font-bold text-gray-900">Network Requirements (Ports)</h2>
                 </div>
             </div>
-            <div className="pl-4 pr-4">
-                <div className="bg-white rounded-lg border border-gray-200">
-                    <div className="grid grid-cols-6 gap-4 p-3 bg-gray-50 rounded-t-lg border-b border-gray-200">
+            <div className="px-4">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+                    <div className="hidden md:grid md:grid-cols-6 gap-4 p-3 bg-gray-50 rounded-t-lg border-b border-gray-200">
                         <div className="font-medium text-gray-900">Category</div>
                         <div className="font-medium text-gray-900">Port</div>
                         <div className="font-medium text-gray-900">Protocol</div>
@@ -160,7 +160,38 @@ export const NetworkRequirements = () => {
                                         {port.direction}
                                     </div>
                                 )}
-                                <div className="grid grid-cols-6 gap-4 p-3 border-b last:border-b-0 border-gray-200 hover:bg-gray-50 transition-colors">
+                                <div className="md:hidden p-4 border-b border-gray-200 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            {port.icon}
+                                            <span className="text-sm font-medium text-gray-900">{port.category}</span>
+                                        </div>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            port.direction.includes('Inbound')
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-blue-100 text-blue-700'
+                                        }`}>
+                                            {port.direction}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <div className="text-gray-600 mb-1">Port</div>
+                                            <code className="px-2 py-1 bg-blue-50 rounded text-blue-700">
+                                                {port.port}
+                                            </code>
+                                        </div>
+                                        <div>
+                                            <div className="text-gray-600 mb-1">Protocol</div>
+                                            <div className="font-mono">{port.protocol}</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-gray-600 text-sm mb-1">Description</div>
+                                        <div className="text-gray-900">{port.description}</div>
+                                    </div>
+                                </div>
+                                <div className="hidden md:grid md:grid-cols-6 gap-4 p-3 border-b last:border-b-0 border-gray-200 hover:bg-gray-50 transition-colors">
                                     <div className="flex items-center gap-2">
                                         {port.icon}
                                         <span className="text-sm text-gray-600">{port.category}</span>
@@ -172,10 +203,11 @@ export const NetworkRequirements = () => {
                                     </div>
                                     <div className="text-gray-600 font-mono text-sm">{port.protocol}</div>
                                     <div>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${port.direction.includes('Inbound')
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            port.direction.includes('Inbound')
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'bg-blue-100 text-blue-700'
-                                            }`}>
+                                        }`}>
                                             {port.direction}
                                         </span>
                                     </div>

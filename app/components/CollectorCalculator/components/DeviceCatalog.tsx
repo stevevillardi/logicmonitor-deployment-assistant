@@ -28,6 +28,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogClose,
 } from '@/components/ui/dialog';
 
 import { transformCredentialData } from '../data/credentialData';
@@ -84,24 +85,24 @@ const DeviceCatalog = () => {
                         <CardHeader>
                             <div className="flex items-start gap-4">
                                 {Icon && (
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                        <Icon className="w-6 h-6 text-blue-700" />
+                                    <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
                                     </div>
                                 )}
                                 <div>
-                                    <CardTitle className="text-lg">{credential.name}</CardTitle>
-                                    <p className="text-sm text-gray-600 mt-1">{credential.description}</p>
+                                    <CardTitle className="text-base sm:text-lg">{credential.name}</CardTitle>
+                                    <p className="text-xs sm:text-sm text-gray-600 mt-1">{credential.description}</p>
                                 </div>
                             </div>
                             <div className="flex flex-wrap gap-2 mt-3">
-                                <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                <Badge variant="secondary" className="text-xs sm:text-sm bg-blue-100 text-blue-700 hover:bg-blue-200">
                                     {credential.category}
                                 </Badge>
                                 {credential.tags?.map(tag => (
                                     <Badge 
                                         key={tag} 
                                         variant="outline"
-                                        className="bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200"
+                                        className="text-xs sm:text-sm bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200"
                                     >
                                         {tag}
                                     </Badge>
@@ -110,23 +111,23 @@ const DeviceCatalog = () => {
                         </CardHeader>
                     </Card>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg bg-blue-50 sm:max-w-2xl">
+                <DialogContent className="max-w-[90vw] sm:max-w-lg bg-blue-50 lg:max-w-2xl mx-4 sm:mx-auto">
                     <DialogHeader className="border-b border-blue-100 pb-3">
-                        <DialogTitle className="text-xl font-bold text-[#040F4B]">
-                            <div className="flex items-center justify-between">
+                        <div className="flex items-start justify-between">
+                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
                                 <div className="flex items-center gap-3">
-                                    {Icon && <Icon className="w-6 h-6 text-blue-700" />}
+                                    {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />}
                                     <span>{credential.name}</span>
                                 </div>
-                            </div>
-                        </DialogTitle>
-                        <p className="text-sm text-gray-600 mt-1">{credential.description}</p>
+                            </DialogTitle>
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-600 mt-1">{credential.description}</p>
                     </DialogHeader>
 
                     <div className="space-y-4 py-3">
                         {/* Properties Section */}
                         <div className="space-y-3">
-                            <h3 className="text-base font-semibold text-gray-900">Required Properties</h3>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-900">Required Properties</h3>
                             <div className="grid gap-2">
                                 {credential.properties.map(prop => (
                                     <PropRow key={prop.name} prop={prop} />
@@ -137,17 +138,17 @@ const DeviceCatalog = () => {
                         {/* Permissions Section */}
                         {credential.permissions && credential.permissions.length > 0 && (
                             <div className="space-y-3">
-                                <h3 className="text-base font-semibold text-gray-900">Required Permissions</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-900">Required Permissions</h3>
                                 <div className="grid gap-2">
                                     {credential.permissions.map(perm => (
                                         <div 
                                             key={perm.name}
-                                            className="flex items-start gap-2 p-2 bg-white rounded-lg border border-blue-200 shadow-sm"
+                                            className="flex items-start gap-2 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 shadow-sm"
                                         >
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-medium text-sm text-gray-900">{perm.name}</h4>
-                                                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                                    <h4 className="font-medium text-xs sm:text-sm text-gray-900">{perm.name}</h4>
+                                                    <Badge className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">
                                                         {perm.type}
                                                     </Badge>
                                                 </div>
@@ -162,13 +163,15 @@ const DeviceCatalog = () => {
                         {/* Onboarding Methods Section */}
                         {credential.recommendedOnboarding && credential.recommendedOnboarding.length > 0 && (
                             <div className="space-y-3">
-                                <h3 className="text-base font-semibold text-gray-900">Recommended Onboarding Methods</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-900">
+                                    Recommended Onboarding Methods
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {credential.recommendedOnboarding.map(method => (
                                         <Badge 
                                             key={method} 
                                             variant="secondary" 
-                                            className="bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                            className="text-xs sm:text-sm bg-blue-100 text-blue-700 hover:bg-blue-200"
                                         >
                                             {method.toUpperCase()}
                                         </Badge>
@@ -179,21 +182,21 @@ const DeviceCatalog = () => {
 
                         {/* Documentation Link */}
                         {credential.documentationUrl && (
-                            <div className="bg-white border border-blue-100 rounded-lg p-3">
-                                <div className="flex gap-2 text-sm text-blue-700">
+                            <div className="bg-white border border-blue-100 rounded-lg p-2 sm:p-3">
+                                <div className="flex gap-2 text-blue-700">
                                     <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                                     <div>
-                                        <p className="text-sm mb-2">
+                                        <p className="text-xs sm:text-sm mb-2">
                                             Additional Documentation and Resources
                                         </p>
                                         <a
                                             href={credential.documentationUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-xs flex items-center gap-1 text-blue-700 hover:text-blue-800"
+                                            className="text-xs sm:text-sm flex items-center gap-1 text-blue-700 hover:text-blue-800"
                                         >
                                             View Documentation
-                                            <ExternalLink className="w-3 h-3" />
+                                            <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                                         </a>
                                     </div>
                                 </div>
@@ -201,14 +204,21 @@ const DeviceCatalog = () => {
                         )}
                     </div>
 
-                    <DialogFooter className="border-t border-blue-100 pt-3">
+                    <DialogFooter className="border-t border-blue-100 pt-3 flex flex-col sm:flex-row justify-end gap-3">
+                        <DialogClose asChild>
+                            <Button
+                                variant="outline"
+                                className="w-full sm:w-auto bg-white hover:bg-gray-50"
+                            >
+                                Close
+                            </Button>
+                        </DialogClose>
                         {credential.documentationUrl && (
                             <Button
-                                onClick={() => {
-                                    window.open(credential.documentationUrl, '_blank');
-                                }}
-                                className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+                                onClick={() => window.open(credential.documentationUrl, '_blank')}
+                                className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white gap-2"
                             >
+                                <ExternalLink className="w-4 h-4" />
                                 Go to Documentation
                             </Button>
                         )}
@@ -237,7 +247,7 @@ const DeviceCatalog = () => {
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                     <Input
-                        placeholder="Search technologies..."
+                        placeholder="Search..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
@@ -247,7 +257,7 @@ const DeviceCatalog = () => {
                     <PopoverTrigger asChild>
                         <Button 
                             variant="outline" 
-                            className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-[220px] justify-between"
+                            className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-[180px] justify-between"
                         >
                             <div className="flex items-center gap-2">
                                 <Filter className="w-4 h-4" />

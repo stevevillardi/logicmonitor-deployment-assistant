@@ -274,17 +274,17 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
     return (
         <div className="space-y-4">
             {error && (
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="text-sm">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
                 </Alert>
             )}
             {warnings.length > 0 && (
                 <Alert variant="default" className="bg-yellow-50 border-yellow-200">
                     <Info className="h-4 w-4 text-yellow-700" />
-                    <AlertTitle className="text-yellow-700">Import Warnings</AlertTitle>
-                    <AlertDescription className="text-yellow-600">
+                    <AlertTitle className="text-yellow-700 text-sm">Import Warnings</AlertTitle>
+                    <AlertDescription className="text-yellow-600 text-xs sm:text-sm">
                         <ul className="list-disc list-inside space-y-1">
                             {warnings.map((warning, index) => (
                                 <li key={index}>{warning}</li>
@@ -293,31 +293,29 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
                     </AlertDescription>
                 </Alert>
             )}
-            <div className="flex items-center justify-between">
-                <div className="flex gap-4">
-                    <Button
-                        onClick={handleExportConfig}
-                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
-                    >
-                        <Download className="w-4 h-4" />
-                        Export Deployment
-                    </Button>
-                    <Button
-                        onClick={handleImportClick}
-                        variant="outline"
-                        className="gap-2"
-                    >
-                        <Upload className="w-4 h-4" />
-                        Import Deployment
-                    </Button>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleImportConfig}
-                        accept=".json"
-                        className="hidden"
-                    />
-                </div>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+                <Button
+                    onClick={handleExportConfig}
+                    className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 w-full sm:w-auto"
+                >
+                    <Download className="w-4 h-4" />
+                    Export Deployment
+                </Button>
+                <Button
+                    onClick={handleImportClick}
+                    variant="outline"
+                    className="gap-2 w-full sm:w-auto"
+                >
+                    <Upload className="w-4 h-4" />
+                    Import Deployment
+                </Button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImportConfig}
+                    accept=".json"
+                    className="hidden"
+                />
             </div>
         </div>
     );

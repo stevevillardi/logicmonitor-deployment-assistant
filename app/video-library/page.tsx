@@ -5,7 +5,7 @@ import { Footer } from '../components/CollectorCalculator/components/Footer';
 const VideoLibraryPage = memo(function VideoLibraryPage() {
   return (
     <div className="min-h-screen bg-[#040F4B] flex flex-col">
-      <main className="flex-grow p-8">
+      <main className="flex-grow py-4 sm:p-8">
         <CollectorCalculator />
       </main>
       <Footer />

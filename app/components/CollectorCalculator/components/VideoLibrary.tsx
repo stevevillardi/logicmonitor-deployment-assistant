@@ -182,7 +182,7 @@ const VideoLibrary = () => {
                         <CardTitle>Video Library</CardTitle>
                     </div>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col min-h-[800px]">
                         {/* Top Content Section */}
                         <div className="flex-grow">
@@ -209,7 +209,7 @@ const VideoLibrary = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Search and Filter
                                 </label>
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     <div className="relative flex-1">
                                         <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                                         <Input
@@ -223,7 +223,7 @@ const VideoLibrary = () => {
                                         <PopoverTrigger asChild>
                                             <Button 
                                                 variant="outline" 
-                                                className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-[180px] justify-between"
+                                                className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-full sm:w-[180px] justify-between"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Filter className="w-4 h-4" />
@@ -276,21 +276,21 @@ const VideoLibrary = () => {
 
                         {/* Pagination Controls - Fixed at Bottom */}
                         <div className="mt-8">
-                            <div className="flex justify-between">
+                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                                 <button
                                     onClick={handlePreviousPage}
                                     disabled={currentPage === 1}
-                                    className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
+                                    className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
                                 >
                                     Previous
                                 </button>
-                                <span className="text-sm text-gray-700">
+                                <span className="text-sm text-gray-700 order-first sm:order-none">
                                     Page {currentPage} of {totalPages}
                                 </span>
                                 <button
                                     onClick={handleNextPage}
                                     disabled={currentPage === totalPages}
-                                    className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
+                                    className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
                                 >
                                     Next
                                 </button>

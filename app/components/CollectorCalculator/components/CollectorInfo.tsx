@@ -54,44 +54,24 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
         }
     };
 
-    const networkPorts = [
-        { port: 443, direction: 'Outbound-External', description: 'HTTPS connection to LogicMonitor Platform', protocol: 'TCP/TLS' },
-        { port: 162, direction: 'Inbound-Internal', description: 'SNMP Traps', protocol: 'UDP' },
-        { port: 514, direction: 'Inbound-Internal', description: 'Syslog', protocol: 'UDP' },
-        { port: 2055, direction: 'Inbound-Internal', description: 'Netflow/IPFIX', protocol: 'UDP' },
-        { port: 6343, direction: 'Inbound-Internal', description: 'SFlow/JFlow', protocol: 'UDP' },
-        { port: 7214, direction: 'Inbound-Internal', description: 'Optional: Communication from custom JobMonitors to Collector', protocol: 'TCP' },
-        { port: 161, direction: 'Outbound-Internal', description: 'SNMP monitoring', protocol: 'UDP' },
-        { port: 22, direction: 'Outbound-Internal', description: 'SSH monitoring', protocol: 'TCP' },
-        { port: 135, direction: 'Outbound-Internal', description: 'WMI/Powershell monitoring', protocol: 'TCP' },
-        { port: "49152-65635", direction: 'Outbound-Internal', description: 'RPC Dynamic Ports for WMI/DCOM', protocol: 'TCP' },
-        { port: "80,443", direction: 'Outbound-Internal', description: 'HTTP/S server/web/api monitoring', protocol: 'TCP' },
-        { port: "5985,5986", direction: 'Outbound-Internal  ', description: 'WinRM', protocol: 'TCP' },
-        { port: "1433,1434", direction: 'Outbound-Internal  ', description: 'SQL Server monitoring', protocol: 'TCP' },
-        { port: 623, direction: 'Outbound-Internal  ', description: 'IPMI monitoring', protocol: 'UDP' }
-
-    ];
-
     return (
         <div className="space-y-6 overflow-y-auto">
-            {/* Collector Requirements */}
             <CollectorReq />
-            {/* Collector Sizes */}
             <EnhancedCard className="bg-white border border-gray-200">
                 <div className="p-4">
                     <div className="flex items-center gap-2 mb-4">
                         <Server className="w-6 h-6 text-blue-700" />
                         <h2 className="text-xl font-semibold text-gray-900">Collector Sizes</h2>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                         {Object.entries(collectorRequirements).map(([size, requirements]) => (
-                            <div key={size} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-10">
-                                        <div className="w-16">
+                            <div key={size} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-16 flex-shrink-0">
                                             <span className="font-bold text-blue-700">{size}</span>
                                         </div>
-                                        <div className="flex items-center gap-9 text-sm">
+                                        <div className="flex items-center gap-4 text-sm">
                                             <div className="flex items-center gap-1">
                                                 <Cpu className="w-4 h-4 text-blue-700" />
                                                 <span className="text-gray-700">{requirements.cpu}</span>
@@ -106,14 +86,18 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className=" pl-6 flex items-center gap-6 text-sm">
+                                    <div className="flex items-center gap-4 text-sm lg:border-l lg:pl-4 border-gray-200">
                                         <div className="flex items-center gap-1">
                                             <Weight className="w-4 h-4 text-blue-700" />
-                                            <span className="text-gray-700">{config.collectorCapacities[size as keyof typeof collectorRequirements].weight.toLocaleString()}</span>
+                                            <span className="text-gray-700">
+                                                {config.collectorCapacities[size as keyof typeof collectorRequirements].weight.toLocaleString()}
+                                            </span>
                                         </div>
-                                        <div className="border-l border-gray-400 pl-6 flex items-center gap-1">
+                                        <div className="flex items-center gap-1 pl-4 border-l border-gray-200">
                                             <Activity className="w-4 h-4 text-blue-700" />
-                                            <span className="text-gray-700">{config.collectorCapacities[size as keyof typeof collectorRequirements].eps.toLocaleString()}</span>
+                                            <span className="text-gray-700">
+                                                {config.collectorCapacities[size as keyof typeof collectorRequirements].eps.toLocaleString()}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -146,8 +130,6 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                     )}
                 </div>
             </EnhancedCard>
-
-            {/* Network Requirements */}
             <NetworkRequirements />
         </div>
     );

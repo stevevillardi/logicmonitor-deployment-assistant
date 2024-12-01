@@ -151,6 +151,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
             logs: {} as Record<string, number>
         };
 
+        // First count primary collectors
         sites.forEach(site => {
             const results = calculateCollectors(
                 calculateWeightedScore(site.devices, config.methodWeights),
@@ -172,7 +173,8 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
             });
         });
 
-        if (config.enablePollingFailover) {
+        // Only add redundant collectors if there are primary collectors
+        if (config.enablePollingFailover && Object.keys(collectorsBySize.polling).length > 0) {
             sites.forEach(site => {
                 const results = calculateCollectors(
                     calculateWeightedScore(site.devices, config.methodWeights),
@@ -328,7 +330,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                     {/* Global Content with Border */}
                     <div className="border border-blue-200 rounded-lg p-6 space-y-6">
                         {/* Global Metrics */}
-                        <div className="grid grid-cols-5 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                             {/* Total Sites */}
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                 <div className="flex items-center gap-2 mb-1">
@@ -386,7 +388,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                         </div>
 
                         {/* Global Collector Distribution */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Polling Collectors */}
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                 <div className="flex items-center justify-between mb-3">
@@ -504,7 +506,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                     {/* Site Content */}
                                     <div className="space-y-4">
                                         {/* Site Metrics */}
-                                        <div className="grid grid-cols-6 gap-2">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                                             {/* Total Devices */}
                                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                                 <div className="flex items-center gap-2 mb-1">
@@ -577,7 +579,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                         </div>
 
                                         {/* Site Collector Distribution */}
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                                 <div className="flex items-center justify-between mb-3">
                                                     <div className="flex items-center gap-2">
@@ -666,7 +668,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                         {/* Device Distribution */}
                                         <div>
                                             <h3 className="text-lg font-semibold text-gray-900 mb-3">Device Distribution</h3>
-                                            <div className="grid grid-cols-3 gap-2">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                                                 {Object.entries(site.devices)
                                                     .filter(([_, data]) => data.count > 0)
                                                     .map(([type, data]) => {
@@ -685,7 +687,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                                                         <div className="flex items-center gap-2">
                                                                             <span className="font-medium text-gray-900 text-sm truncate">{type}</span>
                                                                         </div>
-                                                                        <div className="grid grid-cols-3 gap-2 mt-1 text-xs text-gray-600">
+                                                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1 text-xs text-gray-600">
                                                                             <div className="flex items-center gap-1">
                                                                                 <HardDrive className="w-3 h-3 text-blue-700" />
                                                                                 <span>Devices: {data.count}</span>

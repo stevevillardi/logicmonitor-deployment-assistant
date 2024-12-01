@@ -30,12 +30,13 @@ import {
 
 const Logo = () => {
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
             <Image
                 src="lmlogo.webp"
                 alt="LogicMonitor"
                 width={250}
                 height={250}
+                className="w-[150px] sm:w-[200px] lg:w-[250px]"
                 priority
             />
         </div>
@@ -234,48 +235,50 @@ const CollectorCalculator = () => {
                 onOpenChange={setHelpDialogOpen}
             />
             <Card className="w-full max-w-[1440px] bg-white shadow-lg">
-                <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-white to-blue-50/50 no-print">
-                    <div className="flex items-center justify-between py-2">
-                        <div className="flex items-center gap-8">
+                <CardHeader className="border-gray-200 bg-gradient-to-r from-white to-blue-50/50 no-print">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 py-2">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-8 w-full sm:w-auto">
                             <a href="https://www.logicmonitor.com" target="_blank" rel="noopener noreferrer">
                                 <Logo />
                             </a>
-                            <div className="h-8 w-px bg-gray-200"></div>
-                            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                            <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
+                            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
                                 Deployment Assistant
                             </CardTitle>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="hidden sm:flex flex-wrap items-center gap-2 sm:gap-4">
                             <Button
                                 variant="outline"
                                 onClick={() => setHelpDialogOpen(true)}
-                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm"
                             >
-                                <HelpCircle className="w-5 h-5 text-blue-700" />
-                                <span className="text-sm font-medium text-blue-700">Help Guide</span>
+                                <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                <span className="font-medium text-blue-700">Help Guide</span>
                             </Button>
+
                             <a
                                 href="https://support.logicmonitor.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm"
                             >
-                                <BiSupport className="w-5 h-5 text-blue-700" />
-                                <span className="text-sm font-medium text-blue-700">Support</span>
+                                <BiSupport className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                <span className="font-medium text-blue-700">Support</span>
                             </a>
+
                             <a
                                 href="https://community.logicmonitor.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm"
                             >
-                                <MessageCircleQuestion className="w-5 h-5 text-blue-700" />
-                                <span className="text-sm font-medium text-blue-700">Community Forum</span>
+                                <MessageCircleQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                <span className="font-medium text-blue-700">Community</span>
                             </a>
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="p-6 bg-gray-50">
+                <CardContent className="p-0 pl-3 pr-3 bg-gray-50">
                     <div className="space-y-6">
                         <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
 

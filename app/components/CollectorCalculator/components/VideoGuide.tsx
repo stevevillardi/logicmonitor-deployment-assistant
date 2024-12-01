@@ -65,7 +65,7 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                         )}
                     </div>
                     <div className="flex-grow">
-                        <div className="flex justify-between">
+                        <div className="flex flex-col sm:flex-row justify-between gap-4">
                             <div>
                                 <h4 className="font-medium text-gray-900 flex items-center gap-2">
                                     {title}
@@ -77,7 +77,7 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                                 </h4>
                                 <p className="text-sm text-gray-600 mt-1">{description}</p>
                             </div>
-                            <div className="flex items-center gap-3 ml-4">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:ml-4">
                                 {!isExpanded && videoId && (
                                     <div className="relative w-16 h-9 rounded overflow-hidden">
                                         <Image
@@ -89,16 +89,16 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                                     </div>
                                 )}
                                 {duration && (
-                                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-50 text-green-700 text-sm font-medium">
-                                    <Clock className="w-4 h-4 mr-1" />
-                                    {duration}
-                                </div>
+                                    <div className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs sm:text-sm font-medium">
+                                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                                        {duration}
+                                    </div>
                                 )}
                                 {category && (
-                                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
-                                    <Tag className="w-4 h-4 mr-1" />
-                                    {category}
-                                </div>
+                                    <div className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs sm:text-sm font-medium">
+                                        <Tag className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                                        {category}
+                                    </div>
                                 )}
                             </div>
                         </div>

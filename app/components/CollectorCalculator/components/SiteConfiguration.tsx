@@ -18,6 +18,7 @@ import { devLog } from '@/utils/debug';
 import { RxReset } from "react-icons/rx";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SiteConfigurationProps {
     sites: Site[];
@@ -122,11 +123,11 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
             />
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <Button
                         onClick={addSite}
-                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 w-full sm:w-auto"
                     >
                         <Plus className="w-4 h-4" />
                         Add New Site
@@ -140,7 +141,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                 setExpandedSites(new Set(shouldExpandAll ? allSiteIndexes : []));
                             }}
                             variant="outline"
-                            className="gap-2"
+                            className="gap-2 w-full sm:w-auto"
                         >
                             {expandedSites.size === sites.length ? (
                                 <>
@@ -200,17 +201,30 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 </div>
             ) : (
                 sites.map((site, index) => (
-                    <EnhancedCard key={index} className="bg-white border border-gray-200">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div className="flex items-center gap-6">
-                                <div className="flex items-center gap-4">
-                                    <div onClick={() => toggleSite(index)} className={`w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex cursor-pointer items-center justify-center transition-colors ${expandedSites.has(index) ? 'bg-blue-50 text-blue-600' : 'text-gray-400'}`}>
-                                        {expandedSites.has(index) ? "▼" : "▶"}
-                                    </div>
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                        <Building onClick={() => toggleSite(index)} className="w-6 h-6 text-blue-600 cursor-pointer" />
-                                    </div>
-                                    <div className="flex items-center gap-2">
+                    <EnhancedCard 
+                        key={`site-${index}`}
+                        className="mb-4"
+                    >
+                        <CardHeader className="border-gray-200 bg-white">
+                            <div className="flex flex-col sm:flex-row gap-4 w-full">
+                                {/* Site Name Section - Clickable */}
+                                <div 
+                                    className="flex-none sm:min-w-[200px] sm:max-w-[300px] w-full"
+                                    onClick={() => toggleSite(index)}
+                                >
+                                    <div className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity">
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
+                                                        <Building className="w-4 h-4 text-blue-700" />
+                                                    </div>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="bg-white border border-gray-200 text-gray-900 shadow-sm">
+                                                    <p>Click to {expandedSites.has(index) ? 'collapse' : 'expand'} site</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                         <Input
                                             value={site.name}
                                             onChange={(e) => {
@@ -219,115 +233,118 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 newSites[index].name = e.target.value;
                                                 onUpdateSites(newSites);
                                             }}
-                                            className="w-64"
                                             onClick={(e) => e.stopPropagation()}
-                                            placeholder="Enter site name..."
+                                            placeholder={`Site ${index + 1}`}
+                                            className="w-full"
                                         />
                                     </div>
                                 </div>
 
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
-                                    <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                        <Server className="w-4 h-4 text-blue-600" />
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-600">
-                                        x{getSiteResults(site).polling.collectors.filter(c => c.type === "Primary").length} Polling
-                                    </span>
-                                    {config.enablePollingFailover && (
-                                        <span className="text-sm text-gray-500">
-                                            + 1 Redundant
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
-                                        <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                            <Activity className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-600">
-                                            x{getSiteResults(site).logs.collectors.filter(c => c.type === "Primary").length} Netflow/Logs
-                                        </span>
-                                        {config.enableLogsFailover && (
-                                            <span className="text-sm text-gray-500">
-                                                + 1 N+1
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className={`px-3 py-1.5 rounded-lg flex items-center gap-2 ${calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
-                                        ? "bg-red-50 text-red-700 border border-red-200"
-                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                            ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                        }`}>
-                                        <span className="text-sm font-medium">Avg Load</span>
-                                        <span className="text-sm">
-                                            {calculateAverageLoad(getSiteResults(site).polling.collectors)}%
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-                                        <HardDrive className="w-5 h-5 text-blue-600" />
-                                        <span className="text-sm font-medium text-blue-700">
-                                            {Object.values(site.devices).reduce(
-                                                (sum, device) => sum + (device.count || 0),
-                                                0
-                                            )}{" "}
-                                            Devices
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700"
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-2" />
-                                            Remove Site
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent className="max-w-lg bg-blue-50 sm:max-w-2xl">
-                                        <AlertDialogHeader className="border-b border-blue-100 pb-3">
-                                            <AlertDialogTitle className="text-xl font-bold text-[#040F4B]">
-                                                Remove Site
-                                            </AlertDialogTitle>
-                                            <AlertDialogDescription className="text-gray-600">
-                                                Are you sure you want to remove this site? This action cannot be undone.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <div className="py-3">
-                                            <div className="bg-white border border-blue-100 rounded-lg p-3">
-                                                <div className="flex gap-2 text-sm text-blue-700">
-                                                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                                                    <div>
-                                                        <p className="text-sm">The following will be removed:</p>
-                                                        <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1 mt-2">
-                                                            <li>Site configuration</li>
-                                                            <li>Device counts and settings</li>
-                                                            <li>Log and NetFlow settings</li>
-                                                        </ul>
-                                                    </div>
+                                {/* Stats Grid - Not Clickable */}
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 w-full">
+                                        {/* Polling Collectors */}
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg w-full">
+                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                                                <Server className="w-4 h-4 text-blue-700" />
+                                            </div>
+                                            <div className="flex flex-col min-w-0 flex-1">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-sm font-medium text-blue-900 truncate">
+                                                        {getSiteResults(site).polling.collectors.filter(c => c.type === "Primary").length}x Polling
+                                                    </span>
                                                 </div>
+                                                {config.enablePollingFailover && (
+                                                    <span className="text-xs text-blue-700">
+                                                        +1 Redundant
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
-                                        <AlertDialogFooter className="border-t border-blue-100 pt-3">
-                                            <AlertDialogCancel className="border-[#040F4B] bg-white">
-                                                Cancel
-                                            </AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={() => deleteSite(index)}
-                                                className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
-                                            >
-                                                Remove Site
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+
+                                        {/* Netflow/Logs Collectors */}
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg w-full">
+                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                                                <Activity className="w-4 h-4 text-orange-700" />
+                                            </div>
+                                            <div className="flex flex-col min-w-0 flex-1">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-sm font-medium text-orange-900 truncate">
+                                                        {getSiteResults(site).logs.collectors.filter(c => c.type === "Primary").length}x Logs
+                                                    </span>
+                                                </div>
+                                                {config.enableLogsFailover && (
+                                                    <span className="text-xs text-orange-700">
+                                                        +1 Redundant
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Average Load */}
+                                        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
+                                            calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
+                                                ? "bg-red-50 border-red-200"
+                                                : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
+                                                    ? "bg-yellow-50 border-yellow-200"
+                                                    : "bg-emerald-50 border-emerald-200"
+                                        }`}>
+                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                                                <Bolt className={`w-4 h-4 ${
+                                                    calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
+                                                        ? "text-red-700"
+                                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
+                                                            ? "text-yellow-700"
+                                                            : "text-emerald-700"
+                                                }`} />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className={`text-sm font-medium ${
+                                                    calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
+                                                        ? "text-red-900"
+                                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
+                                                            ? "text-yellow-900"
+                                                            : "text-emerald-900"
+                                                }`}>Average Load</span>
+                                                <span className={`text-xs ${
+                                                    calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
+                                                        ? "text-red-700"
+                                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
+                                                            ? "text-yellow-700"
+                                                            : "text-emerald-700"
+                                                }`}>
+                                                    {calculateAverageLoad(getSiteResults(site).polling.collectors)}%
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Device Count */}
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                                                <HardDrive className="w-4 h-4 text-blue-700" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-medium text-blue-900">
+                                                    {Object.values(site.devices).reduce(
+                                                        (sum, device) => sum + (device.count || 0),
+                                                        0
+                                                    )}{" "}
+                                                    Devices
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Delete Button */}
+                                    <Button
+                                        variant="outline"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 w-full sm:w-auto shrink-0"
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Remove Site
+                                    </Button>
+                                </div>
                             </div>
                         </CardHeader>
                         {expandedSites.has(index) && (
@@ -350,7 +367,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 Reset Devices
                                             </Button>
                                         </div>
-                                        <div className="grid grid-cols-4 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                             {Object.entries(site.devices).map(([type, data]) => (
                                                 <DeviceTypeCard
                                                     key={type}

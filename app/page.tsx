@@ -7,7 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 const CollectorCalculator = dynamic(() => import('./components/CollectorCalculator/CollectorCalculator'), { 
   ssr: false,
   loading: () => (
-    <div className="flex-grow p-8">
+    <div className="flex-grow">
       <div className="max-w-[1200px] mx-auto">
         {/* Header Area */}
         <div className="flex justify-between items-center mb-8">
@@ -56,7 +56,7 @@ const CollectorCalculator = dynamic(() => import('./components/CollectorCalculat
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#040F4B] flex flex-col">
-      <main className="flex-grow p-8">
+      <main className="flex-grow py-4 sm:p-8">
         <SpeedInsights />
         <CollectorCalculator />
       </main>

@@ -81,17 +81,17 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 flex-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
                     <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
                         <Building2 className="w-6 h-6 text-blue-700" />
                     </div>
-                    <div className="flex-1 flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
                         <Input
                             value={value}
                             onChange={(e) => onDeploymentNameChange(e.target.value)}
                             placeholder="Enter deployment name..."
-                            className="bg-white border border-gray-200 h-9 max-w-md"
+                            className="bg-white border border-gray-200 h-9 w-full sm:max-w-md"
                             type="text"
                         />
                         <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                         <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700"
+                            className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 w-full sm:w-auto"
                         >
                             <RxReset className="w-4 h-4 mr-2" />
                             Reset Deployment
