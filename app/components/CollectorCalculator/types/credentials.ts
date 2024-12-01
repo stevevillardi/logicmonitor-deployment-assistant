@@ -29,6 +29,7 @@ export interface CredentialType {
     tags?: string[];
     documentationUrl?: string;
     recommendedOnboarding?: string[];
+    type?: string;
 }
 
 export interface CredentialData {

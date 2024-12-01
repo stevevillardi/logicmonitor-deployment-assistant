@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ExternalLink, ChevronRight, Info, ChevronLeft, Link } from 'lucide-react';
+import { Search, Filter, ExternalLink, ChevronRight, Info, ChevronLeft, Link, Network, Server } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -39,16 +39,28 @@ const DeviceCatalog = () => {
     const [search, setSearch] = useState('');
     const [selectedCredential, setSelectedCredential] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 12;
 
     // Initialize the credential data
     const credentialData = useMemo(() => transformCredentialData(), []);
 
-    // Get list of credential names for the filter
-    const credentialNames = useMemo(() => {
+    // Near the top of the component, add this categorization logic
+    const categorizedCredentials = useMemo(() => {
         const allCredentials = Object.values(credentialData);
-        return ['All Credentials', ...allCredentials.map(cred => cred.name).sort()];
+        const protocols = ['All Protocols'];
+        const systems = ['All Systems'];
+        
+        allCredentials.forEach(cred => {
+            if (cred.type === 'protocol') {
+                protocols.push(cred.name);
+            } else {
+                systems.push(cred.name);
+            }
+        });
+        
+        return {
+            protocols: protocols.sort(),
+            systems: systems.sort()
+        };
     }, [credentialData]);
 
     const filteredCredentials = useMemo(() => {
@@ -59,21 +71,16 @@ const DeviceCatalog = () => {
                 cred.name.toLowerCase().includes(search.toLowerCase()) ||
                 cred.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()));
 
-            const matchesSelected = !selectedCredential || 
+            const matchesSelected = 
+                !selectedCredential || 
                 selectedCredential === 'All Credentials' ||
+                (selectedCredential === 'All Protocols' && cred.type === 'protocol') ||
+                (selectedCredential === 'All Systems' && cred.type === 'system') ||
                 cred.name === selectedCredential;
 
             return matchesSearch && matchesSelected;
         });
     }, [search, selectedCredential, credentialData]);
-
-    const paginatedCredentials = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return filteredCredentials.slice(startIndex, endIndex);
-    }, [filteredCredentials, currentPage]);
-
-    const totalPages = Math.ceil(filteredCredentials.length / itemsPerPage);
 
     const CredentialDialog = ({ credential }: { credential: CredentialType }) => {
         const Icon = credential.icon;
@@ -265,31 +272,87 @@ const DeviceCatalog = () => {
                             </div>
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[220px] p-0 bg-white border border-gray-200 max-h-[300px] overflow-y-auto">
-                        <div className="p-2">
-                            {credentialNames.map((name, index) => (
-                                <div
-                                    key={index}
-                                    className={`px-2 py-1.5 cursor-pointer rounded hover:bg-gray-100 ${
-                                        selectedCredential === name ? 'bg-gray-100' : ''
-                                    }`}
-                                    onClick={() => setSelectedCredential(name)}
-                                >
-                                    {name}
-                                </div>
-                            ))}
-                        </div>
+                    <PopoverContent className="w-[220px] p-0 bg-white border border-gray-200 max-h-[400px] overflow-y-auto">
+                        <Command>
+                            <CommandList>
+                                <CommandGroup heading="Protocols">
+                                    <CommandItem
+                                        onSelect={() => setSelectedCredential('All Credentials')}
+                                        className={`px-2 py-1.5 cursor-pointer text-gray-900 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-900 hover:bg-gray-50`}
+                                    >
+                                        All Credentials
+                                    </CommandItem>
+                                    {categorizedCredentials.protocols.map((name) => (
+                                        <CommandItem
+                                            key={`protocol-${name}`}
+                                            onSelect={() => setSelectedCredential(name)}
+                                            className={`px-2 py-1.5 cursor-pointer text-gray-900 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-900 hover:bg-gray-50`}
+                                        >
+                                            {name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+
+                                <CommandSeparator />
+
+                                <CommandGroup heading="Systems">
+                                    {categorizedCredentials.systems.map((name) => (
+                                        <CommandItem
+                                            key={`system-${name}`}
+                                            onSelect={() => setSelectedCredential(name === 'All Systems' ? 'All Credentials' : name)}
+                                            className={`px-2 py-1.5 cursor-pointer text-gray-900 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-900 hover:bg-gray-50`}
+                                        >
+                                            {name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
                     </PopoverContent>
                 </Popover>
             </div>
 
             {/* Results Grid */}
             <div className="flex flex-col min-h-[600px] justify-between">
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {paginatedCredentials.map((credential) => (
-                            <CredentialDialog key={credential.id} credential={credential} />
-                        ))}
+                <div className="space-y-8">
+                    {/* Protocols Section */}
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            <Network className="w-5 h-5 text-blue-600" />
+                            Protocols
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {filteredCredentials
+                                .filter(cred => cred.type === 'protocol')
+                                .map((credential) => (
+                                    <CredentialDialog key={credential.id} credential={credential} />
+                                ))}
+                            {filteredCredentials.filter(cred => cred.type === 'protocol').length === 0 && (
+                                <div className="col-span-full p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                                    <p className="text-gray-500">No protocols found matching your criteria</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Systems Section */}
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            <Server className="w-5 h-5 text-blue-600" />
+                            Systems
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {filteredCredentials
+                                .filter(cred => cred.type === 'system')
+                                .map((credential) => (
+                                    <CredentialDialog key={credential.id} credential={credential} />
+                                ))}
+                            {filteredCredentials.filter(cred => cred.type === 'system').length === 0 && (
+                                <div className="col-span-full p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                                    <p className="text-gray-500">No systems found matching your criteria</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* No Results State */}
@@ -302,29 +365,6 @@ const DeviceCatalog = () => {
                         </div>
                     )}
                 </div>
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                    <div className="flex justify-between mt-4">
-                        <button
-                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
-                        >
-                            Previous
-                        </button>
-                        <span className="text-sm text-gray-700">
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <button
-                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
-                        >
-                            Next
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );
