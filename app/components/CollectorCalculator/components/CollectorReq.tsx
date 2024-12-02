@@ -64,9 +64,21 @@ const CollectorReq = () => {
                             <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-gray-900">Support Policy</h4>
                                 <p className="text-sm text-gray-900">
-                                    LogicMonitor follows the Microsoft Lifecycle Policy for the &quot;Extended Support End Date&quot; and
-                                    the Red Hat Enterprise Linux Life Cycle for the &quot;End of Maintenance Support 2 (Product retirement)&quot;
-                                    date to determine supported operating systems for Collector installation.
+                                    LogicMonitor follows the <a 
+                                        href="https://learn.microsoft.com/en-us/lifecycle/" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="text-blue-600 hover:text-blue-800 underline"
+                                    >
+                                        Microsoft Lifecycle Policy
+                                    </a> for the &quot;Extended Support End Date&quot; and the <a 
+                                        href="https://access.redhat.com/support/policy/updates/errata" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 underline"
+                                    >
+                                        Red Hat Enterprise Linux Life Cycle
+                                    </a> for the &quot;End of Maintenance Support 2 (Product retirement)&quot; date to determine supported operating systems for Collector installation.
                                 </p>
                             </div>
                         </div>
@@ -122,7 +134,7 @@ const CollectorReq = () => {
                                 </div>
                                 <div>
                                     <p className="font-medium text-gray-900">
-                                        Recommended OS: {recommendation.recommended}
+                                        Recommended OS based on your configuration: {recommendation.recommended}
                                     </p>
                                     <p className="text-sm text-gray-600 mt-1">
                                         {recommendation.reason}

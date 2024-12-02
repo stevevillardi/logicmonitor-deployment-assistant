@@ -410,7 +410,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                         <span className="font-medium">Configuration Impact</span>
                                     </div>
                                     <p className="text-sm text-blue-600">
-                                        These settings affect how collectors are sized and distributed. Adjust the maximum load to balance performance and resource utilization.
+                                        These settings affect how collectors are sized and distributed. Adjust the maximum load to balance performance and resource utilization. Use advanced settings to configure device/collector defaults and protocol weights if needed.
                                     </p>
                                 </div>
 

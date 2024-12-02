@@ -22,7 +22,7 @@ const getIconForCredential = (id: string): LucideIcon => {
         esxServer: Server,
         mongodb: Database,
         netapp: HardDrive,
-        paloaltoFirewall: Network,
+        paloaltoFirewall: Shield,
         dellEMCIsilon: HardDrive,
         dellEMCUnity: HardDrive,
         dellEMCPowerStore: HardDrive,
