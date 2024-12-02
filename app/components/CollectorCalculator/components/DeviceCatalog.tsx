@@ -430,7 +430,7 @@ const DeviceCatalog = () => {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                     <div className="flex items-center gap-2 text-blue-700 mb-2">
                         <Info className="w-5 h-5" />
-                        <span className="font-medium">Resource Credential and Property Details (Work in Progress)</span>
+                        <span className="font-medium">Resource Credential and Property Details</span>
                     </div>
                     <p className="text-sm text-blue-600">
                         This section contains the required properties and permissions for a list of common technologies. Click on a technology to view more details about what is required to onboard it. For the full list of LogicMontior&apos;s 3000+ supported technologies, please see the <a className="font-medium text-blue-700 hover:text-blue-800" href="https://www.logicmonitor.com/integrations">Integrations</a> page.

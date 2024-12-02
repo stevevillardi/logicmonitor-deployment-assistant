@@ -302,17 +302,37 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
         <div className="space-y-6 overflow-y-auto">
             <Tabs defaultValue="general" className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <TabsList className="grid grid-cols-1 sm:flex w-full h-full p-0 bg-gray-50 rounded-lg border border-gray-200 mb-6">
+                    <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white p-1 rounded-lg border border-gray-200">
                         <TabsTrigger 
                             value="general" 
-                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                data-[state=active]:bg-blue-50 
+                                data-[state=active]:text-blue-700 
+                                data-[state=active]:border-blue-200
+                                data-[state=active]:shadow-sm
+                                hover:bg-gray-50 
+                                text-gray-600
+                                font-medium
+                                transition-all
+                                border border-transparent
+                                mb-2 sm:mb-0 sm:mr-2"
                         >
                             <Settings className="w-4 h-4" />
                             General Settings
                         </TabsTrigger>
                         <TabsTrigger 
                             value="formula" 
-                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                data-[state=active]:bg-blue-50 
+                                data-[state=active]:text-blue-700 
+                                data-[state=active]:border-blue-200
+                                data-[state=active]:shadow-sm
+                                hover:bg-gray-50 
+                                text-gray-600
+                                font-medium
+                                transition-all
+                                border border-transparent
+                                mb-2 sm:mb-0 sm:mr-2"
                         >
                             <Calculator className="w-4 h-4" />
                             Load Calculation Formula
@@ -321,21 +341,50 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                             <>
                                 <TabsTrigger 
                                     value="devices" 
-                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                        data-[state=active]:bg-blue-50 
+                                        data-[state=active]:text-blue-700 
+                                        data-[state=active]:border-blue-200
+                                        data-[state=active]:shadow-sm
+                                        hover:bg-gray-50 
+                                        text-gray-600
+                                        font-medium
+                                        transition-all
+                                        border border-transparent
+                                        mb-2 sm:mb-0 sm:mr-2"
                                 >
                                     <Server className="w-4 h-4" />
                                     Device Defaults
                                 </TabsTrigger>
                                 <TabsTrigger 
                                     value="weights" 
-                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                        data-[state=active]:bg-blue-50 
+                                        data-[state=active]:text-blue-700 
+                                        data-[state=active]:border-blue-200
+                                        data-[state=active]:shadow-sm
+                                        hover:bg-gray-50 
+                                        text-gray-600
+                                        font-medium
+                                        transition-all
+                                        border border-transparent
+                                        mb-2 sm:mb-0 sm:mr-2"
                                 >
                                     <Dumbbell className="w-4 h-4" />
                                     Protocol Weights
                                 </TabsTrigger>
                                 <TabsTrigger 
                                     value="collector-capacities" 
-                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors"
+                                    className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                        data-[state=active]:bg-blue-50 
+                                        data-[state=active]:text-blue-700 
+                                        data-[state=active]:border-blue-200
+                                        data-[state=active]:shadow-sm
+                                        hover:bg-gray-50 
+                                        text-gray-600
+                                        font-medium
+                                        transition-all
+                                        border border-transparent"
                                 >
                                     <Database className="w-4 h-4" />
                                     Collector Capacities

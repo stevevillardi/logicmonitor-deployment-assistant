@@ -234,7 +234,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 onUpdateSites(newSites);
                                             }}
                                             onClick={(e) => e.stopPropagation()}
-                                            placeholder={`Site ${index + 1}`}
+                                            placeholder={`Enter Site Name...`}
                                             className="w-full"
                                         />
                                     </div>
@@ -338,7 +338,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     {/* Delete Button */}
                                     <Button
                                         variant="outline"
-                                        onClick={(e) => e.stopPropagation()}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteSite(index);
+                                        }}
                                         className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 w-full sm:w-auto shrink-0"
                                     >
                                         <Trash2 className="w-4 h-4 mr-2" />

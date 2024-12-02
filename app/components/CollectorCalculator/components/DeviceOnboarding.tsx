@@ -202,17 +202,36 @@ const DeviceOnboarding: React.FC = () => {
     return (
         <div className="space-y-6 overflow-y-auto">
             <Tabs defaultValue="onboarding" className="w-full">
-                <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-gray-50 p-0 rounded-lg border border-gray-200 mb-6">
+                <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white p-1 rounded-lg border border-gray-200 mb-6">
                     <TabsTrigger
                         value="onboarding"
-                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors mb-2 sm:mb-0 sm:mr-2"
+                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                            data-[state=active]:bg-blue-50 
+                            data-[state=active]:text-blue-700 
+                            data-[state=active]:border-blue-200
+                            data-[state=active]:shadow-sm
+                            hover:bg-gray-50 
+                            text-gray-600
+                            font-medium
+                            transition-all
+                            border border-transparent
+                            mb-2 sm:mb-0 sm:mr-2"
                     >
                         <Server className="w-4 h-4" />
                         Onboarding Methods
                     </TabsTrigger>
                     <TabsTrigger
                         value="credentials"
-                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 hover:bg-gray-100 transition-colors"
+                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                            data-[state=active]:bg-blue-50 
+                            data-[state=active]:text-blue-700 
+                            data-[state=active]:border-blue-200
+                            data-[state=active]:shadow-sm
+                            hover:bg-gray-50 
+                            text-gray-600
+                            font-medium
+                            transition-all
+                            border border-transparent"
                     >
                         <Key className="w-4 h-4" />
                         Common Credential Requirements
@@ -455,7 +474,7 @@ const DeviceOnboarding: React.FC = () => {
                                                 description="Automated discovery and monitoring of containerized workloads."
                                                 recommended
                                             >
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                     <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
                                                         <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Key Features</h4>
                                                         <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
@@ -538,7 +557,7 @@ const DeviceOnboarding: React.FC = () => {
                                                 <div className="hidden sm:block p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <Workflow className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Automation Examples</h4>
+                                                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Automation Examples (Adding Devices)</h4>
                                                     </div>
                                                     <CodeSamples />
                                                 </div>
