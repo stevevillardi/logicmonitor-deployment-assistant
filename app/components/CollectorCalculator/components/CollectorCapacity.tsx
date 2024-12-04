@@ -47,7 +47,7 @@ export const CollectorCapacitySection: React.FC<CollectorCapacitySectionProps> =
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <Label className="text-sm text-gray-600 mb-2 block">
-                                    Weighted Capacity
+                                    Weighted Capacity (Load Score)
                                 </Label>
                                 <div className="relative">
                                     <Input

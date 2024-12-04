@@ -1,7 +1,5 @@
-import { Bot, Shield, Server } from 'lucide-react';
-import { Info } from 'lucide-react';
+import { Bot, Info } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
-import { defaultDeviceTypes } from '../constants';
 import { useEffect, useState } from 'react';
 import { Site } from '../types';
 import { IoLogoWindows } from "react-icons/io";

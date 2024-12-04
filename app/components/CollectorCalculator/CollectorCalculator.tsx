@@ -2,14 +2,13 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from './constants';
 import SiteConfiguration from './components/SiteConfiguration';
 import { SystemConfiguration } from './components/SystemConfiguration';
 import SiteOverview from './components/SiteOverview';
 import CollectorInfo from './components/CollectorInfo';
 import { Config, Site } from './types';
 import Image from 'next/image';
-import { HandHelping, ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Info, Terminal, Bolt, Bot, HelpingHand, HelpCircle } from 'lucide-react';
+import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Terminal, Bolt, Bot, HelpCircle } from 'lucide-react';
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -18,15 +17,7 @@ import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
 import { devLog } from '@/utils/debug';
 import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+import { getInitialConfig, getInitialSites } from './utils/storage';
 
 const Logo = () => {
     return (
@@ -138,39 +129,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
 };
 
 const CollectorCalculator = () => {
-    const [config, setConfig] = useState < Config > (() => {
-        // Try to get the config from localStorage
-        const savedConfig = typeof window !== 'undefined' ? localStorage.getItem('collectorConfig') : null;
-        return savedConfig ? JSON.parse(savedConfig) : {
-            deploymentName: '',
-            methodWeights: { ...defaultMethodWeights },
-            maxLoad: 85,
-            enablePollingFailover: true,
-            enableLogsFailover: false,
-            deviceDefaults: { ...defaultDeviceTypes },
-            collectorCapacities: { ...collectorCapacities },
-            showAdvancedSettings: false,
-        };
-    });
-
-    const [sites, setSites] = useState < Site[] > (() => {
-        // Try to get the sites from localStorage
-        const savedSites = typeof window !== 'undefined' ? localStorage.getItem('collectorSites') : null;
-        return savedSites ? JSON.parse(savedSites) : [{
-            name: "",
-            devices: Object.fromEntries(
-                Object.entries(defaultDeviceTypes).map(([type, data]) => [
-                    type,
-                    { ...data, count: 0 },
-                ])
-            ),
-            logs: {
-                netflow: 0,
-                syslog: 0,
-                traps: 0,
-            },
-        }];
-    });
+    const [config, setConfig] = useState<Config>(getInitialConfig);
+    const [sites, setSites] = useState<Site[]>(getInitialSites);
 
     const router = useRouter();
     const pathname = usePathname();

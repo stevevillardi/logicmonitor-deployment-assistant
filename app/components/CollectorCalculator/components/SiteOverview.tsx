@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Component, Building, Server, Activity, Download, Calculator, Users, Database, Weight, HardDrive, Earth, Building2 } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
@@ -30,11 +30,13 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
         return sites.reduce((sum, site) => sum + getTotalEPS(site), 0);
     };
 
-    const getTotalLoadScore = () => {
-        return sites.reduce((sum, site) => sum + calculateWeightedScore(site.devices, config.methodWeights), 0);
-    };
+    const totalLoadScore = useMemo(() => 
+        sites.reduce((sum, site) => 
+            sum + calculateWeightedScore(site.devices, config.methodWeights), 0
+        ), [sites, config.methodWeights]
+    );
 
-    const getIcon = (type: string) => {
+    const getIcon = useMemo(() => (type: string) => {
         switch (type) {
             case "Linux Servers":
             case "Windows Servers":
@@ -60,8 +62,10 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                 return <Cpu className="w-6 h-6 text-blue-700" />;
             default:
                 return <Server className="w-6 h-6 text-blue-700" />;
-        }
-    };
+            }
+        },
+        []
+    );
 
     const getEstimatedInstanceCount = (site: Site) => {
         return Object.entries(site.devices).reduce((sum, [_, data]) => {
@@ -117,7 +121,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        Load Score: ${Math.round(getTotalLoadScore()).toLocaleString()}
+                        Load Score: ${Math.round(totalLoadScore).toLocaleString()}
                     </div>
                 </div>
             </div>
@@ -371,7 +375,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
                                     <span className="text-sm text-purple-900">Load Score</span>
                                 </div>
                                 <p className="text-lg font-bold text-purple-700">
-                                    {Math.round(getTotalLoadScore()).toLocaleString()}
+                                    {Math.round(totalLoadScore).toLocaleString()}
                                 </p>
                             </div>
 

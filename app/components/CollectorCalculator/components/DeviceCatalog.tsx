@@ -1,37 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ExternalLink, ChevronRight, Info, ChevronLeft, Link, Network, Server, LayoutGrid, List } from 'lucide-react';
+import { Search, Filter, ExternalLink, ChevronRight, Info, LayoutGrid, List } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-    CommandSeparator,
-} from '@/components/ui/command';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogClose,
-} from '@/components/ui/dialog';
-
+import { Command, CommandGroup, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { transformCredentialData } from '../data/credentialData';
 import { CredentialType } from '../types/credentials';
 

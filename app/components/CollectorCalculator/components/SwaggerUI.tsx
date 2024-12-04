@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Info, ExternalLink, Terminal } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Terminal } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';

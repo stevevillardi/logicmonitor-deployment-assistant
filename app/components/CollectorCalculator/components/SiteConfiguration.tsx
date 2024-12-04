@@ -1,5 +1,5 @@
 import { Site, Config } from '../types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
@@ -16,8 +16,6 @@ import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
 import { devLog } from '@/utils/debug';
 import { RxReset } from "react-icons/rx";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SiteConfigurationProps {
@@ -29,7 +27,7 @@ interface SiteConfigurationProps {
     expandedSites: Set<number>;
 }
 
-export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config, onSiteExpand }: SiteConfigurationProps) => {
+export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config, onSiteExpand, expandedSites }: SiteConfigurationProps) => {
     devLog('SiteConfiguration received config:', config);
     const resetSite = (index: number, type: string) => {
         const newSites = [...sites];
@@ -67,18 +65,14 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
         );
     };
 
-    const [expandedSites, setExpandedSites] = useState(new Set([0])); // Start with first site expanded
-
     const toggleSite = (index: number) => {
-        setExpandedSites((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(index)) {
-                newSet.delete(index);
-            } else {
-                newSet.add(index);
-            }
-            return newSet;
-        });
+        const newSet = new Set<number>(expandedSites);
+        if (newSet.has(index)) {
+            newSet.delete(index);
+        } else {
+            newSet.add(index);
+        }
+        onSiteExpand(newSet);
     };
 
     const addSite = () => {
@@ -98,24 +92,20 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
         };
 
         // Clear all expanded sites
-        setExpandedSites(new Set());
+        onSiteExpand(new Set());
 
         // Add new site to the beginning of the array
         onUpdateSites([newSite, ...sites]);
 
         // After a brief delay, expand the new site (now at index 0)
         setTimeout(() => {
-            setExpandedSites(new Set([0]));
+            onSiteExpand(new Set([0]));
         }, 100);
     };
 
     const deleteSite = (index: number) => {
         onUpdateSites(sites.filter((_, i) => i !== index));
     };
-
-    useEffect(() => {
-        console.log('Config updated in SiteConfiguration:', config);
-    }, [config]);
 
     return (
         <div className="space-y-8 min-h-[900px]">
@@ -138,7 +128,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                 const allSiteIndexes = Array.from({ length: sites.length }, (_, i) => i);
                                 // If all sites are expanded, collapse all. Otherwise, expand all
                                 const shouldExpandAll = expandedSites.size !== sites.length;
-                                setExpandedSites(new Set(shouldExpandAll ? allSiteIndexes : []));
+                                onSiteExpand(new Set(shouldExpandAll ? allSiteIndexes : []));
                             }}
                             variant="outline"
                             className="gap-2 w-full sm:w-auto"
@@ -162,7 +152,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     config={config}
                     onUpdateSites={onUpdateSites}
                     onUpdateConfig={onUpdateConfig}
-                    onSiteExpand={setExpandedSites}
+                    onSiteExpand={onSiteExpand}
                 />
             </div>
             <DeploymentNameInput

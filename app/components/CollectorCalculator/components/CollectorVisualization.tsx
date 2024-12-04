@@ -1,7 +1,5 @@
 import React from 'react';
-import { Server, Activity, AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-
+import { Server, Activity } from 'lucide-react';
 import { devLog } from '@/utils/debug';
 
 interface CollectorVisualizationProps {

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Server, Network, Cpu, HardDrive, MemoryStick, MessageCircleWarning, Weight, Activity } from 'lucide-react';
+import { Server, Network, Cpu, HardDrive, MemoryStick, Weight, Activity } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import CollectorReq from './CollectorReq';
 import { Config } from '../types';
 import { collectorCapacities as defaultCapacities } from '../constants';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import NetworkRequirements from './NetworkRequirements';
 interface CollectorInfoProps {
     config: Config;

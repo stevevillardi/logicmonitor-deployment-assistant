@@ -31,7 +31,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
     const [newDeviceType, setNewDeviceType] = useState('');
     const [newMethodName, setNewMethodName] = useState('');
     const [newMethodWeightName, setNewMethodWeightName] = useState('');
-    const [newMethodWeight, setNewMethodWeight] = useState('2.5');
+    const [newMethodWeight, setNewMethodWeight] = useState('3');
     const [errors, setErrors] = useState<{
         methodRatios?: string;
         deviceType?: string;
@@ -787,7 +787,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                 <Label className="text-xs text-gray-500 block mb-1">Weight: {newMethodWeight}</Label>
                                                 <input
                                                     type="range"
-                                                    min="0"
+                                                    min="1"
                                                     max="5"
                                                     step="0.1"
                                                     value={newMethodWeight}
@@ -795,8 +795,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
                                                 />
                                                 <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                                    <span>0</span>
-                                                    <span>2.5</span>
+                                                    <span>1</span>
+                                                    <span>3</span>
                                                     <span>5</span>
                                                 </div>
                                             </div>
@@ -844,7 +844,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                     <Label className="text-xs text-gray-500 block mb-1">Weight: {weight}</Label>
                                                     <input
                                                         type="range"
-                                                        min="0"
+                                                        min="1"
                                                         max="5"
                                                         step="0.1"
                                                         value={weight}
@@ -861,8 +861,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
                                                     />
                                                     <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                                        <span>0</span>
-                                                        <span>2.5</span>
+                                                        <span>1</span>
+                                                        <span>3</span>
                                                         <span>5</span>
                                                     </div>
                                                 </div>

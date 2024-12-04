@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Label } from '@/components/ui/label';
-import { Building2, ListRestart, Info, RotateCcw } from 'lucide-react';
+import { Building2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/enhanced-components'
 import { Config, Site } from '../types';

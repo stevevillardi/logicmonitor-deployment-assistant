@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Bot, CheckCircle2, Terminal, Info, Users, CirclePlay, ChevronRight } from 'lucide-react';
+import { Bot, Terminal, Info, Users, CirclePlay, ChevronRight } from 'lucide-react';
 import {
     Dialog,
     DialogContent,

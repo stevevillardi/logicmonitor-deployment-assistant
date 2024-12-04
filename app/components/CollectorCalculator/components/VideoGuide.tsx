@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PlayCircle, ChevronDown, ChevronUp, Clock, Tag } from 'lucide-react';
+import { PlayCircle, ChevronUp, Clock, Tag } from 'lucide-react';
 import Image from 'next/image';
 
 interface VideoGuideProps {

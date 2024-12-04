@@ -1,10 +1,9 @@
 import React from 'react';
 import { Download, Upload, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/enhanced-components';
-import { Site, Config, CollectorCapacity } from '../types';
+import { Site, Config } from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState, useRef } from 'react';
-import { ListRestart } from 'lucide-react';
 import { devLog } from '@/utils/debug';
 interface ConfigurationActionsProps {
     sites: Site[];
@@ -41,7 +40,7 @@ interface ValidationResult {
     warnings: string[];
 }
 
-const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, onSiteExpand }: ConfigurationActionsProps) => {
+const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: ConfigurationActionsProps) => {
     const [error, setError] = useState<string | null>(null);
     const [warnings, setWarnings] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -114,8 +113,8 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
         // Validate each site has the required structure
         for (const site of data.sites) {
             if (!site.name) {
-                warnings.push('Site missing name');
-                isValid = false;
+                warnings.push('Site missing name, using default');
+                site.name = 'New Site';
             }
             if (!site.devices || typeof site.devices !== 'object') {
                 warnings.push(`Site ${site.name}: Invalid devices format`);
@@ -155,7 +154,12 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
 
         // Validate collector capacities
         if (data.collectorCapacities && typeof data.collectorCapacities === 'object') {
-            // TODO: Implement collector capacities validation
+            Object.entries(data.collectorCapacities).forEach(([size, limits]) => {
+                if (!limits || typeof limits !== 'object') {
+                    warnings.push(`Invalid limits for collector size ${size}`);
+                    isValid = false;
+                }
+            });
         } else {
             warnings.push('Invalid collector capacities format');
             isValid = false;
@@ -235,11 +239,13 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig, on
             const reconstructedSites = validationResult.sites.map(site => ({
                 name: site.name,
                 devices: Object.fromEntries(
-                    Object.entries(site.devices).map(([type, data]) => [
+                    Object.entries(importedData.deviceDefaults).map(([type, defaultData]) => [
                         type,
                         {
-                            ...config.deviceDefaults[type],
-                            count: data.count
+                            ...defaultData as Record<string, unknown>,
+                            count: site.devices[type]?.count || 0,
+                            methods: site.devices[type]?.methods as Record<string, number> || {},
+                            instances: site.devices[type]?.instances || 0
                         }
                     ])
                 ),

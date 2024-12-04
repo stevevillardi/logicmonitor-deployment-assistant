@@ -1,4 +1,4 @@
-import { Network, ArrowRightLeft, Server, Shield, Globe, Database, Monitor, Cpu, Wrench } from "lucide-react";
+import { Network, ArrowRightLeft, Server, Globe, Database, Monitor, Cpu, Wrench } from "lucide-react";
 import EnhancedCard from '@/components/ui/enhanced-card';
 import React from 'react';
 export const NetworkRequirements = () => {

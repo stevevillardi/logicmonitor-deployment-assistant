@@ -34,20 +34,37 @@ export const defaultDeviceTypes = {
         instances: 150,
         methods: { SNMPv2: 0.5, Script: 0.5 }
     },
-    "vCenter VMs": { count: 0, instances: 18, methods: { Script: 1 } },
-    "ESXi Hosts": {
+    "Hypervisor Hosts (ESXi, Hyper-V)": {
         count: 0,
         instances: 18,
         methods: { Script: 1 }
     },
 };
 
+export const defaultPlatformTypes = {
+    "VMware vSphere": {
+        "Virtual Machines": {
+            count: 0,
+            instances: 18,
+            methods: { Script: 1 }
+        },
+        "vCenter Servers": {
+            count: 0,
+            instances: 0,
+            methods: { Script: 0 }
+        }
+    }
+};
+
 export const defaultMethodWeights = {
-    SNMPv2: 0.8,
-    SNMPv3: 1,
-    WMI: 2,
-    WinRM: 2,
+    SNMPv2: 1,
+    HTTP: 1.1,
+    JMX: 1.2,
+    SNMPv3: 1.3,
+    WMI: 2.2,
+    WinRM: 2.2,
     JDBC: 1.5,
+    Perfmon: 3,
     Script: 5,
 };
 
