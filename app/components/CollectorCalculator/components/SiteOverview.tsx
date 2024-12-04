@@ -36,36 +36,38 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
         ), [sites, config.methodWeights]
     );
 
-    const getIcon = useMemo(() => (type: string) => {
-        switch (type) {
-            case "Linux Servers":
-            case "Windows Servers":
-                return <Server className="w-6 h-6 text-blue-700" />;
-            case "SQL Servers (Linux)":
-            case "SQL Servers (Windows)":
-                return <Database className="w-6 h-6 text-blue-700" />;
-            case "Routers":
-                return <Router className="w-6 h-6 text-blue-700" />;
-            case "Switches":
-                return <Network className="w-6 h-6 text-blue-700" />;
-            case "Firewalls":
-                return <Settings className="w-6 h-6 text-blue-700" />;
-            case "SD-WAN Edges":
-                return <Activity className="w-6 h-6 text-blue-700" />;
-            case "Access Points":
-                return <Wifi className="w-6 h-6 text-blue-700" />;
-            case "Storage Arrays":
-                return <HardDrive className="w-6 h-6 text-blue-700" />;
-            case "vCenter VMs":
-                return <Monitor className="w-6 h-6 text-blue-700" />;
-            case "ESXi Hosts":
-                return <Cpu className="w-6 h-6 text-blue-700" />;
-            default:
-                return <Server className="w-6 h-6 text-blue-700" />;
+    const getIcon = useMemo(() => {
+        const iconFunction = (type: string) => {
+            switch (type) {
+                case "Linux Servers":
+                case "Windows Servers":
+                    return <Server className="w-6 h-6 text-blue-700" />;
+                case "SQL Servers (Linux)":
+                case "SQL Servers (Windows)":
+                    return <Database className="w-6 h-6 text-blue-700" />;
+                case "Routers":
+                    return <Router className="w-6 h-6 text-blue-700" />;
+                case "Switches":
+                    return <Network className="w-6 h-6 text-blue-700" />;
+                case "Firewalls":
+                    return <Settings className="w-6 h-6 text-blue-700" />;
+                case "SD-WAN Edges":
+                    return <Activity className="w-6 h-6 text-blue-700" />;
+                case "Access Points":
+                    return <Wifi className="w-6 h-6 text-blue-700" />;
+                case "Storage Arrays":
+                    return <HardDrive className="w-6 h-6 text-blue-700" />;
+                case "vCenter VMs":
+                    return <Monitor className="w-6 h-6 text-blue-700" />;
+                case "ESXi Hosts":
+                    return <Cpu className="w-6 h-6 text-blue-700" />;
+                default:
+                    return <Server className="w-6 h-6 text-blue-700" />;
             }
-        },
-        []
-    );
+        };
+        iconFunction.displayName = 'GetIconFunction';
+        return iconFunction;
+    }, []);
 
     const getEstimatedInstanceCount = (site: Site) => {
         return Object.entries(site.devices).reduce((sum, [_, data]) => {
