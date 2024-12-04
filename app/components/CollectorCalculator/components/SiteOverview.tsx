@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Component, Building, Server, Activity, Download, Calculator, Users, Database, Weight, HardDrive, Earth, Building2 } from 'lucide-react';
+import { Component, Building, Server, Activity, Download, Database, Weight, HardDrive, Earth, Building2 } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
 import { Site, Config } from '../types';
@@ -13,7 +13,7 @@ interface SiteOverviewProps {
     config: Config;
 }
 
-const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
+const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     const getTotalDeviceCount = (site: Site) => {
         return Object.values(site.devices).reduce((sum, device) => sum + device.count, 0);
     };
@@ -723,5 +723,7 @@ const SiteOverview = ({ sites, config }: SiteOverviewProps) => {
         </div>
     );
 };
+
+SiteOverview.displayName = "SiteOverview";
 
 export default SiteOverview;
