@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Footer } from './components/CollectorCalculator/components/Footer';
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import ProtectedRoute from './components/ProtectedRoute';
 
 const CollectorCalculator = dynamic(() => import('./components/CollectorCalculator/CollectorCalculator'), { 
   ssr: false,
@@ -55,12 +55,13 @@ const CollectorCalculator = dynamic(() => import('./components/CollectorCalculat
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#040F4B] flex flex-col">
-      <main className="flex-grow py-4 sm:p-8">
-        <SpeedInsights />
-        <CollectorCalculator />
-      </main>
-      <Footer />
-    </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-[#040F4B] flex flex-col">
+        <main className="flex-grow py-4 sm:p-8">
+          <CollectorCalculator />
+        </main>
+        <Footer />
+      </div>
+    </ProtectedRoute>
   );
 }

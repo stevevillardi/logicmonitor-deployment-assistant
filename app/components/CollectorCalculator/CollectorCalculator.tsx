@@ -131,7 +131,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
 const CollectorCalculator = () => {
     const [config, setConfig] = useState<Config>(getInitialConfig);
     const [sites, setSites] = useState<Site[]>(getInitialSites);
-
+    
     const router = useRouter();
     const pathname = usePathname();
 

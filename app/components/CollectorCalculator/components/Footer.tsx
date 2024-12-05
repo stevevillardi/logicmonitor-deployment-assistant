@@ -30,7 +30,7 @@ export const Footer = () => {
                     </div>
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                         <a 
-                            href="https://github.com/stevevillardi/logicmonitor-calculator" 
+                            href="https://github.com/stevevillardi/logicmonitor-deployment-assistant" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200"
