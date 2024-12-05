@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input, Button } from "@/components/ui/enhanced-components";
 import { Lock, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -13,22 +13,35 @@ interface LoginPageProps {
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const authPassword = process.env.AUTH_PASSWORD;
+        setIsLoading(true);
+        setError(false);
 
-        if (!authPassword) {
-            console.error('Authentication password not set in environment variables');
-            setError(true);
-            return;
-        }
+        try {
+            const response = await fetch('/api/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password }),
+            });
 
-        if (password === authPassword) {
-            onLogin(true);
-            localStorage.setItem('isAuthenticated', 'true');
-        } else {
+            const data = await response.json();
+
+            if (data.success) {
+                onLogin(true);
+                localStorage.setItem('isAuthenticated', 'true');
+            } else {
+                setError(true);
+            }
+        } catch (error) {
+            console.error('Authentication error:', error);
             setError(true);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -66,13 +79,15 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                                     setError(false);
                                 }}
                                 className={error ? 'border-red-500 ring-red-500' : ''}
+                                disabled={isLoading}
                             />
                         </div>
                         <Button
                             type="submit"
                             className="w-full"
+                            disabled={isLoading}
                         >
-                            Login
+                            {isLoading ? 'Authenticating...' : 'Login'}
                         </Button>
                     </form>
                 </CardContent>
