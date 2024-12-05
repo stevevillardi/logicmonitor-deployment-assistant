@@ -16,7 +16,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const authPassword = process.env.NEXT_PUBLIC_AUTH_PASSWORD;
+        const authPassword = process.env.AUTH_PASSWORD;
 
         if (!authPassword) {
             console.error('Authentication password not set in environment variables');
