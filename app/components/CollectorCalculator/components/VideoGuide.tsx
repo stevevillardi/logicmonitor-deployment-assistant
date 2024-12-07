@@ -54,59 +54,70 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
         <div className="bg-gray-50 rounded-lg border border-gray-200 transition-all duration-200 hover:border-gray-300">
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full text-left p-4"
+                className="w-full text-left px-4 py-3"
             >
                 <div className="flex gap-3">
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 mt-0.5">
                         {isExpanded ? (
-                            <ChevronUp className="w-5 h-5 text-blue-700 mt-1" />
+                            <ChevronUp className="w-4 h-4 text-blue-700" />
                         ) : (
-                            <PlayCircle className="w-5 h-5 text-blue-700 mt-1" />
+                            <PlayCircle className="w-4 h-4 text-blue-700" />
                         )}
                     </div>
-                    <div className="flex-grow">
-                        <div className="flex flex-col sm:flex-row justify-between gap-4">
-                            <div>
-                                <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                    <div className="flex flex-grow min-w-0 gap-4">
+                        {/* Text Content */}
+                        <div className="flex-grow min-w-0">
+                            {/* Title and Tags Row */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h4 className="font-medium text-gray-900 truncate text-sm">
                                     {title}
+                                </h4>
+                                <div className="flex items-center gap-2">
+                                    {duration && (
+                                        <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-medium whitespace-nowrap">
+                                            <Clock className="w-3 h-3 mr-1" />
+                                            {duration}
+                                        </div>
+                                    )}
+                                    {category && (
+                                        <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium whitespace-nowrap">
+                                            <Tag className="w-3 h-3 mr-1" />
+                                            {category}
+                                        </div>
+                                    )}
                                     {!isExpanded && (
-                                        <span className="text-xs text-blue-700 font-normal">
+                                        <span className="text-xs text-blue-700 font-normal whitespace-nowrap">
                                             Click to watch
                                         </span>
                                     )}
-                                </h4>
-                                <p className="text-sm text-gray-600 mt-1">{description}</p>
+                                </div>
                             </div>
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:ml-4">
-                                {!isExpanded && videoId && (
-                                    <div className="relative w-16 h-9 rounded overflow-hidden">
-                                        <Image
-                                            src={`https://img.youtube.com/vi/${videoId}/0.jpg`}
-                                            alt={`Thumbnail for ${title}`}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                )}
-                                {duration && (
-                                    <div className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs sm:text-sm font-medium">
-                                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                                        {duration}
-                                    </div>
-                                )}
-                                {category && (
-                                    <div className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs sm:text-sm font-medium">
-                                        <Tag className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                                        {category}
-                                    </div>
-                                )}
-                            </div>
+
+                            {/* Description */}
+                            <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+                                {description}
+                            </p>
                         </div>
+
+                        {/* Thumbnail */}
+                        {!isExpanded && videoId && (
+                            <div className="relative w-24 h-14 rounded-lg overflow-hidden flex-shrink-0 self-center">
+                                <Image
+                                    src={`https://img.youtube.com/vi/${videoId}/0.jpg`}
+                                    alt={`Thumbnail for ${title}`}
+                                    fill
+                                    className="object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center">
+                                    <PlayCircle className="w-6 h-6 text-white drop-shadow-md" />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </button>
             {isExpanded && (
-                <div className="px-4 pb-4">
+                <div className="px-4 pb-3">
                     <div className="mt-2 bg-white rounded-lg border border-gray-200 p-2">
                         {getVideoEmbed()}
                     </div>

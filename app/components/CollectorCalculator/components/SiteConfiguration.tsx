@@ -1,5 +1,5 @@
 import { Site, Config } from '../types';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
@@ -11,7 +11,7 @@ import { LogsInput } from './LogsInput';
 import { CollectorVisualization } from './CollectorVisualization';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import ConfigurationActions from './ConfigurationActions';
-import { Plus, ChevronUp, ChevronDown, HardDrive, HelpCircle, Bolt } from 'lucide-react';
+import { Plus, ChevronUp, ChevronDown, ChevronRight, HardDrive, HelpCircle, Bolt } from 'lucide-react';
 import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
 import { devLog } from '@/utils/debug';
@@ -106,6 +106,12 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     const deleteSite = (index: number) => {
         onUpdateSites(sites.filter((_, i) => i !== index));
     };
+
+    // Add useEffect to expand all sites when component mounts
+    useEffect(() => {
+        const allSiteIndexes = Array.from({ length: sites.length }, (_, i) => i);
+        onSiteExpand(new Set(allSiteIndexes));
+    }, [sites.length, onSiteExpand]);
 
     return (
         <div className="space-y-8 min-h-[900px]">
@@ -206,8 +212,15 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
-                                                        <Building className="w-4 h-4 text-blue-700" />
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
+                                                            <Building className="w-4 h-4 text-blue-700" />
+                                                        </div>
+                                                        <ChevronRight 
+                                                            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                                                                expandedSites.has(index) ? 'rotate-90' : ''
+                                                            }`}
+                                                        />
                                                     </div>
                                                 </TooltipTrigger>
                                                 <TooltipContent className="bg-white border border-gray-200 text-gray-900 shadow-sm">

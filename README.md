@@ -31,11 +31,11 @@ The LogicMonitor Collector Calculator is designed to help users:
 
 | Size   | Max Weight | Max EPS  | Recommended Use Case |
 |--------|------------|----------|---------------------|
-| XXL    | 100,000    | 52,817   | Large enterprise deployments |
-| XL     | 35,000     | 37,418   | Large environments |
-| LARGE  | 25,000     | 23,166   | Medium to large deployments |
-| MEDIUM | 12,500     | 13,797   | Small to medium deployments |
-| SMALL  | 10,000     | 7,800    | Small deployments |
+| XXL    | 285,500    | 52,817   | Large enterprise deployments |
+| XL     | 165,950    | 37,418   | Large environments |
+| LARGE  | 104,714    | 23,166   | Medium to large deployments |
+| MEDIUM | 48,557     | 13,797   | Small to medium deployments |
+| SMALL  | 21,286     | 7,800    | Small deployments |
 
 ## Getting Started
 

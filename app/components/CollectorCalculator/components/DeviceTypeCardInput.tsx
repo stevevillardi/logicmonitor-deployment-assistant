@@ -22,9 +22,11 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
     const getIcon = () => {
         switch (type) {
             case "Linux Servers":
+                return <Server className="w-6 h-6 text-blue-700" />;
             case "Windows Servers":
                 return <Server className="w-6 h-6 text-blue-700" />;
             case "SQL Servers (Linux)":
+                return <Database className="w-6 h-6 text-blue-700" />;
             case "SQL Servers (Windows)":
                 return <Database className="w-6 h-6 text-blue-700" />;
             case "Routers":
@@ -37,10 +39,16 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                 return <Activity className="w-6 h-6 text-blue-700" />;
             case "Access Points":
                 return <Wifi className="w-6 h-6 text-blue-700" />;
-            case "Storage Arrays":
+            case "Other Storage Arrays":
+                return <HardDrive className="w-6 h-6 text-blue-700" />;
+            case "Nimble Storage Arrays":
+                return <HardDrive className="w-6 h-6 text-blue-700" />;
+            case "Netapp Storage Arrays":
                 return <HardDrive className="w-6 h-6 text-blue-700" />;
             case "vCenter VMs":
                 return <Monitor className="w-6 h-6 text-blue-700" />;
+            case "Wireless LAN Controllers":
+                return <Wifi className="w-6 h-6 text-blue-700" />;
             case "ESXi Hosts":
                 return <Cpu className="w-6 h-6 text-blue-700" />;
             default:

@@ -14,7 +14,6 @@ import { Dumbbell, Settings, Shield, Server, Activity, Variable } from 'lucide-r
 import { PcCase, Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
 import sliderStyles from '../../../styles';
 import { CollectorCapacitySection } from './CollectorCapacity';
-import { devLog } from '@/utils/debug';
 import { RiAdminLine } from "react-icons/ri";
 import { Switch } from "@/components/ui/switch"
 
