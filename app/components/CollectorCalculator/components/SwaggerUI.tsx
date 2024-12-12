@@ -110,6 +110,10 @@ const SwaggerUIComponent = () => {
                     }
                 }
 
+                code[class*=language-], pre[class*=language-] {
+                    color: white;
+                }
+
                 /* Responsive server selection */
                 .swagger-ui .servers select {
                     width: 100%;
