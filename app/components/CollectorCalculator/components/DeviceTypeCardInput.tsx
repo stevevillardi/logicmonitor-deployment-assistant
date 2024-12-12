@@ -1,5 +1,6 @@
 import { DeviceType } from '../types';
-import { Server, Component, Database, Router, Network, Settings, Activity, Wifi, HardDrive, Monitor, Cpu, Calculator, Weight } from 'lucide-react';
+import * as Icons from 'lucide-react';
+import { Component, Settings, Calculator, Weight, LucideIcon } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
 import { AlertTriangle } from 'lucide-react';
@@ -20,40 +21,8 @@ interface DeviceTypeCardProps {
 
 export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetails = false }: DeviceTypeCardProps) => {
     const getIcon = () => {
-        switch (type) {
-            case "Linux Servers":
-                return <Server className="w-6 h-6 text-blue-700" />;
-            case "Windows Servers":
-                return <Server className="w-6 h-6 text-blue-700" />;
-            case "SQL Servers (Linux)":
-                return <Database className="w-6 h-6 text-blue-700" />;
-            case "SQL Servers (Windows)":
-                return <Database className="w-6 h-6 text-blue-700" />;
-            case "Routers":
-                return <Router className="w-6 h-6 text-blue-700" />;
-            case "Switches":
-                return <Network className="w-6 h-6 text-blue-700" />;
-            case "Firewalls":
-                return <Settings className="w-6 h-6 text-blue-700" />;
-            case "SD-WAN Edges":
-                return <Activity className="w-6 h-6 text-blue-700" />;
-            case "Access Points":
-                return <Wifi className="w-6 h-6 text-blue-700" />;
-            case "Other Storage Arrays":
-                return <HardDrive className="w-6 h-6 text-blue-700" />;
-            case "Nimble Storage Arrays":
-                return <HardDrive className="w-6 h-6 text-blue-700" />;
-            case "Netapp Storage Arrays":
-                return <HardDrive className="w-6 h-6 text-blue-700" />;
-            case "vCenter VMs":
-                return <Monitor className="w-6 h-6 text-blue-700" />;
-            case "Wireless LAN Controllers":
-                return <Wifi className="w-6 h-6 text-blue-700" />;
-            case "ESXi Hosts":
-                return <Cpu className="w-6 h-6 text-blue-700" />;
-            default:
-                return <Server className="w-6 h-6 text-blue-700" />;
-        }
+        const IconComponent = (Icons[data.icon as keyof typeof Icons] || Icons.EthernetPort) as LucideIcon;
+        return <IconComponent className="w-6 h-6 text-blue-700" />;
     };
 
     const calculateSingleDeviceLoad = () => {

@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Command, CommandGroup, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -13,10 +12,8 @@ import { transformCredentialData } from '../data/credentialData';
 import { CredentialType } from '../types/credentials';
 
 const DeviceCatalog = () => {
-    const router = useRouter();
     const [search, setSearch] = useState('');
     const [selectedCredential, setSelectedCredential] = useState<string | null>(null);
-    const [copied, setCopied] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const itemsPerPage = 12;
     const [currentPage, setCurrentPage] = useState(1);
@@ -104,41 +101,44 @@ const DeviceCatalog = () => {
         return (
             <Dialog>
                 <DialogTrigger asChild>
-                    <Card className="cursor-pointer hover:shadow-md transition-all h-[180px]">
-                        <CardHeader>
+                    <Card className="group cursor-pointer transition-all h-full border hover:border-blue-300 hover:shadow-md relative">
+                        <div className="absolute right-3 top-3 text-gray-400 group-hover:text-blue-500 transition-colors">
+                            <ExternalLink className="w-4 h-4" />
+                        </div>
+                        <CardHeader className="space-y-3">
                             <div className="flex items-start gap-4">
                                 {Icon && (
-                                    <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
+                                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+                                        <Icon className="w-6 h-6 text-blue-700" />
                                     </div>
                                 )}
-                                <div className="flex-1 min-w-0">
-                                    <CardTitle className="text-base sm:text-lg truncate">
-                                        {credential.name}
-                                    </CardTitle>
-                                    <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">
+                                <div className="flex-1 min-w-0 pr-6">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <CardTitle className="text-base sm:text-lg group-hover:text-blue-700 transition-colors">
+                                            {credential.name}
+                                        </CardTitle>
+                                        <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                                            {credential.type}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-sm text-gray-600 line-clamp-2">
                                         {credential.description}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2 mt-3">
-                                <Badge variant="secondary" className="text-xs sm:text-sm bg-blue-100 text-blue-700 hover:bg-blue-200">
+                            <div className="flex flex-wrap gap-2">
+                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
                                     {credential.category}
                                 </Badge>
-                                {credential.tags?.slice(0, 2).map(tag => (
+                                {credential.tags?.map(tag => (
                                     <Badge 
                                         key={tag} 
                                         variant="outline"
-                                        className="text-xs sm:text-sm bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200"
+                                        className="text-xs bg-gray-50 text-gray-600 border-gray-200"
                                     >
                                         {tag}
                                     </Badge>
                                 ))}
-                                {credential.tags && credential.tags.length > 2 && (
-                                    <Badge variant="outline" className="text-xs sm:text-sm bg-gray-50 text-gray-700">
-                                        +{credential.tags.length - 2}
-                                    </Badge>
-                                )}
                             </div>
                         </CardHeader>
                     </Card>
@@ -266,21 +266,37 @@ const DeviceCatalog = () => {
         return (
             <Dialog>
                 <DialogTrigger asChild>
-                    <div className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-lg cursor-pointer border border-gray-200">
+                    <div className="group flex items-start gap-4 p-4 rounded-lg cursor-pointer border border-gray-200 hover:border-blue-300 hover:shadow-md relative bg-white">
                         {Icon && (
-                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                                 <Icon className="w-6 h-6 text-blue-700" />
                             </div>
                         )}
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 truncate">{credential.name}</h3>
-                            <p className="text-sm text-gray-600 line-clamp-1">{credential.description}</p>
+                        <div className="flex-1 min-w-0 pr-6">
+                            <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">{credential.name}</h3>
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                                    {credential.type}
+                                </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 line-clamp-2">{credential.description}</p>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                    {credential.category}
+                                </Badge>
+                                {credential.tags?.map(tag => (
+                                    <Badge 
+                                        key={tag}
+                                        variant="outline" 
+                                        className="text-xs bg-gray-50 text-gray-600 border-gray-200"
+                                    >
+                                        {tag}
+                                    </Badge>
+                                ))}
+                            </div>
                         </div>
-                        <div className="flex gap-2 flex-shrink-0">
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                                {credential.type}
-                            </Badge>
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                        <div className="absolute right-3 top-3 text-gray-400 group-hover:text-blue-500 transition-colors">
+                            <ExternalLink className="w-4 h-4" />
                         </div>
                     </div>
                 </DialogTrigger>
@@ -582,26 +598,33 @@ const PropRow = ({ prop }: PropRowProps) => {
     return (
         <div 
             onClick={handleCopy}
-            className={`flex items-center w-full cursor-pointer transition-colors bg-white border border-blue-200 rounded-lg p-2 ${copied ? 'bg-green-100' : 'hover:bg-blue-50'}`}
+            className={`flex items-center w-full cursor-pointer transition-colors bg-white border border-blue-200 rounded-lg p-2 ${
+                copied ? 'bg-green-50' : 'hover:bg-gray-50'
+            }`}
             title="Click to copy property name"
         >
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-sm text-gray-900">{prop.name}</h4>
+                    <h4 className="font-semibold text-sm text-blue-900">
+                        {prop.name}
+                    </h4>
                     {prop.required && (
                         <Badge variant="default" className="bg-blue-100 text-blue-700">
                             Required
                         </Badge>
                     )}
                 </div>
-                <p className="text-xs text-gray-600">{prop.description}</p>
+                <p className="text-xs text-gray-600 mt-1">{prop.description}</p>
             </div>
-            {prop.name && (
-                <p className="text-sm text-gray-600 ml-auto pl-4 flex-shrink-0 pr-2">
-                    <span className="text-blue-700 font-medium">{prop.name}</span>
-                    {copied && <span className="ml-2 text-green-600">Copied!</span>}
-                </p>
-            )}
+            <div className="ml-auto pl-4 flex-shrink-0 w-24 text-center">
+                <span className="text-xs">
+                    {copied ? (
+                        <span className="text-green-600 font-medium">Copied!</span>
+                    ) : (
+                        <span className="text-blue-600">click to copy</span>
+                    )}
+                </span>
+            </div>
         </div>
     );
 };

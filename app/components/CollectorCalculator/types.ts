@@ -3,7 +3,7 @@ export interface DeviceType {
     count: number;
     instances: number;
     methods: Record<string, number>;
-    icon?: React.ElementType;
+    icon?: string;
 }
 
 export interface Site {

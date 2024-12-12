@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
-import { Component, Building, Server, Activity, Download, Database, Weight, HardDrive, Earth, Building2 } from 'lucide-react';
+import * as Icons from 'lucide-react';
+import { Component, Building, Server, Activity, Download, Database, Weight, HardDrive, Earth, Building2, LucideIcon } from 'lucide-react';
 import { calculateWeightedScore } from '../utils';
 import { calculateCollectors } from '../utils';
 import { Site, Config } from '../types';
 import { Button } from '@/components/ui/enhanced-components';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { Info } from 'lucide-react';
-import { Router, Network, Settings, Wifi, Monitor, Cpu } from 'lucide-react';
+
 
 interface SiteOverviewProps {
     sites: Site[];
@@ -35,39 +36,6 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
             sum + calculateWeightedScore(site.devices, config.methodWeights), 0
         ), [sites, config.methodWeights]
     );
-
-    const getIcon = useMemo(() => {
-        const iconFunction = (type: string) => {
-            switch (type) {
-                case "Linux Servers":
-                case "Windows Servers":
-                    return <Server className="w-6 h-6 text-blue-700" />;
-                case "SQL Servers (Linux)":
-                case "SQL Servers (Windows)":
-                    return <Database className="w-6 h-6 text-blue-700" />;
-                case "Routers":
-                    return <Router className="w-6 h-6 text-blue-700" />;
-                case "Switches":
-                    return <Network className="w-6 h-6 text-blue-700" />;
-                case "Firewalls":
-                    return <Settings className="w-6 h-6 text-blue-700" />;
-                case "SD-WAN Edges":
-                    return <Activity className="w-6 h-6 text-blue-700" />;
-                case "Access Points":
-                    return <Wifi className="w-6 h-6 text-blue-700" />;
-                case "Storage Arrays":
-                    return <HardDrive className="w-6 h-6 text-blue-700" />;
-                case "vCenter VMs":
-                    return <Monitor className="w-6 h-6 text-blue-700" />;
-                case "ESXi Hosts":
-                    return <Cpu className="w-6 h-6 text-blue-700" />;
-                default:
-                    return <Server className="w-6 h-6 text-blue-700" />;
-            }
-        };
-        iconFunction.displayName = 'GetIconFunction';
-        return iconFunction;
-    }, []);
 
     const getEstimatedInstanceCount = (site: Site) => {
         return Object.entries(site.devices).reduce((sum, [_, data]) => {
@@ -679,7 +647,8 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     .filter(([_, data]) => data.count > 0)
                                                     .map(([type, data]) => {
                                                         const groupMetrics = calculateDeviceGroupMetrics(site, type, data);
-                                                        const DeviceIcon = getIcon(type);
+                                                        const IconComponent = (Icons[data.icon as keyof typeof Icons] || Icons.EthernetPort) as LucideIcon;
+
                                                         return (
                                                             <div
                                                                 key={type}
@@ -687,7 +656,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                             >
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                                                        {DeviceIcon}
+                                                                        <IconComponent className="w-6 h-6 text-blue-700" />
                                                                     </div>
                                                                     <div className="min-w-0">
                                                                         <div className="flex items-center gap-2">

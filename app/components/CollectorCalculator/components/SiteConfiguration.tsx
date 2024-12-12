@@ -29,6 +29,7 @@ interface SiteConfigurationProps {
 
 export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config, onSiteExpand, expandedSites }: SiteConfigurationProps) => {
     devLog('SiteConfiguration received config:', config);
+    devLog('SiteConfiguration received sites:', sites);
     const resetSite = (index: number, type: string) => {
         const newSites = [...sites];
         if (type === "devices") {
