@@ -7,6 +7,8 @@ import { Site, Config } from '../types';
 import { Button } from '@/components/ui/enhanced-components';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { Info } from 'lucide-react';
+import ReactDOM from 'react-dom/client';
+import PDFTemplate from './PDFTemplate';
 
 
 interface SiteOverviewProps {
@@ -15,6 +17,8 @@ interface SiteOverviewProps {
 }
 
 const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
+    const currentDate = new Date().toLocaleDateString();
+    
     const getTotalDeviceCount = (site: Site) => {
         return Object.values(site.devices).reduce((sum, device) => sum + device.count, 0);
     };
@@ -48,75 +52,81 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     };
 
     const handleExportPDF = () => {
-        // Add report header before printing
-        const printHeader = document.createElement('div');
-        printHeader.className = 'report-header print-only';
-        printHeader.style.display = 'none';
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
 
-        const currentDate = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        // Get the current page's styles
+        const styles = Array.from(document.styleSheets)
+            .map(styleSheet => {
+                try {
+                    return Array.from(styleSheet.cssRules)
+                        .map(rule => rule.cssText)
+                        .join('\n');
+                } catch (e) {
+                    return '';
+                }
+            })
+            .join('\n');
 
-        printHeader.innerHTML = `
-        <h1 class="text-2xl font-bold text-[#040F4B] mb-2">Deployment Assistant Report</h1>
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-8">
-            <img src="/lmlogo.webp" alt="LogicMonitor" class="h-12" />
-            <div>
-                <div class="flex items-center gap-4 text-sm text-gray-600">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        ${currentDate}
-                    </div>
-                    <div class="h-4 w-px bg-gray-300"></div>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        ${sites.length} Site${sites.length !== 1 ? 's' : ''}
-                    </div>
-                    <div class="h-4 w-px bg-gray-300"></div>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                        </svg>
-                        ${getTotalDevicesBySites().toLocaleString()} Device${getTotalDevicesBySites() !== 1 ? 's' : ''}
-                    </div>
-                    <div class="h-4 w-px bg-gray-300"></div>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Load Score: ${Math.round(totalLoadScore).toLocaleString()}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="bg-blue-50/50 p-4 border-b border-t border-blue-200">
-        <div class="flex items-center gap-2 text-sm text-blue-700">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            This report provides a comprehensive overview of your LogicMonitor collector deployment configuration and recommendations.
-        </div>
-    </div>
-`;
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Deployment Assistant Report</title>
+                    <style>${styles}</style>
+                    <link rel="stylesheet" href="/app/globals.css" />
+                    <style>
+                        @page {
+                            margin: 1cm;
+                            size: A4;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 0;
+                        }
+                        @media print {
+                            body {
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                        }
+                    </style>
+                </head>
+                <body class="bg-white">
+                    <div id="pdf-root"></div>
+                </body>
+            </html>
+        `);
 
-        // Add print-specific elements
-        document.body.prepend(printHeader);
+        // Render the PDF template
+        const root = ReactDOM.createRoot(printWindow.document.getElementById('pdf-root')!);
+        root.render(
+            <PDFTemplate 
+                sites={sites}
+                config={config}
+                currentDate={currentDate}
+                siteMetrics={siteMetrics}
+            />
+        );
 
-        // Trigger print
-        window.print();
+        // Close the document to finish writing
+        printWindow.document.close();
 
-        // Cleanup
+        // Wait for both content and styles to load
         setTimeout(() => {
-            document.body.removeChild(printHeader);
-        }, 0);
+            if (printWindow.document.readyState === 'complete') {
+                printWindow.print();
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                };
+            } else {
+                printWindow.onload = () => {
+                    printWindow.print();
+                    printWindow.onafterprint = () => {
+                        printWindow.close();
+                    };
+                };
+            }
+        }, 1500); // Increased timeout to ensure content loads
     };
 
     const getCollectorSummary = () => {
@@ -243,6 +253,11 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
             )
         };
     };
+
+    const siteMetrics = sites.reduce((acc, site, index) => {
+        acc[index] = getSummaryMetrics(site);
+        return acc;
+    }, {} as Record<number, ReturnType<typeof getSummaryMetrics>>);
 
     const getLoadColor = (load: number) => {
         if (load >= 80) return "text-red-600";

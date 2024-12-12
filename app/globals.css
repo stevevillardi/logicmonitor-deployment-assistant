@@ -21,190 +21,33 @@
 
 /* Print styles */
 @media print {
-  /* Hide non-essential elements */
-  button:not(.print-show),
-  .tabs-list,
-  nav,
-  .no-print,
-  input[type="range"],
-  input[type="checkbox"],
-  input[type="text"],
-  select,
-  .card > .flex > button,
-  footer {
-    display: none !important;
-  }
-
-  /* Reset background colors for better printing */
-  body, 
-  .bg-gray-50, 
-  .bg-blue-50, 
-  .bg-white {
-    background: white !important;
-    color: black !important;
-  }
-
-  /* Ensure content is not cut off */
-  .card, 
-  .card-content {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  /* Format header for report style */
-  .report-header {
-    text-align: center;
-    padding: 20px 0;
-    border-bottom: 2px solid #333;
-    margin-bottom: 30px;
-  }
-
-  .report-header img {
-    height: 60px;
-    margin-bottom: 10px;
-  }
-
-  .report-header h1 {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 10px 0;
-  }
-
-  .report-header .report-meta {
-    font-size: 14px;
-    color: #666;
-  }
-
-  .navigation-menu-link {
-    padding: 0.5rem 1rem;
-    display: flex;
-    align-items: center;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s;
-}
-
-.navigation-menu-link:hover {
-    background-color: #0A1B6F;
-}
-
-  /* Enhance table styling */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    page-break-inside: auto;
-  }
-
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
-  }
-
-  th, td {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: left;
-  }
-
-  th {
-    background-color: #f5f5f5;
-    font-weight: bold;
-  }
-
-  /* Add page numbers */
   @page {
-    margin: 2cm;
+      size: A4;
+      margin: 2cm;
   }
 
-  /* Format sections */
-  .section {
-    margin: 20px 0;
-    page-break-inside: avoid;
+  body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: white;
   }
 
-  .section-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
+  .pdf-content {
+      max-width: none !important;
+      padding: 0 !important;
   }
 
-  /* Ensure good contrast for stats */
-  .stat-card {
-    border: 1px solid #ddd !important;
-    padding: 15px !important;
-    margin: 10px 0 !important;
-    background: white !important;
+  /* Ensure proper page breaks */
+  .break-inside-avoid {
+      break-inside: avoid;
   }
 
-  .stat-value {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333 !important;
+  /* Remove any background colors for better printing */
+  * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
   }
-
-  /* Print-specific elements */
-  .print-only {
-    display: block !important;
-  }
-
-  /* Hide elements not needed in print */
-  .print-hide {
-    display: none !important;
-  }
-
-  /* Grid adjustments for print */
-  .print-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 20px !important;
-  }
-
-  /* Footer styling */
-  .print-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 10px 0;
-    border-top: 1px solid #ddd;
-    font-size: 12px;
-    color: #666;
-  }
-
-  /* In your @media print styles */
-.report-header {
-  border-bottom: 1px solid #e5e7eb !important;
-  margin-bottom: 30px;
-}
-
-.report-header img {
-  height: 48px;
-  width: auto;
-}
-
-.report-header h1 {
-  color: #040F4B !important;
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-}
-
-.report-header .text-gray-600 {
-  color: #4B5563 !important;
-}
-
-.report-header .bg-blue-50\/50 {
-  background-color: #EFF6FF !important;
-  border-bottom: 1px solid #BFDBFE !important;
-}
-
-.report-header svg {
-  color: currentColor !important;
-}
 }
 
 @keyframes highlight {
