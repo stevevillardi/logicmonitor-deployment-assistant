@@ -1,6 +1,6 @@
 import { DeviceType } from '../types';
 import * as Icons from 'lucide-react';
-import { Component, Settings, Calculator, Weight, LucideIcon } from 'lucide-react';
+import { Component, Settings, Calculator, Weight, LucideIcon, Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
 import { AlertTriangle } from 'lucide-react';
@@ -55,13 +55,29 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
             </div>
             <div className="space-y-3">
                 <div>
-                    <Label className="text-sm text-gray-600">Device Count</Label>
-                    <Input
-                        type="text"
-                        value={data.count}
-                        onChange={(e) => onUpdate(parseInt(e.target.value) || 0)}
-                        className="mt-1 bg-white border-gray-200"
-                    />
+                    <Label className="text-sm text-gray-600 flex items-center gap-1">
+                        Device Count 
+                        {type.includes("Virtual Machines") && data.count > 2000 && (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-4 w-4 text-blue-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className='bg-white border border-gray-200'>
+                                        <p>When monitoring more than 2,000 virtual machines, it's recommended to have a dedicated collector for vCenter monitoring with a dedicated failover configured.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )}
+                    </Label>
+                    <div className="flex items-center gap-2">
+                        <Input
+                            type="text"
+                            value={data.count}
+                            onChange={(e) => onUpdate(parseInt(e.target.value) || 0)}
+                            className="mt-1 bg-white border-gray-200"
+                        />
+                    </div>
                 </div>
                 {showDetails && (
                     <>

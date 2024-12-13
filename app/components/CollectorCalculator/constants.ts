@@ -71,6 +71,12 @@ export const defaultDeviceTypes = {
         methods: { Script: 0.5, SNMPv3: 0.5 },
         icon: "HardDrive"
     },
+    "vSphere Virtual Machines (VMs)": {
+        count: 0,
+        instances: 8,
+        methods: { Script: 1 },
+        icon: "Monitor"
+    },
     "Hypervisor Hosts (ESXi, Hyper-V)": {
         count: 0,
         instances: 172,
@@ -91,18 +97,31 @@ export const defaultDeviceTypes = {
     },
 };
 
-export const defaultPlatformTypes = {
-    "VMware vSphere": {
-        "Virtual Machines": {
-            count: 0,
-            instances: 18,
-            methods: { Script: 1 }
-        },
-        "vCenter Servers": {
-            count: 0,
-            instances: 0,
-            methods: { Script: 0 }
-        }
+export const collectorRequirements = {
+    SMALL: {
+        cpu: '1',
+        memory: '2',
+        disk: '35',
+    },
+    MEDIUM: {
+        cpu: '2',
+        memory: '4',
+        disk: '35',
+    },
+    LARGE: {
+        cpu: '4',
+        memory: '8',
+        disk: '35',
+    },
+    XL: {
+        cpu: '8',
+        memory: '16',
+        disk: '35',
+    },
+    XXL: {
+        cpu: '16',
+        memory: '32',
+        disk: '35',
     }
 };
 

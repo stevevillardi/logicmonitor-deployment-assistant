@@ -17,6 +17,7 @@ import DeploymentNameInput from './DeploymentNameInput';
 import { devLog } from '@/utils/debug';
 import { RxReset } from "react-icons/rx";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import DisclaimerBox from './DisclaimerBox';
 
 interface SiteConfigurationProps {
     sites: Site[];
@@ -52,7 +53,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
     const getSiteResults = useCallback((site: Site) => {
-        const totalWeight = calculateWeightedScore(site.devices, config.methodWeights);
+        const totalWeight = calculateWeightedScore(site.devices, config.methodWeights, config);
         const totalEPS = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
         return calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
     }, [config]);
@@ -420,7 +421,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     </h3>
                                     {(() => {
                                         const siteResults = getSiteResults(site);
-                                        const totalPollingLoad = calculateWeightedScore(site.devices, config.methodWeights);
+                                        const totalPollingLoad = calculateWeightedScore(site.devices, config.methodWeights, config);
                                         const totalLogsLoad = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
 
                                         devLog('Site Results Detail:', {
@@ -457,6 +458,9 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     </EnhancedCard>
                 ))
             )}
+                                        <div className="mb-6">
+                <DisclaimerBox />
+            </div>
         </div>
     );
 };

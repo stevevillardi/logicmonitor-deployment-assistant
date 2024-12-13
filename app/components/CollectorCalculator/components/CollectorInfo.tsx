@@ -6,6 +6,7 @@ import { Config } from '../types';
 import { collectorCapacities as defaultCapacities } from '../constants';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { collectorRequirements } from '../constants';
 import NetworkRequirements from './NetworkRequirements';
 interface CollectorInfoProps {
     config: Config;
@@ -25,34 +26,6 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
             return capacity.weight !== defaultCapacity.weight || capacity.eps !== defaultCapacity.eps;
         })
         .map(([size]) => size);
-
-    const collectorRequirements = {
-        SMALL: {
-            cpu: '1 core',
-            memory: '2GB',
-            disk: '35GB',
-        },
-        MEDIUM: {
-            cpu: '2 cores',
-            memory: '4GB',
-            disk: '35GB',
-        },
-        LARGE: {
-            cpu: '4 cores',
-            memory: '8GB',
-            disk: '35GB',
-        },
-        XL: {
-            cpu: '8 cores',
-            memory: '16GB',
-            disk: '35GB',
-        },
-        XXL: {
-            cpu: '16 cores',
-            memory: '32GB',
-            disk: '35GB',
-        }
-    };
 
     return (
         <div className="space-y-6 overflow-y-auto">
@@ -74,15 +47,15 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                                         <div className="flex items-center gap-4 text-sm">
                                             <div className="flex items-center gap-1">
                                                 <Cpu className="w-4 h-4 text-blue-700" />
-                                                <span className="text-gray-700">{requirements.cpu}</span>
+                                                <span className="text-gray-700">{requirements.cpu} core(s)</span>
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <MemoryStick className="w-4 h-4 text-blue-700" />
-                                                <span className="text-gray-700">{requirements.memory}</span>
+                                                <span className="text-gray-700">{requirements.memory}GB</span>
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <HardDrive className="w-4 h-4 text-blue-700" />
-                                                <span className="text-gray-700">{requirements.disk}</span>
+                                                <span className="text-gray-700">{requirements.disk}GB</span>
                                             </div>
                                         </div>
                                     </div>

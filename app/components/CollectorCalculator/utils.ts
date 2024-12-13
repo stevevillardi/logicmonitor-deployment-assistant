@@ -1,10 +1,30 @@
 import { Config, DeviceType } from './types';
+import { collectorCapacities } from './constants';
 
 // Utility Functions
-export const calculateWeightedScore = (devices: Record<string, DeviceType>, methodWeights: Record<string, number>) => {
-    
+export const calculateWeightedScore = (devices: Record<string, DeviceType>, methodWeights: Record<string, number>, config: Config) => {
     return Object.entries(devices).reduce((total, [type, data]) => {
         if (data.count === 0) return total;
+        
+        // Special handling for Virtual Machines
+        if (type.includes("Virtual Machines")) {
+            switch (true) {
+                case data.count >= 5000:
+                    return total + (config.collectorCapacities.XXL.weight * (config.maxLoad / 100));
+                case data.count >= 3000:
+                    return total + (config.collectorCapacities.XL.weight * (config.maxLoad / 100));
+                case data.count >= 2000:
+                    return total + (config.collectorCapacities.LARGE.weight * (config.maxLoad / 100));
+                default:
+                    // Proceed with normal calculation
+                    const methodScores = Object.entries(data.methods).map(([method, ratio]) => {
+                        const score = data.instances * ratio * methodWeights[method];
+                        return score;
+                    });
+                    const deviceScore = methodScores.reduce((sum, score) => sum + score, 0);
+                    return total + deviceScore * data.count;
+            }
+        }
 
         const methodScores = Object.entries(data.methods).map(([method, ratio]) => {
             const score = data.instances * ratio * methodWeights[method];

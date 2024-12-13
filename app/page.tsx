@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { Footer } from './components/CollectorCalculator/components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import CollectorCalculator from './components/CollectorCalculator/CollectorCalculator';
