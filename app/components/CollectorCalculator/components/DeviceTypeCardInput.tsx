@@ -64,7 +64,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                                         <Info className="h-4 w-4 text-blue-500" />
                                     </TooltipTrigger>
                                     <TooltipContent className='bg-white border border-gray-200'>
-                                        <p>When monitoring more than 2,000 virtual machines, it's recommended to have a dedicated collector for vCenter monitoring with a dedicated failover configured.</p>
+                                        <p>When monitoring more than 2,000 virtual machines, it&apos;s recommended to have a dedicated collector for vCenter monitoring with a dedicated failover configured.</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
