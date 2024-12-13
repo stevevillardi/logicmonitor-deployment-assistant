@@ -76,6 +76,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                             value={data.count}
                             onChange={(e) => onUpdate(parseInt(e.target.value) || 0)}
                             className="mt-1 bg-white border-gray-200"
+                            maxLength={5}
                         />
                     </div>
                 </div>
