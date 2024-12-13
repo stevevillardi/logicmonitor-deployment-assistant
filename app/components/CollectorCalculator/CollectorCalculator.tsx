@@ -12,12 +12,12 @@ import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookT
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
 import { devLog } from '@/utils/debug';
 import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
 import { getInitialConfig, getInitialSites } from './utils/storage';
+import SwaggerUIComponent from './components/SwaggerUI';
 
 const Logo = () => {
     return (
@@ -49,10 +49,6 @@ const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
     acc[path] = tab;
     return acc;
 }, {} as Record<string, string>);
-
-const LazyAPIExplorer = dynamic(() => import('./components/SwaggerUI'), {
-    ssr: false
-});
 
 const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (value: string) => void }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -283,7 +279,7 @@ const CollectorCalculator = () => {
 
                         {activeTab === 'api-explorer' && (
                             <div className="mt-6">
-                                <LazyAPIExplorer />
+                                <SwaggerUIComponent />
                             </div>
                         )}
 

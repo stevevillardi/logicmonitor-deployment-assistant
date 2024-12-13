@@ -6,13 +6,40 @@ import 'swagger-ui-react/swagger-ui.css';
 import ApiDocumentationBanner from './ApiDocumentationBanner';
 import { devLog } from '@/utils/debug';
 
+const SwaggerLoadingPlaceholder = () => (
+  <div className="space-y-6 p-4">
+    {/* API Method Blocks */}
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className="border border-gray-200 rounded-lg">
+        {/* Method Header */}
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <div className="flex items-center gap-4">
+            <div className="animate-pulse h-8 w-16 bg-gray-200 rounded"></div>
+            <div className="animate-pulse h-6 w-96 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+        {/* Method Content */}
+        <div className="p-4">
+          <div className="space-y-4">
+            <div className="animate-pulse h-4 w-3/4 bg-gray-200 rounded"></div>
+            <div className="animate-pulse h-4 w-1/2 bg-gray-200 rounded"></div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
+              <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
+              <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 const SwaggerUIComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Use effect to set loading to false after initial render
     useEffect(() => {
-        // Small delay to ensure SwaggerUI has initialized
         const timer = setTimeout(() => {
             setIsLoading(false);
         }, 2000);
@@ -50,7 +77,7 @@ const SwaggerUIComponent = () => {
 
     return (
         <Card className="bg-white border-gray-200 h-full min-h-[800px]">
-            <CardHeader className="border-b border-gray-200 bg-gray-50 p-4sm:p-6">
+            <CardHeader className="border-b border-gray-200 bg-gray-50 p-4 sm:p-6">
                 <div className="flex items-center gap-3">
                     <Terminal className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700" />
                     <CardTitle className="text-base sm:text-lg">LogicMonitor API Explorer</CardTitle>
@@ -60,13 +87,11 @@ const SwaggerUIComponent = () => {
             <CardContent className="p-2 sm:p-6">
                 <ApiDocumentationBanner />
 
-                <div className="min-h-[800px] relative">
+                <div className="min-h-[800px]">
                     {isLoading ? (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />
-                        </div>
+                        <SwaggerLoadingPlaceholder />
                     ) : error ? (
-                        <div className="absolute inset-0 flex items-center justify-center text-red-600 text-sm sm:text-base p-4">
+                        <div className="flex items-center justify-center text-red-600 text-sm sm:text-base p-4">
                             {error}
                         </div>
                     ) : (
@@ -83,6 +108,8 @@ const SwaggerUIComponent = () => {
                             requestInterceptor={requestInterceptor}
                             layout="BaseLayout"
                             persistAuthorization={true}
+                            requestSnippetsEnabled={true}
+                            displayRequestDuration={true}
                         />
                     )}
                 </div>
