@@ -1,45 +1,42 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Download } from 'lucide-react';
+import { X, Download, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const PWAInstallPrompt = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        // Debug logs
-        console.log('PWA Debug:', {
-            isStandalone: window.matchMedia('(display-mode: standalone)').matches,
-            isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
-            hasUserDismissed: localStorage.getItem('pwaPromptDismissed'),
-        });
-
         // Check if user has previously dismissed the prompt
         const hasUserDismissed = localStorage.getItem('pwaPromptDismissed');
-        if (hasUserDismissed) {
+        if (hasUserDismissed) return;
+
+        // Check for iOS
+        const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        setIsIOS(isIOSDevice);
+
+        // Show prompt for iOS devices that aren't in standalone mode
+        if (isIOSDevice && !isStandalone) {
+            setShowInstallPrompt(true);
             return;
         }
 
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-        if (!isStandalone && isMobile) {
-            
+        // For non-iOS devices, use beforeinstallprompt
+        if (!isStandalone) {
             const handler = (e: any) => {
                 e.preventDefault();
-                console.log('beforeinstallprompt event fired');
                 setDeferredPrompt(e);
                 setShowInstallPrompt(true);
             };
 
             window.addEventListener('beforeinstallprompt', handler);
-
-            return () => {
-                window.removeEventListener('beforeinstallprompt', handler);
-            };
-        } 
+            return () => window.removeEventListener('beforeinstallprompt', handler);
+        }
     }, []);
 
     const handleDismiss = () => {
@@ -48,9 +45,7 @@ const PWAInstallPrompt = () => {
     };
 
     const handleInstallClick = async () => {
-        if (!deferredPrompt) {
-            return;
-        }
+        if (!deferredPrompt) return;
 
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
@@ -70,17 +65,27 @@ const PWAInstallPrompt = () => {
                         Install Deployment Assistant
                     </p>
                     <p className="text-xs text-gray-600">
-                        Get quick access from your home screen
+                        {isIOS 
+                            ? "Tap the share button below and select 'Add to Home Screen'"
+                            : "Get quick access from your home screen"
+                        }
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button
-                        onClick={handleInstallClick}
-                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 text-sm"
-                    >
-                        <Download className="h-4 w-4" />
-                        Install
-                    </Button>
+                    {isIOS ? (
+                        <div className="flex flex-col items-center gap-1">
+                            <Share2 className="h-5 w-5 text-gray-600 animate-bounce" />
+                            <span className="text-xs text-gray-600">Tap Share</span>
+                        </div>
+                    ) : (
+                        <Button
+                            onClick={handleInstallClick}
+                            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 text-sm"
+                        >
+                            <Download className="h-4 w-4" />
+                            Install
+                        </Button>
+                    )}
                     <Button
                         variant="ghost"
                         size="icon"
