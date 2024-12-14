@@ -302,8 +302,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
             <Tabs defaultValue="general" className="space-y-6">
                 <div className="flex items-center justify-between">
                     <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white p-1 rounded-lg border border-gray-200">
-                        <TabsTrigger 
-                            value="general" 
+                        <TabsTrigger
+                            value="general"
                             className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
                                 data-[state=active]:bg-blue-50 
                                 data-[state=active]:text-blue-700 
@@ -319,8 +319,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                             <Settings className="w-4 h-4" />
                             General Settings
                         </TabsTrigger>
-                        <TabsTrigger 
-                            value="formula" 
+                        <TabsTrigger
+                            value="formula"
                             className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
                                 data-[state=active]:bg-blue-50 
                                 data-[state=active]:text-blue-700 
@@ -338,8 +338,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                         </TabsTrigger>
                         {config.showAdvancedSettings && (
                             <>
-                                <TabsTrigger 
-                                    value="devices" 
+                                <TabsTrigger
+                                    value="devices"
                                     className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
                                         data-[state=active]:bg-blue-50 
                                         data-[state=active]:text-blue-700 
@@ -355,8 +355,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                     <Server className="w-4 h-4" />
                                     Device Defaults
                                 </TabsTrigger>
-                                <TabsTrigger 
-                                    value="weights" 
+                                <TabsTrigger
+                                    value="weights"
                                     className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
                                         data-[state=active]:bg-blue-50 
                                         data-[state=active]:text-blue-700 
@@ -372,8 +372,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                     <Dumbbell className="w-4 h-4" />
                                     Protocol Weights
                                 </TabsTrigger>
-                                <TabsTrigger 
-                                    value="collector-capacities" 
+                                <TabsTrigger
+                                    value="collector-capacities"
                                     className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
                                         data-[state=active]:bg-blue-50 
                                         data-[state=active]:text-blue-700 
@@ -394,7 +394,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                 </div>
 
                 <TabsContent value="general">
-                    <EnhancedCard className="bg-white h-[700px] overflow-y-auto shadow-sm border border-gray-200">
+                    <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Settings className="w-6 h-6 text-blue-700" />
