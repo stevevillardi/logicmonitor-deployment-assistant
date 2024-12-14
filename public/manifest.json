@@ -1,6 +1,6 @@
 {
     "name": "Deployment Assistant",
-    "short_name": "Deploy Assist",
+    "short_name": "Deploy Assistant",
     "description": "LogicMonitor Deployment Assistant",
     "start_url": "/",
     "display": "standalone",
