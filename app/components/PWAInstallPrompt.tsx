@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Download, Share2 } from 'lucide-react';
+import { X, Download, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const PWAInstallPrompt = () => {
@@ -74,8 +74,8 @@ const PWAInstallPrompt = () => {
                 <div className="flex items-center gap-2">
                     {isIOS ? (
                         <div className="flex flex-col items-center gap-1">
-                            <Share2 className="h-5 w-5 text-gray-600 animate-bounce" />
-                            <span className="text-xs text-gray-600">Tap Share</span>
+                            <Share className="h-5 w-5 text-gray-600 animate-bounce" />
+                            <span className="text-xs text-gray-600">Use browser share ↓</span>
                         </div>
                     ) : (
                         <Button
