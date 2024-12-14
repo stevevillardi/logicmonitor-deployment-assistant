@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -16,7 +16,21 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "LogicMonitor Deployment Assistant",
   description: "Help estimate the number of LogicMonitor collectors needed for your environment, explore the LogicMonitor API, and more.",
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Deployment Assistant',
+  },
 };
+
+export const viewport: Viewport = {
+  themeColor: '#040F4B',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
 
 export default function RootLayout({
   children,
