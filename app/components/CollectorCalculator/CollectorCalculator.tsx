@@ -191,46 +191,56 @@ const CollectorCalculator = () => {
                 onOpenChange={setHelpDialogOpen}
             />
             <Card className="w-full max-w-[1440px] bg-white shadow-lg">
-                <CardHeader className="border-gray-200 bg-gradient-to-r from-white to-blue-50/50 no-print">
+                <CardHeader className="border-gray-200 bg-gradient-to-r from-white to-blue-50/50 no-print p-1 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 py-2">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-8 w-full sm:w-auto">
                             <a href="https://www.logicmonitor.com" target="_blank" rel="noopener noreferrer">
                                 <Logo />
                             </a>
                             <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
-                            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                            <CardTitle className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
                                 Deployment Assistant
                             </CardTitle>
                         </div>
-                        <div className="hidden sm:flex flex-wrap items-center gap-2 sm:gap-4">
+                        <div className="hidden md:flex flex-wrap items-center gap-2 lg:gap-4">
                             <Button
                                 variant="outline"
                                 onClick={() => setHelpDialogOpen(true)}
-                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm"
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                             >
                                 <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="font-medium text-blue-700">Help Guide</span>
+                                <span className="hidden xl:inline">Help Guide</span>
                             </Button>
 
-                            <a
-                                href="https://support.logicmonitor.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm"
+                            <Button
+                                variant="outline"
+                                asChild
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                             >
-                                <BiSupport className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="font-medium text-blue-700">Support</span>
-                            </a>
+                                <a
+                                    href="https://support.logicmonitor.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <BiSupport className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                    <span className="hidden xl:inline">Support</span>
+                                </a>
+                            </Button>
 
-                            <a
-                                href="https://community.logicmonitor.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm"
+                            <Button
+                                variant="outline"
+                                asChild
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                             >
-                                <MessageCircleQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="font-medium text-blue-700">Community</span>
-                            </a>
+                                <a
+                                    href="https://community.logicmonitor.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <MessageCircleQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                    <span className="hidden xl:inline">Community</span>
+                                </a>
+                            </Button>
                         </div>
                     </div>
                 </CardHeader>

@@ -394,7 +394,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                 </div>
 
                 <TabsContent value="general">
-                    <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                    <EnhancedCard className="bg-white min-h-[900px] border border-gray-200">
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Settings className="w-6 h-6 text-blue-700" />
@@ -545,7 +545,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                 {config.showAdvancedSettings && (
                     <>
                         <TabsContent value="devices">
-                            <EnhancedCard className="bg-white h-[1100px] overflow-hidden shadow-sm border border-gray-200">
+                            <EnhancedCard className="bg-white min-h-[900px] border border-gray-200">
                                 <CardHeader className="border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center gap-3">
                                         <Server className="w-6 h-6 text-blue-700" />
@@ -752,7 +752,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                         </TabsContent>
 
                         <TabsContent value="weights">
-                            <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                            <EnhancedCard className="bg-white min-h-[900px] border border-gray-200">
                                 <CardHeader className="border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center gap-3">
                                         <Dumbbell className="w-6 h-6 text-blue-700" />
@@ -873,7 +873,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                         </TabsContent>
 
                         <TabsContent value="collector-capacities">
-                            <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                            <EnhancedCard className="bg-white min-h-[900px] border border-gray-200">
                                 <CardHeader className="border-b border-gray-200 bg-gray-50">
                                     <div className="flex items-center gap-3">
                                         <Database className="w-6 h-6 text-blue-700" />
@@ -891,7 +891,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                     </>
                 )}
                 <TabsContent value="formula">
-                    <EnhancedCard className="bg-white h-[900px] overflow-y-auto shadow-sm border border-gray-200">
+                    <EnhancedCard className="bg-white min-h-[900px] border border-gray-200">
                         <CardHeader className="border-b border-gray-200 bg-gray-50">
                             <div className="flex items-center gap-3">
                                 <Calculator className="w-6 h-6 text-blue-700" />

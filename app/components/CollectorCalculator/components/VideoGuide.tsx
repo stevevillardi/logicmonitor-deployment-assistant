@@ -86,7 +86,7 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                                         </div>
                                     )}
                                     {!isExpanded && (
-                                        <span className="text-xs text-blue-700 font-normal whitespace-nowrap">
+                                        <span className="text-xs text-blue-700 font-normal whitespace-nowrap hidden sm:inline-block">
                                             Click to watch
                                         </span>
                                     )}

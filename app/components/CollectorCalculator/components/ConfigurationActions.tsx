@@ -5,6 +5,8 @@ import { Site, Config } from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState, useRef } from 'react';
 import { devLog } from '@/utils/debug';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 interface ConfigurationActionsProps {
     sites: Site[];
     config: Config;
@@ -15,7 +17,10 @@ interface ConfigurationActionsProps {
 
 interface SimplifiedSite {
     name: string;
-    devices: Record<string, { count: number }>;
+    devices: Record<string, { 
+        count: number;
+        additional_count?: number;
+    }>;
     logs: {
         netflow: number;
         syslog: number;
@@ -43,6 +48,8 @@ interface ValidationResult {
 const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: ConfigurationActionsProps) => {
     const [error, setError] = useState<string | null>(null);
     const [warnings, setWarnings] = useState<string[]>([]);
+    const [warningDialogOpen, setWarningDialogOpen] = useState(false);
+    const [errorDialogOpen, setErrorDialogOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleExportConfig = () => {
@@ -52,7 +59,10 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
             devices: Object.fromEntries(
                 Object.entries(site.devices).map(([type, data]) => [
                     type,
-                    { count: data.count }
+                    { 
+                        count: data.count,
+                        additional_count: data.additional_count 
+                    }
                 ])
             ),
             logs: {
@@ -175,11 +185,13 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
             const siteDevices = Object.fromEntries(
                 Object.entries(data.deviceDefaults).map(([type, defaultData]) => {
                     const deviceCount = simplifiedSite.devices[type]?.count || 0;
+                    const additionalCount = simplifiedSite.devices[type]?.additional_count;
                     return [
                         type,
                         {
                             ...defaultData as Record<string, unknown>,
-                            count: deviceCount
+                            count: deviceCount,
+                            additional_count: additionalCount,
                         }
                     ];
                 })
@@ -213,6 +225,8 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
     const handleImportConfig = async (event: React.ChangeEvent<HTMLInputElement>) => {
         setError(null);
         setWarnings([]);
+        setWarningDialogOpen(false);
+        setErrorDialogOpen(false);
 
         const file = event.target.files?.[0];
         if (!file) return;
@@ -233,9 +247,10 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
 
             if (validationResult.warnings.length > 0) {
                 setWarnings(validationResult.warnings);
+                setWarningDialogOpen(true);
             }
 
-            // Reconstruct sites with current device defaults
+            // Reconstruct sites with current device defaults and additional_count
             const reconstructedSites = validationResult.sites.map(site => ({
                 name: site.name,
                 devices: Object.fromEntries(
@@ -244,7 +259,8 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                         {
                             ...defaultData as Record<string, unknown>,
                             count: site.devices[type]?.count || 0,
-                            methods: site.devices[type]?.methods as Record<string, number> || {},
+                            additional_count: site.devices[type]?.additional_count,
+                            methods: site.devices[type]?.methods || {},
                             instances: site.devices[type]?.instances || 0
                         }
                     ])
@@ -269,6 +285,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
         } catch (err) {
             console.error('Import error:', err);
             setError('Failed to import configuration. Please check the file format.');
+            setErrorDialogOpen(true);
         }
 
         // Reset file input
@@ -279,26 +296,60 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
 
     return (
         <div className="space-y-4">
-            {error && (
-                <Alert variant="destructive" className="text-sm">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
-                </Alert>
-            )}
-            {warnings.length > 0 && (
-                <Alert variant="default" className="bg-yellow-50 border-yellow-200">
-                    <Info className="h-4 w-4 text-yellow-700" />
-                    <AlertTitle className="text-yellow-700 text-sm">Import Warnings</AlertTitle>
-                    <AlertDescription className="text-yellow-600 text-xs sm:text-sm">
-                        <ul className="list-disc list-inside space-y-1">
-                            {warnings.map((warning, index) => (
-                                <li key={index}>{warning}</li>
-                            ))}
-                        </ul>
-                    </AlertDescription>
-                </Alert>
-            )}
+            {/* Warning Dialog */}
+            <AlertDialog open={warningDialogOpen} onOpenChange={setWarningDialogOpen}>
+                <AlertDialogContent className="bg-yellow-50 border-yellow-200">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2 text-yellow-700">
+                            <Info className="h-5 w-5" />
+                            Import Warnings
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            <div className="mt-2 text-yellow-600">
+                                <ul className="list-disc list-inside space-y-1">
+                                    {warnings.map((warning, index) => (
+                                        <li key={index}>{warning}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction 
+                            onClick={() => setWarningDialogOpen(false)}
+                            className="bg-yellow-50 border border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                        >
+                            Dismiss
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Error Dialog */}
+            <AlertDialog open={errorDialogOpen} onOpenChange={setErrorDialogOpen}>
+                <AlertDialogContent className="bg-red-50 border-red-200">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2 text-red-700">
+                            <AlertTriangle className="h-5 w-5" />
+                            Import Error
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            <div className="mt-2 text-red-600">
+                                {error}
+                            </div>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction 
+                            onClick={() => setErrorDialogOpen(false)}
+                            className="bg-red-50 border border-red-200 text-red-700 hover:bg-red-100"
+                        >
+                            Dismiss
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <Button
                     onClick={handleExportConfig}

@@ -8,24 +8,37 @@ export const calculateWeightedScore = (devices: Record<string, DeviceType>, meth
         
         // Special handling for Virtual Machines
         if (type.includes("Virtual Machines")) {
+            // Get vCenter count (default to 1 if not set or 0)
+            const vCenterCount = (data.additional_count && data.additional_count > 0) ? data.additional_count : 1;
+            // Calculate average VMs per vCenter
+            const avgVMsPerVCenter = Math.ceil(data.count / vCenterCount);
+            
+            let vCenterScore = 0;
             switch (true) {
-                case data.count >= 5000:
-                    return total + (config.collectorCapacities.XXL.weight * (config.maxLoad / 100));
-                case data.count >= 3000:
-                    return total + (config.collectorCapacities.XL.weight * (config.maxLoad / 100));
-                case data.count >= 2000:
-                    return total + (config.collectorCapacities.LARGE.weight * (config.maxLoad / 100));
+                case avgVMsPerVCenter >= 5000:
+                    vCenterScore = config.collectorCapacities.XXL.weight * (config.maxLoad / 100);
+                    break;
+                case avgVMsPerVCenter >= 3000:
+                    vCenterScore = config.collectorCapacities.XL.weight * (config.maxLoad / 100);
+                    break;
+                case avgVMsPerVCenter >= 2000:
+                    vCenterScore = config.collectorCapacities.LARGE.weight * (config.maxLoad / 100);
+                    break;
                 default:
-                    // Proceed with normal calculation
+                    // Calculate normal score for smaller VM counts, but per vCenter
                     const methodScores = Object.entries(data.methods).map(([method, ratio]) => {
-                        const score = data.instances * ratio * methodWeights[method];
+                        // Calculate score based on average VMs per vCenter
+                        const score = (avgVMsPerVCenter * data.instances * ratio * methodWeights[method]);
                         return score;
                     });
-                    const deviceScore = methodScores.reduce((sum, score) => sum + score, 0);
-                    return total + deviceScore * data.count;
+                    vCenterScore = methodScores.reduce((sum, score) => sum + score, 0);
             }
+            
+            // Multiply by vCenter count to get total score
+            return total + (vCenterScore * vCenterCount);
         }
 
+        // Normal calculation for non-VM devices
         const methodScores = Object.entries(data.methods).map(([method, ratio]) => {
             const score = data.instances * ratio * methodWeights[method];
             return score;

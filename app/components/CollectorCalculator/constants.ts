@@ -71,11 +71,12 @@ export const defaultDeviceTypes = {
         methods: { Script: 0.5, SNMPv3: 0.5 },
         icon: "HardDrive"
     },
-    "vSphere Virtual Machines (VMs)": {
+    "Virtual Machines (VMs)": {
         count: 0,
         instances: 8,
         methods: { Script: 1 },
-        icon: "Monitor"
+        icon: "Monitor",
+        additional_count: 0
     },
     "Hypervisor Hosts (ESXi, Hyper-V)": {
         count: 0,

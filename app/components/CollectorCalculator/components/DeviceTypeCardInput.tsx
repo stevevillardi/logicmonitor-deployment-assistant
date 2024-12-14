@@ -15,7 +15,7 @@ interface DeviceTypeCardProps {
     type: string;
     data: DeviceType;
     methodWeights: Record<string, number>;
-    onUpdate: (count: number) => void;
+    onUpdate: (count: number, additionalCount?: number) => void;
     showDetails: boolean;
 }
 
@@ -38,6 +38,18 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
             <div className="flex items-center gap-3 mb-3">
                 {getIcon()}
                 <h3 className="font-semibold text-gray-900">{type}</h3>
+                {type.includes("Virtual Machines") && data.count > 2000 && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Info className="h-4 w-4 text-blue-500" />
+                            </TooltipTrigger>
+                            <TooltipContent className='bg-white border border-gray-200'>
+                                <p>When monitoring more than 2,000 virtual machines, it&apos;s recommended to have a dedicated collector for vCenter monitoring with a dedicated failover configured.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
                 {Object.values(data.methods).reduce((sum, ratio) => sum + ratio, 0) !== 1 && (
                     <div className="ml-auto">
                         <TooltipProvider>
@@ -55,31 +67,37 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
             </div>
             <div className="space-y-3">
                 <div>
-                    <Label className="text-sm text-gray-600 flex items-center gap-1">
-                        Device Count 
-                        {type.includes("Virtual Machines") && data.count > 2000 && (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <Info className="h-4 w-4 text-blue-500" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className='bg-white border border-gray-200'>
-                                        <p>When monitoring more than 2,000 virtual machines, it&apos;s recommended to have a dedicated collector for vCenter monitoring with a dedicated failover configured.</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <Label className="text-sm text-gray-600">
+                                Resource Count 
+                            </Label>
+                            <Input
+                                type="text"
+                                value={data.count}
+                                onChange={(e) => onUpdate(parseInt(e.target.value) || 0, data.additional_count)}
+                                className="mt-2 bg-white border-gray-200"
+                                maxLength={5}
+                            />
+                        </div>
+
+                        {type.includes("Virtual Machines") && (
+                            <div className="flex-1">
+                                <Label className="text-sm text-gray-600">
+                                    vCenter Count
+                                </Label>
+                                <Input
+                                    type="text"
+                                    value={data.additional_count || 0}
+                                    onChange={(e) => onUpdate(data.count, parseInt(e.target.value) || 0)}
+                                    className="mt-2 bg-white border-gray-200"
+                                    maxLength={5}
+                                />
+                            </div>
                         )}
-                    </Label>
-                    <div className="flex items-center gap-2">
-                        <Input
-                            type="text"
-                            value={data.count}
-                            onChange={(e) => onUpdate(parseInt(e.target.value) || 0)}
-                            className="mt-1 bg-white border-gray-200"
-                            maxLength={5}
-                        />
                     </div>
                 </div>
+
                 {showDetails && (
                     <>
                         <div className="space-y-4">

@@ -4,6 +4,7 @@ export interface DeviceType {
     instances: number;
     methods: Record<string, number>;
     icon?: string;
+    additional_count?: number;
 }
 
 export interface Site {

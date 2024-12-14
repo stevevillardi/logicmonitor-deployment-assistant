@@ -382,9 +382,13 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                     type={type}
                                                     data={data}
                                                     methodWeights={config.methodWeights}
-                                                    onUpdate={(newCount) => {
+                                                    onUpdate={(newCount, additionalCount) => {
                                                         const newSites = [...sites];
-                                                        newSites[index].devices[type].count = newCount;
+                                                        newSites[index].devices[type] = {
+                                                            ...newSites[index].devices[type],
+                                                            count: newCount,
+                                                            additional_count: additionalCount
+                                                        };
                                                         onUpdateSites(newSites);
                                                     }}
                                                     showDetails={config.showDetails}
@@ -401,6 +405,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 variant="outline"
                                                 className="text-red-600 hover:text-red-700"
                                             >
+                                                <RxReset className="w-4 h-4 mr-2" />
                                                 Reset Logs
                                             </Button>
                                         </div>
