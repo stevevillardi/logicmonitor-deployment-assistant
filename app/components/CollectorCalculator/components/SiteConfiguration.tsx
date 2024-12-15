@@ -246,7 +246,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
                                 {/* Stats Grid - Not Clickable */}
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 w-full">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
                                         {/* Polling Collectors */}
                                         <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg w-full">
                                             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
@@ -335,17 +335,19 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     </div>
 
                                     {/* Delete Button */}
-                                    <Button
-                                        variant="outline"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            deleteSite(index);
-                                        }}
-                                        className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 w-full sm:w-auto shrink-0"
-                                    >
-                                        <Trash2 className="w-4 h-4 mr-2" />
-                                        Remove Site
-                                    </Button>
+                                    <div className="w-full md:w-auto mt-2 md:mt-0">
+                                        <Button
+                                            variant="outline"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteSite(index);
+                                            }}
+                                            className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 w-full md:w-auto shrink-0"
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-2" />
+                                            Remove Site
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </CardHeader>
