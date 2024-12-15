@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button, Input } from '@/components/ui/enhanced-components'
-import { Config } from '../types';
+import { Config, DeviceType } from '../types';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Info, Plus, Trash2, AlertTriangle, Pencil, Check } from 'lucide-react';
 import { defaultDeviceTypes } from '../constants';
 import { useEffect } from 'react';
 import EnhancedCard from '@/components/ui/enhanced-card';
@@ -16,6 +16,8 @@ import sliderStyles from '../../../styles';
 import { CollectorCapacitySection } from './CollectorCapacity';
 import { RiAdminLine } from "react-icons/ri";
 import { Switch } from "@/components/ui/switch"
+import * as Icons from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 
 interface SystemConfigurationProps {
@@ -36,6 +38,8 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
         deviceType?: string;
         methodName?: string;
     }>({});
+    const [isEditing, setIsEditing] = useState<string | null>(null);
+    const [editingName, setEditingName] = useState<string>('');
 
     // Initialize selectedDeviceType when component mounts or config changes
     useEffect(() => {
@@ -78,7 +82,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                 [newDeviceType]: {
                     instances: 0,
                     count: 0,
-                    methods: { script: 1 }
+                    methods: {}
                 }
             }
         };
@@ -91,7 +95,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                 [newDeviceType]: {
                     instances: 0,
                     count: 0,
-                    methods: { script: 1 }
+                    methods: {}
                 }
             }
         }));
@@ -202,19 +206,33 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
     };
 
     const removeDeviceType = (type: string) => {
-        if (Object.keys(config.deviceDefaults).length <= 1) {
-            setErrors(prev => ({
-                ...prev,
-                deviceType: 'Cannot delete the last device type'
-            }));
-            return;
-        }
+        // Create new deviceDefaults without the removed type
+        const { [type]: removed, ...remainingDefaults } = config.deviceDefaults;
+        
+        // Update config
+        const newConfig = {
+            ...config,
+            deviceDefaults: remainingDefaults
+        };
 
-        const newDefaults = { ...config.deviceDefaults };
-        delete newDefaults[type];
-        const updatedConfig: Config = { ...config, deviceDefaults: newDefaults };
-        onUpdate(updatedConfig);
-        setErrors(prev => ({ ...prev, deviceType: undefined }));
+        // Update all sites to remove this device type
+        const updatedSites = sites.map(site => {
+            const { [type]: removed, ...remainingDevices } = site.devices;
+            return {
+                ...site,
+                devices: remainingDevices
+            };
+        });
+
+        // Update state
+        onUpdate(newConfig);
+        onUpdateSites(updatedSites);
+
+        // If the removed type was selected, select another type
+        if (selectedDeviceType === type) {
+            const deviceTypes = Object.keys(remainingDefaults);
+            setSelectedDeviceType(deviceTypes.length > 0 ? deviceTypes[0] : '');
+        }
     };
 
     const addCollectionMethod = (deviceType: string) => {
@@ -593,30 +611,119 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                 <Label className="text-sm text-gray-600 mb-3 block">Device Types</Label>
                                                 <ScrollArea className="h-[600px] pr-4">
                                                     <div className="space-y-2">
-                                                        {Object.keys(config.deviceDefaults || {}).map((type) => (
-                                                            <div
-                                                                key={type}
-                                                                className={`p-3 rounded-lg cursor-pointer group flex items-center gap-3 transition-all ${selectedDeviceType === type
-                                                                    ? 'bg-blue-100 text-blue-900 border border-blue-200'
-                                                                    : 'hover:bg-slate-50 text-gray-900 hover:text-slate-900 border border-transparent'
+                                                        {Object.entries(config.deviceDefaults || {}).map(([type, data]) => {
+                                                            const IconComponent = (Icons[data.icon as keyof typeof Icons] || Icons.EthernetPort) as LucideIcon;
+                                                            return (
+                                                                <div
+                                                                    key={type}
+                                                                    className={`p-3 rounded-lg cursor-pointer group flex items-center gap-3 transition-all ${
+                                                                        selectedDeviceType === type
+                                                                            ? 'bg-blue-100 text-blue-900 border border-blue-200'
+                                                                            : 'hover:bg-slate-50 text-gray-900 hover:text-slate-900 border border-transparent'
                                                                     }`}
-                                                                onClick={() => setSelectedDeviceType(type)}
-                                                            >
-                                                                <PcCase className="h-4 w-4 text-blue-700" />
-                                                                <span className="flex-1">{type}</span>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        removeDeviceType(type);
-                                                                    }}
-                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                    onClick={() => setSelectedDeviceType(type)}
                                                                 >
-                                                                    <Trash2 className="h-4 w-4 text-red-500" />
-                                                                </Button>
-                                                            </div>
-                                                        ))}
+                                                                    <IconComponent className="h-4 w-4 text-blue-700" />
+                                                                    {isEditing === type ? (
+                                                                        <Input
+                                                                            value={editingName}
+                                                                            onChange={(e) => setEditingName(e.target.value)}
+                                                                            onBlur={() => {
+                                                                                if (editingName && editingName !== type) {
+                                                                                    const newDeviceDefaults = Object.entries(config.deviceDefaults)
+                                                                                        .map(([key, value]): [string, DeviceType] => [key, value as unknown as DeviceType])
+                                                                                        .reduce((acc, [key, value]) => {
+                                                                                            const newKey = key === type ? editingName : key;
+                                                                                            acc[newKey] = value;
+                                                                                            return acc;
+                                                                                        }, {} as Record<string, DeviceType>);
+
+                                                                                    const newConfig = {
+                                                                                        ...config,
+                                                                                        deviceDefaults: newDeviceDefaults
+                                                                                    };
+
+                                                                                    const updatedSites = sites.map(site => ({
+                                                                                        ...site,
+                                                                                        devices: Object.entries(site.devices)
+                                                                                            .map(([key, value]): [string, DeviceType] => [key, value as unknown as DeviceType])
+                                                                                            .reduce((acc, [key, value]) => {
+                                                                                                const newKey = key === type ? editingName : key;
+                                                                                                acc[newKey] = value;
+                                                                                                return acc;
+                                                                                            }, {} as Record<string, DeviceType>)
+                                                                                    }));
+
+                                                                                    onUpdate(newConfig);
+                                                                                    onUpdateSites(updatedSites);
+                                                                                }
+                                                                                setIsEditing(null);
+                                                                                setEditingName('');
+                                                                            }}
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === 'Enter') {
+                                                                                    e.currentTarget.blur();
+                                                                                }
+                                                                                if (e.key === 'Escape') {
+                                                                                    setIsEditing(null);
+                                                                                    setEditingName('');
+                                                                                }
+                                                                            }}
+                                                                            autoFocus
+                                                                            className="flex-1"
+                                                                        />
+                                                                    ) : (
+                                                                        <span className="flex-1">{type}</span>
+                                                                    )}
+                                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                                                                        {isEditing === type ? (
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    e.stopPropagation();
+                                                                                    const input = document.activeElement as HTMLInputElement;
+                                                                                    input?.blur();
+                                                                                    setTimeout(() => {
+                                                                                        setIsEditing(null);
+                                                                                        setEditingName('');
+                                                                                    }, 0);
+                                                                                }}
+                                                                                className="h-8 w-8"
+                                                                            >
+                                                                                <Check className="h-4 w-4 text-green-500" />
+                                                                            </Button>
+                                                                        ) : (
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    e.stopPropagation();
+                                                                                    setEditingName(type);
+                                                                                    setIsEditing(type);
+                                                                                }}
+                                                                                className="h-8 w-8"
+                                                                            >
+                                                                                <Pencil className="h-4 w-4 text-blue-500" />
+                                                                            </Button>
+                                                                        )}
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                removeDeviceType(type);
+                                                                            }}
+                                                                            className="h-8 w-8"
+                                                                        >
+                                                                            <Trash2 className="h-4 w-4 text-red-500" />
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </ScrollArea>
                                             </div>
@@ -631,10 +738,11 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                                 <Label className="text-gray-600 mb-2 block">Base Instances</Label>
                                                                 <div className="flex items-center gap-3">
                                                                     <Input
-                                                                        type="number"
+                                                                        type="text"
                                                                         value={config.deviceDefaults[selectedDeviceType].instances}
                                                                         onChange={(e) => handleInstancesChange(selectedDeviceType, parseInt(e.target.value) || 0)}
                                                                         className="w-32"
+                                                                        maxLength={4}
                                                                     />
                                                                     <div className="ml-4 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
                                                                         <Calculator className="w-4 h-4 text-blue-700" />
@@ -690,56 +798,68 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                                     <AlertDescription>{errors.methodRatios}</AlertDescription>
                                                                 </Alert>
                                                             )}
-                                                            <div className="grid grid-cols-2 gap-4">
-                                                                {Object.entries(
-                                                                    config.deviceDefaults[selectedDeviceType].methods
-                                                                ).map(([method, ratio]) => (
-                                                                    <div
-                                                                        key={method}
-                                                                        className="flex flex-col p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                                                                    >
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <div className="flex items-center gap-3">
-                                                                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                                                                    <Settings className="w-4 h-4 text-blue-700" />
+                                                            <div className="space-y-4">
+                                                                {Object.keys(config.deviceDefaults[selectedDeviceType].methods).length > 0 ? (
+                                                                    Object.entries(config.deviceDefaults[selectedDeviceType].methods).map(([method, ratio]) => (
+                                                                        <div
+                                                                            key={method}
+                                                                            className="flex flex-col p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                                                                        >
+                                                                            <div className="flex items-center justify-between mb-4">
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                                                        <Settings className="w-4 h-4 text-blue-700" />
+                                                                                    </div>
+                                                                                    <Label className="capitalize text-gray-900">{method}</Label>
                                                                                 </div>
-                                                                                <Label className="capitalize text-gray-900">{method}</Label>
+                                                                                <Button
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    onClick={() => selectedDeviceType && removeCollectionMethod(selectedDeviceType, method)}
+                                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                                >
+                                                                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                                                                </Button>
                                                                             </div>
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                onClick={() => selectedDeviceType && removeCollectionMethod(selectedDeviceType, method)}
-                                                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                                                            >
-                                                                                <Trash2 className="h-4 w-4 text-red-500" />
-                                                                            </Button>
+                                                                            <div className="space-y-2">
+                                                                                <style>{sliderStyles}</style>
+                                                                                <Label className="text-xs text-gray-500 block">Ratio: {(ratio * 100).toFixed(1)}%</Label>
+                                                                                <input
+                                                                                    type="range"
+                                                                                    min="0"
+                                                                                    max="1"
+                                                                                    step="0.05"
+                                                                                    value={ratio}
+                                                                                    onChange={(e) => {
+                                                                                        updateMethodRatio(
+                                                                                            selectedDeviceType,
+                                                                                            method,
+                                                                                            parseFloat(e.target.value)
+                                                                                        );
+                                                                                    }}
+                                                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                                                                                />
+                                                                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                                                                    <span>0%</span>
+                                                                                    <span>50%</span>
+                                                                                    <span>100%</span>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="space-y-2">
-                                                                            <style>{sliderStyles}</style>
-                                                                            <Label className="text-xs text-gray-500 block">Ratio: {(ratio * 100).toFixed(1)}%</Label>
-                                                                            <input
-                                                                                type="range"
-                                                                                min="0"
-                                                                                max="1"
-                                                                                step="0.05"
-                                                                                value={ratio}
-                                                                                onChange={(e) => {
-                                                                                    updateMethodRatio(
-                                                                                        selectedDeviceType,
-                                                                                        method,
-                                                                                        parseFloat(e.target.value)
-                                                                                    );
-                                                                                }}
-                                                                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
-                                                                            />
-                                                                            <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                                                                <span>0%</span>
-                                                                                <span>50%</span>
-                                                                                <span>100%</span>
-                                                                            </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div className="flex flex-col items-center gap-4 p-6 bg-gray-50 border border-gray-200 rounded-lg text-gray-500">
+                                                                        <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
+                                                                            <Variable className="w-5 h-5 text-gray-400" />
+                                                                        </div>
+                                                                        <div className="text-center space-y-1">
+                                                                            <p className="font-medium text-gray-600">No Collection Methods Defined</p>
+                                                                            <p className="text-sm text-gray-500">
+                                                                                You must define at least one collection method for load calculations to work correctly.
+                                                                            </p>
                                                                         </div>
                                                                     </div>
-                                                                ))}
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>

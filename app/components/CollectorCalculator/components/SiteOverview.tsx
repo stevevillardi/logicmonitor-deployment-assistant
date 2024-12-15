@@ -345,23 +345,23 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 </div>
 
                                 {/* Total Instances */}
-                                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Component className="w-4 h-4 text-indigo-700" />
-                                        <span className="text-sm text-indigo-900">Instances</span>
+                                        <Component className="w-4 h-4 text-blue-700" />
+                                        <span className="text-sm text-blue-900">Instances</span>
                                     </div>
-                                    <p className="text-lg font-bold text-indigo-700">
+                                    <p className="text-lg font-bold text-blue-700">
                                         {getTotalInstanceCount().toLocaleString()}
                                     </p>
                                 </div>
 
                                 {/* Total Load Score */}
-                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Weight className="w-4 h-4 text-purple-700" />
-                                        <span className="text-sm text-purple-900">Load Score</span>
+                                        <Weight className="w-4 h-4 text-blue-700" />
+                                        <span className="text-sm text-blue-900">Load Score</span>
                                     </div>
-                                    <p className="text-lg font-bold text-purple-700">
+                                    <p className="text-lg font-bold text-blue-700">
                                         {Math.round(totalLoadScore).toLocaleString()}
                                     </p>
                                 </div>
@@ -519,23 +519,23 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                 </div>
 
                                                 {/* Estimated Instances */}
-                                                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <Component className="w-4 h-4 text-indigo-700" />
-                                                        <span className="text-sm text-indigo-900">Instances</span>
+                                                        <Component className="w-4 h-4 text-blue-700" />
+                                                        <span className="text-sm text-blue-900">Instances</span>
                                                     </div>
-                                                    <p className="text-lg font-bold text-indigo-700">
+                                                    <p className="text-lg font-bold text-blue-700">
                                                         {metrics.estimatedInstances.toLocaleString()}
                                                     </p>
                                                 </div>
 
                                                 {/* Estimated Load */}
-                                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <Weight className="w-4 h-4 text-purple-700" />
-                                                        <span className="text-sm text-purple-900">Load Score</span>
+                                                        <Weight className="w-4 h-4 text-blue-700" />
+                                                        <span className="text-sm text-blue-900">Load Score</span>
                                                     </div>
-                                                    <p className="text-lg font-bold text-purple-700">
+                                                    <p className="text-lg font-bold text-blue-700">
                                                         {Math.round(metrics.totalWeight).toLocaleString()}
                                                     </p>
                                                 </div>

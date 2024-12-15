@@ -113,12 +113,12 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
-                    <div className="bg-purple-50 rounded-lg border border-purple-200 p-3 sm:p-6">
+                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-6">
                         <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                            <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
-                            <h3 className="text-xs sm:text-sm font-medium text-purple-900">Total Load Score</h3>
+                            <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                            <h3 className="text-xs sm:text-sm font-medium text-blue-900">Total Load Score</h3>
                         </div>
-                        <p className="text-xl sm:text-3xl font-bold text-purple-700">
+                        <p className="text-xl sm:text-3xl font-bold text-blue-700">
                             {Math.round(collectorSummary.totalWeight).toLocaleString()}
                         </p>
                     </div>

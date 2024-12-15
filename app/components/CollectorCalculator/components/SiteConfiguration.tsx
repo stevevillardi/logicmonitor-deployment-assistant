@@ -199,14 +199,14 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 </div>
             ) : (
                 sites.map((site, index) => (
-                    <EnhancedCard 
+                    <EnhancedCard
                         key={`site-${index}`}
                         className="mb-4"
                     >
                         <CardHeader className="border-gray-200 bg-white">
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
                                 {/* Site Name Section - Clickable */}
-                                <div 
+                                <div
                                     className="flex-none sm:min-w-[200px] sm:max-w-[300px] w-full"
                                     onClick={() => toggleSite(index)}
                                 >
@@ -218,10 +218,9 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                         <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
                                                             <Building className="w-4 h-4 text-blue-700" />
                                                         </div>
-                                                        <ChevronRight 
-                                                            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                                                                expandedSites.has(index) ? 'rotate-90' : ''
-                                                            }`}
+                                                        <ChevronRight
+                                                            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expandedSites.has(index) ? 'rotate-90' : ''
+                                                                }`}
                                                         />
                                                     </div>
                                                 </TooltipTrigger>
@@ -255,15 +254,21 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             </div>
                                             <div className="flex flex-col min-w-0 flex-1">
                                                 <div className="flex items-center gap-1">
-                                                    <span className="text-sm font-medium text-blue-900 truncate">
-                                                        {getSiteResults(site).polling.collectors.filter(c => c.type === "Primary").length}x Polling
+                                                    <span className="text-xs font-medium text-blue-900 truncate">
+                                                        Polling Collectors
                                                     </span>
                                                 </div>
-                                                {config.enablePollingFailover && (
-                                                    <span className="text-xs text-blue-700">
-                                                        +1 Redundant
-                                                    </span>
-                                                )}
+                                                <span className="text-sm font-bold text-blue-700">
+                                                    {(() => {
+                                                        const pollingCollectors = getSiteResults(site).polling.collectors;
+                                                        const primaryCollectors = pollingCollectors.filter(c => c.type === "Primary");
+                                                        const hasOnlyRedundancy = pollingCollectors.length === 1 && pollingCollectors[0].type === "N+1 Redundancy";
+                                                        const showNA = primaryCollectors.length === 0 || hasOnlyRedundancy;
+
+                                                        return showNA ? "N/A" : 
+                                                            `${pollingCollectors.length}${config.enablePollingFailover && pollingCollectors.some(c => c.type === "N+1 Redundancy") ? " (with N+1)" : ""}`;
+                                                    })()}
+                                                </span>
                                             </div>
                                         </div>
 
@@ -274,68 +279,57 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             </div>
                                             <div className="flex flex-col min-w-0 flex-1">
                                                 <div className="flex items-center gap-1">
-                                                    <span className="text-sm font-medium text-orange-900 truncate">
-                                                        {getSiteResults(site).logs.collectors.filter(c => c.type === "Primary").length}x Logs
+                                                    <span className="text-xs font-medium text-orange-900 truncate">
+                                                        Logs Collectors
                                                     </span>
                                                 </div>
-                                                {config.enableLogsFailover && (
-                                                    <span className="text-xs text-orange-700">
-                                                        +1 Redundant
-                                                    </span>
-                                                )}
+                                                <span className="text-sm font-bold text-orange-700">
+                                                    {(() => {
+                                                        const logsCollectors = getSiteResults(site).logs.collectors;
+                                                        const primaryCollectors = logsCollectors.filter(c => c.type === "Primary");
+                                                        const hasOnlyRedundancy = logsCollectors.length === 1 && logsCollectors[0].type === "N+1 Redundancy";
+                                                        const showNA = primaryCollectors.length === 0 || hasOnlyRedundancy;
+
+                                                        return showNA ? "N/A" : 
+                                                            `${logsCollectors.length}${config.enableLogsFailover && logsCollectors.some(c => c.type === "N+1 Redundancy") ? " (with N+1)" : ""}`;
+                                                    })()}
+                                                </span>
                                             </div>
                                         </div>
 
+
                                         {/* Average Load */}
-                                        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
-                                            calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
-                                                ? "bg-red-50 border-red-200"
-                                                : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                                    ? "bg-yellow-50 border-yellow-200"
-                                                    : "bg-emerald-50 border-emerald-200"
-                                        }`}>
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
                                             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                                                <Bolt className={`w-4 h-4 ${
-                                                    calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
-                                                        ? "text-red-700"
-                                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                                            ? "text-yellow-700"
-                                                            : "text-emerald-700"
-                                                }`} />
+                                                <HardDrive className="w-4 h-4 text-emerald-700" />
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className={`text-sm font-medium ${
-                                                    calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
-                                                        ? "text-red-900"
-                                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                                            ? "text-yellow-900"
-                                                            : "text-emerald-900"
-                                                }`}>Average Load</span>
-                                                <span className={`text-xs ${
-                                                    calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80
-                                                        ? "text-red-700"
-                                                        : calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60
-                                                            ? "text-yellow-700"
-                                                            : "text-emerald-700"
-                                                }`}>
+                                            <div className="flex flex-col min-w-0 flex-1">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs font-medium text-emerald-900 truncate">
+                                                        Average Load
+                                                    </span>
+                                                </div>
+                                                <span className="text-sm font-bold text-emerald-700">
                                                     {calculateAverageLoad(getSiteResults(site).polling.collectors)}%
                                                 </span>
                                             </div>
                                         </div>
 
                                         {/* Device Count */}
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
                                             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                                                <HardDrive className="w-4 h-4 text-blue-700" />
+                                                <HardDrive className="w-4 h-4 text-yellow-700" />
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-blue-900">
-                                                    {Object.values(site.devices).reduce(
-                                                        (sum, device) => sum + (device.count || 0),
-                                                        0
-                                                    )}{" "}
-                                                    Devices
-                                                </span>
+                                            <div className="flex flex-col min-w-0 flex-1">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs font-medium text-yellow-900 truncate">
+                                                        Devices
+                                                    </span>
+                                                </div>
+                                                <span className="text-sm font-bold text-yellow-700">                                                    {Object.values(site.devices).reduce(
+                                                    (sum, device) => sum + (device.count || 0),
+                                                    0
+                                                )}{" "}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -463,7 +457,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     </EnhancedCard>
                 ))
             )}
-                                        <div className="mb-6">
+            <div className="mb-6">
                 <DisclaimerBox />
             </div>
         </div>

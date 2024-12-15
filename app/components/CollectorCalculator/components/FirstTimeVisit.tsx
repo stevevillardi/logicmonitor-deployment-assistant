@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bot, Terminal, Info, Users, CirclePlay, ChevronRight } from 'lucide-react';
+import { Bot, Terminal, Info, Users, CirclePlay, ChevronRight, BookText } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -19,7 +19,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
         {
             title: "Calculate collector requirements",
             description: "Calculate the number of collectors required for your deployment",
-            icon: <Bot className="w-4 h-4 text-blue-600" />,
+            icon: <BookText className="w-4 h-4 text-blue-600" />,
             link: "/"
         },
         {

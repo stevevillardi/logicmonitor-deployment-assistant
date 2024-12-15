@@ -51,13 +51,21 @@ export const calculateWeightedScore = (devices: Record<string, DeviceType>, meth
 
 export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLoad: number, config: Config) => {
 
+    // Helper function to calculate collectors for either polling (weight) or logs (EPS)
     const calculateForCapacity = (total: number, isEPS: boolean) => {
         let size = "XXL";
         let minCollectors = Infinity;
 
+        // Iterate through each collector size (XXL, XL, LARGE, etc.)
         Object.entries(config.collectorCapacities).forEach(([collectorSize, limits]) => {
+            // Get the relevant limit (either EPS or weight) based on what we're calculating
             const limit = isEPS ? limits.eps : limits.weight;
+            
+            // Calculate how many collectors needed at this size
+            // Formula: total capacity needed / (collector capacity * max load percentage)
             const needed = Math.ceil(total / (limit * (maxLoad / 100)));
+            
+            // If this size requires fewer collectors, update our choice
             if (needed <= minCollectors) {
                 minCollectors = needed;
                 size = collectorSize;
@@ -67,7 +75,10 @@ export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLo
         return { size, count: minCollectors };
     };
 
+    // Calculate collectors needed for polling (based on weight)
     const pollingConfig = calculateForCapacity(totalWeight, false);
+    
+    // Calculate collectors needed for logs (based on EPS)
     const logsConfig = calculateForCapacity(totalEPS, true);
 
     return {
@@ -75,13 +86,17 @@ export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLo
             collectors: Array(pollingConfig.count + (config.enablePollingFailover ? 1 : 0))
                 .fill(null)
                 .map((_, idx) => {
+                    // Check if this is a redundant collector
                     const isRedundant = idx === pollingConfig.count && config.enablePollingFailover;
+                    
+                    // Calculate load percentage for each collector
                     const load = isRedundant ? 0 : Math.round(
                         (totalWeight /
                             pollingConfig.count /
                             config.collectorCapacities[pollingConfig.size].weight) *
                         100
                     );
+                    
                     return {
                         size: pollingConfig.size,
                         type: isRedundant ? "N+1 Redundancy" : "Primary",
@@ -93,6 +108,7 @@ export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLo
             collectors: Array(logsConfig.count + (config.enableLogsFailover ? 1 : 0))
                 .fill(null)
                 .map((_, idx) => {
+                    // Similar logic for logs collectors
                     const isRedundant = idx === logsConfig.count && config.enableLogsFailover;
                     const load = isRedundant ? 0 : Math.round(
                         (totalEPS /

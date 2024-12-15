@@ -37,6 +37,7 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
 
     const calculateMetrics = (collectors: Array<any>) => {
         const primaryCollectors = collectors.filter(c => c.type === "Primary");
+        const hasRedundancy = collectors.some(c => c.type === "N+1 Redundancy");
         const avgLoad = primaryCollectors.length > 0
             ? Math.round(primaryCollectors.reduce((sum, c) => sum + c.load, 0) / primaryCollectors.length)
             : 0;
@@ -45,13 +46,16 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
             collectors,
             primaryCollectors,
             avgLoad,
-            size: collectors[0]?.size || 'N/A'
+            size: collectors[0]?.size || 'N/A',
+            hasRedundancy
         });
 
         return {
             avgLoad,
             primaryCount: primaryCollectors.length,
-            size: collectors[0]?.size || 'N/A'
+            totalCount: collectors.length,
+            size: collectors[0]?.size || 'N/A',
+            hasRedundancy
         };
     };
 
@@ -78,28 +82,30 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
                         </h3>
 
                         <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                            <div className={`px-2 sm:px-3 py-2 rounded-lg ${loadColor} flex items-center gap-1.5`}>
+                            <div className="px-2 sm:px-3 py-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-medium">Total Load</span>
-                                    <span className="text-sm font-bold">{showNA ? "0" : Math.round(totalLoad).toLocaleString()}</span>
+                                    <span className="text-xs font-medium">Collectors</span>
+                                    <span className="text-sm font-bold">
+                                        {showNA ? "N/A" : `${metrics.totalCount}${metrics.hasRedundancy ? ' (with N+1)' : ''}`}
+                                    </span>
                                 </div>
                             </div>
-                            <div className="px-2 sm:px-3 py-2 rounded-lg bg-blue-50 border-blue-200 text-blue-700 flex items-center gap-1.5">
+                            <div className="px-2 sm:px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-medium">Primary</span>
-                                    <span className="text-sm font-bold">{showNA ? "N/A" : metrics.primaryCount}</span>
+                                    <span className="text-xs font-medium">Avg Load</span>
+                                    <span className="text-sm font-bold">{showNA ? "0" : `${metrics.avgLoad}%`}</span>
                                 </div>
                             </div>
-                            <div className="px-2 sm:px-3 py-2 rounded-lg bg-gray-50 border-gray-200 text-gray-700 flex items-center gap-1.5">
+                            <div className="px-2 sm:px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
                                     <span className="text-xs font-medium">Size</span>
                                     <span className="text-sm font-bold">{showNA ? "0" : metrics.size}</span>
                                 </div>
                             </div>
-                            <div className={`px-2 sm:px-3 py-2 rounded-lg ${loadColor} flex items-center gap-1.5`}>
+                            <div className="px-2 sm:px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-medium">Avg Load</span>
-                                    <span className="text-sm font-bold">{showNA ? "0" : `${metrics.avgLoad}%`}</span>
+                                    <span className="text-xs font-medium">Total Load</span>
+                                    <span className="text-sm font-bold">{showNA ? "0" : Math.round(totalLoad).toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
