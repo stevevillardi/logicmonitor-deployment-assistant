@@ -4,6 +4,7 @@ import { Server, Activity, Component, Weight, HardDrive, Building, Earth, Info }
 import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import DisclaimerBox from './DisclaimerBox';
+import CollectorRecommendation from './CollectorRecommendation';
 
 interface PDFTemplateProps {
     sites: Site[];
@@ -23,13 +24,13 @@ interface PDFTemplateProps {
 }
 
 const SectionDivider = () => (
-  <div className="flex items-center gap-4 my-8">
-    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-grow" />
-    <div className="h-1 w-1 rounded-full bg-gray-300" />
-    <div className="h-1 w-1 rounded-full bg-gray-300" />
-    <div className="h-1 w-1 rounded-full bg-gray-300" />
-    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-grow" />
-  </div>
+    <div className="flex items-center gap-4 my-8">
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-grow" />
+        <div className="h-1 w-1 rounded-full bg-gray-300" />
+        <div className="h-1 w-1 rounded-full bg-gray-300" />
+        <div className="h-1 w-1 rounded-full bg-gray-300" />
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-grow" />
+    </div>
 );
 
 const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplateProps) => {
@@ -59,12 +60,12 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
             {/* Header */}
             <header className="mb-8 sm:mb-12 border-b pb-4 sm:pb-6">
                 <div className="flex items-center justify-between">
-                    <img 
-                        src="/lmlogo.webp" 
-                        alt="LogicMonitor" 
-                        width={230} 
-                        height={43} 
-                        className="w-[150px] sm:w-[230px] object-contain" 
+                    <img
+                        src="/lmlogo.webp"
+                        alt="LogicMonitor"
+                        width={230}
+                        height={43}
+                        className="w-[150px] sm:w-[230px] object-contain"
                     />
                     <div className="text-right">
                         <p className="text-xs sm:text-sm text-gray-600">Generated on {currentDate}</p>
@@ -96,7 +97,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                             <h3 className="text-xs sm:text-sm font-medium text-blue-900">Total Devices</h3>
                         </div>
                         <p className="text-xl sm:text-3xl font-bold text-blue-700">
-                            {sites.reduce((sum, site) => 
+                            {sites.reduce((sum, site) =>
                                 sum + Object.values(site.devices).reduce((devSum, dev) => devSum + dev.count, 0), 0
                             ).toLocaleString()}
                         </p>
@@ -242,16 +243,17 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         }}
                     />
                 </div>
+
                 <div className="mb-6">
-                <DisclaimerBox />
-            </div>
-            <SectionDivider />
+                    <CollectorRecommendation />
+                </div>
+                <SectionDivider />
             </div>
 
             {/* Sites */}
             {sites.map((site, index) => {
                 const metrics = siteMetrics[index];
-                
+
                 return (
                     <div key={index} className="site-section mb-8 sm:mb-12">
                         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
@@ -408,7 +410,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                                     <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">
                                                         {Math.round(
                                                             Object.entries(data.methods).reduce(
-                                                                (total, [method, ratio]) => 
+                                                                (total, [method, ratio]) =>
                                                                     total + (data.instances * (ratio as number) * config.methodWeights[method] * data.count),
                                                                 0
                                                             )
@@ -421,6 +423,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                             </table>
                         </div>
                         {index < sites.length - 1 && <SectionDivider />}
+                        {index == sites.length - 1 && <div className="mt-6"><DisclaimerBox /></div>}
                     </div>
                 );
             })}

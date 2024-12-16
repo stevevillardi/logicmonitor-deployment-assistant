@@ -1,50 +1,10 @@
-import { Bot, Info } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
-import { useEffect, useState } from 'react';
-import { Site } from '../types';
 import { IoLogoWindows } from "react-icons/io";
 import { FaLinux } from "react-icons/fa";
+import CollectorRecommendation from './CollectorRecommendation';
 
 const CollectorReq = () => {
-    // Get the config from localStorage
-    const [hasWindowsDevices, setHasWindowsDevices] = useState(false);
-
-    useEffect(() => {
-        const checkForWindowsDevices = () => {
-            const savedSites = localStorage.getItem('collectorSites');
-            if (!savedSites) return false;
-
-            const sites = JSON.parse(savedSites);
-
-            return sites.some((site: Site) => {
-                return Object.entries(site.devices).some(([deviceType, data]) => {
-                    const isWindowsDevice = deviceType.toLowerCase().includes('windows');
-                    return isWindowsDevice && data.count > 0;
-                });
-            });
-        };
-
-        setHasWindowsDevices(checkForWindowsDevices());
-
-        // Add event listener for storage changes
-        const handleStorageChange = () => {
-            setHasWindowsDevices(checkForWindowsDevices());
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
-
-    const recommendation = hasWindowsDevices ? {
-        recommended: 'Windows',
-        reason: 'Windows Collector is required for monitoring Windows-based devices.',
-        icon: <IoLogoWindows className="w-4 h-4 text-blue-700" />
-    } : {
-        recommended: 'Linux',
-        reason: 'Linux Collector is recommended for better performance and resource utilization.',
-        icon: <FaLinux className="w-4 h-4 text-emerald-700" />
-    };
-
     return (
         <div className="space-y-6 overflow-y-auto">
             {/* Operating System Support Section */}
@@ -121,25 +81,7 @@ const CollectorReq = () => {
                         </div>
 
                         {/* Recommendation Section */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h3 className="font-semibold text-blue-700 mb-3 flex items-center gap-2">
-                                <Info className="w-4 h-4" />
-                                Collector OS Recommendation
-                            </h3>
-                            <div className="flex items-start gap-3 bg-white p-4 rounded-lg border border-gray-200">
-                                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                    {recommendation.icon}
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">
-                                        Recommended OS based on your configuration: {recommendation.recommended}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        {recommendation.reason}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <CollectorRecommendation />
                     </div>
                 </div>
             </EnhancedCard>

@@ -11,6 +11,7 @@ import ReactDOM from 'react-dom/client';
 import PDFTemplate from './PDFTemplate';
 import ComputeRequirements from './ComputeRequirements';
 import DisclaimerBox from './DisclaimerBox';
+import CollectorRecommendation from './CollectorRecommendation';
 
 interface SiteOverviewProps {
     sites: Site[];
@@ -477,6 +478,9 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 }}
                                 className="mt-4"
                             />
+
+                            {/* Collector Req section */}
+                            <CollectorRecommendation />
                         </div>
                     </div>
 

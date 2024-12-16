@@ -290,15 +290,25 @@ const DeviceOnboarding: React.FC = () => {
                                         </div>
                                         <div className="space-y-2">
                                             <h4 className="font-medium text-gray-900">Resources</h4>
-                                            <div className="space-y-1">
-                                                <ResourceLink
-                                                    href="https://docs.google.com/document/d/1I1flixdli-MXWL13_0riU4FZIdmfVXG7Im6Q6uesPRA/edit?usp=sharing"
-                                                    title="PowerShell CSV Import Preparation Guide"
-                                                />
-                                                <ResourceLink
-                                                    href="https://github.com/logicmonitor/lm-powershell-module"
-                                                    title="PowerShell Module Github"
-                                                />
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                <div className="col-span-1">
+                                                    <ResourceLink
+                                                        href="https://docs.google.com/document/d/1I1flixdli-MXWL13_0riU4FZIdmfVXG7Im6Q6uesPRA/edit?usp=sharing"
+                                                        title="PowerShell CSV Import Preparation Guide"
+                                                    />
+                                                </div>
+                                                <div className="col-span-1">
+                                                    <ResourceLink
+                                                        href="https://github.com/logicmonitor/lm-powershell-module"
+                                                        title="PowerShell Module Github"
+                                                    />
+                                                </div>
+                                                <div className="col-span-1">
+                                                    <ResourceLink
+                                                        href="https://github.com/stevevillardi/Logic.Monitor.SE"
+                                                        title="PowerShell (SE) Module Github"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         <VideoGuide
@@ -444,7 +454,7 @@ const DeviceOnboarding: React.FC = () => {
                                         </div>
                                         <div className="space-y-2 gap-4">
                                             <h4 className="font-medium text-gray-900">Resources</h4>
-                                            <div className="space-y-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div className="space-y-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                                                 <div className="col-span-1">
                                                     <ResourceLink
                                                         href="https://www.logicmonitor.com/support/monitoring/applications-databases/microsoft-office-365-monitoring"
