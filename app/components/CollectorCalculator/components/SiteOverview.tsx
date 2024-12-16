@@ -477,6 +477,8 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                     logs: globalCollectorSummary.logs
                                 }}
                                 className="mt-4"
+                                enablePollingFailover={config.enablePollingFailover}
+                                enableLogsFailover={config.enableLogsFailover}
                             />
 
                             {/* Collector Req section */}
@@ -676,6 +678,8 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     logs: metrics.collectorsBySize.logs
                                                 }}
                                                 className="mt-4"
+                                                enablePollingFailover={config.enablePollingFailover}
+                                                enableLogsFailover={config.enableLogsFailover}
                                             />
 
                                             {/* Device Distribution */}
