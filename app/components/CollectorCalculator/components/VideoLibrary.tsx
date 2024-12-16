@@ -163,6 +163,8 @@ const VideoLibrary = () => {
         }
     };
 
+    const totalVideos = filteredVideos.reduce((sum, category) => sum + category.videos.length, 0);
+
     if (isLoading) {
         return (
             <div className="min-h-[800px] space-y-4">
@@ -206,9 +208,14 @@ const VideoLibrary = () => {
                             </div>
                             {/* Search and Filter Section */}
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Search and Filter
-                                </label>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-sm font-medium text-gray-700">
+                                        Search and Filter
+                                    </label>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {totalVideos} {totalVideos === 1 ? 'video' : 'videos'}
+                                    </span>
+                                </div>
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <div className="relative flex-1">
                                         <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
