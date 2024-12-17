@@ -1,15 +1,15 @@
 'use client';
 
-import { Footer } from './components/CollectorCalculator/components/Footer';
+import { Footer } from './components/DeploymentAssistant/components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import CollectorCalculator from './components/CollectorCalculator/CollectorCalculator';
+import DeploymentAssistant from './components/DeploymentAssistant/DeploymentAssistant';
 
 export default function Home() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-[#040F4B] flex flex-col">
         <main className="flex-grow py-4 sm:p-8">
-          <CollectorCalculator />
+          <DeploymentAssistant />
         </main>
         <Footer />
       </div>

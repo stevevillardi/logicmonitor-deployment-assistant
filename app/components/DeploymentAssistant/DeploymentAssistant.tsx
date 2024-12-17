@@ -12,7 +12,7 @@ import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookT
 import { FirstTimeVisit } from './components/FirstTimeVisit';
 import DeviceOnboarding from './components/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
-import VideoLibrary from '../CollectorCalculator/components/VideoLibrary';
+import VideoLibrary from './components/VideoLibrary';
 import { devLog } from '@/utils/debug';
 import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
@@ -124,7 +124,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
     );
 };
 
-const CollectorCalculator = () => {
+const DeploymentAssistant = () => {
     const [config, setConfig] = useState<Config>(getInitialConfig);
     const [sites, setSites] = useState<Site[]>(getInitialSites);
     
@@ -167,10 +167,10 @@ const CollectorCalculator = () => {
     }, [pathname, activeTab]);
 
     useEffect(() => {
-        const hasVisited = localStorage.getItem('hasVisitedCollectorCalculator');
+        const hasVisited = localStorage.getItem('hasVisitedDeploymentAssistant');
         if (!hasVisited) {
             setHelpDialogOpen(true);
-            localStorage.setItem('hasVisitedCollectorCalculator', 'true');
+            localStorage.setItem('hasVisitedDeploymentAssistant', 'true');
         }
     }, []);
 
@@ -311,4 +311,4 @@ const CollectorCalculator = () => {
     );
 };
 
-export default CollectorCalculator;
+export default DeploymentAssistant;

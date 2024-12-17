@@ -1,5 +1,5 @@
 import React from 'react';
-import Footer from '../components/CollectorCalculator/components/Footer';
+import Footer from '../components/DeploymentAssistant/components/Footer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 

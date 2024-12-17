@@ -1,14 +1,14 @@
 'use client';
 import { memo } from 'react';
-import CollectorCalculator from '../components/CollectorCalculator/CollectorCalculator';
-import { Footer } from '../components/CollectorCalculator/components/Footer';
+import DeploymentAssistant from '../components/DeploymentAssistant/DeploymentAssistant';
+import { Footer } from '../components/DeploymentAssistant/components/Footer';
 import ProtectedRoute from '../components/ProtectedRoute';
 const DeviceOnboardingPage = memo(function DeviceOnboardingPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-[#040F4B] flex flex-col">
         <main className="flex-grow py-4 sm:p-8">
-        <CollectorCalculator />
+        <DeploymentAssistant />
       </main>
         <Footer />
       </div>

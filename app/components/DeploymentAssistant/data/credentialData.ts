@@ -1,10 +1,9 @@
 import { LucideIcon } from 'lucide-react';
-import { CredentialData, CredentialType, PermissionType } from '../types/credentials';
+import {CredentialType } from '../types/credentials';
 import {
     Database,
     Server,
     Network,
-    Cloud,
     Lock,
     Key,
     Monitor,
@@ -46,11 +45,18 @@ const getIconForCredential = (id: string): LucideIcon => {
 };
 
 export const transformCredentialData = async () => {
-    const credentialList = await import('./credential-list.json');
+    const CREDENTIALS_URL = process.env.NEXT_PUBLIC_DEVICE_PROP_JSON;
+    
+    if (!CREDENTIALS_URL) {
+        throw new Error('NEXT_PUBLIC_DEVICE_PROP_JSON environment variable is not defined');
+    }
+
+    const response = await fetch(CREDENTIALS_URL);
+    const credentialList = await response.json();
     const transformedData: { [key: string]: CredentialType } = {};
 
     // Transform system credentials
-    Object.entries(credentialList.default.systemCredentials).forEach(([id, cred]: [string, any]) => {
+    Object.entries(credentialList.systemCredentials).forEach(([id, cred]: [string, any]) => {
         transformedData[id] = {
             id,
             type: 'system',
@@ -67,7 +73,7 @@ export const transformCredentialData = async () => {
     });
 
     // Transform protocol credentials
-    Object.entries(credentialList.default.protocolCredentials).forEach(([id, cred]: [string, any]) => {
+    Object.entries(credentialList.protocolCredentials).forEach(([id, cred]: [string, any]) => {
         transformedData[id] = {
             id,
             type: 'protocol',

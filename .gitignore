@@ -128,6 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-app/components/CollectorCalculator/.DS_Store
+app/components/DeploymentAssistant/.DS_Store
 .DS_Store
 .vercel

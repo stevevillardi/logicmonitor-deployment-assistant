@@ -2,8 +2,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Config, Site } from '../components/CollectorCalculator/types';
-import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from '../components/CollectorCalculator/constants';
+import { Config, Site } from '../components/DeploymentAssistant/types';
+import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from '../components/DeploymentAssistant/constants';
 
 interface CollectorContextType {
     config: Config;
