@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -45,6 +46,7 @@ export default function RootLayout({
       >
           {children}
           <PWAInstallPrompt />
+          <Analytics/>
       </body>
     </html>
   );
