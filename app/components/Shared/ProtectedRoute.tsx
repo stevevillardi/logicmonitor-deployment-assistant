@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import LoginPage from '../Auth/LoginPage';
+import LoginPage from '../Authentication/LoginPage';
 import LoadingPlaceholder from './LoadingPlaceholder';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
