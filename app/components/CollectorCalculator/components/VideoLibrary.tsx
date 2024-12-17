@@ -52,7 +52,7 @@ const localVideoCategories: VideoCategory[] = [
 ];
 
 // URL for remote videos JSON
-const VIDEOS_URL = 'https://raw.githubusercontent.com/stevevillardi/LogicMonitor-Dashboards/refs/heads/main/LMDA/deployment-assistant-videos.json';
+const VIDEOS_URL = process.env.NEXT_PUBLIC_VIDEO_JSON || '';
 
 const VideoLibrary = () => {
     const [videoCategories, setVideoCategories] = useState<VideoCategory[]>(localVideoCategories);

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input, Button } from "@/components/ui/enhanced-components";
 import { Lock, AlertCircle } from 'lucide-react';
-import Image from 'next/image';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface LoginPageProps {

@@ -46,11 +46,14 @@ const SwaggerUIComponent = () => {
 
         return () => clearTimeout(timer);
     }, []);
-
+    
+    const SwaggerYAML = process.env.NEXT_PUBLIC_SWAGGER_YAML
+    
     // Define a request interceptor function
     const requestInterceptor = (req: any) => {
         // Get the original URL
         const originalUrl = req.url;
+
 
         // Check if this is a LogicMonitor API call
         if (originalUrl.includes('logicmonitor.com')) {
@@ -96,7 +99,7 @@ const SwaggerUIComponent = () => {
                         </div>
                     ) : (
                         <SwaggerUI
-                            url="/api-specs/logicmonitor-api.yaml"
+                            url={SwaggerYAML}
                             docExpansion="list"
                             deepLinking={false}
                             defaultModelsExpandDepth={-1}
