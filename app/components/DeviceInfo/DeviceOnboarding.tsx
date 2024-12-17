@@ -21,7 +21,7 @@ import {
     Server,
     Key
 } from 'lucide-react';
-import VideoGuide from './VideoGuide';
+import VideoGuide from '../VideoLibrary/VideoGuide';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DeviceCatalog from './DeviceCatalog';
 import { Badge } from '@/components/ui/badge';

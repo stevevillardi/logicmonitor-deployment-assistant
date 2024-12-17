@@ -2,7 +2,7 @@ import { Bot } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { IoLogoWindows } from "react-icons/io";
 import { FaLinux } from "react-icons/fa";
-import CollectorRecommendation from './CollectorRecommendation';
+import CollectorRecommendation from '../Shared/CollectorRecommendation';
 
 const CollectorReq = () => {
     return (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import VideoGuide from './VideoGuide';
-import { VideoGuideData } from '../types';
+import { VideoGuideData } from '../DeploymentAssistant/types/types';
 import { AlertTriangle, Search, Filter, PlayCircle, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';

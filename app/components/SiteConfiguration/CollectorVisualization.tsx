@@ -1,6 +1,6 @@
 import React from 'react';
 import { Server, Activity } from 'lucide-react';
-import { devLog } from '@/utils/debug';
+import { devLog } from '../Shared/utils/debug';
 
 interface CollectorVisualizationProps {
     polling: { collectors: Array<any> };

@@ -1,10 +1,11 @@
-import { Site, Config } from '../types';
+import { Site, Config } from '../DeploymentAssistant/types/types';
 import ComputeRequirements from './ComputeRequirements';
 import { Server, Activity, Component, Weight, HardDrive, Building, Earth, Info } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
-import DisclaimerBox from './DisclaimerBox';
-import CollectorRecommendation from './CollectorRecommendation';
+import DisclaimerBox from '../Shared/DisclaimerBox';
+import CollectorRecommendation from '../Shared/CollectorRecommendation';
+import Image from 'next/image';
 
 interface PDFTemplateProps {
     sites: Site[];
@@ -60,12 +61,13 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
             {/* Header */}
             <header className="mb-8 sm:mb-12 border-b pb-4 sm:pb-6">
                 <div className="flex items-center justify-between">
-                    <img
+                    <Image
                         src="/lmlogo.webp"
                         alt="LogicMonitor"
                         width={230}
                         height={43}
                         className="w-[150px] sm:w-[230px] object-contain"
+                        priority
                     />
                     <div className="text-right">
                         <p className="text-xs sm:text-sm text-gray-600">Generated on {currentDate}</p>

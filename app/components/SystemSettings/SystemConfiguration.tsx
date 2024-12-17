@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button, Input } from '@/components/ui/enhanced-components'
-import { Config, DeviceType } from '../types';
+import { Config, DeviceType } from '../DeploymentAssistant/types/types';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, Plus, Trash2, AlertTriangle, Pencil, Check } from 'lucide-react';
-import { defaultDeviceTypes } from '../constants';
+import { defaultDeviceTypes } from '../DeploymentAssistant/utils/constants';
 import { useEffect } from 'react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { Dumbbell, Settings, Shield, Server, Activity, Variable } from 'lucide-react';
-import { PcCase, Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
-import sliderStyles from '../../../styles';
-import { CollectorCapacitySection } from './CollectorCapacity';
+import { Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
+import sliderStyles from './styles/styles';
+import { CollectorCapacitySection } from '../CollectorInfo/CollectorCapacity';
 import { RiAdminLine } from "react-icons/ri";
 import { Switch } from "@/components/ui/switch"
 import * as Icons from 'lucide-react';

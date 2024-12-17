@@ -3,8 +3,8 @@ import { Label } from '@/components/ui/label';
 import { Building2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/enhanced-components'
-import { Config, Site } from '../types';
-import { defaultMethodWeights, collectorCapacities, defaultDeviceTypes } from '../constants';
+import { Config, Site } from '../DeploymentAssistant/types/types';
+import { defaultMethodWeights, collectorCapacities, defaultDeviceTypes } from '../DeploymentAssistant/utils/constants';
 import {
     AlertDialog,
     AlertDialogAction,

@@ -1,11 +1,11 @@
-import { Site, Config } from '../types';
+import { Site, Config } from '../DeploymentAssistant/types/types';
 import { useState, useCallback, useEffect } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
 import { Server, Activity, Building, Trash2, RotateCcw } from 'lucide-react';
-import { calculateWeightedScore } from '../utils';
-import { calculateCollectors } from '../utils';
+import { calculateWeightedScore } from '../DeploymentAssistant/utils/utils';
+import { calculateCollectors } from '../DeploymentAssistant/utils/utils';
 import { DeviceTypeCard } from './DeviceTypeCardInput';
 import { LogsInput } from './LogsInput';
 import { CollectorVisualization } from './CollectorVisualization';
@@ -14,10 +14,10 @@ import ConfigurationActions from './ConfigurationActions';
 import { Plus, ChevronUp, ChevronDown, ChevronRight, HardDrive, HelpCircle, Bolt } from 'lucide-react';
 import { FirstTimeVisit } from './FirstTimeVisit';
 import DeploymentNameInput from './DeploymentNameInput';
-import { devLog } from '@/utils/debug';
+import { devLog } from '../Shared/utils/debug';
 import { RxReset } from "react-icons/rx";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import DisclaimerBox from './DisclaimerBox';
+import DisclaimerBox from '../Shared/DisclaimerBox';
 
 interface SiteConfigurationProps {
     sites: Site[];

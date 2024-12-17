@@ -2,22 +2,22 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import SiteConfiguration from './components/SiteConfiguration';
-import { SystemConfiguration } from './components/SystemConfiguration';
-import SiteOverview from './components/SiteOverview';
-import CollectorInfo from './components/CollectorInfo';
-import { Config, Site } from './types';
+import SiteConfiguration from '../SiteConfiguration/SiteConfiguration';
+import { SystemConfiguration } from '../SystemSettings/SystemConfiguration';
+import SiteOverview from '../SiteOverview/SiteOverview';
+import CollectorInfo from '../CollectorInfo/CollectorInfo';
+import { Config, Site } from './types/types';
 import Image from 'next/image';
 import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Terminal, Bolt, Bot, HelpCircle } from 'lucide-react';
-import { FirstTimeVisit } from './components/FirstTimeVisit';
-import DeviceOnboarding from './components/DeviceOnboarding';
+import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
+import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
-import VideoLibrary from './components/VideoLibrary';
-import { devLog } from '@/utils/debug';
+import VideoLibrary from '../VideoLibrary/VideoLibrary';
+import { devLog } from '../Shared/utils/debug';
 import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
 import { getInitialConfig, getInitialSites } from './utils/storage';
-import SwaggerUIComponent from './components/SwaggerUI';
+import SwaggerUIComponent from '../APIExplorer/SwaggerUI';
 
 const Logo = () => {
     return (

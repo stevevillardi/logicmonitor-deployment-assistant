@@ -1,8 +1,8 @@
 'use client';
 import { memo } from 'react';
 import DeploymentAssistant from '../components/DeploymentAssistant/DeploymentAssistant';
-import { Footer } from '../components/DeploymentAssistant/components/Footer';
-import ProtectedRoute from '../components/ProtectedRoute';
+import { Footer } from '../components/Shared/Footer';
+import ProtectedRoute from '../components/Shared/ProtectedRoute';
 const VideoLibraryPage = memo(function VideoLibraryPage() {
   return (
     <ProtectedRoute>

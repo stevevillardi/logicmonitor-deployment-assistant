@@ -1,4 +1,4 @@
-import { DeviceType } from '../types';
+import { DeviceType } from '../DeploymentAssistant/types/types';
 import * as Icons from 'lucide-react';
 import { Component, Settings, Calculator, Weight, LucideIcon, Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';

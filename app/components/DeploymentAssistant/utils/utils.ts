@@ -1,4 +1,4 @@
-import { Config, DeviceType } from './types';
+import { Config, DeviceType } from '../types/types';
 import { collectorCapacities } from './constants';
 
 // Utility Functions

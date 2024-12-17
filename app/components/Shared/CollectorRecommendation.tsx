@@ -1,7 +1,7 @@
 import { IoLogoWindows } from "react-icons/io";
 import { FaLinux } from "react-icons/fa";
 import { Info } from 'lucide-react';
-import { Site } from '../types';
+import { Site } from '../DeploymentAssistant/types/types';
 import { useState, useEffect } from 'react';
 
 interface RecommendationType {

@@ -2,11 +2,11 @@ import React from 'react';
 import { Server, Network, Cpu, HardDrive, MemoryStick, Weight, Activity } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import CollectorReq from './CollectorReq';
-import { Config } from '../types';
-import { collectorCapacities as defaultCapacities } from '../constants';
+import { Config } from '../DeploymentAssistant/types/types';
+import { collectorCapacities as defaultCapacities } from '../DeploymentAssistant/utils/constants';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
-import { collectorRequirements } from '../constants';
+import { collectorRequirements } from '../DeploymentAssistant/utils/constants';
 import NetworkRequirements from './NetworkRequirements';
 interface CollectorInfoProps {
     config: Config;

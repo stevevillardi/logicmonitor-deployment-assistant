@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
 import * as Icons from 'lucide-react';
 import { Component, Building, Server, Activity, Download, Database, Weight, HardDrive, Earth, Building2, LucideIcon } from 'lucide-react';
-import { calculateWeightedScore } from '../utils';
-import { calculateCollectors } from '../utils';
-import { Site, Config } from '../types';
+import { calculateWeightedScore } from '../DeploymentAssistant/utils/utils';
+import { calculateCollectors } from '../DeploymentAssistant/utils/utils';
+import { Site, Config } from '../DeploymentAssistant/types/types';
 import { Button } from '@/components/ui/enhanced-components';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { Info } from 'lucide-react';
 import ReactDOM from 'react-dom/client';
 import PDFTemplate from './PDFTemplate';
 import ComputeRequirements from './ComputeRequirements';
-import DisclaimerBox from './DisclaimerBox';
-import CollectorRecommendation from './CollectorRecommendation';
+import DisclaimerBox from '../Shared/DisclaimerBox';
+import CollectorRecommendation from '../Shared/CollectorRecommendation';
 
 interface SiteOverviewProps {
     sites: Site[];
@@ -40,7 +40,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     const totalLoadScore = useMemo(() =>
         sites.reduce((sum, site) =>
             sum + calculateWeightedScore(site.devices, config.methodWeights, config), 0
-        ), [sites, config.methodWeights]
+        ), [sites, config]
     );
 
     const getEstimatedInstanceCount = (site: Site) => {

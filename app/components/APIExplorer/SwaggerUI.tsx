@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 import ApiDocumentationBanner from './ApiDocumentationBanner';
-import { devLog } from '@/utils/debug';
+import { devLog } from '../Shared/utils/debug';
 
 const SwaggerLoadingPlaceholder = () => (
   <div className="space-y-6 p-4">

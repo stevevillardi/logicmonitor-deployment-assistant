@@ -8,8 +8,8 @@ import { useEffect } from 'react';
 import { Command, CommandGroup, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
-import { transformCredentialData } from '../data/credentialData';
-import { CredentialType } from '../types/credentials';
+import { transformCredentialData } from '../DeploymentAssistant/types/credentialData';
+import { CredentialType } from '../DeploymentAssistant/types/credentials';
 
 const DeviceCatalog = () => {
     const [search, setSearch] = useState('');

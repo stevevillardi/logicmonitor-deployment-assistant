@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/enhanced-components';
 import { Site, Config } from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState, useRef } from 'react';
-import { devLog } from '@/utils/debug';
+import { devLog } from '../Shared/utils/debug';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface ConfigurationActionsProps {

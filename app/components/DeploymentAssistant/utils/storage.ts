@@ -1,5 +1,5 @@
-import { Config, Site } from '../types';
-import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from '../constants';
+import { Config, Site } from '../types/types';
+import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from './constants';
 
 export const getInitialConfig = (): Config => {
     const savedConfig = typeof window !== 'undefined' ? localStorage.getItem('collectorConfig') : null;

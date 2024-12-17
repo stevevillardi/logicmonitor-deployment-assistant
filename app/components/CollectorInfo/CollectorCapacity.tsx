@@ -2,7 +2,7 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
 import { Database, Activity, Weight } from 'lucide-react';
-import { Config } from '../types';
+import { Config } from '../DeploymentAssistant/types/types';
 
 export const handleCapacityChange = (
     config: Config,

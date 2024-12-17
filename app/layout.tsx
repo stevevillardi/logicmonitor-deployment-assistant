@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import PWAInstallPrompt from './components/PWAInstallPrompt';
+import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 

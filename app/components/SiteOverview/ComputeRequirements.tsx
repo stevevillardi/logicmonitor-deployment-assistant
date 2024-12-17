@@ -1,7 +1,7 @@
 import React from 'react';
 import { Cpu, MemoryStick, HardDrive, Server, Activity } from 'lucide-react';
-import { collectorRequirements } from '../constants';
-import { devLog } from '@/utils/debug';
+import { collectorRequirements } from '../DeploymentAssistant/utils/constants';
+import { devLog } from '../Shared/utils/debug';
 
 interface CollectorSizes {
   polling: Record<string, number>;

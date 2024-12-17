@@ -1,5 +1,5 @@
 import { LucideIcon } from 'lucide-react';
-import {CredentialType } from '../types/credentials';
+import {CredentialType } from './credentials';
 import {
     Database,
     Server,
