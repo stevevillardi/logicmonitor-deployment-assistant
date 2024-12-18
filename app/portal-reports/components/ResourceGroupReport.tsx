@@ -582,7 +582,7 @@ const ResourceGroupReport = ({ portalName, bearerToken }: ResourceGroupReportPro
               <TableIcon className="w-12 h-12" />
               <div className="text-center">
                 <p className="font-medium">No Resource Groups Loaded</p>
-                <p className="text-sm">Click the "Load Groups" button above to fetch resource group data</p>
+                <p className="text-sm">Click the &quot;Load Groups&quot; button above to fetch resource group data</p>
               </div>
             </div>
           ) : (

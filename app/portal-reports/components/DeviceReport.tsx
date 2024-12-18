@@ -615,7 +615,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
               <TableIcon className="w-12 h-12" />
               <div className="text-center">
                 <p className="font-medium">No Devices Loaded</p>
-                <p className="text-sm">Click the "Load Devices" button above to fetch device data</p>
+                <p className="text-sm">Click the &quot;Load Devices&quot; button above to fetch device data</p>
               </div>
             </div>
           ) : (

@@ -234,7 +234,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
         };
       }));
     }, 0);
-  }, []);
+  }, [columns.length]);
 
   // Call redistributeColumnWidths after initial render and when data changes
   useEffect(() => {
@@ -681,7 +681,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
               <FileText className="w-12 h-12" />
               <div className="text-center">
                 <p className="font-medium">No Alerts Loaded</p>
-                <p className="text-sm">Click the "Load Alerts" button above to fetch alert data</p>
+                <p className="text-sm">Click the &quot;Load Alerts&quot; button above to fetch alert data</p>
               </div>
             </div>
           ) : (
