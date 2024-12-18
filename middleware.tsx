@@ -8,7 +8,8 @@ const VALID_PATHS = [
     '/system',
     '/collector-info',
     '/api-explorer',
-    '/device-onboarding'
+    '/device-onboarding',
+    '/portal-reports'
 ];
 
 export function middleware(request: NextRequest) {
@@ -30,6 +31,7 @@ export const config = {
         '/system',
         '/collector-info',
         '/api-explorer',
-        '/device-onboarding'
+        '/device-onboarding',
+        '/portal-reports'
     ],
 }

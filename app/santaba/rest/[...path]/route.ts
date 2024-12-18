@@ -38,7 +38,11 @@ async function handleRequest(request: NextRequest, pathSegments: string[]) {
   try {
     const path = pathSegments.join('/');
     const company = request.headers.get('x-lm-company') || '';
-    const url = `https://${company}.logicmonitor.com/santaba/rest/${path}`;
+    
+    // Get the URL search params
+    const searchParams = request.nextUrl.searchParams;
+    const queryString = searchParams.toString();
+    const url = `https://${company}.logicmonitor.com/santaba/rest/${path}${queryString ? `?${queryString}` : ''}`;
 
     console.log('Proxying request to:', url);
 

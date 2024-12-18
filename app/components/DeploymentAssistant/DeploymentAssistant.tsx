@@ -8,7 +8,7 @@ import SiteOverview from '../SiteOverview/SiteOverview';
 import CollectorInfo from '../CollectorInfo/CollectorInfo';
 import { Config, Site } from './types/types';
 import Image from 'next/image';
-import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Terminal, Bolt, Bot, HelpCircle } from 'lucide-react';
+import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Terminal, Bolt, Bot, HelpCircle, FileText } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -203,6 +203,14 @@ const DeploymentAssistant = () => {
                             </CardTitle>
                         </div>
                         <div className="hidden md:flex flex-wrap items-center gap-2 lg:gap-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => window.location.href = '/portal-reports'}
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                            >
+                                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                <span className="hidden xl:inline">Reports (Beta)</span>
+                            </Button>
                             <Button
                                 variant="outline"
                                 onClick={() => setHelpDialogOpen(true)}
