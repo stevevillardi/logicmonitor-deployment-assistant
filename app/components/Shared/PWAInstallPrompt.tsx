@@ -10,34 +10,40 @@ const PWAInstallPrompt = () => {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        // Check if user has previously dismissed the prompt
-        const hasUserDismissed = localStorage.getItem('pwaPromptDismissed');
-        if (hasUserDismissed) return;
+        // Move this check outside of the effect to prevent unnecessary logic
+        const hasUserDismissed = localStorage.getItem('pwaPromptDismissed') === 'true';
+        if (hasUserDismissed) {
+            setShowInstallPrompt(false);
+            return;
+        }
+
+        // Check if already installed
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (isStandalone) {
+            setShowInstallPrompt(false);
+            return;
+        }
 
         // Check for iOS
         const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        
         setIsIOS(isIOSDevice);
 
-        // Show prompt for iOS devices that aren't in standalone mode
-        if (isIOSDevice && !isStandalone) {
+        // Show prompt for iOS devices
+        if (isIOSDevice) {
             setShowInstallPrompt(true);
             return;
         }
 
         // For non-iOS devices, use beforeinstallprompt
-        if (!isStandalone) {
-            const handler = (e: any) => {
-                e.preventDefault();
-                setDeferredPrompt(e);
-                setShowInstallPrompt(true);
-            };
+        const handler = (e: any) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+            setShowInstallPrompt(true);
+        };
 
-            window.addEventListener('beforeinstallprompt', handler);
-            return () => window.removeEventListener('beforeinstallprompt', handler);
-        }
-    }, []);
+        window.addEventListener('beforeinstallprompt', handler);
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+    }, []); // Empty dependency array means this only runs once when component mounts
 
     const handleDismiss = () => {
         localStorage.setItem('pwaPromptDismissed', 'true');
