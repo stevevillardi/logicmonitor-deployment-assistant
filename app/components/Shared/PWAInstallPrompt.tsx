@@ -6,35 +6,32 @@ import { Button } from '@/components/ui/button';
 
 const PWAInstallPrompt = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-    const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+    const [showInstallPrompt, setShowInstallPrompt] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const hasUserDismissed = localStorage.getItem('pwaPromptDismissed') === 'true';
+            return !hasUserDismissed;
+        }
+        return false;
+    });
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        // Move this check outside of the effect to prevent unnecessary logic
-        const hasUserDismissed = localStorage.getItem('pwaPromptDismissed') === 'true';
-        if (hasUserDismissed) {
-            setShowInstallPrompt(false);
-            return;
-        }
+        if (!showInstallPrompt) return;
 
-        // Check if already installed
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
         if (isStandalone) {
             setShowInstallPrompt(false);
             return;
         }
 
-        // Check for iOS
         const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
         setIsIOS(isIOSDevice);
 
-        // Show prompt for iOS devices
         if (isIOSDevice) {
             setShowInstallPrompt(true);
             return;
         }
 
-        // For non-iOS devices, use beforeinstallprompt
         const handler = (e: any) => {
             e.preventDefault();
             setDeferredPrompt(e);
@@ -43,7 +40,7 @@ const PWAInstallPrompt = () => {
 
         window.addEventListener('beforeinstallprompt', handler);
         return () => window.removeEventListener('beforeinstallprompt', handler);
-    }, []); // Empty dependency array means this only runs once when component mounts
+    }, [showInstallPrompt]);
 
     const handleDismiss = () => {
         localStorage.setItem('pwaPromptDismissed', 'true');
