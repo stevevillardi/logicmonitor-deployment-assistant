@@ -720,15 +720,23 @@ const PortalReports = () => {
               <div className="space-y-4">
                 {/* Property Selection Section */}
                 <div className="bg-white border border-gray-200 rounded-lg">
-                  <div
-                    onClick={() => setIsPropertiesOpen(!isPropertiesOpen)}
-                    className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-blue-700" />
-                      <span className="font-medium text-gray-900">Property Selection</span>
+                  <div className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-blue-700" />
+                        <span className="font-medium text-gray-900">Property Selection</span>
+                      </div>
+                      <div className="relative w-[300px]" onClick={e => e.stopPropagation()}>
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          placeholder="Search properties..."
+                          value={propertySearch}
+                          onChange={(e) => setPropertySearch(e.target.value)}
+                          className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                       <Select
                         value={propertyType}
                         onValueChange={(value: 'all' | 'system' | 'custom' | 'inherited') => {
@@ -745,55 +753,46 @@ const PortalReports = () => {
                           <SelectItem value="inherited">Inherited Properties</SelectItem>
                         </SelectContent>
                       </Select>
+                      <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg" onClick={e => e.stopPropagation()}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setPropertyView('grid')}
+                          className={`${
+                            propertyView === 'grid' 
+                              ? 'bg-white text-blue-700 shadow-sm' 
+                              : 'text-gray-600 hover:text-gray-900'
+                          } px-3 py-1.5 rounded`}
+                        >
+                          <TableIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setPropertyView('list')}
+                          className={`${
+                            propertyView === 'list' 
+                              ? 'bg-white text-blue-700 shadow-sm' 
+                              : 'text-gray-600 hover:text-gray-900'
+                          } px-3 py-1.5 rounded`}
+                        >
+                          <List className="w-4 h-4" />
+                        </Button>
+                      </div>
                       <ChevronDown
-                        className={`w-5 h-5 text-gray-500 transition-transform ${
+                        className={`w-5 h-5 text-gray-500 transition-transform cursor-pointer ${
                           isPropertiesOpen ? 'transform rotate-180' : ''
                         }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPropertiesOpen(!isPropertiesOpen);
+                        }}
                       />
                     </div>
                   </div>
                   
                   {isPropertiesOpen && (
                     <div className="space-y-4 p-4">
-                      {/* Search and View Toggle */}
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="relative flex-1">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <Input
-                            placeholder="Search properties..."
-                            value={propertySearch}
-                            onChange={(e) => setPropertySearch(e.target.value)}
-                            className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setPropertyView('grid')}
-                            className={`${
-                              propertyView === 'grid' 
-                                ? 'bg-white text-blue-700 shadow-sm' 
-                                : 'text-gray-600 hover:text-gray-900'
-                            } px-3 py-1.5 rounded`}
-                          >
-                            <TableIcon className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setPropertyView('list')}
-                            className={`${
-                              propertyView === 'list' 
-                                ? 'bg-white text-blue-700 shadow-sm' 
-                                : 'text-gray-600 hover:text-gray-900'
-                            } px-3 py-1.5 rounded`}
-                          >
-                            <List className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-
                       {/* Selected Properties Preview */}
                       {selectedProperties.length > 0 && (
                         <div className="flex flex-wrap gap-2">
