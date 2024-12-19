@@ -86,7 +86,7 @@ const PortalReports = () => {
                     <Input
                       placeholder="Enter portal name..."
                       value={portalName}
-                      onChange={(e) => setPortalName(e.target.value)}
+                      onChange={(e) => setPortalName(e.target.value.replace('.logicmonitor.com', ''))}
                       className="bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
                     />
                   </div>
