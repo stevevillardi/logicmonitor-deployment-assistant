@@ -1,9 +1,3 @@
-declare global {
-  interface Window {
-    tailwindLoaded: boolean;
-  }
-}
-
 'use client';
 import React from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -22,6 +16,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { List, Grid } from 'lucide-react';
 import AlertDetails from './AlertDetails';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+declare global {
+    interface Window {
+      tailwindLoaded: boolean;
+    }
+  }
 
 interface AlertReportProps {
   portalName: string;
