@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 interface Alert {
   id: string;
@@ -20,24 +21,65 @@ interface ColumnConfig {
   originalName: string;
 }
 
+interface TimelineData {
+  timestamp: number;
+  count: number;
+}
+
 interface PDFTemplateProps {
   alerts: Alert[];
-  title?: string;
-  date: string;
   columns: ColumnConfig[];
+  title: string;
+  date: string;
+  timelineData: TimelineData[];
 }
+
+const preprocessTimelineData = (data: TimelineData[]) => {
+  if (data.length === 0) return [];
+  
+  // Sort data by timestamp
+  const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
+  
+  // Get time range
+  const startTime = sortedData[0].timestamp;
+  const endTime = sortedData[sortedData.length - 1].timestamp;
+  const timeRange = endTime - startTime;
+  
+  // Create evenly distributed points
+  const numPoints = 20; // Adjust this number for more/fewer points
+  const points: TimelineData[] = [];
+  
+  for (let i = 0; i < numPoints; i++) {
+    const timestamp = startTime + (timeRange * i / (numPoints - 1));
+    
+    // Find the closest actual data point
+    const closestPoint = sortedData.reduce((prev, curr) => {
+      return Math.abs(curr.timestamp - timestamp) < Math.abs(prev.timestamp - timestamp) ? curr : prev;
+    });
+    
+    points.push({
+      timestamp,
+      count: closestPoint.count
+    });
+  }
+  
+  return points;
+};
 
 const PDFTemplate: React.FC<PDFTemplateProps> = ({ 
   alerts,
   title = 'Alert Report',
   date,
-  columns
+  columns,
+  timelineData
 }) => {
+  const processedData = preprocessTimelineData(timelineData);
+
   const getSeverityBadgeColor = (severity: number): string => {
     const colors: { [key: number]: string } = {
-      4: 'bg-red-100 text-red-700',
-      3: 'bg-yellow-100 text-yellow-700',
-      2: 'bg-blue-100 text-blue-700',
+        4: 'bg-red-100 text-red-700',    // Critical
+        2: 'bg-yellow-100 text-yellow-700', // Warning
+        3: 'bg-orange-100 text-orange-700',    // Error
     };
     return colors[severity] || 'bg-gray-100 text-gray-700';
   };
@@ -56,6 +98,31 @@ const PDFTemplate: React.FC<PDFTemplateProps> = ({
             alert.severity === 2 ? 'Warning' : 'Unknown',
       color: getSeverityBadgeColor(alert.severity)
     };
+  };
+
+  const formatTimeLabel = (timestamp: number): string => {
+    const date = new Date(timestamp * 1000);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays > 1) {
+      return date.toLocaleDateString(undefined, { 
+        month: 'numeric',
+        day: 'numeric',
+        year: '2-digit'
+      });
+    } else if (diffDays === 1) {
+      return `Yesterday ${date.toLocaleTimeString(undefined, { 
+        hour: 'numeric',
+        minute: '2-digit'
+      })}`;
+    } else {
+      return date.toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
   };
 
   return (
@@ -83,6 +150,65 @@ const PDFTemplate: React.FC<PDFTemplateProps> = ({
             <span className="text-gray-600">Total Alerts:</span>
             <span className="ml-2 font-medium">{alerts.length}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Timeline Chart */}
+      <div className="p-8 pb-0">
+        <h2 className="text-lg font-semibold mb-4">Alert Timeline</h2>
+        <div style={{ 
+          width: '100%', 
+          height: '250px', 
+          position: 'relative',
+          backgroundColor: 'white'
+        }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart 
+              data={processedData} 
+              margin={{ top: 10, right: 40, left: 60, bottom: 40 }}
+            >
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                vertical={false} 
+                stroke="#E5E7EB"
+              />
+              <XAxis
+                dataKey="timestamp"
+                tickFormatter={(value) => formatTimeLabel(value)}
+                tick={{ fontSize: 10, fill: '#6B7280' }}
+                stroke="#E5E7EB"
+                type="number"
+                domain={['dataMin', 'dataMax']}
+                ticks={processedData.map(d => d.timestamp)}
+                dy={10}
+              />
+              <YAxis 
+                allowDecimals={false}
+                tick={{ fontSize: 10, fill: '#6B7280' }}
+                stroke="#E5E7EB"
+                label={{ 
+                  value: 'Alert Count', 
+                  angle: -90, 
+                  position: 'insideLeft',
+                  offset: -45,
+                  style: { 
+                    fontSize: 11,
+                    fill: '#6B7280'
+                  }
+                }}
+                domain={[0, 'dataMax']}
+              />
+              <Area
+                type="basis"
+                dataKey="count"
+                stroke="#1D4ED8"
+                strokeWidth={2}
+                fill="#1D4ED8"
+                fillOpacity={0.08}
+                isAnimationActive={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

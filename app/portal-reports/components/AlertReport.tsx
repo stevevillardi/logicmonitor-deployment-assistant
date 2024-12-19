@@ -1,4 +1,11 @@
+declare global {
+  interface Window {
+    tailwindLoaded: boolean;
+  }
+}
+
 'use client';
+import React from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,13 +18,17 @@ import { arrayMove, SortableContext, horizontalListSortingStrategy, useSortable 
 import { CSS } from '@dnd-kit/utilities';
 import ReactDOM from 'react-dom/client';
 import PDFTemplate from './AlertPDFTemplate';
+import { Checkbox } from '@/components/ui/checkbox';
+import { List, Grid } from 'lucide-react';
+import AlertDetails from './AlertDetails';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface AlertReportProps {
   portalName: string;
   bearerToken: string;
 }
 
-interface Alert {
+export interface Alert {
   id: string;
   severity: number;
   startEpoch: number;
@@ -57,13 +68,13 @@ const getSeverityBadgeColor = (severity: number): string => {
   const colors: { [key: number]: string } = {
     4: 'bg-red-100 text-red-700',    // Critical
     2: 'bg-yellow-100 text-yellow-700', // Warning
-    3: 'bg-blue-100 text-orange-700',    // Error
+    3: 'bg-orange-100 text-orange-700',    // Error
   };
   return colors[severity] || 'bg-gray-100 text-gray-700';
 };
 
 // Get severity display text and color
-const getSeverityDisplay = (alert: Alert) => {
+export const getSeverityDisplay = (alert: Alert) => {
   if (alert.cleared) {
     return {
       text: 'Cleared',
@@ -152,6 +163,36 @@ const SortableHeader = ({
   );
 };
 
+interface TimelineData {
+  timestamp: number;
+  count: number;
+}
+
+const formatTimeLabel = (timestamp: number): string => {
+  const date = new Date(timestamp * 1000);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  if (diffDays > 1) {
+    return date.toLocaleDateString(undefined, { 
+      month: 'numeric',
+      day: 'numeric',
+      year: '2-digit'
+    });
+  } else if (diffDays === 1) {
+    return `Yesterday ${date.toLocaleTimeString(undefined, { 
+      hour: 'numeric',
+      minute: '2-digit'
+    })}`;
+  } else {
+    return date.toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  }
+};
+
 const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(false);
@@ -174,13 +215,19 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
   const [includeClearedAlerts, setIncludeClearedAlerts] = useState(false);
   const [startTime, setStartTime] = useState<Date | undefined>(undefined);
   const [endTime, setEndTime] = useState<Date | undefined>(undefined);
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: '', direction: null });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: 'startEpoch', direction: 'desc' });
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [availableProperties, setAvailableProperties] = useState<string[]>([]);
   const [showProperties, setShowProperties] = useState(false);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
-  const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const tableRef = useRef<HTMLDivElement>(null);
+  const [propertyView, setPropertyView] = useState<'grid' | 'list'>('grid');
+  const [propertySearch, setPropertySearch] = useState('');
+  const [isPropertiesOpen, setIsPropertiesOpen] = useState(true);
+  const [propertyPageSize, setPropertyPageSize] = useState(20);
+  const [propertyPage, setPropertyPage] = useState(1);
+  const [showTimeline, setShowTimeline] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -260,7 +307,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
     
     try {
       let offset = 0;
-      const size = 250;
+      const size = 1000;
       const alertMap = new Map<string, Alert>();
       const propertySet = new Set<string>();
 
@@ -453,41 +500,63 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
           <script src="https://cdn.tailwindcss.com"></script>
           <style>
             body { margin: 0; padding: 0; }
+            @media print {
+              @page { size: landscape; margin: 0.5in; }
+            }
+            .loading {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              font-family: Inter, sans-serif;
+            }
           </style>
         </head>
         <body>
-          <div id="root"></div>
+          <div id="root">
+            <div class="loading">
+              <h2>Generating Report...</h2>
+              <p>Processing ${getFilteredAlerts().length} alerts</p>
+            </div>
+          </div>
+          <script>
+            window.tailwindLoaded = false;
+            window.addEventListener('load', () => {
+              window.tailwindLoaded = true;
+            });
+          </script>
         </body>
       </html>
     `);
     doc.close();
 
-    const root = ReactDOM.createRoot(doc.getElementById('root')!);
-    root.render(
-      <PDFTemplate
-        alerts={getFilteredAlerts()}
-        columns={columns}
-        title="Alert History Report"
-        date={new Date().toLocaleString()}
-      />
-    );
+    const checkTailwind = () => {
+      if (printWindow.tailwindLoaded) {
+        const alerts = getFilteredAlerts();
+        // Only process first 1000 alerts for PDF
+        const limitedAlerts = alerts.slice(0, 10000);
+        
+        const root = ReactDOM.createRoot(doc.getElementById('root')!);
+        root.render(
+          <PDFTemplate
+            alerts={limitedAlerts}
+            columns={columns}
+            title={`Alert History Report ${limitedAlerts.length < alerts.length ? `(Showing first ${limitedAlerts.length} of ${alerts.length} alerts)` : ''}`}
+            date={new Date().toLocaleString()}
+            timelineData={getTimelineData()}
+          />
+        );
 
-    const style = doc.createElement('style');
-    style.textContent = `
-      @media print {
-        @page { size: landscape; margin: 0.5in; }
-        body { 
-          font-family: 'Inter', sans-serif;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
+        setTimeout(() => {
+          printWindow.print();
+        }, 1500);
+      } else {
+        setTimeout(checkTailwind, 100);
       }
-    `;
-    doc.head.appendChild(style);
+    };
 
-    setTimeout(() => {
-      printWindow.print();
-    }, 500);
+    checkTailwind();
   };
 
   // Column management
@@ -578,6 +647,59 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
   const EXCLUDED_FIELDS = ['monitorObjectGroups'];
 
   // Update the expanded row section:
+
+  // Utility function to format timestamps
+  const formatTimestamp = (value: any, fieldName: string): string => {
+    // Handle epoch timestamps and fields ending with "On"
+    if (fieldName.toLowerCase().includes('epoch') || fieldName.endsWith('On')) {
+      const epoch = parseInt(value);
+      if (!isNaN(epoch) && epoch !== 0) {
+        return new Date(epoch * 1000).toLocaleString();
+      } else if (epoch === 0) {
+        return 'N/A';
+      }
+    }
+    return String(value ?? 'N/A');
+  };
+
+  // Helper function to get paginated properties
+  const getPaginatedProperties = () => {
+    const filteredProps = availableProperties
+      .filter(prop => prop.toLowerCase().includes(propertySearch.toLowerCase()));
+    
+    const total = filteredProps.length;
+    const totalPages = Math.ceil(total / propertyPageSize);
+    const start = (propertyPage - 1) * propertyPageSize;
+    const end = start + propertyPageSize;
+    
+    return {
+      properties: filteredProps
+        .slice(start, end)
+        .map(prop => [prop, 1] as [string, number]),
+      total,
+      totalPages
+    };
+  };
+
+  // Generate timeline data from alerts
+  const getTimelineData = useCallback((): TimelineData[] => {
+    if (!alerts.length) return [];
+    
+    // Group alerts by hour
+    const hourGroups = alerts.reduce((acc, alert) => {
+      const hour = Math.floor(alert.startEpoch / 3600) * 3600;
+      acc[hour] = (acc[hour] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    // Convert to array and sort by timestamp
+    return Object.entries(hourGroups)
+      .map(([timestamp, count]) => ({
+        timestamp: parseInt(timestamp),
+        count
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
+  }, [alerts]);
 
   return (
     <Card>
@@ -686,59 +808,281 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
             </div>
           ) : (
             <div className="space-y-4">
+
               {/* Property Selection Section */}
-              {alerts.length > 0 && (
-                <div className="bg-white rounded-lg border border-gray-200">
-                  <div className="p-4 border-b border-gray-200 bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Settings className="w-5 h-5 text-blue-700" />
-                        <span className="font-medium text-gray-900">Properties</span>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-lg">
+                <div className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Settings className="w-5 h-5 text-blue-700" />
+                      <span className="font-medium text-gray-900">Alert Fields</span>
+                    </div>
+                    <div className="relative w-[300px]" onClick={e => e.stopPropagation()}>
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Input
+                        placeholder="Search properties..."
+                        value={propertySearch}
+                        onChange={(e) => setPropertySearch(e.target.value)}
+                        className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                      />
                     </div>
                   </div>
-                  <div className="p-4">
-                    <div className="space-y-4">
-                      {selectedProperties.length > 0 && (
-                        <div className="space-y-2">
-                          <div className="flex flex-wrap gap-2">
-                            {selectedProperties.map((prop) => (
-                              <Button
-                                key={prop}
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removePropertyColumn(prop)}
-                                className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 hover:text-blue-800 hover:border-blue-300"
-                              >
-                                {prop}
-                                <X className="w-3 h-3 ml-2" />
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex flex-wrap gap-2">
-                        {availableProperties
-                          .filter(prop => !selectedProperties.includes(prop))
-                          .map((prop) => (
-                            <Button
-                              key={prop}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => addPropertyColumn(prop)}
-                              className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
-                            >
-                              {prop}
-                            </Button>
-                          ))}
-                        {availableProperties.length === 0 && (
-                          <span className="text-sm text-gray-500">No additional properties available</span>
-                        )}
-                      </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg" onClick={e => e.stopPropagation()}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPropertyView('grid')}
+                        className={`${
+                          propertyView === 'grid' 
+                            ? 'bg-white text-blue-700 shadow-sm' 
+                            : 'text-gray-600 hover:text-gray-900'
+                        } px-3 py-1.5 rounded`}
+                      >
+                        <TableIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPropertyView('list')}
+                        className={`${
+                          propertyView === 'list' 
+                            ? 'bg-white text-blue-700 shadow-sm' 
+                            : 'text-gray-600 hover:text-gray-900'
+                        } px-3 py-1.5 rounded`}
+                      >
+                        <List className="w-4 h-4" />
+                      </Button>
                     </div>
+                    <ChevronDown
+                      className={`w-5 h-5 text-gray-500 transition-transform cursor-pointer ${
+                        isPropertiesOpen ? 'transform rotate-180' : ''
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsPropertiesOpen(!isPropertiesOpen);
+                      }}
+                    />
                   </div>
                 </div>
-              )}
+                
+                {isPropertiesOpen && (
+                  <div className="space-y-4 p-4">
+                    {/* Selected Properties Preview */}
+                    {selectedProperties.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProperties.map(prop => (
+                          <div 
+                            key={prop}
+                            className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm"
+                          >
+                            <span>{prop}</span>
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-blue-900"
+                              onClick={() => setSelectedProperties(prev => prev.filter(p => p !== prop))}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Property List */}
+                    {propertyView === 'grid' ? (
+                      <div className="grid grid-cols-4 gap-2">
+                        {getPaginatedProperties().properties.map(([prop, count]) => (
+                          <div
+                            key={prop}
+                            className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors hover:border-blue-200 ${
+                              selectedProperties.includes(prop)
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-gray-50 border-gray-200'
+                            }`}
+                            onClick={() => {
+                              setSelectedProperties(prev =>
+                                prev.includes(prop)
+                                  ? prev.filter(p => p !== prop)
+                                  : [...prev, prop]
+                              );
+                            }}
+                          >
+                            <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                              <Checkbox
+                                checked={selectedProperties.includes(prop)}
+                                className="pointer-events-none shrink-0"
+                              />
+                              <span className="text-xs text-gray-700 truncate">{prop}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {count}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {getPaginatedProperties().properties.map(([prop, count]) => (
+                          <div 
+                            key={prop}
+                            className={`flex items-center justify-between p-2 rounded-lg transition-colors cursor-pointer
+                              ${selectedProperties.includes(prop) 
+                                ? 'bg-blue-50 border border-blue-200' 
+                                : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'}`}
+                            onClick={() => {
+                              setSelectedProperties(prev => 
+                                prev.includes(prop) 
+                                  ? prev.filter(p => p !== prop)
+                                  : [...prev, prop]
+                              );
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Checkbox
+                                checked={selectedProperties.includes(prop)}
+                                className="pointer-events-none"
+                              />
+                              <span className="text-sm text-gray-700">{prop}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {count}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Property Pagination Controls */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-gray-200">
+                      <div className="flex items-center gap-4 order-2 sm:order-1">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPropertyPage(p => Math.max(1, p - 1))}
+                            disabled={propertyPage === 1}
+                            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPropertyPage(p => Math.min(getPaginatedProperties().totalPages, p + 1))}
+                            disabled={propertyPage === getPaginatedProperties().totalPages}
+                            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                          >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600">Items per page:</span>
+                          <Select
+                            value={propertyPageSize.toString()}
+                            onValueChange={(value) => {
+                              setPropertyPageSize(Number(value));
+                              setPropertyPage(1);
+                            }}
+                          >
+                            <SelectTrigger className="w-[70px] h-8 bg-white border-gray-200">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              {[20, 50, 100].map((size) => (
+                                <SelectItem key={size} value={size.toString()}>
+                                  {size}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-600 order-1 sm:order-2">
+                        Showing {((propertyPage - 1) * propertyPageSize) + 1} to {Math.min(propertyPage * propertyPageSize, getPaginatedProperties().total)} of {getPaginatedProperties().total} properties
+                      </div>
+                    </div>
+
+                    {availableProperties.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        No properties found matching your search
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Timeline Graph */}
+              <div className="bg-white rounded-lg border border-gray-200">
+                <div className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-blue-700" />
+                    <span className="font-medium text-gray-900">Alert Timeline</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-5 h-5 text-gray-500 transition-transform cursor-pointer ${
+                      showTimeline ? 'transform rotate-180' : ''
+                    }`}
+                    onClick={() => setShowTimeline(!showTimeline)}
+                  />
+                </div>
+                {showTimeline && (
+                  <div className="p-4">
+                    <div className="h-[200px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={getTimelineData()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="alertCount" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#1D4ED8" stopOpacity={0.1}/>
+                              <stop offset="95%" stopColor="#1D4ED8" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis
+                            dataKey="timestamp"
+                            tickFormatter={(value) => formatTimeLabel(value)}
+                            interval="preserveStartEnd"
+                            tick={{ fontSize: 11 }}
+                          />
+                          <YAxis 
+                            allowDecimals={false} 
+                            tick={{ fontSize: 11 }}
+                            label={{ 
+                              value: 'Alert Count', 
+                              angle: -90, 
+                              position: 'insideLeft',
+                              style: { fontSize: 12 }
+                            }}
+                          />
+                          <Tooltip
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="bg-white p-2 border border-gray-200 shadow-sm rounded-lg">
+                                    <p className="text-sm text-gray-600">
+                                      {new Date(payload[0].payload.timestamp * 1000).toLocaleString()}
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">
+                                      {payload[0].value} alerts
+                                    </p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="count"
+                            stroke="#1D4ED8"
+                            fillOpacity={1}
+                            fill="url(#alertCount)"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Results Table */}
               <div className={`bg-white rounded-lg border border-gray-200 ${
@@ -820,8 +1164,12 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                     </div>
                   </div>
                 </div>
-                <div className={`flex-1 overflow-auto ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
-                  <div className="overflow-x-auto" ref={tableRef}>
+                <div className={`flex-1 ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
+                  <div className="overflow-x-auto overflow-y-visible" style={{ 
+                    maxWidth: '100%',
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch'
+                  }} ref={tableRef}>
                     <DndContext 
                       sensors={sensors}
                       collisionDetection={closestCenter}
@@ -862,11 +1210,10 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         <TableBody>
                           {getPaginatedAlerts().length > 0 ? (
                             getPaginatedAlerts().map((alert) => (
-                              <>
+                              <React.Fragment key={alert.id}>
                                 <TableRow 
-                                  key={alert.id}
                                   className="cursor-pointer hover:bg-gray-50"
-                                  onClick={() => setExpandedAlertId(expandedAlertId === alert.id ? null : alert.id)}
+                                  onClick={() => setSelectedAlert(alert)}
                                 >
                                   {columns.map((column) => {
                                     let content;
@@ -877,11 +1224,9 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                                           {text}
                                         </span>
                                       );
-                                    } else if (column.id === 'startEpoch' || column.id === 'endEpoch' || column.id === "achedEpoch") {
-                                      content = new Date(alert[column.id] * 1000).toLocaleString();
                                     } else {
                                       const value = alert[column.originalName];
-                                      content = formatPropertyValue(value);
+                                      content = formatTimestamp(value, column.originalName);
                                     }
 
                                     return (
@@ -901,33 +1246,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                                     );
                                   })}
                                 </TableRow>
-                                {expandedAlertId === alert.id && (
-                                  <TableRow>
-                                    <TableCell colSpan={columns.length} className="bg-gray-50 p-4">
-                                      <div className="space-y-6">
-                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-4">
-                                          {Object.entries(alert)
-                                            .sort(([a], [b]) => a.localeCompare(b))
-                                            .filter(([key]) => !EXCLUDED_FIELDS.includes(key))
-                                            .map(([key, value]) => (
-                                              <div key={key} className="flex flex-col">
-                                                <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                  {key}
-                                                </div>
-                                                <div className="mt-1 text-sm text-gray-900 break-words">
-                                                  {formatPropertyValue(value)}
-                                                </div>
-                                              </div>
-                                            ))}
-                                        </div>
-                                        <div className="text-xs text-gray-500 italic">
-                                          Click row to collapse details
-                                        </div>
-                                      </div>
-                                    </TableCell>
-                                  </TableRow>
-                                )}
-                              </>
+                              </React.Fragment>
                             ))
                           ) : (
                             <TableRow>
@@ -1009,6 +1328,13 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                   </div>
                 </div>
               </div>
+
+              {/* Alert Details Dialog */}
+              <AlertDetails
+                alert={selectedAlert!}
+                open={selectedAlert !== null}
+                onClose={() => setSelectedAlert(null)}
+              />
             </div>
           )}
         </div>

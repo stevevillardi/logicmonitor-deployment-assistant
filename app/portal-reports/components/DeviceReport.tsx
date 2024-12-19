@@ -300,14 +300,37 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
       for (const type of ['system', 'custom', 'inherited']) {
         const props = device[`${type}Properties` as keyof Device] as PropertyItem[];
         const prop = props?.find(p => p.name === propName);
-        if (prop) return prop.value;
+        if (prop) {
+          // Handle epoch timestamps and "On" timestamps
+          if (propName.toLowerCase().includes('epoch') || propName.endsWith('On')) {
+            const epoch = parseInt(prop.value);
+            if (!isNaN(epoch) && epoch !== 0) {
+              return new Date(epoch * 1000).toLocaleString();
+            } else if (epoch === 0) {
+              return 'N/A';
+            }
+          }
+          return prop.value;
+        }
       }
       return '';
     }
     
     const props = device[`${propertyType}Properties` as keyof Device] as PropertyItem[];
     const prop = props?.find(p => p.name === propName);
-    return prop?.value || '';
+    if (prop) {
+      // Handle epoch timestamps and "On" timestamps
+      if (propName.toLowerCase().includes('epoch') || propName.endsWith('On')) {
+        const epoch = parseInt(prop.value);
+        if (!isNaN(epoch) && epoch !== 0) {
+          return new Date(epoch * 1000).toLocaleString();
+        } else if (epoch === 0) {
+          return 'N/A';
+        }
+      }
+      return prop.value;
+    }
+    return '';
   };
 
   // Update the getFilteredDevices function
@@ -982,8 +1005,12 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                     </div>
                   </div>
                 </div>
-                <div className={`flex-1 overflow-auto ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
-                  <div className="overflow-x-auto">
+                <div className={`flex-1 ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
+                  <div className="overflow-x-auto overflow-y-visible" style={{ 
+                    maxWidth: '100%',
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch'
+                  }}>
                     <DndContext 
                       sensors={sensors}
                       collisionDetection={closestCenter}

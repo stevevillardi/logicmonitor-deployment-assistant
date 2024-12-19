@@ -953,8 +953,12 @@ const ResourceGroupReport = ({ portalName, bearerToken }: ResourceGroupReportPro
                     </div>
                   </div>
                 </div>
-                <div className={`flex-1 overflow-auto ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
-                  <div className="overflow-x-auto">
+                <div className={`flex-1 ${isFullScreen ? 'h-[calc(100vh-120px)]' : ''}`}>
+                  <div className="overflow-x-auto overflow-y-visible" style={{ 
+                    maxWidth: '100%',
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch'
+                  }}>
                     <DndContext 
                       sensors={sensors}
                       collisionDetection={closestCenter}
