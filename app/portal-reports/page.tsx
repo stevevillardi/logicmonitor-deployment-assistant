@@ -8,6 +8,7 @@ import { FileText, ChevronLeft, Info } from 'lucide-react';
 import DeviceReport from './components/DeviceReport';
 import ResourceGroupReport from './components/ResourceGroupReport';
 import AlertReport from './components/AlertReport';
+import ProtectedRoute from '../components/Shared/ProtectedRoute';
 
 type ReportType = 'device-inventory' | 'alerts-report' | 'resource-groups' | null;
 
@@ -46,6 +47,7 @@ const PortalReports = () => {
   }, []);
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen w-full flex items-center justify-center bg-[#040F4B]">
       <Card className="w-full max-w-[1440px] bg-white shadow-lg m-6">
         <CardHeader className="border-b border-gray-200 bg-gray-50">
@@ -155,6 +157,7 @@ const PortalReports = () => {
         </CardContent>
       </Card>
     </div>
+    </ProtectedRoute>
   );
 };
 
