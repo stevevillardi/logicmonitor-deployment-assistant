@@ -106,7 +106,7 @@ const CollectorReq = () => {
                                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                     <h4 className="text-sm font-semibold text-yellow-800 mb-2">Limitations</h4>
                                     <ul className="list-disc list-inside space-y-1 text-sm text-yellow-800">
-                                        <li>The installation does not support the "bootstrap" option. You can only run the "full package" installation.</li>
+                                        <li>The installation does not support the bootstrap option. You can only run the full package installation.</li>
                                         <li>The collector deployed in a Docker Container is based on Linux. Linux collectors do not monitor Windows-based WMI collectors.</li>
                                     </ul>
                                 </div>
