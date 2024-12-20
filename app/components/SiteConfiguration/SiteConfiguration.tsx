@@ -387,6 +387,14 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                         };
                                                         onUpdateSites(newSites);
                                                     }}
+                                                    onMethodUpdate={(newMethods) => {
+                                                        const newSites = [...sites];
+                                                        newSites[index].devices[type] = {
+                                                            ...newSites[index].devices[type],
+                                                            methods: newMethods
+                                                        };
+                                                        onUpdateSites(newSites);
+                                                    }}
                                                     showDetails={config.showDetails}
                                                 />
                                             ))}

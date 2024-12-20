@@ -2,8 +2,8 @@
 export const defaultDeviceTypes = {
     "Linux Servers": {
         count: 0,
-        instances: 98,
-        methods: { SNMPv3: 0.6, Script: 0.4 },
+        instances: 100,
+        methods: { SNMPv3: 0.8, Script: 0.2 },
         icon: "Server"
     },
     "Windows Servers": {
@@ -160,7 +160,7 @@ export const defaultMethodWeights = {
     JMX: 1.2,
     SNMPv3: 1.3,
     WMI: 2.2,
-    WinRM: 2.2,
+    WinRM: 4,
     JDBC: 1.5,
     Perfmon: 3,
     Script: 5,

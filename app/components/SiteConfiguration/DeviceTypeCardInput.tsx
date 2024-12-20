@@ -1,6 +1,6 @@
 import { DeviceType } from '../DeploymentAssistant/types/types';
 import * as Icons from 'lucide-react';
-import { Component, Settings, Calculator, Weight, LucideIcon, Info } from 'lucide-react';
+import { Component, Settings, Calculator, Weight, LucideIcon, Info, Terminal } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
 import { AlertTriangle } from 'lucide-react';
@@ -10,6 +10,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Switch } from "@/components/ui/switch"
+import { useState } from 'react';
 
 interface DeviceTypeCardProps {
     type: string;
@@ -17,9 +19,32 @@ interface DeviceTypeCardProps {
     methodWeights: Record<string, number>;
     onUpdate: (count: number, additionalCount?: number) => void;
     showDetails: boolean;
+    onMethodUpdate?: (methods: Record<string, number>) => void;
 }
 
-export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetails = false }: DeviceTypeCardProps) => {
+export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetails = false, onMethodUpdate }: DeviceTypeCardProps) => {
+    const [useSSH, setUseSSH] = useState(false);
+    const [useWinRM, setUseWinRM] = useState(false);
+
+    const isLinuxDevice = type.toLowerCase().includes('linux');
+    const isWindowsDevice = type.toLowerCase().includes('windows');
+
+    const updateProtocolMethods = (isLinux: boolean, useAlternative: boolean) => {
+        let newMethods: Record<string, number>;
+        
+        if (isLinux) {
+            newMethods = useAlternative 
+                ? { Script: 1 }  // SSH
+                : { Script: 0.20, SNMPv3: 0.8 }; // SNMP
+        } else {
+            newMethods = useAlternative
+                ? { WinRM: 0.20, Script: 0.75, JMX: 0.05 }  // WinRM
+                : { WMI: 0.20, Script: 0.75, JMX: 0.05 };   // WMI
+        }
+
+        onMethodUpdate?.(newMethods);
+    };
+
     const getIcon = () => {
         const IconComponent = (Icons[data.icon as keyof typeof Icons] || Icons.EthernetPort) as LucideIcon;
         return <IconComponent className="w-6 h-6 text-blue-700" />;
@@ -33,10 +58,63 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
 
     const singleDeviceLoad = calculateSingleDeviceLoad();
 
+    const renderProtocolToggle = () => {
+        if (!isLinuxDevice && !isWindowsDevice) return null;
+
+        return (
+            <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                    {isLinuxDevice && (
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-2">
+                                <Terminal className="w-4 h-4 text-blue-700" />
+                                <Label className="text-sm text-gray-700 font-medium">Collection Protocol</Label>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200">
+                                <span className={`text-sm ${!useSSH ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>SNMP</span>
+                                <Switch
+                                    checked={useSSH}
+                                    onCheckedChange={(checked) => {
+                                        setUseSSH(checked);
+                                        updateProtocolMethods(true, checked);
+                                    }}
+                                    className="bg-gray-200 data-[state=checked]:bg-gray-200 data-[state=unchecked]:bg-gray-200"
+                                />
+                                <span className={`text-sm ${useSSH ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>SSH</span>
+                            </div>
+                        </div>
+                    )}
+                    {isWindowsDevice && (
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-2">
+                                <Terminal className="w-4 h-4 text-blue-700" />
+                                <Label className="text-sm text-gray-700 font-medium">Collection Protocol</Label>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200">
+                                <span className={`text-sm ${!useWinRM ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>WMI</span>
+                                <Switch
+                                    checked={useWinRM}
+                                    onCheckedChange={(checked) => {
+                                        setUseWinRM(checked);
+                                        updateProtocolMethods(false, checked);
+                                    }}
+                                    className="bg-gray-200 data-[state=checked]:bg-gray-200 data-[state=unchecked]:bg-gray-200"
+                                />
+                                <span className={`text-sm ${useWinRM ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>WinRM</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200">
-            <div className="flex items-center gap-3 mb-3">
-                {getIcon()}
+            <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                    {getIcon()}
+                </div>
                 <h3 className="font-semibold text-gray-900">{type}</h3>
                 {type.includes("Virtual Machines") && data.count > 2000 && (
                     <TooltipProvider>
@@ -65,11 +143,11 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                     </div>
                 )}
             </div>
-            <div className="space-y-3">
-                <div>
-                    <div className="flex gap-4">
-                        <div className="flex-1">
-                            <Label className="text-sm text-gray-600">
+            <div className="space-y-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label className="text-sm text-gray-700 font-medium">
                                 Resource Count 
                             </Label>
                             <Input
@@ -82,8 +160,8 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                         </div>
 
                         {type.includes("Virtual Machines") && (
-                            <div className="flex-1">
-                                <Label className="text-sm text-gray-600">
+                            <div>
+                                <Label className="text-sm text-gray-700 font-medium">
                                     vCenter Count
                                 </Label>
                                 <Input
@@ -98,57 +176,55 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                     </div>
                 </div>
 
+                {(isLinuxDevice || isWindowsDevice) && renderProtocolToggle()}
+
                 {showDetails && (
-                    <>
-                        <div className="space-y-4">
-                            {/* Metrics Section */}
-                            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Component className="w-4 h-4 text-blue-700" />
-                                        <span className="text-gray-600">Base Instances</span>
-                                    </div>
-                                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                        {data.instances}
-                                    </div>
+                    <div className="space-y-4">
+                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Component className="w-4 h-4 text-blue-700" />
+                                    <span className="text-gray-700 font-medium">Base Instances</span>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Calculator className="w-4 h-4 text-blue-700" />
-                                        <span className="text-gray-600">Load Score</span>
-                                    </div>
-                                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                        {Math.round(singleDeviceLoad * 10) / 10}
-                                    </div>
+                                <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                    {data.instances}
                                 </div>
                             </div>
-
-                            {/* Collection Methods Section */}
-                            <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Settings className="w-4 h-4 text-blue-700" />
-                                    <span className="text-gray-900 font-medium">Collection Methods</span>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Calculator className="w-4 h-4 text-blue-700" />
+                                    <span className="text-gray-700 font-medium">Load Score</span>
                                 </div>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {Object.entries(data.methods).map(([method, ratio]) => (
-                                        <div
-                                            key={method}
-                                            className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all duration-300"
-                                        >
-                                            <span className="capitalize text-gray-900 text-sm">{method}</span>
-                                            <span className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
-                                                {Math.round(ratio * 100)}%
-                                            </span>
-                                            <div className="flex items-center gap-1 text-gray-500 text-xs">
-                                                <Weight className="w-3 h-3" />
-                                                <span className="font-medium">{methodWeights[method]}</span>
-                                            </div>
-                                        </div>
-                                    ))}
+                                <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                    {Math.round(calculateSingleDeviceLoad() * 10) / 10}
                                 </div>
                             </div>
                         </div>
-                    </>
+
+                        <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Settings className="w-4 h-4 text-blue-700" />
+                                <span className="text-gray-700 font-medium">Collection Methods</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {Object.entries(data.methods).map(([method, ratio]) => (
+                                    <div
+                                        key={method}
+                                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all duration-300"
+                                    >
+                                        <span className="capitalize text-gray-900 text-sm font-medium">{method}</span>
+                                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                                            {Math.round(ratio * 100)}%
+                                        </span>
+                                        <div className="flex items-center gap-1 text-gray-500 text-xs">
+                                            <Weight className="w-3 h-3" />
+                                            <span className="font-medium">{methodWeights[method]}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
