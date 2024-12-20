@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import * as Icons from 'lucide-react';
-import { Component, Building, Server, Activity, Download, Database, Weight, HardDrive, Earth, Building2, LucideIcon } from 'lucide-react';
+import { Component, Building, Server, Activity, Download, Database, Weight, HardDrive, Earth, Building2, LucideIcon, MessageSquare } from 'lucide-react';
 import { calculateWeightedScore } from '../DeploymentAssistant/utils/utils';
 import { calculateCollectors } from '../DeploymentAssistant/utils/utils';
 import { Site, Config } from '../DeploymentAssistant/types/types';
@@ -18,6 +18,18 @@ interface SiteOverviewProps {
     config: Config;
 }
 
+const calculateAverageLoad = (collectors: Array<{ load: number }>) => {
+    if (!collectors.length) return 0;
+    return Math.round(collectors.reduce((sum, c) => sum + c.load, 0) / collectors.length);
+};
+
+const countCollectorsBySize = (collectors: Array<{ size: string }>) => {
+    return collectors.reduce((acc, c) => {
+        acc[c.size] = (acc[c.size] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
+};
+
 const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     const currentDate = new Date().toLocaleDateString();
 
@@ -30,7 +42,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     };
 
     const getTotalEPS = (site: Site) => {
-        return Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
+        return site.logs.events.eps + site.logs.netflow.fps;
     };
 
     const getTotalEPSBySites = () => {
@@ -57,104 +69,87 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
         const printWindow = window.open('', '_blank');
         if (!printWindow) return;
 
-        // Get the current page's styles
-        const styles = Array.from(document.styleSheets)
-            .map(styleSheet => {
-                try {
-                    return Array.from(styleSheet.cssRules)
-                        .map(rule => rule.cssText)
-                        .join('\n');
-                } catch (e) {
-                    return '';
-                }
-            })
-            .join('\n');
-
+        // Add base HTML structure with Tailwind CDN
         printWindow.document.write(`
             <html>
                 <head>
-                    <title>Deployment Assistant Report</title>
-                    <style>${styles}</style>
-                    <link rel="stylesheet" href="/app/globals.css" />
+                    <script src="https://cdn.tailwindcss.com"></script>
                     <style>
-                        @page {
-                            margin: 1cm;
-                            size: A4;
-                        }
-                        body {
-                            margin: 0;
-                            padding: 0;
-                        }
-                        @media print {
-                            body {
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            }
+                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+                        * { font-family: 'Inter', sans-serif; }
+                        @media print { 
+                            @page { size: A4; margin: 20mm; }
+                            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                         }
                     </style>
                 </head>
-                <body class="bg-white">
+                <body>
                     <div id="pdf-root"></div>
                 </body>
             </html>
         `);
 
-        // Render the PDF template
-        const root = ReactDOM.createRoot(printWindow.document.getElementById('pdf-root')!);
-        root.render(
-            <PDFTemplate
-                sites={sites}
-                config={config}
-                currentDate={currentDate}
-                siteMetrics={siteMetrics}
-            />
-        );
-
-        // Close the document to finish writing
+        // Wait for document to be ready
         printWindow.document.close();
 
-        // Wait for both content and styles to load
-        setTimeout(() => {
-            if (printWindow.document.readyState === 'complete') {
-                printWindow.print();
-                printWindow.onafterprint = () => {
-                    printWindow.close();
-                };
-            } else {
-                printWindow.onload = () => {
+        const renderContent = () => {
+            const container = printWindow.document.getElementById('pdf-root');
+            if (container) {
+                const root = ReactDOM.createRoot(container);
+                root.render(
+                    <PDFTemplate
+                        sites={sites}
+                        config={config}
+                        currentDate={currentDate}
+                        siteMetrics={siteMetrics}
+                    />
+                );
+
+                setTimeout(() => {
                     printWindow.print();
-                    printWindow.onafterprint = () => {
-                        printWindow.close();
-                    };
-                };
+                    printWindow.onafterprint = () => printWindow.close();
+                }, 1000);
             }
-        }, 1500); // Increased timeout to ensure content loads
+        };
+
+        if (printWindow.document.readyState === 'complete') {
+            renderContent();
+        } else {
+            printWindow.onload = renderContent;
+        }
     };
 
     const getCollectorSummary = () => {
         const collectorsBySize = {
             polling: {} as Record<string, number>,
-            logs: {} as Record<string, number>
+            logs: {} as Record<string, number>,
+            netflow: {} as Record<string, number>
         };
 
         // First count primary collectors
         sites.forEach(site => {
             const results = calculateCollectors(
                 calculateWeightedScore(site.devices, config.methodWeights, config),
-                getTotalEPS(site),
+                { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
                 config.maxLoad,
                 config
             );
 
-            results.polling.collectors.forEach(collector => {
+            results.polling.collectors.forEach((collector: { type: string; size: string }) => {
                 if (collector.type === "Primary") {
                     collectorsBySize.polling[collector.size] = (collectorsBySize.polling[collector.size] || 0) + 1;
                 }
             });
 
-            results.logs.collectors.forEach(collector => {
+            results.logs.eventCollectors.forEach((collector: { type: string; size: string }) => {
                 if (collector.type === "Primary") {
                     collectorsBySize.logs[collector.size] = (collectorsBySize.logs[collector.size] || 0) + 1;
+                }
+            });
+
+            results.logs.netflowCollectors.forEach((collector: { type: string; size: string }) => {
+                if (collector.type === "Primary") {
+                    collectorsBySize.netflow[collector.size] = (collectorsBySize.netflow[collector.size] || 0) + 1;
                 }
             });
         });
@@ -164,7 +159,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
             sites.forEach(site => {
                 const results = calculateCollectors(
                     calculateWeightedScore(site.devices, config.methodWeights, config),
-                    getTotalEPS(site),
+                    { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
                     config.maxLoad,
                     config
                 );
@@ -180,11 +175,11 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
             sites.forEach(site => {
                 const results = calculateCollectors(
                     calculateWeightedScore(site.devices, config.methodWeights, config),
-                    getTotalEPS(site),
+                    { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
                     config.maxLoad,
                     config
                 );
-                const redundantCollector = results.logs.collectors.find(c => c.type === "N+1 Redundancy");
+                const redundantCollector = results.logs.eventCollectors.find(c => c.type === "N+1 Redundancy");
                 if (redundantCollector) {
                     collectorsBySize.logs[redundantCollector.size] =
                         (collectorsBySize.logs[redundantCollector.size] || 0) + 1;
@@ -192,74 +187,52 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
             });
         }
 
+        if (config.enableLogsFailover) {
+            sites.forEach(site => {
+                const results = calculateCollectors(
+                    calculateWeightedScore(site.devices, config.methodWeights, config),
+                    { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+                    config.maxLoad,
+                    config
+                );
+                const redundantCollector = results.logs.netflowCollectors.find(c => c.type === "N+1 Redundancy");
+                if (redundantCollector) {
+                    collectorsBySize.netflow[redundantCollector.size] =
+                        (collectorsBySize.netflow[redundantCollector.size] || 0) + 1;
+                }
+            });
+        }
+
         return collectorsBySize;
     };
 
-    const getSummaryMetrics = (site: Site) => {
-        const totalWeight = calculateWeightedScore(site.devices, config.methodWeights,config);
-        const totalEPS = getTotalEPS(site);
-        const results = calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
-
-        const collectorsBySize = {
-            polling: {} as Record<string, number>,
-            logs: {} as Record<string, number>
-        };
-
-        // Count polling collectors by size
-        results.polling.collectors
-            .filter(c => c.type === "Primary")
-            .forEach(collector => {
-                collectorsBySize.polling[collector.size] = (collectorsBySize.polling[collector.size] || 0) + 1;
-            });
-
-        // Count logs collectors by size
-        results.logs.collectors
-            .filter(c => c.type === "Primary")
-            .forEach(collector => {
-                collectorsBySize.logs[collector.size] = (collectorsBySize.logs[collector.size] || 0) + 1;
-            });
-
-        // Add N+1 collectors if enabled
-        if (config.enablePollingFailover) {
-            const redundantCollector = results.polling.collectors.find(c => c.type === "N+1 Redundancy");
-            if (redundantCollector) {
-                collectorsBySize.polling[redundantCollector.size] =
-                    (collectorsBySize.polling[redundantCollector.size] || 0) + 1;
-            }
-        }
-
-        if (config.enableLogsFailover) {
-            const redundantCollector = results.logs.collectors.find(c => c.type === "N+1 Redundancy");
-            if (redundantCollector) {
-                collectorsBySize.logs[redundantCollector.size] =
-                    (collectorsBySize.logs[redundantCollector.size] || 0) + 1;
-            }
-        }
+    const calculateSiteMetrics = (site: Site) => {
+        const results = calculateCollectors(
+            calculateWeightedScore(site.devices, config.methodWeights, config),
+            { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+            config.maxLoad,
+            config
+        );
 
         return {
-            totalWeight,
-            totalEPS,
+            totalWeight: calculateWeightedScore(site.devices, config.methodWeights, config),
+            totalEPS: getTotalEPS(site),
             estimatedInstances: getEstimatedInstanceCount(site),
-            collectorsBySize,
-            avgPollingLoad: Math.round(
-                results.polling.collectors
-                    .filter(c => c.type === "Primary")
-                    .reduce((sum, c) => sum + c.load, 0) /
-                results.polling.collectors.filter(c => c.type === "Primary").length || 0
-            ),
-            avgLogsLoad: Math.round(
-                results.logs.collectors
-                    .filter(c => c.type === "Primary")
-                    .reduce((sum, c) => sum + c.load, 0) /
-                results.logs.collectors.filter(c => c.type === "Primary").length || 0
-            )
+            avgPollingLoad: calculateAverageLoad(results.polling.collectors),
+            avgLogsLoad: calculateAverageLoad(results.logs.eventCollectors),
+            avgNetflowLoad: calculateAverageLoad(results.logs.netflowCollectors),
+            collectorsBySize: {
+                polling: countCollectorsBySize(results.polling.collectors),
+                logs: countCollectorsBySize(results.logs.eventCollectors),
+                netflow: countCollectorsBySize(results.logs.netflowCollectors)
+            }
         };
     };
 
     const siteMetrics = sites.reduce((acc, site, index) => {
-        acc[index] = getSummaryMetrics(site);
+        acc[index] = calculateSiteMetrics(site);
         return acc;
-    }, {} as Record<number, ReturnType<typeof getSummaryMetrics>>);
+    }, {} as Record<number, ReturnType<typeof calculateSiteMetrics>>);
 
     const getLoadColor = (load: number) => {
         if (load >= 80) return "text-red-600";
@@ -294,6 +267,16 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
     const globalCollectorSummary = getCollectorSummary();
 
+    const globalResults = calculateCollectors(
+        totalLoadScore,
+        { 
+            events: getTotalEPSBySites(), 
+            netflow: sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0) 
+        },
+        config.maxLoad,
+        config
+    );
+
     return (
         
         <div className="space-y-6 overflow-y-auto min-h-[800px]">
@@ -327,10 +310,10 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Building className="w-4 h-4 text-blue-700" />
-                                        <span className="text-sm text-blue-900">Sites</span>
+                                        <span className="text-sm text-blue-900">Total Sites</span>
                                     </div>
                                     <p className="text-lg font-bold text-blue-700">
-                                        {sites.length.toLocaleString()}
+                                        {sites.length}
                                     </p>
                                 </div>
 
@@ -356,31 +339,31 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                     </p>
                                 </div>
 
-                                {/* Total Load Score */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <Weight className="w-4 h-4 text-blue-700" />
-                                        <span className="text-sm text-blue-900">Load Score</span>
-                                    </div>
-                                    <p className="text-lg font-bold text-blue-700">
-                                        {Math.round(totalLoadScore).toLocaleString()}
-                                    </p>
-                                </div>
-
                                 {/* Total EPS */}
                                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Activity className="w-4 h-4 text-orange-700" />
+                                        <MessageSquare className="w-4 h-4 text-orange-700" />
                                         <span className="text-sm text-orange-900">Events Per Second</span>
                                     </div>
                                     <p className="text-lg font-bold text-orange-700">
                                         {getTotalEPSBySites().toLocaleString()}
                                     </p>
                                 </div>
+
+                                {/* Total FPS */}
+                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Activity className="w-4 h-4 text-purple-700" />
+                                        <span className="text-sm text-purple-900">Flows Per Second</span>
+                                    </div>
+                                    <p className="text-lg font-bold text-purple-700">
+                                        {sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0).toLocaleString()}
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Global Collector Distribution */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {/* Polling Collectors */}
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                     <div className="flex items-center justify-between mb-3">
@@ -388,13 +371,12 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                             <Server className="w-4 h-4 text-blue-700" />
                                             <h3 className="font-medium text-blue-900">Polling Collectors</h3>
                                         </div>
-                                        {config.enablePollingFailover &&
-                                            (Object.entries(globalCollectorSummary.polling).reduce((sum, [_, count]) => sum + count, 0) > 1) && (
-                                                <div className="flex items-center gap-1 text-xs text-blue-700">
-                                                    <Info className="w-3 h-3" />
-                                                    <span>N+1 enabled</span>
-                                                </div>
-                                            )}
+                                        {config.enablePollingFailover && (Object.entries(globalCollectorSummary.polling).length > 0) && (
+                                            <div className="flex items-center gap-1 text-xs text-blue-700">
+                                                <Info className="w-3 h-3" />
+                                                <span>N+1 enabled</span>
+                                            </div>
+                                        )}
                                     </div>
                                     {Object.keys(globalCollectorSummary.polling).length > 0 ? (
                                         <div className="space-y-1.5">
@@ -425,22 +407,28 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                     )}
                                 </div>
 
-                                {/* Logs/NetFlow Collectors */}
+                                {/* Logs Collectors */}
                                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
-                                            <Activity className="w-4 h-4 text-orange-700" />
-                                            <h3 className="font-medium text-orange-900">Logs/NetFlow Collectors</h3>
+                                            <MessageSquare className="w-4 h-4 text-orange-700" />
+                                            <h3 className="font-medium text-orange-900">Logs Collectors</h3>
                                         </div>
-                                        {config.enableLogsFailover &&
-                                            (Object.entries(globalCollectorSummary.logs).reduce((sum, [_, count]) => sum + count, 0) > 1) && (
-                                                <div className="flex items-center gap-1 text-xs text-orange-700">
-                                                    <Info className="w-3 h-3" />
-                                                    <span>N+1 enabled</span>
-                                                </div>
-                                            )}
+                                        {config.enableLogsFailover && 
+                                            Object.values(globalCollectorSummary.logs).reduce((sum, count) => sum + count, 0) > 1 && (
+                                            <div className="flex items-center gap-1 text-xs text-orange-700">
+                                                <Info className="w-3 h-3" />
+                                                <span>N+1 enabled</span>
+                                            </div>
+                                        )}
                                     </div>
-                                    {Object.keys(globalCollectorSummary.logs).length > 0 ? (
+                                    {(Object.keys(globalCollectorSummary.logs).length === 0 || 
+                                      (config.enableLogsFailover && Object.values(globalCollectorSummary.logs).reduce((sum, count) => sum + count, 0) <= 1)) ? (
+                                        <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
+                                            <MessageSquare className="w-4 h-4" />
+                                            <span>No collectors required</span>
+                                        </div>
+                                    ) : (
                                         <div className="space-y-1.5">
                                             {Object.entries(globalCollectorSummary.logs)
                                                 .sort(([sizeA], [sizeB]) => {
@@ -451,7 +439,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
-                                                                <Activity className="w-3 h-3 text-orange-700" />
+                                                                <MessageSquare className="w-3 h-3 text-orange-700" />
                                                             </div>
                                                             <span className="text-sm font-medium text-orange-900">{size}</span>
                                                         </div>
@@ -461,10 +449,50 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     </div>
                                                 ))}
                                         </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
+                                    )}
+                                </div>
+
+                                {/* NetFlow Collectors */}
+                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="w-4 h-4 text-purple-700" />
+                                            <h3 className="font-medium text-purple-900">NetFlow Collectors</h3>
+                                        </div>
+                                        {config.enableLogsFailover && 
+                                            Object.values(globalCollectorSummary.netflow).reduce((sum, count) => sum + count, 0) > 1 && (
+                                            <div className="flex items-center gap-1 text-xs text-purple-700">
+                                                <Info className="w-3 h-3" />
+                                                <span>N+1 enabled</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {(Object.keys(globalCollectorSummary.netflow).length === 0 || 
+                                      (config.enableLogsFailover && Object.values(globalCollectorSummary.netflow).reduce((sum, count) => sum + count, 0) <= 1)) ? (
+                                        <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
                                             <Activity className="w-4 h-4" />
                                             <span>No collectors required</span>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-1.5">
+                                            {Object.entries(globalCollectorSummary.netflow)
+                                                .sort(([sizeA], [sizeB]) => {
+                                                    const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                    return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                                })
+                                                .map(([size, count]) => (
+                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-purple-100 rounded-lg hover:bg-purple-50/50">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                                                <Activity className="w-3 h-3 text-purple-700" />
+                                                            </div>
+                                                            <span className="text-sm font-medium text-purple-900">{size}</span>
+                                                        </div>
+                                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                            {count}x
+                                                        </span>
+                                                    </div>
+                                                ))}
                                         </div>
                                     )}
                                 </div>
@@ -474,7 +502,12 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                             <ComputeRequirements
                                 collectorsBySize={{
                                     polling: globalCollectorSummary.polling,
-                                    logs: globalCollectorSummary.logs
+                                    logs: globalCollectorSummary.logs,
+                                    netflow: globalCollectorSummary.netflow
+                                }}
+                                totalLogsLoad={{
+                                    events: getTotalEPSBySites(),
+                                    netflow: sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0)
                                 }}
                                 className="mt-4"
                                 enablePollingFailover={config.enablePollingFailover}
@@ -500,7 +533,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                         {/* Sites List */}
                         <div className="space-y-4">
                             {sites.map((site, index) => {
-                                const metrics = getSummaryMetrics(site);
+                                const metrics = calculateSiteMetrics(site);
                                 return (
                                     <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
                                         {/* Site Header */}
@@ -511,81 +544,67 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
                                         {/* Site Content */}
                                         <div className="space-y-4">
-                                            {/* Site Metrics */}
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                                                {/* Total Devices */}
-                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Server className="w-4 h-4 text-blue-700" />
-                                                        <span className="text-sm text-blue-900">Devices</span>
+                                            {/* Sites List - Site Level Metrics */}
+                                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                                                {/* Devices */}
+                                                <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                                        <Server className="w-3 h-3 sm:w-4 sm:h-4 text-blue-700" />
+                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900">Devices</h3>
                                                     </div>
-                                                    <p className="text-lg font-bold text-blue-700">
-                                                        {getTotalDeviceCount(site).toLocaleString()}
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-700">
+                                                        {Object.values(site.devices).reduce((sum, dev) => sum + dev.count, 0).toLocaleString()}
                                                     </p>
                                                 </div>
 
-                                                {/* Estimated Instances */}
-                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Component className="w-4 h-4 text-blue-700" />
-                                                        <span className="text-sm text-blue-900">Instances</span>
+                                                {/* Load Score */}
+                                                <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                                        <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900">Load Score</h3>
                                                     </div>
-                                                    <p className="text-lg font-bold text-blue-700">
-                                                        {metrics.estimatedInstances.toLocaleString()}
-                                                    </p>
-                                                </div>
-
-                                                {/* Estimated Load */}
-                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Weight className="w-4 h-4 text-blue-700" />
-                                                        <span className="text-sm text-blue-900">Load Score</span>
-                                                    </div>
-                                                    <p className="text-lg font-bold text-blue-700">
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-700">
                                                         {Math.round(metrics.totalWeight).toLocaleString()}
                                                     </p>
                                                 </div>
 
-                                                {/* Estimated EPS */}
-                                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Activity className="w-4 h-4 text-orange-700" />
-                                                        <span className="text-sm text-orange-900">Events Per Second</span>
+                                                {/* Instances */}
+                                                <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                                        <Component className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900">Instances</h3>
                                                     </div>
-                                                    <p className="text-lg font-bold text-orange-700">
-                                                        {getTotalEPS(site).toLocaleString()}
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-700">
+                                                        {metrics.estimatedInstances.toLocaleString()}
                                                     </p>
                                                 </div>
 
-                                                {/* Polling Load */}
-                                                <div className={`rounded-lg p-3 ${getLoadColor(metrics.avgPollingLoad).includes('text-red') ? 'bg-red-50 border border-red-200' :
-                                                    getLoadColor(metrics.avgPollingLoad).includes('text-yellow') ? 'bg-yellow-50 border border-yellow-200' :
-                                                        'bg-emerald-50 border-emerald-200 border'}`}>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Server className="w-4 h-4 text-gray-700" />
-                                                        <span className="text-sm text-gray-900">Polling Load</span>
+                                                {/* Events Per Second */}
+                                                <div className="bg-orange-50 rounded-lg border border-orange-200 p-2 sm:p-4">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                                        <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
+                                                        <h3 className="text-xs sm:text-sm font-medium text-orange-900">Events/Sec</h3>
                                                     </div>
-                                                    <p className={`text-lg font-bold ${getLoadColor(metrics.avgPollingLoad)}`}>
-                                                        {metrics.avgPollingLoad}%
+                                                    <p className="text-lg sm:text-xl font-bold text-orange-700">
+                                                        {Math.round(metrics.totalEPS).toLocaleString()}
                                                     </p>
                                                 </div>
 
-                                                {/* Logs Load */}
-                                                <div className={`rounded-lg p-3 ${getLoadColor(metrics.avgLogsLoad).includes('text-red') ? 'bg-red-50 border border-red-200' :
-                                                    getLoadColor(metrics.avgLogsLoad).includes('text-yellow') ? 'bg-yellow-50 border border-yellow-200' :
-                                                        'bg-emerald-50 border border-emerald-200'}`}>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Activity className="w-4 h-4 text-gray-700" />
-                                                        <span className="text-sm text-gray-900">Logs Load</span>
+                                                {/* Flows Per Second */}
+                                                <div className="bg-purple-50 rounded-lg border border-purple-200 p-2 sm:p-4">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                                        <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
+                                                        <h3 className="text-xs sm:text-sm font-medium text-purple-900">Flows/Sec</h3>
                                                     </div>
-                                                    <p className={`text-lg font-bold ${getLoadColor(metrics.avgLogsLoad)}`}>
-                                                        {metrics.avgLogsLoad}%
+                                                    <p className="text-lg sm:text-xl font-bold text-purple-700">
+                                                        {Math.round(site.logs.netflow.fps).toLocaleString()}
                                                     </p>
                                                 </div>
                                             </div>
 
                                             {/* Site Collector Distribution */}
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {/* Polling Collectors */}
                                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex items-center gap-2">
@@ -628,11 +647,12 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     )}
                                                 </div>
 
+                                                {/* Logs Collectors */}
                                                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex items-center gap-2">
-                                                            <Activity className="w-4 h-4 text-orange-700" />
-                                                            <h3 className="font-medium text-orange-900">Logs/NetFlow Collectors</h3>
+                                                            <MessageSquare className="w-4 h-4 text-orange-700" />
+                                                            <h3 className="font-medium text-orange-900">Logs Collectors</h3>
                                                         </div>
                                                         {config.enableLogsFailover && metrics.avgLogsLoad > 0 && (
                                                             <div className="flex items-center gap-1 text-xs text-orange-700">
@@ -652,7 +672,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                                     <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
                                                                         <div className="flex items-center gap-2">
                                                                             <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
-                                                                                <Activity className="w-3 h-3 text-orange-700" />
+                                                                                <MessageSquare className="w-3 h-3 text-orange-700" />
                                                                             </div>
                                                                             <span className="text-sm font-medium text-orange-900">{size}</span>
                                                                         </div>
@@ -664,6 +684,50 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
+                                                            <MessageSquare className="w-4 h-4" />
+                                                            <span>No collectors required</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* NetFlow Collectors */}
+                                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <div className="flex items-center gap-2">
+                                                            <Activity className="w-4 h-4 text-purple-700" />
+                                                            <h3 className="font-medium text-purple-900">NetFlow Collectors</h3>
+                                                        </div>
+                                                        {config.enableLogsFailover && metrics.avgNetflowLoad > 0 && (
+                                                            <div className="flex items-center gap-1 text-xs text-purple-700">
+                                                                <Info className="w-3 h-3" />
+                                                                <span>N+1 enabled</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {metrics.avgNetflowLoad > 0 ? (
+                                                        <div className="space-y-1.5">
+                                                            {Object.entries(metrics.collectorsBySize?.netflow || {})
+                                                                .sort(([sizeA], [sizeB]) => {
+                                                                    const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                                    return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                                                })
+                                                                .filter(() => !config.enableLogsFailover || Object.values(metrics.collectorsBySize.netflow).reduce((sum, count) => sum + count, 0) > 1)
+                                                                .map(([size, count]) => (
+                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-purple-100 rounded-lg hover:bg-purple-50/50">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                                                                <Activity className="w-3 h-3 text-purple-700" />
+                                                                            </div>
+                                                                            <span className="text-sm font-medium text-purple-900">{size}</span>
+                                                                        </div>
+                                                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                                            {count}x
+                                                                        </span>
+                                                                    </div>
+                                                                ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
                                                             <Activity className="w-4 h-4" />
                                                             <span>No collectors required</span>
                                                         </div>
@@ -675,7 +739,12 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                             <ComputeRequirements
                                                 collectorsBySize={{
                                                     polling: metrics.collectorsBySize.polling,
-                                                    logs: metrics.collectorsBySize.logs
+                                                    logs: metrics.collectorsBySize.logs,
+                                                    netflow: metrics.collectorsBySize.netflow
+                                                }}
+                                                totalLogsLoad={{
+                                                    events: site.logs.events.eps,
+                                                    netflow: site.logs.netflow.fps
                                                 }}
                                                 className="mt-4"
                                                 enablePollingFailover={config.enablePollingFailover}

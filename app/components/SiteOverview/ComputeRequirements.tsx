@@ -2,18 +2,7 @@ import React from 'react';
 import { Cpu, MemoryStick, HardDrive, Server, Activity } from 'lucide-react';
 import { collectorRequirements } from '../DeploymentAssistant/utils/constants';
 import { devLog } from '../Shared/utils/debug';
-
-interface CollectorSizes {
-  polling: Record<string, number>;
-  logs: Record<string, number>;
-}
-
-interface ComputeRequirementsProps {
-  collectorsBySize: CollectorSizes;
-  className?: string;
-  enablePollingFailover?: boolean;
-  enableLogsFailover?: boolean;
-}
+import { ComputeRequirementsProps } from '../DeploymentAssistant/types/types';
 
 interface ResourceTotals {
   cpu: number;
@@ -27,17 +16,6 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
   enablePollingFailover = false,
   enableLogsFailover = false
 }) => {
-  // Check if we have any non-N+1 collectors
-  const hasActiveCollectors = () => {
-    const pollingCollectorCount = Object.values(collectorsBySize.polling).reduce((sum, count) => sum + count, 0);
-    const logsCollectorCount = Object.values(collectorsBySize.logs).reduce((sum, count) => sum + count, 0);
-
-    // If failover is enabled and we only have 1 collector, it's just the N+1
-    const hasPollingCollectors = !enablePollingFailover || pollingCollectorCount > 1;
-    const hasLogsCollectors = !enableLogsFailover || logsCollectorCount > 1;
-
-    return hasPollingCollectors || hasLogsCollectors;
-  };
 
   const calculateResourcesForType = (
     collectors: Record<string, number>, 
@@ -76,9 +54,11 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
 
   const pollingTotals = calculateResourcesForType(collectorsBySize.polling, enablePollingFailover);
   const logsTotals = calculateResourcesForType(collectorsBySize.logs, enableLogsFailover);
+  const netflowTotals = calculateResourcesForType(collectorsBySize.netflow, enableLogsFailover);
 
   const hasPollingResources = pollingTotals.cpu > 0 || pollingTotals.memory > 0;
   const hasLogsResources = logsTotals.cpu > 0 || logsTotals.memory > 0;
+  const hasNetflowResources = netflowTotals.cpu > 0 || netflowTotals.memory > 0;
 
   const ResourceSection = ({ 
     title, 
@@ -88,21 +68,21 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
   }: { 
     title: string;
     icon: typeof Server;
-    color: "blue" | "orange";
+    color: "blue" | "orange" | "purple";
     totals: ResourceTotals;
   }) => (
     <div className={`bg-white border border-${color}-100 rounded-lg p-3 hover:bg-${color}-50/50`}>
-      <div className="grid grid-cols-[auto_1fr_1fr_1fr] items-center gap-4">
-        {/* Title/Icon Column */}
-        <div className={`flex items-center gap-2`}>
-          <div className={`w-6 h-6 rounded-full bg-${color}-50 flex items-center justify-center`}>
+      <div className="grid grid-cols-[150px_1fr_1fr_1fr] items-center gap-4">
+        {/* Title/Icon Column - Now fixed width */}
+        <div className={`flex items-center gap-2 min-w-[150px]`}>
+          <div className={`w-6 h-6 rounded-full bg-${color}-50 flex items-center justify-center flex-shrink-0`}>
             <Icon className={`w-3 h-3 text-${color}-700`} />
           </div>
-          <span className={`text-sm font-medium text-${color}-900`}>{title}</span>
+          <span className={`text-sm font-medium text-${color}-900 truncate`}>{title}</span>
         </div>
 
         {/* CPU Column */}
-        <div>
+        <div className="flex-1">
           <div className="text-xs text-gray-500 mb-1">CPU Cores</div>
           <div className="flex items-center gap-2">
             <Cpu className="w-3 h-3 text-gray-500" />
@@ -111,7 +91,7 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
         </div>
 
         {/* Memory Column */}
-        <div>
+        <div className="flex-1">
           <div className="text-xs text-gray-500 mb-1">Memory</div>
           <div className="flex items-center gap-2">
             <MemoryStick className="w-3 h-3 text-gray-500" />
@@ -120,7 +100,7 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
         </div>
 
         {/* Disk Column */}
-        <div>
+        <div className="flex-1">
           <div className="text-xs text-gray-500 mb-1">Disk</div>
           <div className="flex items-center gap-2">
             <HardDrive className="w-3 h-3 text-gray-500" />
@@ -136,7 +116,7 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
       <h3 className="font-medium text-gray-900 mb-3">Compute Requirements</h3>
       
       <div className="space-y-2">
-        {(!hasPollingResources && !hasLogsResources) ? (
+        {(!hasPollingResources && !hasLogsResources && !hasNetflowResources) ? (
           <div className="flex items-center gap-2 p-3 bg-white border border-gray-100 rounded-lg text-gray-500 text-sm">
             <HardDrive className="w-4 h-4" />
             <span>No compute resources required</span>
@@ -160,6 +140,16 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
                 icon={Activity} 
                 color="orange" 
                 totals={logsTotals}
+              />
+            )}
+
+            {/* NetFlow Section */}
+            {hasNetflowResources && (
+              <ResourceSection 
+                title="NetFlow" 
+                icon={Activity} 
+                color="purple" 
+                totals={netflowTotals}
               />
             )}
           </>

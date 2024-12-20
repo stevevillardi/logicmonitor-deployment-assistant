@@ -1,11 +1,12 @@
 import React from 'react';
 import { Download, Upload, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/enhanced-components';
-import { Site, Config } from '../types';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Site, Config } from '../DeploymentAssistant/types/types';
 import { useState, useRef } from 'react';
 import { devLog } from '../Shared/utils/debug';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { defaultLogTypes, defaultTrapTypes } from '../DeploymentAssistant/utils/constants';
+import { defaultFlowTypes } from '../DeploymentAssistant/utils/constants';
 
 interface ConfigurationActionsProps {
     sites: Site[];
@@ -22,9 +23,35 @@ interface SimplifiedSite {
         additional_count?: number;
     }>;
     logs: {
-        netflow: number;
-        syslog: number;
-        traps: number;
+        netflow: {
+            fps: number;
+            collectors: Array<{
+                size: string;
+                type: string;
+                load: number;
+            }>;
+        };
+        events: {
+            eps: number;
+            collectors: Array<{
+                size: string;
+                type: string;
+                load: number;
+            }>;
+        };
+        devices: {
+            firewalls: number;
+            network: number;
+            linux: number;
+            storage: number;
+            windows: number;
+            loadbalancers: number;
+            vcenter: number;
+            iis: number;
+            accesspoints: number;
+            snmptraps: number;
+            netflowdevices: number;
+        };
     };
 }
 
@@ -53,7 +80,6 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleExportConfig = () => {
-        // Simplify sites data to only include essential information
         const simplifiedSites: SimplifiedSite[] = sites.map(site => ({
             name: site.name,
             devices: Object.fromEntries(
@@ -66,9 +92,15 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                 ])
             ),
             logs: {
-                netflow: site.logs.netflow,
-                syslog: site.logs.syslog,
-                traps: site.logs.traps
+                netflow: {
+                    fps: site.logs.netflow.fps,
+                    collectors: site.logs.netflow.collectors
+                },
+                events: {
+                    eps: site.logs.events.eps,
+                    collectors: site.logs.events.collectors
+                },
+                devices: site.logs.devices
             }
         }));
 
@@ -201,9 +233,15 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                 name: simplifiedSite.name,
                 devices: siteDevices,
                 logs: {
-                    netflow: simplifiedSite.logs.netflow || 0,
-                    syslog: simplifiedSite.logs.syslog || 0,
-                    traps: simplifiedSite.logs.traps || 0
+                    netflow: {
+                        fps: simplifiedSite.logs.netflow?.fps || 0,
+                        collectors: simplifiedSite.logs.netflow?.collectors || []
+                    },
+                    events: {
+                        eps: simplifiedSite.logs.events?.eps || 0,
+                        collectors: simplifiedSite.logs.events?.collectors || []
+                    },
+                    devices: simplifiedSite.logs.devices || {}
                 }
             };
         });
@@ -251,22 +289,48 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
             }
 
             // Reconstruct sites with current device defaults and additional_count
-            const reconstructedSites = validationResult.sites.map(site => ({
-                name: site.name,
-                devices: Object.fromEntries(
-                    Object.entries(importedData.deviceDefaults).map(([type, defaultData]) => [
-                        type,
-                        {
-                            ...defaultData as Record<string, unknown>,
-                            count: site.devices[type]?.count || 0,
-                            additional_count: site.devices[type]?.additional_count,
-                            methods: site.devices[type]?.methods || {},
-                            instances: site.devices[type]?.instances || 0
-                        }
-                    ])
-                ),
-                logs: site.logs
-            }));
+            const reconstructedSites = validationResult.sites.map(site => {
+                // First create the base site structure
+                const newSite = {
+                    name: site.name,
+                    devices: Object.fromEntries(
+                        Object.entries(importedData.deviceDefaults).map(([type, defaultData]) => [
+                            type,
+                            {
+                                ...defaultData as Record<string, unknown>,
+                                count: site.devices[type]?.count || 0,
+                                additional_count: site.devices[type]?.additional_count,
+                                methods: site.devices[type]?.methods || {},
+                                instances: site.devices[type]?.instances || 0
+                            }
+                        ])
+                    ),
+                    logs: {
+                        netflow: {
+                            fps: 0, // Will be calculated below
+                            collectors: []
+                        },
+                        events: {
+                            eps: 0, // Will be calculated below
+                            collectors: []
+                        },
+                        devices: site.logs.devices || {}
+                    }
+                };
+
+                // Calculate the EPS and FPS based on the device counts
+                const netflowFPS = (newSite.logs.devices.netflowdevices || 0) * defaultFlowTypes.NETFLOW.fps;
+                const eventsEPS = Object.entries(defaultLogTypes).reduce((total, [key, value]) => {
+                    const deviceCount = newSite.logs.devices[key.toLowerCase() as keyof typeof newSite.logs.devices] || 0;
+                    return total + (deviceCount * value.eps);
+                }, 0) + ((newSite.logs.devices.snmptraps || 0) * defaultTrapTypes.SNMP.eps);
+
+                // Update the calculated values
+                newSite.logs.netflow.fps = netflowFPS;
+                newSite.logs.events.eps = eventsEPS;
+
+                return newSite;
+            });
 
             devLog('Final reconstructed sites:', reconstructedSites);
 

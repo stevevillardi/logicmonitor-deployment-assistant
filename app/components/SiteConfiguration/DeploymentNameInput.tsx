@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RxReset } from "react-icons/rx";
 import { Switch } from "@/components/ui/switch"
-
+import { CollectorCalcMethodSelect } from './CollectorCalcMethodSelect';
 interface DeploymentNameInputProps {
     value: string;
     onDeploymentNameChange: (name: string) => void;
@@ -44,7 +44,8 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
             deviceDefaults: defaultDeviceTypes,
             collectorCapacities: collectorCapacities,
             showAdvancedSettings: false,
-            showDetails: false
+            showDetails: false,
+            collectorCalcMethod: 'auto' 
         };
 
         // First update sites and expansion as they don't affect config
@@ -83,18 +84,26 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
         <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex-shrink-0 flex items-center justify-center">
                         <Building2 className="w-6 h-6 text-blue-700" />
                     </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
                         <Input
                             value={value}
                             onChange={(e) => onDeploymentNameChange(e.target.value)}
                             placeholder="Enter deployment name..."
-                            className="bg-white border border-gray-200 h-9 w-full sm:max-w-md"
+                            className="bg-white border border-gray-200 h-9 w-full"
                             type="text"
                         />
-                        <div className="flex items-center gap-2">
+
+<CollectorCalcMethodSelect
+        value={config.collectorCalcMethod}
+        onChange={(value) => onUpdateConfig({ 
+            ...config, 
+            collectorCalcMethod: value as 'auto' | 'SMALL' | 'MEDIUM' | 'LARGE' | 'XL' | 'XXL' 
+        })}
+    />
+                        <div className="flex items-center gap-2 flex-shrink-0">
                             <Switch
                                 id="showDetails"
                                 checked={showDetails}

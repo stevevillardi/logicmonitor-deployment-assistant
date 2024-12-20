@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button, Input } from '@/components/ui/enhanced-components'
-import { Server, Activity, Building, Trash2, RotateCcw } from 'lucide-react';
+import { Server, Activity, Building, Trash2, RotateCcw, MessageSquare, Info } from 'lucide-react';
 import { calculateWeightedScore } from '../DeploymentAssistant/utils/utils';
 import { calculateCollectors } from '../DeploymentAssistant/utils/utils';
 import { DeviceTypeCard } from './DeviceTypeCardInput';
@@ -31,6 +31,31 @@ interface SiteConfigurationProps {
 export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config, onSiteExpand, expandedSites }: SiteConfigurationProps) => {
     devLog('SiteConfiguration received config:', config);
     devLog('SiteConfiguration received sites:', sites);
+
+    const defaultLogs = {
+        netflow: {
+            fps: 0,
+            collectors: []
+        },
+        events: {
+            eps: 0,
+            collectors: []
+        },
+        devices: {
+            firewalls: 0,
+            network: 0,
+            linux: 0,
+            storage: 0,
+            windows: 0,
+            loadbalancers: 0,
+            vcenter: 0,
+            iis: 0,
+            accesspoints: 0,
+            snmptraps: 0,
+            netflowdevices: 0
+        }
+    };
+
     const resetSite = (index: number, type: string) => {
         const newSites = [...sites];
         if (type === "devices") {
@@ -41,11 +66,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 ])
             );
         } else if (type === "logs") {
-            newSites[index].logs = {
-                netflow: 0,
-                syslog: 0,
-                traps: 0,
-            };
+            newSites[index].logs = defaultLogs;
         }
         onUpdateSites(newSites);
     };
@@ -54,8 +75,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
     const getSiteResults = useCallback((site: Site) => {
         const totalWeight = calculateWeightedScore(site.devices, config.methodWeights, config);
-        const totalEPS = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
-        return calculateCollectors(totalWeight, totalEPS, config.maxLoad, config);
+        return calculateCollectors(totalWeight, {
+            events: site.logs?.events?.eps || 0,
+            netflow: site.logs?.netflow?.fps || 0
+        }, config.maxLoad, config);
     }, [config]);
 
     const calculateAverageLoad = (collectors: Array<any>) => {
@@ -86,11 +109,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     { ...data, count: 0 },
                 ])
             ),
-            logs: {
-                netflow: 0,
-                syslog: 0,
-                traps: 0,
-            },
+            logs: defaultLogs
         };
 
         // Clear all expanded sites
@@ -182,6 +201,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 config={config}
                 showDetails={config.showDetails}
             />
+            
             {sites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
                     <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
@@ -204,13 +224,14 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                         className="mb-4"
                     >
                         <CardHeader className="border-gray-200 bg-white">
-                            <div className="flex flex-col sm:flex-row gap-4 w-full">
-                                {/* Site Name Section - Clickable */}
-                                <div
-                                    className="flex-none sm:min-w-[200px] sm:max-w-[300px] w-full"
-                                    onClick={() => toggleSite(index)}
-                                >
-                                    <div className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity">
+                            {/* Mobile-friendly layout */}
+                            <div className="flex flex-col gap-4">
+                                {/* Site Name Row */}
+                                <div className="flex items-center gap-3">
+                                    <div 
+                                        className="flex items-center gap-3 cursor-pointer flex-1"
+                                        onClick={() => toggleSite(index)}
+                                    >
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
@@ -218,13 +239,10 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                         <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
                                                             <Building className="w-4 h-4 text-blue-700" />
                                                         </div>
-                                                        <ChevronRight
-                                                            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expandedSites.has(index) ? 'rotate-90' : ''
-                                                                }`}
-                                                        />
+                                                        <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expandedSites.has(index) ? 'rotate-90' : ''}`} />
                                                     </div>
                                                 </TooltipTrigger>
-                                                <TooltipContent className="bg-white border border-gray-200 text-gray-900 shadow-sm">
+                                                <TooltipContent>
                                                     <p>Click to {expandedSites.has(index) ? 'collapse' : 'expand'} site</p>
                                                 </TooltipContent>
                                             </Tooltip>
@@ -242,225 +260,278 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             className="w-full"
                                         />
                                     </div>
+
+                                    <Button
+                                        variant="outline"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteSite(index);
+                                        }}
+                                        className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 shrink-0"
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Remove Site
+                                    </Button>
                                 </div>
 
-                                {/* Stats Grid - Not Clickable */}
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
-                                        {/* Polling Collectors */}
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg w-full">
-                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                                {/* Stats Grid - Full width on mobile */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    {/* Polling Stats */}
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
                                                 <Server className="w-4 h-4 text-blue-700" />
+                                                <span className="text-sm font-medium text-blue-900">Polling</span>
                                             </div>
-                                            <div className="flex flex-col min-w-0 flex-1">
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-xs font-medium text-blue-900 truncate">
-                                                        Polling Collectors
+                                            <div className="text-right">
+                                                <div className="flex items-center gap-1.5 justify-end">
+                                                    <span className="text-sm font-semibold text-blue-700">
+                                                        {(() => {
+                                                            const collectors = getSiteResults(site).polling.collectors;
+                                                            const count = collectors.filter(c => c.type === "Primary").length;
+                                                            return count > 0 ? count : "0";
+                                                        })()}
                                                     </span>
-                                                </div>
-                                                <span className="text-sm font-bold text-blue-700">
-                                                    {(() => {
-                                                        const pollingCollectors = getSiteResults(site).polling.collectors;
-                                                        const primaryCollectors = pollingCollectors.filter(c => c.type === "Primary");
-                                                        const hasOnlyRedundancy = pollingCollectors.length === 1 && pollingCollectors[0].type === "N+1 Redundancy";
-                                                        const showNA = primaryCollectors.length === 0 || hasOnlyRedundancy;
-
-                                                        return showNA ? "N/A" : 
-                                                            `${pollingCollectors.length}${config.enablePollingFailover && pollingCollectors.some(c => c.type === "N+1 Redundancy") ? " (with N+1)" : ""}`;
-                                                    })()}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Netflow/Logs Collectors */}
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg w-full">
-                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                                                <Activity className="w-4 h-4 text-orange-700" />
-                                            </div>
-                                            <div className="flex flex-col min-w-0 flex-1">
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-xs font-medium text-orange-900 truncate">
-                                                        Logs Collectors
+                                                    <span className="text-xs text-blue-600">
+                                                        {(() => {
+                                                            const count = getSiteResults(site).polling.collectors.filter(c => c.type === "Primary").length;
+                                                            return count === 1 ? "collector" : "collectors";
+                                                        })()}
                                                     </span>
+                                                    {config.enablePollingFailover && getSiteResults(site).polling.collectors.length > 0 && (
+                                                        <span className="text-xs text-blue-600 bg-blue-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                                            <Info className="w-3 h-3" />N+1
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <span className="text-sm font-bold text-orange-700">
-                                                    {(() => {
-                                                        const logsCollectors = getSiteResults(site).logs.collectors;
-                                                        const primaryCollectors = logsCollectors.filter(c => c.type === "Primary");
-                                                        const hasOnlyRedundancy = logsCollectors.length === 1 && logsCollectors[0].type === "N+1 Redundancy";
-                                                        const showNA = primaryCollectors.length === 0 || hasOnlyRedundancy;
-
-                                                        return showNA ? "N/A" : 
-                                                            `${logsCollectors.length}${config.enableLogsFailover && logsCollectors.some(c => c.type === "N+1 Redundancy") ? " (with N+1)" : ""}`;
-                                                    })()}
-                                                </span>
-                                            </div>
-                                        </div>
-
-
-                                        {/* Average Load */}
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
-                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                                                <HardDrive className="w-4 h-4 text-emerald-700" />
-                                            </div>
-                                            <div className="flex flex-col min-w-0 flex-1">
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-xs font-medium text-emerald-900 truncate">
-                                                        Average Load
+                                                <div className="flex items-center gap-1.5 mt-1 justify-end">
+                                                    <span className="text-xs text-blue-600">
+                                                        {Object.values(site.devices).reduce((sum, device) => sum + (device.count || 0), 0).toLocaleString()} devices
                                                     </span>
+                                                    <div className="flex items-center gap-1">
+                                                        <div className="w-12 h-1.5 bg-blue-100 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className="h-full bg-blue-600 rounded-full"
+                                                                style={{ 
+                                                                    width: `${Math.min(calculateAverageLoad(getSiteResults(site).polling.collectors), 100)}%`,
+                                                                    backgroundColor: calculateAverageLoad(getSiteResults(site).polling.collectors) >= 80 ? '#ef4444' : 
+                                                                           calculateAverageLoad(getSiteResults(site).polling.collectors) >= 60 ? '#f59e0b' : '#2563eb'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs font-medium text-blue-700 bg-blue-100/50 px-1.5 py-0.5 rounded">
+                                                            {calculateAverageLoad(getSiteResults(site).polling.collectors)}%
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <span className="text-sm font-bold text-emerald-700">
-                                                    {calculateAverageLoad(getSiteResults(site).polling.collectors)}%
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Device Count */}
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                                                <HardDrive className="w-4 h-4 text-yellow-700" />
-                                            </div>
-                                            <div className="flex flex-col min-w-0 flex-1">
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-xs font-medium text-yellow-900 truncate">
-                                                        Devices
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-bold text-yellow-700">                                                    {Object.values(site.devices).reduce(
-                                                    (sum, device) => sum + (device.count || 0),
-                                                    0
-                                                )}{" "}</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Delete Button */}
-                                    <div className="w-full md:w-auto mt-2 md:mt-0">
-                                        <Button
-                                            variant="outline"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                deleteSite(index);
-                                            }}
-                                            className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 w-full md:w-auto shrink-0"
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-2" />
-                                            Remove Site
-                                        </Button>
+                                    {/* Logs Stats */}
+                                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
+                                                <MessageSquare className="w-4 h-4 text-orange-700" />
+                                                <span className="text-sm font-medium text-orange-900">Logs</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="flex items-center gap-1.5 justify-end">
+                                                    <span className="text-sm font-semibold text-orange-700">
+                                                        {(() => {
+                                                            const collectors = getSiteResults(site).logs.eventCollectors;
+                                                            const count = collectors.filter(c => c.type === "Primary").length;
+                                                            return count > 0 ? count : "0";
+                                                        })()}
+                                                    </span>
+                                                    <span className="text-xs text-orange-600">
+                                                        {(() => {
+                                                            const count = getSiteResults(site).logs.eventCollectors.filter(c => c.type === "Primary").length;
+                                                            return count === 1 ? "collector" : "collectors";
+                                                        })()}
+                                                    </span>
+                                                    {config.enableLogsFailover && getSiteResults(site).logs.eventCollectors.length > 0 && (
+                                                        <span className="text-xs text-orange-600 bg-orange-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                                            <Info className="w-3 h-3" />N+1
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-1.5 mt-1 justify-end">
+                                                    <span className="text-xs text-orange-600">
+                                                        {site.logs.events.eps.toLocaleString()} EPS
+                                                    </span>
+                                                    <div className="flex items-center gap-1">
+                                                        <div className="w-12 h-1.5 bg-orange-100 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className="h-full bg-orange-600 rounded-full"
+                                                                style={{ 
+                                                                    width: `${Math.min(calculateAverageLoad(getSiteResults(site).logs.eventCollectors), 100)}%`,
+                                                                    backgroundColor: calculateAverageLoad(getSiteResults(site).logs.eventCollectors) >= 80 ? '#ef4444' : 
+                                                                           calculateAverageLoad(getSiteResults(site).logs.eventCollectors) >= 60 ? '#f59e0b' : '#ea580c'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs font-medium text-orange-700 bg-orange-100/50 px-1.5 py-0.5 rounded">
+                                                            {calculateAverageLoad(getSiteResults(site).logs.eventCollectors)}%
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* NetFlow Stats */}
+                                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
+                                                <Activity className="w-4 h-4 text-purple-700" />
+                                                <span className="text-sm font-medium text-purple-900">NetFlow</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="flex items-center gap-1.5 justify-end">
+                                                    <span className="text-sm font-semibold text-purple-700">
+                                                        {(() => {
+                                                            const collectors = getSiteResults(site).logs.netflowCollectors;
+                                                            const count = collectors.filter(c => c.type === "Primary").length;
+                                                            return count > 0 ? count : "0";
+                                                        })()}
+                                                    </span>
+                                                    <span className="text-xs text-purple-600">
+                                                        {(() => {
+                                                            const count = getSiteResults(site).logs.netflowCollectors.filter(c => c.type === "Primary").length;
+                                                            return count === 1 ? "collector" : "collectors";
+                                                        })()}
+                                                    </span>
+                                                    {config.enableLogsFailover && getSiteResults(site).logs.netflowCollectors.length > 0 && (
+                                                        <span className="text-xs text-purple-600 bg-purple-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                                            <Info className="w-3 h-3" />N+1
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-1.5 mt-1 justify-end">
+                                                    <span className="text-xs text-purple-600">
+                                                        {site.logs.netflow.fps.toLocaleString()} FPS
+                                                    </span>
+                                                    <div className="flex items-center gap-1">
+                                                        <div className="w-12 h-1.5 bg-purple-100 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className="h-full bg-purple-600 rounded-full"
+                                                                style={{ 
+                                                                    width: `${Math.min(calculateAverageLoad(getSiteResults(site).logs.netflowCollectors), 100)}%`,
+                                                                    backgroundColor: calculateAverageLoad(getSiteResults(site).logs.netflowCollectors) >= 80 ? '#ef4444' : 
+                                                                           calculateAverageLoad(getSiteResults(site).logs.netflowCollectors) >= 60 ? '#f59e0b' : '#9333ea'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs font-medium text-purple-700 bg-purple-100/50 px-1.5 py-0.5 rounded">
+                                                            {calculateAverageLoad(getSiteResults(site).logs.netflowCollectors)}%
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </CardHeader>
                         {expandedSites.has(index) && (
                             <CardContent>
-                                <Tabs defaultValue="devices">
-                                    <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
-                                        <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="devices">Devices</TabsTrigger>
-                                        <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="logs">Logs & NetFlow</TabsTrigger>
-                                    </TabsList>
-
-                                    <TabsContent value="devices" className="mt-4">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold">Devices</h3>
-                                            <Button
-                                                onClick={() => resetSite(index, "devices")}
-                                                variant="outline"
-                                                className="text-red-600 hover:text-red-700"
-                                            >
-                                                <RxReset className="w-4 h-4 mr-2" />
-                                                Reset Devices
-                                            </Button>
+                                <div className="flex justify-between items-center mb-4">
+                                    <Tabs defaultValue="devices" className="flex-1">
+                                        <div className="flex justify-between items-center">
+                                            <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
+                                                <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="devices">
+                                                    Devices
+                                                </TabsTrigger>
+                                                <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="logs">
+                                                    Logs, Traps & NetFlow
+                                                </TabsTrigger>
+                                                <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="collectors">
+                                                    Collectors
+                                                </TabsTrigger>
+                                            </TabsList>
                                         </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                            {Object.entries(site.devices).map(([type, data]) => (
-                                                <DeviceTypeCard
-                                                    key={type}
-                                                    type={type}
-                                                    data={data}
-                                                    methodWeights={config.methodWeights}
-                                                    onUpdate={(newCount, additionalCount) => {
-                                                        const newSites = [...sites];
-                                                        newSites[index].devices[type] = {
-                                                            ...newSites[index].devices[type],
-                                                            count: newCount,
-                                                            additional_count: additionalCount
-                                                        };
-                                                        onUpdateSites(newSites);
-                                                    }}
-                                                    onMethodUpdate={(newMethods) => {
-                                                        const newSites = [...sites];
-                                                        newSites[index].devices[type] = {
-                                                            ...newSites[index].devices[type],
-                                                            methods: newMethods
-                                                        };
-                                                        onUpdateSites(newSites);
-                                                    }}
-                                                    showDetails={config.showDetails}
-                                                />
-                                            ))}
-                                        </div>
-                                    </TabsContent>
 
-                                    <TabsContent value="logs" className="mt-4">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold">Logs & NetFlow</h3>
-                                            <Button
-                                                onClick={() => resetSite(index, "logs")}
-                                                variant="outline"
-                                                className="text-red-600 hover:text-red-700"
-                                            >
-                                                <RxReset className="w-4 h-4 mr-2" />
-                                                Reset Logs
-                                            </Button>
-                                        </div>
-                                        <LogsInput
-                                            logs={site.logs}
-                                            onUpdate={(newLogs) => {
-                                                const newSites = [...sites];
-                                                newSites[index].logs = newLogs;
-                                                onUpdateSites(newSites);
-                                            }}
-                                        />
-                                    </TabsContent>
-                                </Tabs>
+                                        <TabsContent value="devices">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h3 className="text-lg font-semibold">Devices</h3>
+                                                <Button
+                                                    onClick={() => resetSite(index, "devices")}
+                                                    variant="outline"
+                                                    className="text-red-600 hover:text-red-700"
+                                                >
+                                                    <RxReset className="w-4 h-4 mr-2" />
+                                                    Reset Devices
+                                                </Button>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                                {Object.entries(site.devices).map(([type, data]) => (
+                                                    <DeviceTypeCard
+                                                        key={type}
+                                                        type={type}
+                                                        data={data}
+                                                        methodWeights={config.methodWeights}
+                                                        onUpdate={(newCount, additionalCount) => {
+                                                            const newSites = [...sites];
+                                                            newSites[index].devices[type] = {
+                                                                ...newSites[index].devices[type],
+                                                                count: newCount,
+                                                                additional_count: additionalCount
+                                                            };
+                                                            onUpdateSites(newSites);
+                                                        }}
+                                                        onMethodUpdate={(newMethods) => {
+                                                            const newSites = [...sites];
+                                                            newSites[index].devices[type] = {
+                                                                ...newSites[index].devices[type],
+                                                                methods: newMethods
+                                                            };
+                                                            onUpdateSites(newSites);
+                                                        }}
+                                                        showDetails={config.showDetails}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </TabsContent>
 
-                                <div className="mt-8">
-                                    <h3 className="text-xl font-bold text-white-900 mb-4">
-                                        {site.name} Collectors
-                                    </h3>
-                                    {(() => {
-                                        const siteResults = getSiteResults(site);
-                                        const totalPollingLoad = calculateWeightedScore(site.devices, config.methodWeights, config);
-                                        const totalLogsLoad = Object.values(site.logs).reduce((sum, eps) => sum + eps, 0);
-
-                                        devLog('Site Results Detail:', {
-                                            polling: {
-                                                collectors: siteResults.polling.collectors.map(c => ({
-                                                    size: c.size,
-                                                    type: c.type,
-                                                    load: c.load
-                                                })),
-                                                totalLoad: totalPollingLoad
-                                            },
-                                            logs: {
-                                                collectors: siteResults.logs.collectors.map(c => ({
-                                                    size: c.size,
-                                                    type: c.type,
-                                                    load: c.load
-                                                })),
-                                                totalLoad: totalLogsLoad
-                                            }
-                                        });
-
-                                        return (
-                                            <CollectorVisualization
-                                                polling={siteResults.polling}
-                                                logs={siteResults.logs}
-                                                totalPollingLoad={totalPollingLoad}
-                                                totalLogsLoad={totalLogsLoad}
+                                        <TabsContent value="logs">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h3 className="text-lg font-semibold">Logs, Traps & NetFlow</h3>
+                                                <Button
+                                                    onClick={() => resetSite(index, "logs")}
+                                                    variant="outline"
+                                                    className="text-red-600 hover:text-red-700"
+                                                >
+                                                    <RxReset className="w-4 h-4 mr-2" />
+                                                    Reset Logs
+                                                </Button>
+                                            </div>
+                                            <LogsInput
+                                                logs={site.logs}
+                                                onUpdate={(newLogs) => {
+                                                    const newSites = [...sites];
+                                                    newSites[index].logs = newLogs;
+                                                    onUpdateSites(newSites);
+                                                }}
+                                                showDetails={config.showDetails}
                                             />
-                                        );
-                                    })()}
+                                        </TabsContent>
+
+                                        <TabsContent value="collectors">
+                                            <CollectorVisualization
+                                                pollingCollectors={getSiteResults(site).polling.collectors}
+                                                logsCollectors={getSiteResults(site).logs.eventCollectors}
+                                                netflowCollectors={getSiteResults(site).logs.netflowCollectors}
+                                                totalPollingLoad={calculateWeightedScore(site.devices, config.methodWeights, config)}
+                                                totalLogsLoad={{
+                                                    events: site.logs?.events?.eps || 0,
+                                                    netflow: site.logs?.netflow?.fps || 0
+                                                }}
+                                                enablePollingFailover={config.enablePollingFailover}
+                                                enableLogsFailover={config.enableLogsFailover}
+                                            />
+                                        </TabsContent>
+                                    </Tabs>
                                 </div>
                             </CardContent>
                         )}

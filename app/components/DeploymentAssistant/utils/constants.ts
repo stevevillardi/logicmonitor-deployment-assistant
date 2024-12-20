@@ -98,6 +98,70 @@ export const defaultDeviceTypes = {
     },
 };
 
+export const defaultLogTypes = {
+    FIREWALLS: {
+        name: "Firewalls",
+        eps: 1,
+        bytes: 300
+    },
+    NETWORK: {
+        name: "Network Devices",
+        eps: 0.75,
+        bytes: 150
+    },
+    LINUX: {
+        name: "Linux Servers",
+        eps: 0.20,
+        bytes: 200
+    },
+    STORAGE: {
+        name: "Storage",
+        eps: 0.20,
+        bytes: 200
+    },
+    WINDOWS: {
+        name: "Windows Servers",
+        eps: 0.20,
+        bytes: 200
+    },
+    LOADBALANCERS: {
+        name: "Load Balancers",
+        eps: 3,
+        bytes: 235
+    },
+    VCENTER: {
+        name: "vCenter",
+        eps: 1.75,
+        bytes: 300
+    },
+    IIS: {
+        name: "IIS Web Servers",
+        eps: 6.20,
+        bytes: 2005
+    },
+    ACCESSPOINTS: {
+        name: "Access Points",
+        eps: 0.05,
+        bytes: 760
+    }
+};
+
+export const defaultTrapTypes = {
+    SNMP: {
+        name: "SNMP Trap Devices",
+        eps: 0.01,
+        bytes: 1000
+    }
+}
+
+export const defaultFlowTypes = {
+    NETFLOW: {
+        name: "NetFlow Devices",
+        fps: 1100,
+        bytes: 1000
+    }
+}
+
 export const cloudVmSizes = {
     SMALL: {
         aws: 't3.small',      // 2 vCPU, 2 GiB RAM, Up to 12.5 Gbps network
@@ -167,11 +231,11 @@ export const defaultMethodWeights = {
 };
 
 export const collectorCapacities = {
-    XXL: { weight: 285500, eps: 52817 },
-    XL: { weight: 165950, eps: 37418 },
-    LARGE: { weight: 104714, eps: 23166 },
-    MEDIUM: { weight: 48557, eps: 13797 },
-    SMALL: { weight: 21286, eps: 7800 },
+    XXL: { weight: 285500, eps: 7000, fps: 52817},
+    XL: { weight: 165950, eps: 4000, fps: 37418},
+    LARGE: { weight: 104714, eps: 2500, fps: 23166},
+    MEDIUM: { weight: 48557, eps: 500, fps: 13797},
+    SMALL: { weight: 21286, eps: 200 , fps: 7800},
 };
 
 export interface DeviceType {

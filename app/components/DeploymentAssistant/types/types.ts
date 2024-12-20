@@ -11,9 +11,35 @@ export interface Site {
     name: string;
     devices: Record<string, DeviceType>;
     logs: {
-        netflow: number;
-        syslog: number;
-        traps: number;
+        netflow: {
+            fps: number;
+            collectors: Array<{
+                size: string;
+                type: string;
+                load: number;
+            }>;
+        };
+        events: {  // Combined syslog and traps
+            eps: number;
+            collectors: Array<{
+                size: string;
+                type: string;
+                load: number;
+            }>;
+        };
+        devices: {
+            firewalls: number;
+            network: number;
+            linux: number;
+            storage: number;
+            windows: number;
+            loadbalancers: number;
+            vcenter: number;
+            iis: number;
+            accesspoints: number;
+            snmptraps: number;
+            netflowdevices: number;
+        };
     };
 }
 
@@ -27,11 +53,13 @@ export interface Config {
     collectorCapacities: Record<string, CollectorCapacity>;
     showDetails: boolean;
     showAdvancedSettings: boolean;
+    collectorCalcMethod: 'auto' | 'SMALL' | 'MEDIUM' | 'LARGE' | 'XL' | 'XXL';
 }
 
 export interface CollectorCapacity {
     weight: number;
     eps: number;
+    fps: number;  // Add FPS capacity
 }
 
 export interface VideoGuideData {
@@ -68,4 +96,21 @@ export interface Technology {
     recommendedOnboarding: OnboardingMethod[];
     documentationUrl: string;
     tags?: string[];
+}
+
+export interface LogsLoad {
+    events: number;
+    netflow: number;
+}
+
+export interface ComputeRequirementsProps {
+    collectorsBySize: {
+        polling: Record<string, number>;
+        logs: Record<string, number>;
+        netflow: Record<string, number>;
+    };
+    totalLogsLoad: LogsLoad;
+    className?: string;
+    enablePollingFailover?: boolean;
+    enableLogsFailover?: boolean;
 }

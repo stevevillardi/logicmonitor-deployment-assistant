@@ -82,7 +82,7 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                     {/* Add Cloud Provider VM Recommendations */}
                     <div className="mt-6 space-y-4">
                         <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-semibold text-gray-900">Recommended Cloud VM Sizes</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">Recommended Cloud Instance Sizes</h3>
                         </div>
                         <div className="overflow-x-auto bg-gray-50 rounded-lg border border-gray-200">
                             <table className="min-w-full divide-y divide-gray-200">

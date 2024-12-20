@@ -1,6 +1,9 @@
 import { Config, DeviceType } from '../types/types';
 import { collectorCapacities } from './constants';
 
+// At the start of the file, add this type
+type CollectorSize = 'SMALL' | 'MEDIUM' | 'LARGE' | 'XL' | 'XXL';
+
 // Utility Functions
 export const calculateWeightedScore = (devices: Record<string, DeviceType>, methodWeights: Record<string, number>, config: Config) => {
     return Object.entries(devices).reduce((total, [type, data]) => {
@@ -49,79 +52,123 @@ export const calculateWeightedScore = (devices: Record<string, DeviceType>, meth
     }, 0);
 };
 
-export const calculateCollectors = (totalWeight: number, totalEPS: number, maxLoad: number, config: Config) => {
+export const calculateCollectors = (totalWeight: number, logs: { events: number; netflow: number }, maxLoad: number, config: Config) => {
+    // Helper function to calculate collectors for either polling (weight) or logs (EPS/FPS)
+    const calculateForCapacity = (total: number, metric: 'weight' | 'eps' | 'fps') => {
+        // If there's no load or invalid input, return minimal configuration
+        if (!total || total <= 0 || !isFinite(total)) {
+            return { size: 'SMALL', count: 0 };
+        }
 
-    // Helper function to calculate collectors for either polling (weight) or logs (EPS)
-    const calculateForCapacity = (total: number, isEPS: boolean) => {
-        let size = "XXL";
+        // For polling weight and non-auto mode, use the fixed collector size
+        if (metric === 'weight' && config.collectorCalcMethod !== 'auto') {
+            const size = config.collectorCalcMethod;
+            const capacity = config.collectorCapacities[size][metric];
+            const maxLoadPercent = Math.max(1, maxLoad);
+            const collectors = Math.ceil(total / (capacity * (maxLoadPercent / 100)));
+            
+            return {
+                size,
+                count: Math.max(1, Math.min(100, isFinite(collectors) ? collectors : 1))
+            };
+        }
+
+        // For all other cases, find the size that requires the minimum number of collectors
+        let bestSize: CollectorSize = 'XXL';
         let minCollectors = Infinity;
 
-        // Iterate through each collector size (XXL, XL, LARGE, etc.)
-        Object.entries(config.collectorCapacities).forEach(([collectorSize, limits]) => {
-            // Get the relevant limit (either EPS or weight) based on what we're calculating
-            const limit = isEPS ? limits.eps : limits.weight;
+        // Iterate through each collector size to find the most efficient configuration
+        Object.entries(config.collectorCapacities).forEach(([size, capacities]) => {
+            const capacity = capacities[metric];
+            if (!capacity || capacity <= 0) return;
+
+            const needed = Math.ceil(total / (capacity * (maxLoad / 100)));
             
-            // Calculate how many collectors needed at this size
-            // Formula: total capacity needed / (collector capacity * max load percentage)
-            const needed = Math.ceil(total / (limit * (maxLoad / 100)));
-            
-            // If this size requires fewer collectors, update our choice
-            if (needed <= minCollectors) {
+            // If this size requires fewer or equal collectors, update our choice
+            if (needed > 0 && needed <= 100 && needed <= minCollectors) {
                 minCollectors = needed;
-                size = collectorSize;
+                bestSize = size as CollectorSize;
             }
         });
 
-        return { size, count: minCollectors };
+        // If we found a valid configuration, return it
+        if (minCollectors !== Infinity) {
+            return {
+                size: bestSize,
+                count: minCollectors
+            };
+        }
+
+        // Fallback to XXL with maximum collectors if no valid configuration found
+        const xxlCapacity = config.collectorCapacities.XXL[metric];
+        const safeCollectors = Math.min(100, Math.ceil(total / xxlCapacity));
+        
+        return {
+            size: 'XXL',
+            count: Math.max(1, Math.min(100, isFinite(safeCollectors) ? safeCollectors : 1))
+        };
     };
 
-    // Calculate collectors needed for polling (based on weight)
-    const pollingConfig = calculateForCapacity(totalWeight, false);
-    
-    // Calculate collectors needed for logs (based on EPS)
-    const logsConfig = calculateForCapacity(totalEPS, true);
+    // Calculate collectors needed for each type
+    const pollingConfig = calculateForCapacity(totalWeight, 'weight');
+    const eventsConfig = calculateForCapacity(logs.events, 'eps');
+    const netflowConfig = calculateForCapacity(logs.netflow, 'fps');
 
     return {
         polling: {
             collectors: Array(pollingConfig.count + (config.enablePollingFailover ? 1 : 0))
                 .fill(null)
                 .map((_, idx) => {
-                    // Check if this is a redundant collector
                     const isRedundant = idx === pollingConfig.count && config.enablePollingFailover;
+                    let load = 0;
                     
-                    // Calculate load percentage for each collector
-                    const load = isRedundant ? 0 : Math.round(
-                        (totalWeight /
-                            pollingConfig.count /
-                            config.collectorCapacities[pollingConfig.size].weight) *
-                        100
-                    );
-                    
+                    if (!isRedundant && pollingConfig.count > 0) {
+                        const capacity = config.collectorCapacities[pollingConfig.size].weight;
+                        load = Math.round((totalWeight / pollingConfig.count / capacity) * 100);
+                    }
+
                     return {
                         size: pollingConfig.size,
                         type: isRedundant ? "N+1 Redundancy" : "Primary",
-                        load
+                        load: Math.min(100, Math.max(0, isFinite(load) ? load : 0))
                     };
                 }),
         },
         logs: {
-            collectors: Array(logsConfig.count + (config.enableLogsFailover ? 1 : 0))
+            eventCollectors: Array(eventsConfig.count + (config.enableLogsFailover ? 1 : 0))
                 .fill(null)
                 .map((_, idx) => {
-                    // Similar logic for logs collectors
-                    const isRedundant = idx === logsConfig.count && config.enableLogsFailover;
-                    const load = isRedundant ? 0 : Math.round(
-                        (totalEPS /
-                            logsConfig.count /
-                            config.collectorCapacities[logsConfig.size].eps) *
-                        100
-                    );
+                    const isRedundant = idx === eventsConfig.count && config.enableLogsFailover;
+                    let load = 0;
+                    
+                    if (!isRedundant && eventsConfig.count > 0) {
+                        const capacity = config.collectorCapacities[eventsConfig.size].eps;
+                        load = Math.round((logs.events / eventsConfig.count / capacity) * 100);
+                    }
+
                     return {
-                        size: logsConfig.size,
+                        size: eventsConfig.size,
                         type: isRedundant ? "N+1 Redundancy" : "Primary",
-                        load
+                        load: Math.min(100, Math.max(0, isFinite(load) ? load : 0))
                     };
                 }),
-        },
+            netflowCollectors: Array(netflowConfig.count + (config.enableLogsFailover ? 1 : 0))
+                .fill(null)
+                .map((_, idx) => {
+                    const isRedundant = idx === netflowConfig.count && config.enableLogsFailover;
+                    let load = 0;
+                    
+                    if (!isRedundant && netflowConfig.count > 0) {
+                        const capacity = config.collectorCapacities[netflowConfig.size].fps;
+                        load = Math.round((logs.netflow / netflowConfig.count / capacity) * 100);
+                    }
+
+                    return {
+                        size: netflowConfig.size,
+                        type: isRedundant ? "N+1 Redundancy" : "Primary",
+                        load: Math.min(100, Math.max(0, isFinite(load) ? load : 0))
+                    };
+                }),
+        }
     };
 };

@@ -1,6 +1,6 @@
 import { Site, Config } from '../DeploymentAssistant/types/types';
 import ComputeRequirements from './ComputeRequirements';
-import { Server, Activity, Component, Weight, HardDrive, Building, Earth, Info } from 'lucide-react';
+import { Server, Activity, Component, Weight, HardDrive, Building, Earth, Info, MessageSquare } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import DisclaimerBox from '../Shared/DisclaimerBox';
@@ -17,9 +17,11 @@ interface PDFTemplateProps {
         estimatedInstances: number;
         avgPollingLoad: number;
         avgLogsLoad: number;
+        avgNetflowLoad: number;
         collectorsBySize: {
             polling: Record<string, number>;
             logs: Record<string, number>;
+            netflow: Record<string, number>;
         };
     }>;
 }
@@ -45,6 +47,31 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
             avgLogsLoad: Math.round((summary.avgLogsLoad + metrics.avgLogsLoad) / 2)
         };
     }, { totalWeight: 0, totalEPS: 0, estimatedInstances: 0, avgPollingLoad: 0, avgLogsLoad: 0 });
+
+    const globalCollectorSummary = sites.reduce((summary: {
+        polling: Record<string, number>;
+        logs: Record<string, number>;
+        netflow: Record<string, number>;
+    }, site, index) => {
+        const metrics = siteMetrics[index];
+
+        // Merge polling collectors
+        Object.entries(metrics.collectorsBySize.polling).forEach(([size, count]) => {
+            summary.polling[size] = (summary.polling[size] || 0) + count;
+        });
+
+        // Merge logs collectors
+        Object.entries(metrics.collectorsBySize.logs).forEach(([size, count]) => {
+            summary.logs[size] = (summary.logs[size] || 0) + count;
+        });
+
+        // Merge netflow collectors
+        Object.entries(metrics.collectorsBySize.netflow).forEach(([size, count]) => {
+            summary.netflow[size] = (summary.netflow[size] || 0) + count;
+        });
+
+        return summary;
+    }, { polling: {}, logs: {}, netflow: {} });
 
     return (
         <div className="pdf-content max-w-[1000px] mx-auto p-4 sm:p-8 bg-white text-gray-900">
@@ -76,149 +103,191 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                 </div>
             </header>
 
-            {/* Global Section */}
-            <div className="global-section">
-                {/* Overview Cards */}
-                <div className="flex items-center justify-between mb-4 sm:mb-6">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <Earth className="w-5 h-5 sm:w-7 sm:h-7 text-blue-700" />
-                        <h2 className="text-xl sm:text-2xl font-bold"> {"Deployment: " + config.deploymentName || "Deployment Configuration"}</h2>
-                    </div>
-                </div>
-                <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
-                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-6">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                            <Building className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                            <h3 className="text-xs sm:text-sm font-medium text-blue-900">Total Sites</h3>
-                        </div>
-                        <p className="text-xl sm:text-3xl font-bold text-blue-700">{sites.length}</p>
-                    </div>
-                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-6">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                            <Server className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                            <h3 className="text-xs sm:text-sm font-medium text-blue-900">Total Devices</h3>
-                        </div>
-                        <p className="text-xl sm:text-3xl font-bold text-blue-700">
-                            {sites.reduce((sum, site) =>
-                                sum + Object.values(site.devices).reduce((devSum, dev) => devSum + dev.count, 0), 0
-                            ).toLocaleString()}
-                        </p>
-                    </div>
-                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-6">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                            <Component className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                            <h3 className="text-xs sm:text-sm font-medium text-blue-900">Total Instances</h3>
-                        </div>
-                        <p className="text-xl sm:text-3xl font-bold text-blue-700">
-                            {collectorSummary.estimatedInstances.toLocaleString()}
-                        </p>
+            {/* Overview Section */}
+            <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-6">
+                    <Earth className="w-7 h-7 text-blue-700" />
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            {config.deploymentName ? `Deployment: ${config.deploymentName}` : "Deployment Configuration"}
+                        </h2>
+                        <p className="text-sm text-gray-500 mt-1">Global Overview</p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
-                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-6">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                            <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                            <h3 className="text-xs sm:text-sm font-medium text-blue-900">Total Load Score</h3>
+                {/* Infrastructure & Monitoring Metrics */}
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    {/* Infrastructure Metrics */}
+                    <div className="col-span-2 lg:col-span-3 grid grid-cols-3 gap-4">
+                        <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Building className="w-4 h-4 text-blue-700" />
+                                <h3 className="text-sm font-medium text-blue-900">Sites</h3>
+                            </div>
+                            <p className="text-2xl font-bold text-blue-700">{sites.length}</p>
                         </div>
-                        <p className="text-xl sm:text-3xl font-bold text-blue-700">
-                            {Math.round(collectorSummary.totalWeight).toLocaleString()}
-                        </p>
+
+                        <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Server className="w-4 h-4 text-blue-700" />
+                                <h3 className="text-sm font-medium text-blue-900">Devices</h3>
+                            </div>
+                            <p className="text-2xl font-bold text-blue-700">
+                                {Math.round(sites.reduce((sum, site) =>
+                                    sum + Object.values(site.devices).reduce((devSum, dev) => devSum + dev.count, 0), 0
+                                )).toLocaleString()}
+                            </p>
+                        </div>
+
+                        <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Component className="w-4 h-4 text-blue-700" />
+                                <h3 className="text-sm font-medium text-blue-900">Instances</h3>
+                            </div>
+                            <p className="text-2xl font-bold text-blue-700">
+                                {Math.round(collectorSummary.estimatedInstances).toLocaleString()}
+                            </p>
+                        </div>
                     </div>
-                    <div className="bg-orange-50 rounded-lg border border-orange-200 p-3 sm:p-6">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                            <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
-                            <h3 className="text-xs sm:text-sm font-medium text-orange-900">Total Events Per Second</h3>
+
+                    {/* Monitoring Metrics */}
+                    <div className="col-span-2 grid grid-cols-2 gap-4">
+                        <div className="bg-orange-50 rounded-lg border border-orange-200 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <MessageSquare className="w-4 h-4 text-orange-700" />
+                                <h3 className="text-sm font-medium text-orange-900">Events/Sec</h3>
+                            </div>
+                            <p className="text-2xl font-bold text-orange-700">
+                                {Math.round(collectorSummary.totalEPS).toLocaleString()}
+                            </p>
                         </div>
-                        <p className="text-xl sm:text-3xl font-bold text-orange-700">
-                            {Math.round(collectorSummary.totalEPS).toLocaleString()}
-                        </p>
+
+                        <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Activity className="w-4 h-4 text-purple-700" />
+                                <h3 className="text-sm font-medium text-purple-900">Flows/Sec</h3>
+                            </div>
+                            <p className="text-2xl font-bold text-purple-700">
+                                {Math.round(sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0)).toLocaleString()}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 {/* Global Collector Distribution */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
+                <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-6">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-4">
-                            <Server className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                            <h3 className="text-sm sm:text-base font-semibold text-blue-900">Total Polling Collectors</h3>
+                        <div className="flex items-center justify-between mb-2 sm:mb-4">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Server className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                <h3 className="text-sm sm:text-base font-semibold text-blue-900">Total Polling Collectors</h3>
+                            </div>
                         </div>
-                        {Object.keys(sites.reduce((acc, _, index) => {
-                            const metrics = siteMetrics[index];
-                            Object.entries(metrics.collectorsBySize.polling).forEach(([size, count]) => {
-                                acc[size] = (acc[size] || 0) + count;
-                            });
-                            return acc;
-                        }, {} as Record<string, number>)).length > 0 ? (
-                            Object.entries(sites.reduce((acc, _, index) => {
-                                const metrics = siteMetrics[index];
-                                Object.entries(metrics.collectorsBySize.polling).forEach(([size, count]) => {
-                                    acc[size] = (acc[size] || 0) + count;
-                                });
-                                return acc;
-                            }, {} as Record<string, number>)).map(([size, count]) => (
-                                <div key={size} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded-lg hover:bg-blue-50/50">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
-                                            <Server className="w-3 h-3 text-blue-700" />
-                                        </div>
-                                        <span className="text-sm font-medium text-blue-900">{size}</span>
-                                    </div>
-                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                                        {count}x
-                                    </span>
-                                </div>
-                            ))
-                        ) : (
+                        {(Object.keys(globalCollectorSummary.polling).length === 0 ||
+                            (config.enablePollingFailover && Object.values(globalCollectorSummary.polling).reduce((sum, count) => sum + count, 0) <= 1)) ? (
                             <div className="flex items-center gap-2 p-2 bg-white border border-blue-100 rounded-lg text-blue-500 text-sm">
-                                <Server className="w-4 h-4" />
+                                <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                    <Server className="w-3 h-3 text-blue-700" />
+                                </div>
                                 <span>No collectors required</span>
+                            </div>
+                        ) : (
+                            <div className="space-y-1.5">
+                                {Object.entries(globalCollectorSummary.polling)
+                                    .sort(([sizeA], [sizeB]) => {
+                                        const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                        return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                    })
+                                    .map(([size, count]) => (
+                                        <div key={size} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded-lg hover:bg-blue-50/50">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                                    <Server className="w-3 h-3 text-blue-700" />
+                                                </div>
+                                                <span className="text-sm font-medium text-blue-900">{size}</span>
+                                            </div>
+                                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                                                {count}x
+                                            </span>
+                                        </div>
+                                    ))}
                             </div>
                         )}
                     </div>
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 sm:p-6">
                         <div className="flex items-center justify-between mb-2 sm:mb-4">
                             <div className="flex items-center gap-1.5 sm:gap-2">
-                                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
-                                <h3 className="text-sm sm:text-base font-semibold text-orange-900">Total Logs/NetFlow Collectors</h3>
+                                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
+                                <h3 className="text-sm sm:text-base font-semibold text-orange-900">Total Logs Collectors</h3>
                             </div>
-                            {config.enableLogsFailover && sites.some(site => Object.values(site.logs).some(eps => eps > 0)) && (
-                                <div className="flex items-center gap-1 text-xs text-orange-700">
-                                    <Info className="w-3 h-3" />
-                                    <span>N+1 enabled</span>
-                                </div>
-                            )}
                         </div>
-                        {Object.keys(sites.reduce((acc, _, index) => {
-                            const metrics = siteMetrics[index];
-                            Object.entries(metrics.collectorsBySize.logs).forEach(([size, count]) => {
-                                acc[size] = (acc[size] || 0) + count;
-                            });
-                            return acc;
-                        }, {} as Record<string, number>)).length > 0 ? (
-                            Object.entries(sites.reduce((acc, _, index) => {
-                                const metrics = siteMetrics[index];
-                                Object.entries(metrics.collectorsBySize.logs).forEach(([size, count]) => {
-                                    acc[size] = (acc[size] || 0) + count;
-                                });
-                                return acc;
-                            }, {} as Record<string, number>)).map(([size, count]) => (
-                                <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
-                                            <Activity className="w-3 h-3 text-orange-700" />
-                                        </div>
-                                        <span className="text-sm font-medium text-orange-900">{size}</span>
-                                    </div>
-                                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
-                                        {count}x
-                                    </span>
-                                </div>
-                            ))
-                        ) : (
+                        {(Object.keys(globalCollectorSummary.logs).length === 0 ||
+                            (config.enableLogsFailover && Object.values(globalCollectorSummary.logs).reduce((sum, count) => sum + count, 0) <= 1)) ? (
                             <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
-                                <Activity className="w-4 h-4" />
+                                <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                    <MessageSquare className="w-3 h-3 text-orange-700" />
+                                </div>
                                 <span>No collectors required</span>
+                            </div>
+                        ) : (
+                            <div className="space-y-1.5">
+                                {Object.entries(globalCollectorSummary.logs)
+                                    .sort(([sizeA], [sizeB]) => {
+                                        const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                        return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                    })
+                                    .map(([size, count]) => (
+                                        <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                                    <MessageSquare className="w-3 h-3 text-orange-700" />
+                                                </div>
+                                                <span className="text-sm font-medium text-orange-900">{size}</span>
+                                            </div>
+                                            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
+                                                {count}x
+                                            </span>
+                                        </div>
+                                    ))}
+                            </div>
+                        )}
+                    </div>
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-6">
+                        <div className="flex items-center justify-between mb-2 sm:mb-4">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
+                                <h3 className="text-sm sm:text-base font-semibold text-purple-900">Total NetFlow Collectors</h3>
+                            </div>
+                        </div>
+                        {(Object.keys(globalCollectorSummary.netflow).length === 0 ||
+                            (config.enableLogsFailover && Object.values(globalCollectorSummary.netflow).reduce((sum, count) => sum + count, 0) <= 1)) ? (
+                            <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
+                                <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                    <Activity className="w-3 h-3 text-purple-700" />
+                                </div>
+                                <span>No collectors required</span>
+                            </div>
+                        ) : (
+                            <div className="space-y-1.5">
+                                {Object.entries(globalCollectorSummary.netflow)
+                                    .sort(([sizeA], [sizeB]) => {
+                                        const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                        return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                    })
+                                    .map(([size, count]) => (
+                                        <div key={size} className="flex items-center justify-between p-2 bg-white border border-purple-100 rounded-lg hover:bg-purple-50/50">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                                    <Activity className="w-3 h-3 text-purple-700" />
+                                                </div>
+                                                <span className="text-sm font-medium text-purple-900">{size}</span>
+                                            </div>
+                                            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                {count}x
+                                            </span>
+                                        </div>
+                                    ))}
                             </div>
                         )}
                     </div>
@@ -241,8 +310,21 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                     acc[size] = (acc[size] || 0) + count;
                                 });
                                 return acc;
+                            }, {} as Record<string, number>),
+                            netflow: sites.reduce((acc, _, index) => {
+                                const metrics = siteMetrics[index];
+                                Object.entries(metrics.collectorsBySize.netflow).forEach(([size, count]) => {
+                                    acc[size] = (acc[size] || 0) + count;
+                                });
+                                return acc;
                             }, {} as Record<string, number>)
                         }}
+                        totalLogsLoad={{
+                            events: collectorSummary.totalEPS,
+                            netflow: sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0)
+                        }}
+                        enablePollingFailover={config.enablePollingFailover}
+                        enableLogsFailover={config.enableLogsFailover}
                     />
                 </div>
 
@@ -264,7 +346,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         </div>
 
                         {/* Site Metrics Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 mb-4 sm:mb-6">
                             <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
                                 <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                     <Server className="w-3 h-3 sm:w-4 sm:h-4 text-blue-700" />
@@ -285,15 +367,6 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                             </div>
                             <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
                                 <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-                                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                    <h3 className="text-xs sm:text-sm font-medium text-blue-900">EPS</h3>
-                                </div>
-                                <p className="text-lg sm:text-xl font-bold text-blue-700">
-                                    {Math.round(metrics.totalEPS).toLocaleString()}
-                                </p>
-                            </div>
-                            <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
-                                <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                     <Component className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
                                     <h3 className="text-xs sm:text-sm font-medium text-blue-900">Instances</h3>
                                 </div>
@@ -301,71 +374,149 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                     {metrics.estimatedInstances.toLocaleString()}
                                 </p>
                             </div>
+                            <div className="bg-orange-50 rounded-lg border border-orange-200 p-2 sm:p-4">
+                                <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
+                                    <h3 className="text-xs sm:text-sm font-medium text-orange-900">Events/Sec</h3>
+                                </div>
+                                <p className="text-lg sm:text-xl font-bold text-orange-700">
+                                    {Math.round(metrics.totalEPS).toLocaleString()}
+                                </p>
+                            </div>
+                            <div className="bg-purple-50 rounded-lg border border-purple-200 p-2 sm:p-4">
+                                <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
+                                    <h3 className="text-xs sm:text-sm font-medium text-purple-900">Flows/Sec</h3>
+                                </div>
+                                <p className="text-lg sm:text-xl font-bold text-purple-700">
+                                    {Math.round(site.logs.netflow.fps).toLocaleString()}
+                                </p>
+                            </div>
                         </div>
 
                         {/* Collectors Grid */}
-                        <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
+                        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-6">
                                 <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-4">
                                     <Server className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
                                     <h3 className="text-sm sm:text-base font-semibold text-blue-900">Polling Collectors</h3>
                                 </div>
-                                {Object.keys(metrics.collectorsBySize.polling).length > 0 ? (
-                                    <>
-                                        {Object.entries(metrics.collectorsBySize.polling).map(([size, count]) => (
-                                            <div key={size} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded-lg hover:bg-blue-50/50">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
-                                                        <Server className="w-3 h-3 text-blue-700" />
-                                                    </div>
-                                                    <span className="text-sm font-medium text-blue-900">{size}</span>
-                                                </div>
-                                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                                                    {count}x
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </>
-                                ) : (
+                                {(Object.keys(metrics.collectorsBySize.polling).length === 0 ||
+                                    (config.enablePollingFailover && Object.values(metrics.collectorsBySize.polling).reduce((sum, count) => sum + count, 0) <= 1)) ? (
                                     <div className="flex items-center gap-2 p-2 bg-white border border-blue-100 rounded-lg text-blue-500 text-sm">
-                                        <Server className="w-4 h-4" />
+                                        <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                            <Server className="w-3 h-3 text-blue-700" />
+                                        </div>
                                         <span>No collectors required</span>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-1.5">
+                                        {Object.entries(metrics.collectorsBySize.polling)
+                                            .sort(([sizeA], [sizeB]) => {
+                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                            })
+                                            .map(([size, count]) => (
+                                                <div key={size} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded-lg hover:bg-blue-50/50">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                                            <Server className="w-3 h-3 text-blue-700" />
+                                                        </div>
+                                                        <span className="text-sm font-medium text-blue-900">{size}</span>
+                                                    </div>
+                                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                                                        {count}x
+                                                    </span>
+                                                </div>
+                                            ))}
                                     </div>
                                 )}
                             </div>
                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 sm:p-6">
                                 <div className="flex items-center justify-between mb-2 sm:mb-4">
                                     <div className="flex items-center gap-1.5 sm:gap-2">
-                                        <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
-                                        <h3 className="text-sm sm:text-base font-semibold text-orange-900">Logs/NetFlow Collectors</h3>
+                                        <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
+                                        <h3 className="text-sm sm:text-base font-semibold text-orange-900">Logs Collectors</h3>
                                     </div>
-                                    {config.enableLogsFailover && Object.values(site.logs).some(eps => eps > 0) && (
+                                    {config.enableLogsFailover && (site.logs.events.eps > 0 || site.logs.netflow.fps > 0) && (
                                         <div className="flex items-center gap-1 text-xs text-orange-700">
                                             <Info className="w-3 h-3" />
                                             <span>N+1 enabled</span>
                                         </div>
                                     )}
                                 </div>
-                                {Object.keys(metrics.collectorsBySize.logs).length > 0 ? (
-                                    <>
-                                        {Object.entries(metrics.collectorsBySize.logs).map(([size, count]) => (
-                                            <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
-                                                        <Activity className="w-3 h-3 text-orange-700" />
-                                                    </div>
-                                                    <span className="text-sm font-medium text-orange-900">{size}</span>
-                                                </div>
-                                                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
-                                                    {count}x
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </>
-                                ) : (
+                                {(Object.keys(metrics.collectorsBySize.logs).length === 0 ||
+                                    (config.enableLogsFailover && Object.values(metrics.collectorsBySize.logs).reduce((sum, count) => sum + count, 0) <= 1)) ? (
                                     <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
-                                        <Activity className="w-4 h-4" />
+                                        <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                            <MessageSquare className="w-3 h-3 text-orange-700" />
+                                        </div>
                                         <span>No collectors required</span>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-1.5">
+                                        {Object.entries(metrics.collectorsBySize.logs)
+                                            .sort(([sizeA], [sizeB]) => {
+                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                            })
+                                            .map(([size, count]) => (
+                                                <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                                            <MessageSquare className="w-3 h-3 text-orange-700" />
+                                                        </div>
+                                                        <span className="text-sm font-medium text-orange-900">{size}</span>
+                                                    </div>
+                                                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
+                                                        {count}x
+                                                    </span>
+                                                </div>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-6">
+                                <div className="flex items-center justify-between mb-2 sm:mb-4">
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
+                                        <h3 className="text-sm sm:text-base font-semibold text-purple-900">NetFlow Collectors</h3>
+                                    </div>
+                                    {config.enableLogsFailover && site.logs.netflow.fps > 0 && (
+                                        <div className="flex items-center gap-1 text-xs text-purple-700">
+                                            <Info className="w-3 h-3" />
+                                            <span>N+1 enabled</span>
+                                        </div>
+                                    )}
+                                </div>
+                                {(Object.keys(metrics.collectorsBySize.netflow).length === 0 ||
+                                    (config.enableLogsFailover && Object.values(metrics.collectorsBySize.netflow).reduce((sum, count) => sum + count, 0) <= 1)) ? (
+                                    <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
+                                        <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                            <Activity className="w-3 h-3 text-purple-700" />
+                                        </div>
+                                        <span>No collectors required</span>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-1.5">
+                                        {Object.entries(metrics.collectorsBySize.netflow)
+                                            .sort(([sizeA], [sizeB]) => {
+                                                const sizes = ["XXL", "XL", "LARGE", "MEDIUM", "SMALL"];
+                                                return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
+                                            })
+                                            .map(([size, count]) => (
+                                                <div key={size} className="flex items-center justify-between p-2 bg-white border border-purple-100 rounded-lg hover:bg-purple-50/50">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                                            <Activity className="w-3 h-3 text-purple-700" />
+                                                        </div>
+                                                        <span className="text-sm font-medium text-purple-900">{size}</span>
+                                                    </div>
+                                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                        {count}x
+                                                    </span>
+                                                </div>
+                                            ))}
                                     </div>
                                 )}
                             </div>
@@ -376,8 +527,15 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                             <ComputeRequirements
                                 collectorsBySize={{
                                     polling: metrics.collectorsBySize.polling,
-                                    logs: metrics.collectorsBySize.logs
+                                    logs: metrics.collectorsBySize.logs,
+                                    netflow: metrics.collectorsBySize.netflow
                                 }}
+                                totalLogsLoad={{
+                                    events: site.logs.events.eps,
+                                    netflow: site.logs.netflow.fps
+                                }}
+                                enablePollingFailover={config.enablePollingFailover}
+                                enableLogsFailover={config.enableLogsFailover}
                             />
                         </div>
 
@@ -395,32 +553,45 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                 <tbody className="divide-y divide-gray-200">
                                     {Object.entries(site.devices)
                                         .filter(([_, data]) => data.count > 0)
-                                        .map(([type, data]) => {
-                                            const IconComponent = (Icons[data.icon as keyof typeof Icons] || Icons.Server) as LucideIcon;
-                                            return (
-                                                <tr key={type} className="border-b last:border-0">
-                                                    <td className="p-2 sm:p-3">
-                                                        <div className="flex items-center gap-1.5 sm:gap-2">
-                                                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 flex items-center justify-center">
-                                                                <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 text-blue-700" />
+                                        .length > 0 ? (
+                                        Object.entries(site.devices)
+                                            .filter(([_, data]) => data.count > 0)
+                                            .map(([type, data]) => {
+                                                const IconComponent = (Icons[data.icon as keyof typeof Icons] || Icons.Server) as LucideIcon;
+                                                return (
+                                                    <tr key={type} className="border-b last:border-0">
+                                                        <td className="p-2 sm:p-3">
+                                                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                                                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                                                    <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 text-blue-700" />
+                                                                </div>
+                                                                <span className="text-xs sm:text-sm">{type}</span>
                                                             </div>
-                                                            <span className="text-xs sm:text-sm">{type}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{data.count.toLocaleString()}</td>
-                                                    <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{(data.instances * data.count).toLocaleString()}</td>
-                                                    <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">
-                                                        {Math.round(
-                                                            Object.entries(data.methods).reduce(
-                                                                (total, [method, ratio]) =>
-                                                                    total + (data.instances * (ratio as number) * config.methodWeights[method] * data.count),
-                                                                0
-                                                            )
-                                                        ).toLocaleString()}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
+                                                        </td>
+                                                        <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{data.count.toLocaleString()}</td>
+                                                        <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{(data.instances * data.count).toLocaleString()}</td>
+                                                        <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">
+                                                            {Math.round(
+                                                                Object.entries(data.methods).reduce(
+                                                                    (total, [method, ratio]) =>
+                                                                        total + (data.instances * (ratio as number) * config.methodWeights[method] * data.count),
+                                                                    0
+                                                                )
+                                                            ).toLocaleString()}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={4} className="px-2 sm:px-6 py-4">
+                                                <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+                                                    <Server className="w-4 h-4" />
+                                                    <span>No devices configured</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>

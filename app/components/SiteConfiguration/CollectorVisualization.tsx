@@ -1,32 +1,61 @@
 import React from 'react';
-import { Server, Activity } from 'lucide-react';
+import { Server, Activity, MessageSquare, Info } from 'lucide-react';
 import { devLog } from '../Shared/utils/debug';
 
 interface CollectorVisualizationProps {
-    polling: { collectors: Array<any> };
-    logs: { collectors: Array<any> };
-    totalPollingLoad?: number;
-    totalLogsLoad?: number;
+    pollingCollectors: Array<{
+        size: string;
+        type: string;
+        load: number;
+    }>;
+    logsCollectors: Array<{
+        size: string;
+        type: string;
+        load: number;
+    }>;
+    netflowCollectors: Array<{
+        size: string;
+        type: string;
+        load: number;
+    }>;
+    totalPollingLoad: number;
+    totalLogsLoad: {
+        events: number;
+        netflow: number;
+    };
+    enablePollingFailover: boolean;
+    enableLogsFailover: boolean;
 }
 
-export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, totalLogsLoad = 0 }: CollectorVisualizationProps) => {
+export const CollectorVisualization = ({ 
+    pollingCollectors = [], 
+    logsCollectors = [], 
+    netflowCollectors = [], 
+    totalPollingLoad = 0,
+    totalLogsLoad = { events: 0, netflow: 0 },
+    enablePollingFailover = false, 
+    enableLogsFailover = false 
+}: CollectorVisualizationProps) => {
     devLog('CollectorVisualization Received:', {
-        polling: {
-            collectors: polling.collectors.map(c => ({
-                size: c.size,
-                type: c.type,
-                load: c.load
-            })),
-            totalLoad: totalPollingLoad
-        },
-        logs: {
-            collectors: logs.collectors.map(c => ({
-                size: c.size,
-                type: c.type,
-                load: c.load
-            })),
-            totalLoad: totalLogsLoad
-        }
+        pollingCollectors: pollingCollectors.map(c => ({
+            size: c.size,
+            type: c.type,
+            load: c.load
+        })),
+        logsCollectors: logsCollectors.map(c => ({
+            size: c.size,
+            type: c.type,
+            load: c.load
+        })),
+        netflowCollectors: netflowCollectors.map(c => ({
+            size: c.size,
+            type: c.type,
+            load: c.load
+        })),
+        totalPollingLoad,
+        totalLogsLoad,
+        enablePollingFailover,
+        enableLogsFailover
     });
 
     const getLoadColor = (load: number) => {
@@ -64,13 +93,11 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
         collectors: Array<any>,
         icon: React.ReactNode,
         borderColor: string,
-        totalLoad: number
+        totalLoad: number,
+        metricType: "EPS" | "FPS" = "EPS"
     ) => {
         const metrics = calculateMetrics(collectors);
         const loadColor = getLoadColor(metrics.avgLoad);
-        const primaryCollectors = collectors.filter(c => c.type === "Primary");
-        const hasOnlyRedundancy = collectors.length === 1 && collectors[0].type === "N+1 Redundancy";
-        const showNA = primaryCollectors.length === 0 || hasOnlyRedundancy;
 
         return (
             <div className={`border rounded-lg p-4 sm:p-6 bg-white shadow-sm ${borderColor}`}>
@@ -86,26 +113,26 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
                                 <div className="flex flex-col">
                                     <span className="text-xs font-medium">Collectors</span>
                                     <span className="text-sm font-bold">
-                                        {showNA ? "N/A" : `${metrics.totalCount}${metrics.hasRedundancy ? ' (with N+1)' : ''}`}
+                                        {metrics.totalCount === 0 ? "N/A" : `${metrics.totalCount}${metrics.hasRedundancy ? ' (with N+1)' : ''}`}
                                     </span>
                                 </div>
                             </div>
                             <div className="px-2 sm:px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
                                     <span className="text-xs font-medium">Avg Load</span>
-                                    <span className="text-sm font-bold">{showNA ? "0" : `${metrics.avgLoad}%`}</span>
+                                    <span className="text-sm font-bold">{metrics.avgLoad}%</span>
                                 </div>
                             </div>
                             <div className="px-2 sm:px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
                                     <span className="text-xs font-medium">Size</span>
-                                    <span className="text-sm font-bold">{showNA ? "0" : metrics.size}</span>
+                                    <span className="text-sm font-bold">{metrics.size}</span>
                                 </div>
                             </div>
                             <div className="px-2 sm:px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 flex items-center gap-1.5">
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-medium">Total Load</span>
-                                    <span className="text-sm font-bold">{showNA ? "0" : Math.round(totalLoad).toLocaleString()}</span>
+                                    <span className="text-xs font-medium">Total {metricType}</span>
+                                    <span className="text-sm font-bold">{Math.round(totalLoad).toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +141,7 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
 
                 <div className="space-y-2">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {primaryCollectors.length === 0 || hasOnlyRedundancy ? (
+                        {collectors.length === 0 ? (
                             <div className="col-span-1 sm:col-span-2 flex items-center justify-center p-4 bg-white rounded-lg border-2 border-dashed border-gray-200">
                                 <div className="flex items-center gap-2 text-gray-500">
                                     {React.cloneElement(icon as React.ReactElement, {
@@ -170,21 +197,101 @@ export const CollectorVisualization = ({ polling, logs, totalPollingLoad = 0, to
     };
 
     return (
-        <div className="space-y-4 sm:space-y-6">
-            {renderCollectorGroup(
-                "Polling ABCG",
-                polling.collectors,
-                <Server className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700" />,
-                "border-blue-200",
-                totalPollingLoad
-            )}
-            {renderCollectorGroup(
-                "Logs/NetFlow Collectors",
-                logs.collectors,
-                <Activity className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700" />,
-                "border-blue-200",
-                totalLogsLoad
-            )}
+        <div className="space-y-4">
+            {/* Polling Collectors Section */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                        <Server className="w-4 h-4 text-blue-700" />
+                        <h3 className="font-medium text-blue-900">Polling Collectors</h3>
+                    </div>
+                    {enablePollingFailover && pollingCollectors.length > 0 && (
+                        <div className="flex items-center gap-1 text-xs text-blue-700">
+                            <Info className="w-3 h-3" />
+                            <span>N+1 enabled</span>
+                        </div>
+                    )}
+                </div>
+                {(Object.keys(pollingCollectors).length === 0 || 
+                  (enablePollingFailover && pollingCollectors.length <= 1)) ? (
+                    <div className="flex items-center gap-2 p-2 bg-white border border-blue-100 rounded-lg text-blue-500 text-sm">
+                        <Server className="w-4 h-4" />
+                        <span>No collectors required</span>
+                    </div>
+                ) : (
+                    renderCollectorGroup(
+                        "Polling",
+                        pollingCollectors,
+                        <Server className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700" />,
+                        "border-blue-200",
+                        totalPollingLoad
+                    )
+                )}
+            </div>
+
+            {/* Logs Collectors Section */}
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-orange-700" />
+                        <h3 className="font-medium text-orange-900">Logs Collectors</h3>
+                    </div>
+                    {enableLogsFailover && logsCollectors.length > 0 && (
+                        <div className="flex items-center gap-1 text-xs text-orange-700">
+                            <Info className="w-3 h-3" />
+                            <span>N+1 enabled</span>
+                        </div>
+                    )}
+                </div>
+                {(Object.keys(logsCollectors).length === 0 || 
+                  (enableLogsFailover && logsCollectors.length <= 1)) ? (
+                    <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
+                        <MessageSquare className="w-4 h-4" />
+                        <span>No collectors required</span>
+                    </div>
+                ) : (
+                    renderCollectorGroup(
+                        "Logs",
+                        logsCollectors,
+                        <MessageSquare className="w-5 sm:w-6 h-5 sm:h-6 text-orange-700" />,
+                        "border-orange-200",
+                        totalLogsLoad.events,
+                        "EPS"
+                    )
+                )}
+            </div>
+
+            {/* NetFlow Collectors Section */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-purple-700" />
+                        <h3 className="font-medium text-purple-900">NetFlow Collectors</h3>
+                    </div>
+                    {enableLogsFailover && netflowCollectors.length > 0 && (
+                        <div className="flex items-center gap-1 text-xs text-purple-700">
+                            <Info className="w-3 h-3" />
+                            <span>N+1 enabled</span>
+                        </div>
+                    )}
+                </div>
+                {(Object.keys(netflowCollectors).length === 0 || 
+                  (enableLogsFailover && netflowCollectors.length <= 1)) ? (
+                    <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
+                        <Activity className="w-4 h-4" />
+                        <span>No collectors required</span>
+                    </div>
+                ) : (
+                    renderCollectorGroup(
+                        "NetFlow",
+                        netflowCollectors,
+                        <Activity className="w-5 sm:w-6 h-5 sm:h-6 text-purple-700" />,
+                        "border-purple-200",
+                        totalLogsLoad.netflow,
+                        "FPS"
+                    )
+                )}
+            </div>
         </div>
     );
 };
