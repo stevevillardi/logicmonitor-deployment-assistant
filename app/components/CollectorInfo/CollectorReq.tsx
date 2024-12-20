@@ -2,6 +2,7 @@ import { Bot } from 'lucide-react';
 import EnhancedCard from '@/components/ui/enhanced-card';
 import { IoLogoWindows } from "react-icons/io";
 import { FaLinux } from "react-icons/fa";
+import { FaDocker } from "react-icons/fa";
 import CollectorRecommendation from '../Shared/CollectorRecommendation';
 
 const CollectorReq = () => {
@@ -76,6 +77,50 @@ const CollectorReq = () => {
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* New Container Support Section */}
+                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                <FaDocker className="w-6 h-6 text-emerald-600" />
+                                Container Support
+                            </h3>
+                            <div className="space-y-4">
+                                <p className="text-sm text-gray-600">
+                                    LogicMonitor supports installing and running the Collector in a Docker container for the following services:
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    {[
+                                        'Microsoft Azure Kubernetes Service (AKS)',
+                                        'Amazon Elastic Kubernetes Service (EKS)',
+                                        'Google Kubernetes Service (GKS)'
+                                    ].map((service) => (
+                                        <div key={service} className="px-3 py-2 bg-white rounded border border-gray-200">
+                                            <span className="text-sm font-medium text-gray-900">{service}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <h4 className="text-sm font-semibold text-yellow-800 mb-2">Limitations</h4>
+                                    <ul className="list-disc list-inside space-y-1 text-sm text-yellow-800">
+                                        <li>The installation does not support the "bootstrap" option. You can only run the "full package" installation.</li>
+                                        <li>The collector deployed in a Docker Container is based on Linux. Linux collectors do not monitor Windows-based WMI collectors.</li>
+                                    </ul>
+                                </div>
+
+                                <div className="text-sm text-gray-600">
+                                    For detailed installation instructions and configuration options, see the{' '}
+                                    <a 
+                                        href="https://www.logicmonitor.com/support/collectors/collector-installation/installing-collector-in-container"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 underline"
+                                    >
+                                        Container Installation Guide
+                                    </a>.
                                 </div>
                             </div>
                         </div>

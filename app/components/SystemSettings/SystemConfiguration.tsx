@@ -13,7 +13,7 @@ import EnhancedCard from '@/components/ui/enhanced-card';
 import { Dumbbell, Settings, Shield, Server, Activity, Variable } from 'lucide-react';
 import { Calculator, SquareFunction, ArrowRight, Box, Weight, PieChart, Layers, Database, Gauge } from 'lucide-react';
 import sliderStyles from './styles/styles';
-import { CollectorCapacitySection } from '../CollectorInfo/CollectorCapacity';
+import { CollectorCapacitySection } from './CollectorCapacity';
 import { RiAdminLine } from "react-icons/ri";
 import { Switch } from "@/components/ui/switch"
 import * as Icons from 'lucide-react';

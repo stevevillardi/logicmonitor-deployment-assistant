@@ -98,6 +98,34 @@ export const defaultDeviceTypes = {
     },
 };
 
+export const cloudVmSizes = {
+    SMALL: {
+        aws: 't3.small',      // 2 vCPU, 2 GiB RAM, Up to 12.5 Gbps network
+        azure: 'Standard_D1_v2',  // 1 vCPU, 3.5 GiB RAM, Up to 2 Gbps network
+        gcp: 'e2-small'        // 2 vCPU, 2 GiB RAM, Up to 4 Gbps network
+    },
+    MEDIUM: {
+        aws: 'c7i.large',      // 2 vCPU, 4 GiB RAM, Up to 12.5 Gbps network
+        azure: 'Standard_D2ls_v5', // 2 vCPU, 4 GiB RAM, Up to 3 Gbps network
+        gcp: 'e2-standard-2'       // 2 vCPU, 8 GiB RAM, Up to 4 Gbps network
+    },
+    LARGE: {
+        aws: 'c7i.xlarge',     // 4 vCPU, 8 GiB RAM, Up to 12.5 Gbps network
+        azure: 'Standard_D4ls_v5', // 4 vCPU, 8 GiB RAM, Up to 4 Gbps network
+        gcp: 'c2-standard-4'   // 4 vCPU, 16 GiB RAM, Up to 8 Gbps network
+    },
+    XL: {
+        aws: 'c7i.2xlarge',    // 8 vCPU, 16 GiB RAM, Up to 12.5 Gbps network
+        azure: 'Standard_D8ls_v5', // 8 vCPU, 16 GiB RAM, Up to 8 Gbps network
+        gcp: 'c2-standard-8'   // 8 vCPU, 32 GiB RAM, Up to 16 Gbps network
+    },
+    XXL: {
+        aws: 'c7i.4xlarge',    // 16 vCPU, 32 GiB RAM, Up to 25 Gbps network
+        azure: 'Standard_D16ls_v5', // 16 vCPU, 32 GiB RAM, Up to 12 Gbps network
+        gcp: 'c2-standard-16'  // 16 vCPU, 64 GiB RAM, Up to 32 Gbps network
+    }
+};
+
 export const collectorRequirements = {
     SMALL: {
         cpu: '1',

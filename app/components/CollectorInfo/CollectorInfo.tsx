@@ -1,9 +1,10 @@
 import React from 'react';
 import { Server, Network, Cpu, HardDrive, MemoryStick, Weight, Activity } from 'lucide-react';
+import { FaAws, FaGoogle, FaMicrosoft } from "react-icons/fa"; // Add cloud provider icons
 import EnhancedCard from '@/components/ui/enhanced-card';
 import CollectorReq from './CollectorReq';
 import { Config } from '../DeploymentAssistant/types/types';
-import { collectorCapacities as defaultCapacities } from '../DeploymentAssistant/utils/constants';
+import { collectorCapacities as defaultCapacities, cloudVmSizes } from '../DeploymentAssistant/utils/constants';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
 import { collectorRequirements } from '../DeploymentAssistant/utils/constants';
@@ -77,6 +78,64 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Add Cloud Provider VM Recommendations */}
+                    <div className="mt-6 space-y-4">
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-lg font-semibold text-gray-900">Recommended Cloud VM Sizes</h3>
+                        </div>
+                        <div className="overflow-x-auto bg-gray-50 rounded-lg border border-gray-200">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Collector Size
+                                        </th>
+                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <div className="flex items-center gap-1">
+                                                <FaAws className="text-[#FF9900]" />
+                                                AWS
+                                            </div>
+                                        </th>
+                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <div className="flex items-center gap-1">
+                                                <FaMicrosoft className="text-[#00A4EF]" />
+                                                Azure
+                                            </div>
+                                        </th>
+                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <div className="flex items-center gap-1">
+                                                <FaGoogle className="text-[#4285F4]" />
+                                                GCP
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {Object.entries(cloudVmSizes).map(([size, providers], index) => (
+                                        <tr key={size} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                                                {size}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-600 font-mono">
+                                                {providers.aws}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-600 font-mono">
+                                                {providers.azure}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-600 font-mono">
+                                                {providers.gcp}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                            Note: These are minimum recommended sizes based on collector requirements. Actual requirements may vary based on monitoring load and specific use cases. We recomend using fixed performance instances where possible.
+                        </p>
+                    </div>
+
                     {hasModifiedCapacities && (
                         <div className="mt-6">
                             <Alert variant="destructive" className="bg-yellow-50 border-yellow-200">
