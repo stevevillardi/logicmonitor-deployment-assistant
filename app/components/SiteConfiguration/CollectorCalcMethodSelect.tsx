@@ -16,13 +16,10 @@ interface CollectorCalcMethodSelectProps {
 
 export const CollectorCalcMethodSelect = ({ value, onChange }: CollectorCalcMethodSelectProps) => {
     return (
-        <div className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-all">
-            <div className="flex items-center gap-4">
+        <div className="rounded-lg p-4 transition-all">
+            <div className="flex items-center">
                 <div className="flex items-center gap-2 min-w-[200px]">
-                    <Label htmlFor="collector-calc-method" className="text-sm text-gray-600">
-                        Collector Sizing Method
-                    </Label>
-                    <TooltipProvider>
+                <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
                                 <Info className="w-4 h-4 text-gray-600" />
@@ -33,33 +30,36 @@ export const CollectorCalcMethodSelect = ({ value, onChange }: CollectorCalcMeth
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
+                    <Label htmlFor="collector-calc-method" className="text-sm text-gray-600">
+                        Collector Sizing Method:
+                    </Label>
                 </div>
-                <div className="w-[100px]">
+                <div className="w-[130px]">
                     <Select value={value} onValueChange={onChange}>
                         <SelectTrigger 
                             id="collector-calc-method"
-                            className="w-full bg-white border-gray-200 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full bg-white border-gray-200 focus:ring-offset-2 focus:ring-offset-white focus:ring-[#040F4B] focus:border-blue-500"
                         >
-                            <SelectValue placeholder="Select calculation method" className="w-[270px] truncate" />
+                            <SelectValue placeholder="Method..." className="truncate" />
                         </SelectTrigger>
-                        <SelectContent className="w-[100px] bg-white border-gray-200">
+                        <SelectContent className="w-[130px] bg-white border-gray-200">
                             <SelectItem value="auto" className="text-sm">
                                 Auto
                             </SelectItem>
                             <SelectItem value="SMALL" className="text-sm">
-                                Small
+                                Use Small
                             </SelectItem>
                             <SelectItem value="MEDIUM" className="text-sm">
-                                Medium
+                                Use Medium
                             </SelectItem>
                             <SelectItem value="LARGE" className="text-sm">
-                                Large
+                                Use Large
                             </SelectItem>
                             <SelectItem value="XL" className="text-sm">
-                                XL
+                                Use XL
                             </SelectItem>
                             <SelectItem value="XXL" className="text-sm">
-                                XXL
+                                Use XXL
                             </SelectItem>
                         </SelectContent>
                     </Select>

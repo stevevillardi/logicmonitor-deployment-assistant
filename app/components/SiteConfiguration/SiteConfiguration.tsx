@@ -109,7 +109,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     { ...data, count: 0 },
                 ])
             ),
-            logs: defaultLogs
+            logs: { ...defaultLogs }
         };
 
         // Clear all expanded sites
@@ -133,6 +133,11 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
         const allSiteIndexes = Array.from({ length: sites.length }, (_, i) => i);
         onSiteExpand(new Set(allSiteIndexes));
     }, [sites.length, onSiteExpand]);
+
+    // Add default values when accessing logs
+    const getTotalEPS = (site: Site) => {
+        return (site.logs?.events?.eps || 0) + (site.logs?.netflow?.fps || 0);
+    };
 
     return (
         <div className="space-y-8 min-h-[900px]">
@@ -358,7 +363,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 </div>
                                                 <div className="flex items-center gap-1.5 mt-1 justify-end">
                                                     <span className="text-xs text-orange-600">
-                                                        {site.logs.events.eps.toLocaleString()} EPS
+                                                        {(site.logs?.events?.eps || 0).toLocaleString()} EPS
                                                     </span>
                                                     <div className="flex items-center gap-1">
                                                         <div className="w-12 h-1.5 bg-orange-100 rounded-full overflow-hidden">
@@ -410,7 +415,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 </div>
                                                 <div className="flex items-center gap-1.5 mt-1 justify-end">
                                                     <span className="text-xs text-purple-600">
-                                                        {site.logs.netflow.fps.toLocaleString()} FPS
+                                                        {(site.logs?.netflow?.fps || 0).toLocaleString()} FPS
                                                     </span>
                                                     <div className="flex items-center gap-1">
                                                         <div className="w-12 h-1.5 bg-purple-100 rounded-full overflow-hidden">
@@ -436,9 +441,8 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                         </CardHeader>
                         {expandedSites.has(index) && (
                             <CardContent>
-                                <div className="flex justify-between items-center mb-4">
+                                <div className="flex flex-col gap-4 justify-center">
                                     <Tabs defaultValue="devices" className="flex-1">
-                                        <div className="flex justify-between items-center">
                                             <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
                                                 <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="devices">
                                                     Devices
@@ -450,9 +454,9 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                     Collectors
                                                 </TabsTrigger>
                                             </TabsList>
-                                        </div>
 
-                                        <TabsContent value="devices">
+
+                                        <TabsContent value="devices" className="px-2 sm:px-0">
                                             <div className="flex justify-between items-center mb-4">
                                                 <h3 className="text-lg font-semibold">Devices</h3>
                                                 <Button

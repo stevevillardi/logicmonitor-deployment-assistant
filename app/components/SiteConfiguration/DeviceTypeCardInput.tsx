@@ -78,7 +78,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                                         setUseSSH(checked);
                                         updateProtocolMethods(true, checked);
                                     }}
-                                    className="bg-gray-200 data-[state=checked]:bg-gray-200 data-[state=unchecked]:bg-gray-200"
+                                    className="data-[state=checked]:bg-gray-200 data-[state=checked]:border-gray-300 data-[state=unchecked]:bg-gray-200 data-[state=unchecked]:border-gray-300"
                                 />
                                 <span className={`text-sm ${useSSH ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>SSH</span>
                             </div>
@@ -98,7 +98,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                                         setUseWinRM(checked);
                                         updateProtocolMethods(false, checked);
                                     }}
-                                    className="bg-gray-200 data-[state=checked]:bg-gray-200 data-[state=unchecked]:bg-gray-200"
+                                    className="data-[state=checked]:bg-gray-200 data-[state=checked]:border-gray-300 data-[state=unchecked]:bg-gray-200 data-[state=unchecked]:border-gray-300"
                                 />
                                 <span className={`text-sm ${useWinRM ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>WinRM</span>
                             </div>
@@ -115,7 +115,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                 <div className="p-2 bg-blue-50 rounded-lg">
                     {getIcon()}
                 </div>
-                <h3 className="font-semibold text-gray-900">{type}</h3>
+                <h3 className="font-semibold text-gray-900 truncate">{type}</h3>
                 {type.includes("Virtual Machines") && data.count > 2000 && (
                     <TooltipProvider>
                         <Tooltip>
@@ -145,7 +145,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
             </div>
             <div className="space-y-4">
                 <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div>
                             <Label className="text-sm text-gray-700 font-medium">
                                 Resource Count 

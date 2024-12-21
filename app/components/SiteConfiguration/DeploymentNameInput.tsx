@@ -45,7 +45,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
             collectorCapacities: collectorCapacities,
             showAdvancedSettings: false,
             showDetails: false,
-            collectorCalcMethod: 'auto' 
+            collectorCalcMethod: 'auto'
         };
 
         // First update sites and expansion as they don't affect config
@@ -96,25 +96,25 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                             type="text"
                         />
 
-<CollectorCalcMethodSelect
-        value={config.collectorCalcMethod}
-        onChange={(value) => onUpdateConfig({ 
-            ...config, 
-            collectorCalcMethod: value as 'auto' | 'SMALL' | 'MEDIUM' | 'LARGE' | 'XL' | 'XXL' 
-        })}
-    />
+                        <CollectorCalcMethodSelect
+                            value={config.collectorCalcMethod}
+                            onChange={(value) => onUpdateConfig({
+                                ...config,
+                                collectorCalcMethod: value as 'auto' | 'SMALL' | 'MEDIUM' | 'LARGE' | 'XL' | 'XXL'
+                            })}
+                        />
                         <div className="flex items-center gap-2 flex-shrink-0">
                             <Switch
                                 id="showDetails"
                                 checked={showDetails}
                                 onCheckedChange={handleShowDetailsChange}
-                                className="data-[state=checked]:bg-blue-600 border-2 border-gray-300 transition-colors duration-200"
+                                className="data-[state=checked]:bg-gray-200 border-2 border-gray-300 transition-colors duration-200"
                             />
                             <Label
                                 htmlFor="showDetails"
                                 className="text-sm text-gray-600 cursor-pointer whitespace-nowrap"
                             >
-                                Show device details
+                                <span className={`text-sm ${showDetails ? 'text-blue-700 font-medium' : 'text-gray-600'}`}>Show method details</span>
                             </Label>
                         </div>
                     </div>
