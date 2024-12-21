@@ -3,7 +3,7 @@ import { defaultMethodWeights, defaultDeviceTypes, collectorCapacities } from '.
 
 export const getInitialConfig = (): Config => {
     const savedConfig = typeof window !== 'undefined' ? localStorage.getItem('collectorConfig') : null;
-    return savedConfig ? JSON.parse(savedConfig) : {
+    const defaultConfig = {
         deploymentName: '',
         methodWeights: { ...defaultMethodWeights },
         maxLoad: 85,
@@ -13,6 +13,15 @@ export const getInitialConfig = (): Config => {
         collectorCapacities: { ...collectorCapacities },
         showAdvancedSettings: false,
         showDetails: false,
+        collectorCalcMethod: 'auto' as 'auto' | 'XXL' | 'XL' | 'LARGE' | 'MEDIUM' | 'SMALL'
+    };
+
+    if (!savedConfig) return defaultConfig;
+
+    const parsedConfig = JSON.parse(savedConfig);
+    return {
+        ...defaultConfig,
+        ...parsedConfig
     };
 };
 

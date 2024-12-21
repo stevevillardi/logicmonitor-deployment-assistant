@@ -42,11 +42,21 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     };
 
     const getTotalEPS = (site: Site) => {
-        return site.logs.events.eps + site.logs.netflow.fps;
+        const logs = site.logs || { events: { eps: 0 } };
+        return logs.events?.eps || 0;
+    };
+
+    const getTotalFPS = (site: Site) => {
+        const logs = site.logs || { netflow: { fps: 0 } };
+        return logs.netflow?.fps || 0;
     };
 
     const getTotalEPSBySites = () => {
         return sites.reduce((sum, site) => sum + getTotalEPS(site), 0);
+    };
+
+    const getTotalFPSBySites = () => {
+        return sites.reduce((sum, site) => sum + getTotalFPS(site), 0);
     };
 
     const totalLoadScore = useMemo(() =>
@@ -128,9 +138,15 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
         // First count primary collectors
         sites.forEach(site => {
+            // Add null checks for logs object
+            const logs = site.logs || { events: { eps: 0 }, netflow: { fps: 0 } };
+            
             const results = calculateCollectors(
                 calculateWeightedScore(site.devices, config.methodWeights, config),
-                { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+                { 
+                    events: logs.events?.eps || 0, 
+                    netflow: logs.netflow?.fps || 0 
+                },
                 config.maxLoad,
                 config
             );
@@ -157,9 +173,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
         // Only add redundant collectors if there are primary collectors
         if (config.enablePollingFailover && Object.keys(collectorsBySize.polling).length > 0) {
             sites.forEach(site => {
+                const logs = site.logs || { events: { eps: 0 }, netflow: { fps: 0 } };
+                
                 const results = calculateCollectors(
                     calculateWeightedScore(site.devices, config.methodWeights, config),
-                    { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+                    { 
+                        events: logs.events?.eps || 0, 
+                        netflow: logs.netflow?.fps || 0 
+                    },
                     config.maxLoad,
                     config
                 );
@@ -173,9 +194,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
         if (config.enableLogsFailover) {
             sites.forEach(site => {
+                const logs = site.logs || { events: { eps: 0 }, netflow: { fps: 0 } };
+                
                 const results = calculateCollectors(
                     calculateWeightedScore(site.devices, config.methodWeights, config),
-                    { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+                    { 
+                        events: logs.events?.eps || 0, 
+                        netflow: logs.netflow?.fps || 0 
+                    },
                     config.maxLoad,
                     config
                 );
@@ -189,9 +215,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
         if (config.enableLogsFailover) {
             sites.forEach(site => {
+                const logs = site.logs || { events: { eps: 0 }, netflow: { fps: 0 } };
+                
                 const results = calculateCollectors(
                     calculateWeightedScore(site.devices, config.methodWeights, config),
-                    { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+                    { 
+                        events: logs.events?.eps || 0, 
+                        netflow: logs.netflow?.fps || 0 
+                    },
                     config.maxLoad,
                     config
                 );
@@ -209,7 +240,10 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
     const calculateSiteMetrics = (site: Site) => {
         const results = calculateCollectors(
             calculateWeightedScore(site.devices, config.methodWeights, config),
-            { events: site.logs.events.eps, netflow: site.logs.netflow.fps },
+            { 
+                events: getTotalEPS(site),
+                netflow: getTotalFPS(site)
+            },
             config.maxLoad,
             config
         );
@@ -217,6 +251,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
         return {
             totalWeight: calculateWeightedScore(site.devices, config.methodWeights, config),
             totalEPS: getTotalEPS(site),
+            totalFPS: getTotalFPS(site),
             estimatedInstances: getEstimatedInstanceCount(site),
             avgPollingLoad: calculateAverageLoad(results.polling.collectors),
             avgLogsLoad: calculateAverageLoad(results.logs.eventCollectors),
@@ -271,7 +306,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
         totalLoadScore,
         { 
             events: getTotalEPSBySites(), 
-            netflow: sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0) 
+            netflow: getTotalFPSBySites() 
         },
         config.maxLoad,
         config
@@ -324,7 +359,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                         <span className="text-sm text-blue-900">Devices</span>
                                     </div>
                                     <p className="text-lg font-bold text-blue-700">
-                                        {getTotalDevicesBySites().toLocaleString()}
+                                        {Math.round(getTotalDevicesBySites()).toLocaleString()}
                                     </p>
                                 </div>
 
@@ -335,7 +370,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                         <span className="text-sm text-blue-900">Instances</span>
                                     </div>
                                     <p className="text-lg font-bold text-blue-700">
-                                        {getTotalInstanceCount().toLocaleString()}
+                                        {Math.round(getTotalInstanceCount()).toLocaleString()}
                                     </p>
                                 </div>
 
@@ -343,10 +378,10 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <MessageSquare className="w-4 h-4 text-orange-700" />
-                                        <span className="text-sm text-orange-900">Events Per Second</span>
+                                        <span className="text-sm text-orange-900">Events/Sec</span>
                                     </div>
                                     <p className="text-lg font-bold text-orange-700">
-                                        {getTotalEPSBySites().toLocaleString()}
+                                        {Math.round(getTotalEPSBySites()).toLocaleString()}
                                     </p>
                                 </div>
 
@@ -354,10 +389,10 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Activity className="w-4 h-4 text-purple-700" />
-                                        <span className="text-sm text-purple-900">Flows Per Second</span>
+                                        <span className="text-sm text-purple-900">Flows/Sec</span>
                                     </div>
                                     <p className="text-lg font-bold text-purple-700">
-                                        {sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0).toLocaleString()}
+                                        {Math.round(getTotalFPSBySites()).toLocaleString()}
                                     </p>
                                 </div>
                             </div>
@@ -500,14 +535,10 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
                             {/* Add the new Compute Requirements section */}
                             <ComputeRequirements
-                                collectorsBySize={{
-                                    polling: globalCollectorSummary.polling,
-                                    logs: globalCollectorSummary.logs,
-                                    netflow: globalCollectorSummary.netflow
-                                }}
+                                collectorsBySize={globalCollectorSummary}
                                 totalLogsLoad={{
                                     events: getTotalEPSBySites(),
-                                    netflow: sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0)
+                                    netflow: getTotalFPSBySites()
                                 }}
                                 className="mt-4"
                                 enablePollingFailover={config.enablePollingFailover}
@@ -597,7 +628,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                         <h3 className="text-xs sm:text-sm font-medium text-purple-900">Flows/Sec</h3>
                                                     </div>
                                                     <p className="text-lg sm:text-xl font-bold text-purple-700">
-                                                        {Math.round(site.logs.netflow.fps).toLocaleString()}
+                                                        {Math.round(metrics.totalFPS).toLocaleString()}
                                                     </p>
                                                 </div>
                                             </div>
@@ -737,14 +768,10 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
                                             {/* Add the new site-specific Compute Requirements section */}
                                             <ComputeRequirements
-                                                collectorsBySize={{
-                                                    polling: metrics.collectorsBySize.polling,
-                                                    logs: metrics.collectorsBySize.logs,
-                                                    netflow: metrics.collectorsBySize.netflow
-                                                }}
+                                                collectorsBySize={metrics.collectorsBySize}
                                                 totalLogsLoad={{
-                                                    events: site.logs.events.eps,
-                                                    netflow: site.logs.netflow.fps
+                                                    events: getTotalEPS(site),
+                                                    netflow: getTotalFPS(site)
                                                 }}
                                                 className="mt-4"
                                                 enablePollingFailover={config.enablePollingFailover}

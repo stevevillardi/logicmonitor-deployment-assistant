@@ -63,7 +63,7 @@ export const calculateCollectors = (totalWeight: number, logs: { events: number;
         // For polling weight and non-auto mode, use the fixed collector size
         if (metric === 'weight' && config.collectorCalcMethod !== 'auto') {
             const size = config.collectorCalcMethod;
-            const capacity = config.collectorCapacities[size][metric];
+            const capacity = config.collectorCapacities[size]?.[metric] || 0; // Add null check here
             const maxLoadPercent = Math.max(1, maxLoad);
             const collectors = Math.ceil(total / (capacity * (maxLoadPercent / 100)));
             
@@ -79,7 +79,7 @@ export const calculateCollectors = (totalWeight: number, logs: { events: number;
 
         // Iterate through each collector size to find the most efficient configuration
         Object.entries(config.collectorCapacities).forEach(([size, capacities]) => {
-            const capacity = capacities[metric];
+            const capacity = capacities[metric] || 0; // Add null check here
             if (!capacity || capacity <= 0) return;
 
             const needed = Math.ceil(total / (capacity * (maxLoad / 100)));
@@ -100,7 +100,7 @@ export const calculateCollectors = (totalWeight: number, logs: { events: number;
         }
 
         // Fallback to XXL with maximum collectors if no valid configuration found
-        const xxlCapacity = config.collectorCapacities.XXL[metric];
+        const xxlCapacity = config.collectorCapacities.XXL?.[metric] || 0; // Add null check here
         const safeCollectors = Math.min(100, Math.ceil(total / xxlCapacity));
         
         return {

@@ -36,6 +36,24 @@ const SectionDivider = () => (
     </div>
 );
 
+const getTotalEPS = (site: Site) => {
+    const logs = site.logs || { events: { eps: 0 } };
+    return logs.events?.eps || 0;
+};
+
+const getTotalFPS = (site: Site) => {
+    const logs = site.logs || { netflow: { fps: 0 } };
+    return logs.netflow?.fps || 0;
+};
+
+const getTotalEPSBySites = (sites: Site[]) => {
+    return sites.reduce((sum, site) => sum + getTotalEPS(site), 0);
+};
+
+const getTotalFPSBySites = (sites: Site[]) => {
+    return sites.reduce((sum, site) => sum + getTotalFPS(site), 0);
+};
+
 const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplateProps) => {
     const collectorSummary = sites.reduce((summary, site, index) => {
         const metrics = siteMetrics[index];
@@ -159,7 +177,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                 <h3 className="text-sm font-medium text-orange-900">Events/Sec</h3>
                             </div>
                             <p className="text-2xl font-bold text-orange-700">
-                                {Math.round(collectorSummary.totalEPS).toLocaleString()}
+                                {Math.round(getTotalEPSBySites(sites)).toLocaleString()}
                             </p>
                         </div>
 
@@ -169,7 +187,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                 <h3 className="text-sm font-medium text-purple-900">Flows/Sec</h3>
                             </div>
                             <p className="text-2xl font-bold text-purple-700">
-                                {Math.round(sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0)).toLocaleString()}
+                                {Math.round(getTotalFPSBySites(sites)).toLocaleString()}
                             </p>
                         </div>
                     </div>
@@ -296,32 +314,10 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                 {/* Global Compute Requirements */}
                 <div className="mb-6">
                     <ComputeRequirements
-                        collectorsBySize={{
-                            polling: sites.reduce((acc, _, index) => {
-                                const metrics = siteMetrics[index];
-                                Object.entries(metrics.collectorsBySize.polling).forEach(([size, count]) => {
-                                    acc[size] = (acc[size] || 0) + count;
-                                });
-                                return acc;
-                            }, {} as Record<string, number>),
-                            logs: sites.reduce((acc, _, index) => {
-                                const metrics = siteMetrics[index];
-                                Object.entries(metrics.collectorsBySize.logs).forEach(([size, count]) => {
-                                    acc[size] = (acc[size] || 0) + count;
-                                });
-                                return acc;
-                            }, {} as Record<string, number>),
-                            netflow: sites.reduce((acc, _, index) => {
-                                const metrics = siteMetrics[index];
-                                Object.entries(metrics.collectorsBySize.netflow).forEach(([size, count]) => {
-                                    acc[size] = (acc[size] || 0) + count;
-                                });
-                                return acc;
-                            }, {} as Record<string, number>)
-                        }}
+                        collectorsBySize={globalCollectorSummary}
                         totalLogsLoad={{
-                            events: collectorSummary.totalEPS,
-                            netflow: sites.reduce((sum, site) => sum + site.logs.netflow.fps, 0)
+                            events: getTotalEPSBySites(sites),
+                            netflow: getTotalFPSBySites(sites)
                         }}
                         enablePollingFailover={config.enablePollingFailover}
                         enableLogsFailover={config.enableLogsFailover}
@@ -331,7 +327,9 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                 <div className="mb-6">
                     <CollectorRecommendation />
                 </div>
-                <SectionDivider />
+                <div>
+                    <SectionDivider />
+                </div>
             </div>
 
             {/* Sites */}
@@ -339,8 +337,8 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                 const metrics = siteMetrics[index];
 
                 return (
-                    <div key={index} className="site-section mb-8 sm:mb-12">
-                        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                    <div key={index} className="site-section">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-4">
                             <Building className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
                             <h2 className="text-xl sm:text-2xl font-bold">Site: {site.name || `Site ${index + 1}`}</h2>
                         </div>
@@ -380,7 +378,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                     <h3 className="text-xs sm:text-sm font-medium text-orange-900">Events/Sec</h3>
                                 </div>
                                 <p className="text-lg sm:text-xl font-bold text-orange-700">
-                                    {Math.round(metrics.totalEPS).toLocaleString()}
+                                    {Math.round(getTotalEPS(site)).toLocaleString()}
                                 </p>
                             </div>
                             <div className="bg-purple-50 rounded-lg border border-purple-200 p-2 sm:p-4">
@@ -389,7 +387,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                     <h3 className="text-xs sm:text-sm font-medium text-purple-900">Flows/Sec</h3>
                                 </div>
                                 <p className="text-lg sm:text-xl font-bold text-purple-700">
-                                    {Math.round(site.logs.netflow.fps).toLocaleString()}
+                                    {Math.round(getTotalFPS(site)).toLocaleString()}
                                 </p>
                             </div>
                         </div>
@@ -525,14 +523,10 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         {/* Add Site-Specific Compute Requirements */}
                         <div className="mb-6">
                             <ComputeRequirements
-                                collectorsBySize={{
-                                    polling: metrics.collectorsBySize.polling,
-                                    logs: metrics.collectorsBySize.logs,
-                                    netflow: metrics.collectorsBySize.netflow
-                                }}
+                                collectorsBySize={metrics.collectorsBySize}
                                 totalLogsLoad={{
-                                    events: site.logs.events.eps,
-                                    netflow: site.logs.netflow.fps
+                                    events: getTotalEPS(site),
+                                    netflow: getTotalFPS(site)
                                 }}
                                 enablePollingFailover={config.enablePollingFailover}
                                 enableLogsFailover={config.enableLogsFailover}
