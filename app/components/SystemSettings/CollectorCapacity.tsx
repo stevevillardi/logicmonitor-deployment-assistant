@@ -1,14 +1,14 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/enhanced-components';
-import { Database, Activity, Weight } from 'lucide-react';
+import { Database, Weight, MessageSquare, Activity } from 'lucide-react';
 import { Config } from '../DeploymentAssistant/types/types';
 
 export const handleCapacityChange = (
     config: Config,
     onUpdate: (config: Config) => void,
     size: string,
-    field: 'weight' | 'eps',
+    field: 'weight' | 'eps' | 'fps',
     value: string
 ) => {
     const numValue = parseInt(value) || 0;
@@ -44,10 +44,10 @@ export const CollectorCapacitySection: React.FC<CollectorCapacitySectionProps> =
                         </div>
                     </div>
                     <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                                 <Label className="text-sm text-gray-600 mb-2 block">
-                                    Weighted Capacity (Load Score)
+                                    Load Capacity
                                 </Label>
                                 <div className="relative">
                                     <Input
@@ -62,13 +62,28 @@ export const CollectorCapacitySection: React.FC<CollectorCapacitySectionProps> =
                             </div>
                             <div>
                                 <Label className="text-sm text-gray-600 mb-2 block">
-                                    Events Per Second (EPS)
+                                    Events/Sec (EPS)
                                 </Label>
                                 <div className="relative">
                                     <Input
                                         type="number"
                                         value={capacity.eps}
                                         onChange={(e) => handleCapacityChange(config, onUpdate, size, 'eps', e.target.value)}
+                                        className="pl-8 bg-white w-full"
+                                        min="0"
+                                    />
+                                    <MessageSquare className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" />
+                                </div>
+                            </div>
+                            <div>
+                                <Label className="text-sm text-gray-600 mb-2 block">
+                                    Flows/Sec (FPS)
+                                </Label>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={capacity.fps}
+                                        onChange={(e) => handleCapacityChange(config, onUpdate, size, 'fps', e.target.value)}
                                         className="pl-8 bg-white w-full"
                                         min="0"
                                     />
