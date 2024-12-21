@@ -1,5 +1,7 @@
 import React from 'react';
-import { Github, ExternalLink } from 'lucide-react';
+import { Github, ExternalLink, MessageCircleQuestion } from 'lucide-react';
+import { VersionInfo } from '../VersionInfo/VersionInfo';
+import { LaunchTour } from '../PlatformTour/LaunchTour';
 
 export const Footer = () => {
     return (
@@ -43,10 +45,22 @@ export const Footer = () => {
                             href="https://www.logicmonitor.com/support" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-xs sm:text-sm text-gray-600 hover:text-blue-700 flex items-center gap-1"
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200"
                         >
                             Product Support <ExternalLink className="w-3 h-3" />
                         </a>
+                        <div className="hidden sm:block h-4 w-px bg-gray-200" />
+                        <a
+                                    href="https://community.logicmonitor.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                                >
+                                    <MessageCircleQuestion className="w-4 h-4" />
+                                    Community
+                                </a>
+                        <div className="hidden sm:block h-4 w-px bg-gray-200" />
+                        <LaunchTour />
                     </div>
                 </div>
             </div>

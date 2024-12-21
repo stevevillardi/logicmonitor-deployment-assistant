@@ -18,6 +18,7 @@ import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
 import { getInitialConfig, getInitialSites } from './utils/storage';
 import SwaggerUIComponent from '../APIExplorer/SwaggerUI';
+import { VersionInfo } from '../VersionInfo/VersionInfo';
 
 const Logo = () => {
     return (
@@ -219,36 +220,7 @@ const DeploymentAssistant = () => {
                                 <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
                                 <span className="hidden xl:inline">Help Guide</span>
                             </Button>
-
-                            <Button
-                                variant="outline"
-                                asChild
-                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
-                            >
-                                <a
-                                    href="https://support.logicmonitor.com/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <BiSupport className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                    <span className="hidden xl:inline">Support</span>
-                                </a>
-                            </Button>
-
-                            <Button
-                                variant="outline"
-                                asChild
-                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
-                            >
-                                <a
-                                    href="https://community.logicmonitor.com/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <MessageCircleQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                    <span className="hidden xl:inline">Community</span>
-                                </a>
-                            </Button>
+                            <VersionInfo />
                         </div>
                     </div>
                 </CardHeader>
