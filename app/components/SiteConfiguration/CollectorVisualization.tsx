@@ -113,7 +113,7 @@ export const CollectorVisualization = ({
                                 <div className="flex flex-col">
                                     <span className="text-xs font-medium">Collectors</span>
                                     <span className="text-sm font-bold">
-                                        {metrics.totalCount === 0 ? "N/A" : `${metrics.totalCount}${metrics.hasRedundancy ? ' (with N+1)' : ''}`}
+                                        {metrics.totalCount === 0 ? "N/A" : `${metrics.totalCount}`}
                                     </span>
                                 </div>
                             </div>
