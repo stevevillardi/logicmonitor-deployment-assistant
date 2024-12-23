@@ -47,7 +47,7 @@ export default function RootLayout({
       >
         {/* <ThemeProvider> */}
           {children}
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
         <PWAInstallPrompt />
         <Analytics/>
       </body>
