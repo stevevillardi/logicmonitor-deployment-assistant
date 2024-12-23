@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { Button } from '@/components/ui/button';
 
 export const LaunchTour = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -19,13 +20,14 @@ export const LaunchTour = () => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <button 
-                    className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                <Button 
+                    variant="outline"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                     aria-label="Launch Platform Tour"
                 >
-                    <Play className="w-4 h-4" />
-                    <span>Platform Tour</span>
-                </button>
+                    <Play className="w-4 h-4 text-blue-700" />
+                    <span className="hidden xl:inline">Platform Tour</span>
+                </Button>
             </DialogTrigger>
             <DialogContent className={cn(
                 isFullScreen ? "max-w-[95vw] h-[90vh]" : "max-w-[90vw] sm:max-w-lg lg:max-w-4xl",
@@ -39,6 +41,8 @@ export const LaunchTour = () => {
                             <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
                                 <div className="flex items-center gap-2">
                                     <Info className="h-5 w-5" />
+
+                                    
                                     LogicMonitor Platform Tour
                                 </div>
                             </DialogTitle>

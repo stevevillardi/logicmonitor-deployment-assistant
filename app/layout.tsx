@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
+import { ThemeProvider } from './components/Shared/ThemeProvider';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,13 +41,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ThemeProvider>
           {children}
-          <PWAInstallPrompt />
-          <Analytics/>
+        </ThemeProvider>
+        <PWAInstallPrompt />
+        <Analytics/>
       </body>
     </html>
   );

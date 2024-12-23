@@ -468,7 +468,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                     Reset Devices
                                                 </Button>
                                             </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4">
                                                 {Object.entries(site.devices).map(([type, data]) => (
                                                     <DeviceTypeCard
                                                         key={type}

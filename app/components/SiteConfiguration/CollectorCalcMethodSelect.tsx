@@ -30,12 +30,15 @@ export const CollectorCalcMethodSelect = ({ value, onChange }: CollectorCalcMeth
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    <Label htmlFor="collector-calc-method" className="text-sm text-gray-600">
+                    <Label htmlFor="collector-calc-method" className="text-sm text-gray-600 truncate">
                         Collector Sizing Method:
                     </Label>
                 </div>
                 <div className="w-[130px]">
-                    <Select value={value} onValueChange={onChange}>
+                    <Select
+                        value={value}
+                        onValueChange={onChange}
+                    >
                         <SelectTrigger 
                             id="collector-calc-method"
                             className="w-full bg-white border-gray-200 focus:ring-offset-2 focus:ring-offset-white focus:ring-[#040F4B] focus:border-blue-500"

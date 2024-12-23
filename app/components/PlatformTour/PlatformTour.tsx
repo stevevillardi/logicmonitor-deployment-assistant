@@ -42,20 +42,23 @@ const TOUR_STEPS: TourStep[] = [
     {
         id: 'collector-cluster',
         title: 'Collector Cluster',
-        description: 'Distributed collectors gather metrics, logs, and performance data from your infrastructure using various protocols.',
+        description: 'Intelligent, distributed monitoring agents that securely collect and transmit data from your infrastructure using standard protocols.',
         details: {
             keyPoints: [
-                'Automatic collector failover and load balancing',
-                'Support for multiple collection protocols',
-                'Distributed architecture for scalability'
+                'Agentless architecture requiring only one Collector per location',
+                'Secure, encrypted outbound-only HTTPS communication',
+                'Built-in failover and load balancing capabilities',
+                'Automatic data caching during network interruptions'
             ],
             features: [
-                'JDBC, WMI, SSH, and SNMP collection',
-                'Ingestion of logs and netflow data',
-                'Support for Windows, Linux, and Containerized environments'
+                'Support for SNMP, WMI, JMX, SSH and more',
+                'Bandwidth-efficient with ~3Kbps per monitored resource',
+                'Proxy support and automatic proxy discovery',
+                'Configurable data retention up to 24 hours',
+                'Windows and Linux platform support'
             ],
             note: {
-                text: 'Collectors can be deployed on-premises or in the cloud for hybrid monitoring scenarios. ',
+                text: 'Collectors intelligently monitor hundreds of devices while using minimal resources. Data is cached locally during outages and automatically forwarded when connectivity is restored. ',
                 link: {
                     url: 'https://www.logicmonitor.com/support/collectors/collector-overview/about-the-logicmonitor-collector',
                     text: 'Learn more'
@@ -68,20 +71,23 @@ const TOUR_STEPS: TourStep[] = [
     {
         id: 'metrics-store',
         title: 'Data Collection and Retention',
-        description: 'High-performance time-series database designed for long-term metric storage and fast querying.',
+        description: 'Unified data platform for ingesting, storing and analyzing metrics, logs, and traces with granular long-term retention.',
         details: {
             keyPoints: [
-                'Raw data retention for up to 2 years',
-                'No data aggregation or downsampling',
-                'High-speed query performance'
+                'Raw metrics retention for up to 2 years without downsampling',
+                'Log data with anomaly detection and pattern analysis',
+                'Distributed trace data for end-to-end request monitoring',
+                'Integrated context across all data types'
             ],
             features: [
-                'Automatic data replication',
-                'Built-in data compression',
-                'Real-time data ingestion'
+                'High-speed metric ingestion and querying',
+                'AI-powered log analysis and alerting',
+                'Service-level trace visualization',
+                'Cross-platform data correlation',
+                'Customizable data retention periods'
             ],
             note: {
-                text: 'Visit LogicMonitor for more information about data retention. ',
+                text: 'LogicMonitor stores every sample of your time-series data at full granularity for comprehensive historical analysis. Logs are enriched with metadata and traces provide request-level visibility. ',
                 link: {
                     url: 'https://www.logicmonitor.com/support/about-logicmonitor/overview/data-retention',
                     text: 'Learn more'
@@ -94,21 +100,23 @@ const TOUR_STEPS: TourStep[] = [
     {
         id: 'third-party',
         title: 'Third Party Integrations',
-        description: 'Seamlessly integrate with popular observability and IT operations platforms.',
+        description: 'Extend LogicMonitor capabilities by integrating with your existing tools and workflows for a seamless operational experience.',
         details: {
             keyPoints: [
-                'Pre-built integrations with leading platforms',
-                'Bi-directional data synchronization',
-                'Unified observability workflows'
+                'Out-of-the-box integrations configurable directly in portal',
+                'Communication integrations for messaging and alerts',
+                'Workflow integrations for ITSM and incident management',
+                'Automation integrations for infrastructure management'
             ],
             features: [
-                'Cribl integration for data routing',
-                'Dynatrace APM correlation',
-                'ThousandEyes network insights',
-                'Splunk data forwarding'
+                'Microsoft Teams and Slack messaging',
+                'ServiceNow and Jira Service Management',
+                'PagerDuty incident response',
+                'Ansible and Terraform automation',
+                'Custom HTTP/API integrations'
             ],
             note: {
-                text: 'Visit LogicMonitor for the full list of supported integrations. ',
+                text: 'LogicMonitor provides visibility into integration logs and payloads directly in the portal to help troubleshoot integration calls. ',
                 link: {
                     url: 'https://www.logicmonitor.com/support/logicmonitor-integrations-overview',
                     text: 'Learn more'
@@ -121,20 +129,23 @@ const TOUR_STEPS: TourStep[] = [
     {
         id: 'edwin-ai',
         title: 'Edwin AI',
-        description: 'AI-powered intelligence platform for automated event management and root cause analysis.',
+        description: 'Find the signal in your IT noise with AI-powered incident management that consolidates event intelligence, troubleshooting, and incident management into one single pane of glass.',
         details: {
             keyPoints: [
-                'Dynamic thresholds and anomaly detection',
-                'Automated root cause analysis',
-                'Intelligent alert correlation'
+                'Reduce alert noise by 90% through correlation and deduplication',
+                'Reduce MTTR by 60% with GenAI-powered analysis',
+                'Boost productivity by 20% with predictive insights',
+                'Unify ITOps, SecOps, and DevOps data in real-time'
             ],
             features: [
-                'ML-based insights',
-                'Automated incident management',
-                'Pattern recognition and learning'
+                'AI-driven alert correlation and grouping',
+                'GenAI-powered summaries and root cause analysis',
+                'Predictive alerts and automated escalation',
+                'Cross-domain data unification',
+                'ITSM and CMDB integration'
             ],
             note: {
-                text: 'Edwin AI continuously learns from your environment to improve accuracy over time. ',
+                text: 'Edwin AI uses machine learning and Generative AI to transform how customers perceive, reason, and act on their complex observability data, delivering value within hours of implementation. ',
                 link: {
                     url: 'https://www.logicmonitor.com/support/edwin/introduction-to-edwin-ai',
                     text: 'Learn more'
@@ -146,21 +157,24 @@ const TOUR_STEPS: TourStep[] = [
     },
     {
         id: 'service-insights',
-        title: 'Service Insights',
-        description: 'Comprehensive service mapping and dependency visualization for modern applications.',
+        title: 'Service Insight',
+        description: 'Group and monitor resources at a service level to understand the health and performance of your business services and applications.',
         details: {
             keyPoints: [
-                'Automated service discovery',
-                'Real-time dependency mapping',
-                'Impact analysis and visualization'
+                'Aggregate service level indicators across multiple resources',
+                'Monitor applications running across distributed containers',
+                'Focus on overall service health rather than individual components',
+                'Group instances across multiple monitored resources into logical services'
             ],
             features: [
-                'Service health scoring',
-                'Dynamic topology mapping',
-                'Cross-service correlation'
+                'Service-level monitoring and alerting',
+                'Aggregated data collection across instances',
+                'Custom service grouping and organization',
+                'Service health visualization and dashboards',
+                'Cross-resource performance monitoring'
             ],
             note: {
-                text: 'Visualize and understand complex service relationships across your entire infrastructure. ',
+                text: 'Service Insight helps monitor distributed applications where individual component health may not reflect overall service performance. ',
                 link: {
                     url: 'https://www.logicmonitor.com/support/lm-service-insight/about-lm-service-insight',
                     text: 'Learn more'
@@ -173,22 +187,25 @@ const TOUR_STEPS: TourStep[] = [
     {
         id: 'cloud-integration',
         title: 'Cloud Integration',
-        description: 'Native cloud monitoring for AWS, Azure, and Google Cloud Platform.',
+        description: 'Unified monitoring for AWS, Azure, GCP and SaaS applications with automatic discovery and comprehensive visibility.',
         details: {
             keyPoints: [
-                'Automated cloud resource discovery',
-                'Multi-cloud monitoring support',
-                'Cloud cost optimization insights'
+                'Three-step setup wizard for automatic cloud discovery',
+                'API-based monitoring of cloud services and resources',
+                'Comprehensive monitoring of cloud performance, events, and billing',
+                'Support for multi-cloud and hybrid environments'
             ],
             features: [
-                'AWS CloudWatch integration',
-                'Azure Monitor integration',
-                'GCP Stackdriver integration'
+                'Resource performance and cloud events monitoring',
+                'Cloud provider availability tracking',
+                'Cost optimization and billing insights',
+                'Auto-generated cloud dashboards and reports',
+                'Cloud resource tagging and filtering'
             ],
             note: {
-                text: 'Visit LogicMonitor for the full list of supported cloud services. ',
+                text: 'Monitor your entire cloud ecosystem including AWS, Azure, GCP, and SaaS applications like Office 365, Salesforce, and Zoom from a single unified platform. ',
                 link: {
-                    url: 'https://www.logicmonitor.com/support/cloud-services-and-resource-units',
+                    url: 'https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/lm-cloud-monitoring-overview',
                     text: 'Learn more'
                 }
             }
@@ -230,29 +247,33 @@ const categoryStyles = {
     core: { 
         icon: Cpu,
         bgColor: 'bg-blue-50',
-        borderColor: 'border-blue-200',
-        textColor: 'text-blue-600',
+        accentColor: 'bg-blue-200',
+        borderColor: 'border-blue-300',
+        textColor: 'text-blue-700',
         iconBg: 'bg-blue-100'
     },
     integration: { 
         icon: Link,
-        bgColor: 'bg-purple-50',
-        borderColor: 'border-purple-200',
-        textColor: 'text-purple-600',
-        iconBg: 'bg-purple-100'
+        bgColor: 'bg-yellow-50',
+        accentColor: 'bg-yellow-200',
+        borderColor: 'border-yellow-300',
+        textColor: 'text-yellow-700',
+        iconBg: 'bg-yellow-100'
     },
     collection: { 
         icon: Database,
         bgColor: 'bg-orange-50',
-        borderColor: 'border-orange-200',
-        textColor: 'text-orange-600',
+        accentColor: 'bg-orange-200',
+        borderColor: 'border-orange-300',
+        textColor: 'text-orange-700',
         iconBg: 'bg-orange-100'
     },
     automation: { 
         icon: Zap,
         bgColor: 'bg-emerald-50',
-        borderColor: 'border-emerald-200',
-        textColor: 'text-emerald-600',
+        accentColor: 'bg-emerald-200',
+        borderColor: 'border-emerald-300',
+        textColor: 'text-emerald-700',
         iconBg: 'bg-emerald-100'
     }
 } as const;
@@ -354,24 +375,24 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                 </div>
                             </DialogHeader>
 
-                            <div className="p-6 space-y-6">
+                            <div className="space-y-6">
                                 <p className="text-gray-700 leading-relaxed text-lg">
                                     {activeStep.description}
                                 </p>
                                 
                                 {activeStep.details && (
-                                    <div className="bg-white/80 backdrop-blur-sm rounded-xl border shadow-sm p-5 space-y-6">
+                                    <div className="bg-white/80 backdrop-blur-sm rounded-xl border shadow-sm p-6 space-y-8">
                                         {activeStep.details.keyPoints && (
                                             <div>
-                                                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                                    <div className={`w-1 h-4 rounded-full ${categoryStyles[activeStep.category].bgColor}`} />
-                                                    Key Points
+                                                <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-base">
+                                                    <div className={`w-1.5 h-6 rounded-full ${categoryStyles[activeStep.category].accentColor}`} />
+                                                    Key Capabilities
                                                 </h4>
-                                                <ul className="space-y-2.5 ml-2">
+                                                <ul className="space-y-3">
                                                     {activeStep.details.keyPoints.map((point, i) => (
-                                                        <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                                                            <div className={`w-1.5 h-1.5 rounded-full mt-1.5 ${categoryStyles[activeStep.category].bgColor}`} />
-                                                            <span className="leading-relaxed">{point}</span>
+                                                        <li key={i} className="flex items-start gap-3">
+                                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${categoryStyles[activeStep.category].accentColor}`} />
+                                                            <span className="text-gray-600 leading-relaxed">{point}</span>
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -380,15 +401,17 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                         
                                         {activeStep.details.features && (
                                             <div>
-                                                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                                    <div className={`w-1 h-4 rounded-full ${categoryStyles[activeStep.category].bgColor}`} />
+                                                <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-base">
+                                                    <div className={`w-1.5 h-6 rounded-full ${categoryStyles[activeStep.category].accentColor}`} />
                                                     Features
                                                 </h4>
-                                                <ul className="space-y-2.5 ml-2">
+                                                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     {activeStep.details.features.map((feature, i) => (
-                                                        <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                                                            <div className={`w-1.5 h-1.5 rounded-full mt-1.5 ${categoryStyles[activeStep.category].bgColor}`} />
-                                                            <span className="leading-relaxed">{feature}</span>
+                                                        <li key={i} className="flex items-start gap-3">
+                                                            <div className={`p-1 rounded-full mt-0.5 flex-shrink-0 ${categoryStyles[activeStep.category].accentColor}`}>
+                                                                <div className={`w-1.5 h-1.5 rounded-full bg-white`} />
+                                                            </div>
+                                                            <span className="text-gray-600 leading-relaxed">{feature}</span>
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -396,25 +419,30 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                         )}
                                         
                                         {activeStep.details?.note && (
-                                            <div className={`flex items-start gap-3 pt-3 border-t ${categoryStyles[activeStep.category].borderColor}`}>
-                                                <div className="w-5 h-5 mt-0.5 flex-shrink-0">
+                                            <div className={`flex items-start gap-3 pt-4 border-t ${categoryStyles[activeStep.category].borderColor}`}>
+                                                <div className={`p-2 rounded-lg ${categoryStyles[activeStep.category].accentColor} flex-shrink-0`}>
                                                     {React.createElement(categoryStyles[activeStep.category].icon, {
-                                                        className: `w-5 h-5 ${categoryStyles[activeStep.category].textColor}`
+                                                        className: "w-4 h-4 text-white"
                                                     })}
                                                 </div>
-                                                <p className={`text-sm ${categoryStyles[activeStep.category].textColor}`}>
-                                                    {activeStep.details.note.text}
+                                                <div className="space-y-1">
+                                                    <p className="text-gray-600">
+                                                        {activeStep.details.note.text}
+                                                    </p>
                                                     {activeStep.details.note.link && (
                                                         <a 
                                                             href={activeStep.details.note.link.url}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="underline hover:text-gray-600 font-medium"
+                                                            className={`inline-flex items-center gap-1 font-medium hover:underline ${categoryStyles[activeStep.category].textColor}`}
                                                         >
                                                             {activeStep.details.note.link.text}
+                                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                                                            </svg>
                                                         </a>
                                                     )}
-                                                </p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

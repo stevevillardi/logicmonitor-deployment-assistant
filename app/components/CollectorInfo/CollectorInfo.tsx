@@ -1,5 +1,5 @@
 import React from 'react';
-import { Server, Network, Cpu, HardDrive, MemoryStick, Weight, Activity } from 'lucide-react';
+import { Server, Network, Cpu, HardDrive, MemoryStick, Weight, Activity, Info } from 'lucide-react';
 import { FaAws, FaGoogle, FaMicrosoft } from "react-icons/fa"; // Add cloud provider icons
 import EnhancedCard from '@/components/ui/enhanced-card';
 import CollectorReq from './CollectorReq';
@@ -35,48 +35,97 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                 <div className="p-4">
                     <div className="flex items-center gap-2 mb-4">
                         <Server className="w-6 h-6 text-blue-700" />
-                        <h2 className="text-xl font-semibold text-gray-900">Collector Sizes</h2>
+                        <h2 className="text-xl font-semibold text-gray-900">Collector Sizes & Estimated Capacities</h2>
                     </div>
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                        {Object.entries(collectorRequirements).map(([size, requirements]) => (
-                            <div key={size} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                                <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 flex-shrink-0">
-                                            <span className="font-bold text-blue-700">{size}</span>
+                    <div className="overflow-x-auto bg-gray-50 rounded-lg border border-gray-200">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Size
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1">
+                                            <Cpu className="w-4 h-4 text-blue-700" />
+                                            CPU
                                         </div>
-                                        <div className="flex items-center gap-4 text-sm">
-                                            <div className="flex items-center gap-1">
-                                                <Cpu className="w-4 h-4 text-blue-700" />
-                                                <span className="text-gray-700">{requirements.cpu} core(s)</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <MemoryStick className="w-4 h-4 text-blue-700" />
-                                                <span className="text-gray-700">{requirements.memory}GB</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <HardDrive className="w-4 h-4 text-blue-700" />
-                                                <span className="text-gray-700">{requirements.disk}GB</span>
-                                            </div>
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1">
+                                            <MemoryStick className="w-4 h-4 text-blue-700" />
+                                            Memory
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-sm lg:border-l lg:pl-4 border-gray-200">
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1">
+                                            <HardDrive className="w-4 h-4 text-blue-700" />
+                                            Disk
+                                        </div>
+                                    </th>
+                                    <th scope="col" className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <div className="flex items-center gap-1">
                                             <Weight className="w-4 h-4 text-blue-700" />
-                                            <span className="text-gray-700">
-                                                {config.collectorCapacities[size as keyof typeof collectorRequirements].weight.toLocaleString()}
-                                            </span>
+                                            Load
                                         </div>
-                                        <div className="flex items-center gap-1 pl-4 border-l border-gray-200">
+                                    </th>
+                                    <th scope="col" className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1">
                                             <Activity className="w-4 h-4 text-blue-700" />
-                                            <span className="text-gray-700">
-                                                {config.collectorCapacities[size as keyof typeof collectorRequirements].eps.toLocaleString()}
-                                            </span>
+                                            EPS
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                                    </th>
+                                    <th scope="col" className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1">
+                                            <Network className="w-4 h-4 text-blue-700" />
+                                            FPS
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {Object.entries(collectorRequirements).map(([size, requirements], index) => (
+                                    <tr key={size} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                        <td className="px-4 py-3 text-sm font-medium text-blue-700">
+                                            {size}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-gray-900">
+                                            {requirements.cpu}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-gray-900">
+                                            {requirements.memory} GB
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-gray-900">
+                                            {requirements.disk} GB
+                                        </td>
+                                        <td className="hidden lg:table-cell px-4 py-3 text-sm text-gray-900">
+                                            {config.collectorCapacities[size as keyof typeof collectorRequirements].weight.toLocaleString()}
+                                        </td>
+                                        <td className="hidden lg:table-cell px-4 py-3 text-sm text-gray-900">
+                                            {config.collectorCapacities[size as keyof typeof collectorRequirements].eps.toLocaleString()}
+                                        </td>
+                                        <td className="hidden lg:table-cell px-4 py-3 text-sm text-gray-900">
+                                            {config.collectorCapacities[size as keyof typeof collectorRequirements].fps?.toLocaleString() || '-'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Legend - Only show on large screens */}
+                    <div className="hidden lg:block mt-2 text-xs text-gray-500 space-y-1">
+                        <div className="flex items-center gap-1">
+                            <Weight className="w-3.5 h-3.5 text-blue-700" />
+                            <span>Load: Maximum load per collector, see settings for more details on how this is calculated</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <Activity className="w-3.5 h-3.5 text-blue-700" />
+                            <span>EPS: Maximum events per second</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <Network className="w-3.5 h-3.5 text-blue-700" />
+                            <span>FPS: Maximum flows per second.</span>
+                        </div>
                     </div>
 
                     {/* Add Cloud Provider VM Recommendations */}
@@ -84,56 +133,72 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                         <div className="flex items-center gap-2">
                             <h3 className="text-lg font-semibold text-gray-900">Recommended Cloud Instance Sizes</h3>
                         </div>
-                        <div className="overflow-x-auto bg-gray-50 rounded-lg border border-gray-200">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Collector Size
-                                        </th>
-                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <div className="flex items-center gap-1">
-                                                <FaAws className="text-[#FF9900]" />
-                                                AWS
-                                            </div>
-                                        </th>
-                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <div className="flex items-center gap-1">
-                                                <FaMicrosoft className="text-[#00A4EF]" />
-                                                Azure
-                                            </div>
-                                        </th>
-                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <div className="flex items-center gap-1">
-                                                <FaGoogle className="text-[#4285F4]" />
-                                                GCP
-                                            </div>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {Object.entries(cloudVmSizes).map(([size, providers], index) => (
-                                        <tr key={size} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                                                {size}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-gray-600 font-mono">
-                                                {providers.aws}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-gray-600 font-mono">
-                                                {providers.azure}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-gray-600 font-mono">
-                                                {providers.gcp}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="relative -mx-4 sm:mx-0">
+                            {/* Left shadow overlay with solid background - increased width and adjusted gradient */}
+                            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white via-white via-80% to-transparent sm:hidden pointer-events-none z-30" />
+                            {/* Right shadow */}
+                            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white to-transparent sm:hidden pointer-events-none z-10" />
+                            
+                            <div className="overflow-x-auto scrollbar-none">
+                                <div className="min-w-[640px] bg-gray-50 rounded-lg border border-gray-200">
+                                    <table className="w-full divide-y divide-gray-200 relative">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap bg-gray-50 sticky left-0 z-20 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] border-r border-gray-200">
+                                                    Size
+                                                </th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <div className="flex items-center gap-1 whitespace-nowrap">
+                                                        <FaAws className="text-[#FF9900]" />
+                                                        <span>AWS</span>
+                                                    </div>
+                                                </th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <div className="flex items-center gap-1 whitespace-nowrap">
+                                                        <FaMicrosoft className="text-[#00A4EF]" />
+                                                        <span>Azure</span>
+                                                    </div>
+                                                </th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <div className="flex items-center gap-1 whitespace-nowrap">
+                                                        <FaGoogle className="text-[#4285F4]" />
+                                                        <span>GCP</span>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {Object.entries(cloudVmSizes).map(([size, providers], index) => (
+                                                <tr key={size} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                    <td className={`px-4 py-3 text-sm font-medium text-blue-700 whitespace-nowrap sticky left-0 z-20  border-r border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                        {size}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
+                                                        {providers.aws}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
+                                                        {providers.azure}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
+                                                        {providers.gcp}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-sm text-gray-500">
-                            Note: These are minimum recommended sizes based on collector requirements. Actual requirements may vary based on monitoring load and specific use cases. We recomend using fixed performance instances where possible.
-                        </p>
+                        <div className="sm:hidden text-xs text-gray-500 flex items-center gap-1.5 px-4">
+                            <Info className="w-3.5 h-3.5 text-blue-700" />
+                            <p>Swipe left to view Azure and GCP instances</p>
+                        </div>
+                        <div className="hidden sm:flex items-start gap-2 text-sm text-gray-500">
+                            <Info className="w-4 h-4 text-blue-700 flex-shrink-0 mt-0.5" />
+                            <p>
+                                These are minimum recommended sizes based on collector requirements. Actual requirements may vary based on monitoring load and specific use cases. We recommend using fixed performance instances where possible.
+                            </p>
+                        </div>
                     </div>
 
                     {hasModifiedCapacities && (

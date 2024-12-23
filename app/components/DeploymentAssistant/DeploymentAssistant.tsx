@@ -8,18 +8,17 @@ import SiteOverview from '../SiteOverview/SiteOverview';
 import CollectorInfo from '../CollectorInfo/CollectorInfo';
 import { Config, Site } from './types/types';
 import Image from 'next/image';
-import { ChevronDown, PlayCircle, Server, MessageCircleQuestion, Settings, BookText, Terminal, Bolt, Bot, HelpCircle, FileText } from 'lucide-react';
+import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
 import VideoLibrary from '../VideoLibrary/VideoLibrary';
 import { devLog } from '../Shared/utils/debug';
-import { BiSupport } from 'react-icons/bi';
 import { Button } from '@/components/ui/button';
 import { getInitialConfig, getInitialSites } from './utils/storage';
 import SwaggerUIComponent from '../APIExplorer/SwaggerUI';
 import { VersionInfo } from '../VersionInfo/VersionInfo';
-
+import { LaunchTour } from '../PlatformTour/LaunchTour';
 const Logo = () => {
     return (
         <div className="flex items-center">
@@ -212,15 +211,8 @@ const DeploymentAssistant = () => {
                                 <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
                                 <span className="hidden xl:inline">Reports (Beta)</span>
                             </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => setHelpDialogOpen(true)}
-                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
-                            >
-                                <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="hidden xl:inline">Help Guide</span>
-                            </Button>
                             <VersionInfo />
+                            <LaunchTour />
                         </div>
                     </div>
                 </CardHeader>
