@@ -75,8 +75,8 @@ export const Footer = () => {
                                 <HelpCircle className="w-4 h-4" />
                                 Help Guide
                             </button>
-                            <div className="hidden sm:block h-4 w-px bg-gray-200" />
-                            <ThemeToggle />
+                            {/* <div className="hidden sm:block h-4 w-px bg-gray-200" />
+                            <ThemeToggle /> */}
                         </div>
                     </div>
                 </div>

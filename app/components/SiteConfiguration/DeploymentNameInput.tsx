@@ -100,7 +100,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                     </div>
 
                     {/* Controls Section - Now centered on mobile */}
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pl-10">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:pl-14 pl-0">
                         {/* Collector Calc Method */}
                         <div className="flex items-center justify-center h-9 w-full sm:w-auto">
                             <CollectorCalcMethodSelect
