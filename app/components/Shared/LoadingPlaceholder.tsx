@@ -5,7 +5,7 @@ import Image from 'next/image';
 const LoadingPlaceholder = () => {
   return (
     <div className="min-h-screen bg-[#040F4B] w-full flex items-center justify-center py-4 sm:p-8">
-      <Card className="w-full max-w-[1440px] bg-white shadow-lg">
+      <Card className="w-full max-w-[1700px] bg-white shadow-lg">
         <CardHeader className="border-gray-200 bg-gradient-to-r from-white to-blue-50/50 no-print">
           <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 py-2">
             <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-8 w-full sm:w-auto">
@@ -14,13 +14,13 @@ const LoadingPlaceholder = () => {
                   src="lmlogo.webp"
                   alt="LogicMonitor"
                   width={250}
-                  height={250}
-                  className="w-[150px] sm:w-[200px] lg:w-[250px]"
+                  height={47}
+                  className="w-[150px] h-auto sm:w-[200px] lg:w-[250px]"
                   priority
                 />
               </div>
-              <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
-              <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+              <div className="hidden sm:block h-10 w-px bg-gray-200"></div>
+              <CardTitle className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
                 Deployment Assistant
               </CardTitle>
             </div>

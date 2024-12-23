@@ -140,7 +140,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     };
 
     return (
-        <div className="space-y-8 min-h-[900px]">
+        <div className="space-y-3 min-h-[900px]">
             <FirstTimeVisit
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
@@ -542,7 +542,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     </EnhancedCard>
                 ))
             )}
-            <div className="mb-6">
+            <div className="mb-3">
                 <DisclaimerBox />
             </div>
         </div>

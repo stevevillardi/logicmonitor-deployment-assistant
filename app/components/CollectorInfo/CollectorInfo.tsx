@@ -84,7 +84,7 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {Object.entries(collectorRequirements).map(([size, requirements], index) => (
-                                    <tr key={size} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                    <tr key={size} className='bg-white'>
                                         <td className="px-4 py-3 text-sm font-medium text-blue-700">
                                             {size}
                                         </td>
@@ -113,7 +113,7 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                     </div>
 
                     {/* Legend - Only show on large screens */}
-                    <div className="hidden lg:block mt-2 text-xs text-gray-500 space-y-1">
+                    <div className="hidden lg:block mt-4 text-xs text-gray-500 space-y-1">
                         <div className="flex items-center gap-1">
                             <Weight className="w-3.5 h-3.5 text-blue-700" />
                             <span>Load: Maximum load per collector, see settings for more details on how this is calculated</span>
@@ -129,20 +129,20 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                     </div>
 
                     {/* Add Cloud Provider VM Recommendations */}
-                    <div className="mt-6 space-y-4">
+                    <div className="mt-4 space-y-4">
                         <div className="flex items-center gap-2">
                             <h3 className="text-lg font-semibold text-gray-900">Recommended Cloud Instance Sizes</h3>
                         </div>
                         <div className="relative -mx-4 sm:mx-0">
-                            {/* Left shadow overlay with solid background - increased width and adjusted gradient */}
+                            {/* Left shadow overlay with solid background */}
                             <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white via-white via-80% to-transparent sm:hidden pointer-events-none z-30" />
                             {/* Right shadow */}
                             <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white to-transparent sm:hidden pointer-events-none z-10" />
                             
                             <div className="overflow-x-auto scrollbar-none">
-                                <div className="min-w-[640px] bg-gray-50 rounded-lg border border-gray-200">
+                                <div className="min-w-[640px] bg-white rounded-lg border border-gray-200">
                                     <table className="w-full divide-y divide-gray-200 relative">
-                                        <thead>
+                                        <thead className="bg-gray-50">
                                             <tr>
                                                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap bg-gray-50 sticky left-0 z-20 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] border-r border-gray-200">
                                                     Size
@@ -169,8 +169,8 @@ const CollectorInfo = ({ config }: CollectorInfoProps) => {
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {Object.entries(cloudVmSizes).map(([size, providers], index) => (
-                                                <tr key={size} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                                    <td className={`px-4 py-3 text-sm font-medium text-blue-700 whitespace-nowrap sticky left-0 z-20  border-r border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                <tr key={size} className="bg-white">
+                                                    <td className="px-4 py-3 text-sm font-medium text-blue-700 whitespace-nowrap sticky left-0 z-20 bg-white border-r border-gray-200">
                                                         {size}
                                                     </td>
                                                     <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">

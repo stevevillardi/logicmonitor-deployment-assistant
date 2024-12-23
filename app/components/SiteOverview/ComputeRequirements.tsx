@@ -72,8 +72,45 @@ const ComputeRequirements: React.FC<ComputeRequirementsProps> = ({
     totals: ResourceTotals;
   }) => (
     <div className={`bg-white border border-${color}-100 rounded-lg p-3 hover:bg-${color}-50/50`}>
-      <div className="grid grid-cols-[150px_1fr_1fr_1fr] items-center gap-4">
-        {/* Title/Icon Column - Now fixed width */}
+      {/* Mobile Layout */}
+      <div className="sm:hidden space-y-3">
+        <div className={`flex items-center gap-2`}>
+          <div className={`w-6 h-6 rounded-full bg-${color}-50 flex items-center justify-center flex-shrink-0`}>
+            <Icon className={`w-3 h-3 text-${color}-700`} />
+          </div>
+          <span className={`text-sm font-medium text-${color}-900 truncate`}>{title}</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {/* CPU */}
+          <div className="bg-gray-50 rounded-lg p-2">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Cpu className="w-3 h-3 text-gray-500" />
+              <div className="text-xs text-gray-500">CPU</div>
+            </div>
+            <div className="text-sm font-medium text-gray-900">{totals.cpu}</div>
+          </div>
+          {/* Memory */}
+          <div className="bg-gray-50 rounded-lg p-2">
+            <div className="flex items-center gap-1.5 mb-1">
+              <MemoryStick className="w-3 h-3 text-gray-500" />
+              <div className="text-xs text-gray-500">RAM</div>
+            </div>
+            <div className="text-sm font-medium text-gray-900">{totals.memory} GB</div>
+          </div>
+          {/* Disk */}
+          <div className="bg-gray-50 rounded-lg p-2">
+            <div className="flex items-center gap-1.5 mb-1">
+              <HardDrive className="w-3 h-3 text-gray-500" />
+              <div className="text-xs text-gray-500">Disk</div>
+            </div>
+            <div className="text-sm font-medium text-gray-900">{totals.disk} GB</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden sm:grid grid-cols-[150px_1fr_1fr_1fr] items-center gap-4">
+        {/* Title/Icon Column */}
         <div className={`flex items-center gap-2 min-w-[150px]`}>
           <div className={`w-6 h-6 rounded-full bg-${color}-50 flex items-center justify-center flex-shrink-0`}>
             <Icon className={`w-3 h-3 text-${color}-700`} />

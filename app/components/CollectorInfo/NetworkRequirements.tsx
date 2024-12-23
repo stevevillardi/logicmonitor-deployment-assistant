@@ -132,20 +132,18 @@ export const NetworkRequirements = () => {
 
     return (
         <EnhancedCard className="bg-white border border-gray-200">
-            <div className="border-gray-200 p-4 rounded-t-lg">
-                <div className="flex items-center gap-3">
-                    <Network className="w-7 h-7 text-blue-700" />
-                    <h2 className="text-xl font-bold text-gray-900">Network Requirements (Ports)</h2>
+            <div className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                    <Network className="w-6 h-6 text-blue-700" />
+                    <h2 className="text-xl font-semibold text-gray-900">Network Requirements (Ports)</h2>
                 </div>
-            </div>
-            <div className="px-4">
-                <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+                <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
                     <div className="hidden md:grid md:grid-cols-6 gap-4 p-3 bg-gray-50 rounded-t-lg border-b border-gray-200">
-                        <div className="font-medium text-gray-900">Category</div>
-                        <div className="font-medium text-gray-900">Port</div>
-                        <div className="font-medium text-gray-900">Protocol</div>
-                        <div className="font-medium text-gray-900">Direction</div>
-                        <div className="col-span-2 font-medium text-gray-900">Description</div>
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Category</div>
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Port</div>
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Protocol</div>
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</div>
+                        <div className="col-span-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Description</div>
                     </div>
                     {sortedNetworkPorts.map((port, index, array) => {
                         const isNewDirection = index === 0 || port.direction !== array[index - 1].direction;
@@ -156,11 +154,11 @@ export const NetworkRequirements = () => {
                         return (
                             <React.Fragment key={index}>
                                 {isNewDirection && (
-                                    <div className="bg-gray-100 px-3 py-2 font-semibold text-gray-700">
+                                    <div className="bg-gray-50 px-3 py-2 font-semibold text-gray-700">
                                         {port.direction}
                                     </div>
                                 )}
-                                <div className="md:hidden p-4 border-b border-gray-200 space-y-3">
+                                <div className="md:hidden p-4 bg-white border-b border-gray-200 space-y-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             {port.icon}
@@ -191,7 +189,7 @@ export const NetworkRequirements = () => {
                                         <div className="text-gray-900">{port.description}</div>
                                     </div>
                                 </div>
-                                <div className="hidden md:grid md:grid-cols-6 gap-4 p-3 border-b last:border-b-0 border-gray-200 hover:bg-gray-50 transition-colors">
+                                <div className="hidden md:grid md:grid-cols-6 gap-4 p-3 bg-white border-b last:border-b-0 border-gray-200 hover:bg-gray-50/50 transition-colors">
                                     <div className="flex items-center gap-2">
                                         {port.icon}
                                         <span className="text-sm text-gray-600">{port.category}</span>

@@ -27,7 +27,7 @@ interface PDFTemplateProps {
 }
 
 const SectionDivider = () => (
-    <div className="flex items-center gap-4 my-8">
+    <div className="flex items-center gap-4 my-6">
         <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-grow" />
         <div className="h-1 w-1 rounded-full bg-gray-300" />
         <div className="h-1 w-1 rounded-full bg-gray-300" />
@@ -104,7 +104,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
             </style>
 
             {/* Header */}
-            <header className="mb-8 sm:mb-12 border-b pb-4 sm:pb-6">
+            <header className="mb-6 border-b pb-4 sm:pb-6">
                 <div className="flex items-center justify-between">
                     <Image
                         src="/lmlogo.webp"
@@ -199,7 +199,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         <div className="flex items-center justify-between mb-2 sm:mb-4">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                                 <Server className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <h3 className="text-sm sm:text-base font-semibold text-blue-900">Total Polling Collectors</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-blue-900">Polling Collectors</h3>
                             </div>
                         </div>
                         {(Object.keys(globalCollectorSummary.polling).length === 0 ||
@@ -237,7 +237,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         <div className="flex items-center justify-between mb-2 sm:mb-4">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                                 <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
-                                <h3 className="text-sm sm:text-base font-semibold text-orange-900">Total Logs Collectors</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-orange-900">Logs Collectors</h3>
                             </div>
                         </div>
                         {(Object.keys(globalCollectorSummary.logs).length === 0 ||
@@ -275,7 +275,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         <div className="flex items-center justify-between mb-2 sm:mb-4">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                                 <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
-                                <h3 className="text-sm sm:text-base font-semibold text-purple-900">Total NetFlow Collectors</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-purple-900">NetFlow Collectors</h3>
                             </div>
                         </div>
                         {(Object.keys(globalCollectorSummary.netflow).length === 0 ||
@@ -337,7 +337,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                 const metrics = siteMetrics[index];
 
                 return (
-                    <div key={index} className="site-section">
+                    <div key={index} className="site-section mt-6">
                         <div className="flex items-center gap-2 sm:gap-3 mb-4">
                             <Building className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
                             <h2 className="text-xl sm:text-2xl font-bold">Site: {site.name || `Site ${index + 1}`}</h2>
@@ -357,7 +357,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                             <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
                                 <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                     <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                    <h3 className="text-xs sm:text-sm font-medium text-blue-900">Load Score</h3>
+                                    <h3 className="text-xs sm:text-sm font-medium text-blue-900">Load</h3>
                                 </div>
                                 <p className="text-lg sm:text-xl font-bold text-blue-700">
                                     {Math.round(metrics.totalWeight).toLocaleString()}

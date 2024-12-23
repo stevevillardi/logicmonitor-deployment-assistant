@@ -13,7 +13,7 @@ export const Footer = () => {
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
             />
-            <footer className="hidden sm:block w-full bg-white border-t border-gray-200 mt-8">
+            <footer className="hidden sm:block w-full bg-white border-t border-gray-200">
                 <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
