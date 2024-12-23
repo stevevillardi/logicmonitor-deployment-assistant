@@ -22,10 +22,11 @@ export const LaunchTour = () => {
             <DialogTrigger asChild>
                 <Button 
                     variant="outline"
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                    onClick={() => setIsOpen(true)}
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-200 text-sm text-blue-700 dark:text-blue-400"
                     aria-label="Launch Platform Tour"
                 >
-                    <Play className="w-4 h-4 text-blue-700" />
+                    <Play className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                     <span className="hidden xl:inline">Platform Tour</span>
                 </Button>
             </DialogTrigger>
@@ -35,10 +36,10 @@ export const LaunchTour = () => {
                 "transition-all duration-300",
                 "[&>button]:hidden"
             )}>
-                <DialogHeader className="border-b border-blue-100 pb-3">
+                <DialogHeader className="border-b border-blue-100 dark:border-blue-800 pb-3">
                     <div className="flex items-center justify-between">
                         <div>
-                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-blue-100">
                                 <div className="flex items-center gap-2">
                                     <Info className="h-5 w-5" />
 
@@ -46,7 +47,7 @@ export const LaunchTour = () => {
                                     LogicMonitor Platform Tour
                                 </div>
                             </DialogTitle>
-                            <DialogDescription className="text-sm text-gray-600">
+                            <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
                                 Explore the key components and features of the LogicMonitor platform
                             </DialogDescription>
                         </div>

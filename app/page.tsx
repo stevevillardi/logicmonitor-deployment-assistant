@@ -7,7 +7,7 @@ import DeploymentAssistant from './components/DeploymentAssistant/DeploymentAssi
 export default function Home() {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-[#040F4B] flex flex-col">
+      <div className="min-h-screen bg-[#040F4B] dark:bg-gray-950 flex flex-col">
         <main className="flex-grow py-4 sm:p-8">
           <DeploymentAssistant />
         </main>

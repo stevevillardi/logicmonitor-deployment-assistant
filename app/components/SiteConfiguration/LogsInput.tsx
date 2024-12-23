@@ -61,16 +61,16 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
     const getIcon = (type: string) => {
         switch (type) {
             case 'netflow':
-                return <Activity className="w-5 h-5 text-blue-700" />;
+                return <Activity className="w-5 h-5 text-blue-700 dark:text-blue-400" />;
             case 'firewalls':
-                return <Shield className="w-5 h-5 text-blue-700" />;
+                return <Shield className="w-5 h-5 text-blue-700 dark:text-blue-400" />;
             case 'network':
-                return <Network className="w-5 h-5 text-blue-700" />;
+                return <Network className="w-5 h-5 text-blue-700 dark:text-blue-400" />;
             case 'linux':
             case 'windows':
-                return <Server className="w-5 h-5 text-blue-700" />;
+                return <Server className="w-5 h-5 text-blue-700 dark:text-blue-400" />;
             default:
-                return <MessageSquare className="w-5 h-5 text-blue-700" />;
+                return <MessageSquare className="w-5 h-5 text-blue-700 dark:text-blue-400" />;
         }
     };
 
@@ -145,25 +145,25 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
         icon: JSX.Element
     ) => (
         <div 
-            className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50"
+            className="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
             onClick={() => toggleSection(section)}
         >
             <div className="flex items-center gap-3">
                 {expandedSections.has(section) ? 
-                    <ChevronDown className="w-4 h-4 text-gray-500" /> : 
-                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                    <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" /> : 
+                    <ChevronRight className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 }
-                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900 border border-blue-100 dark:border-blue-800 flex items-center justify-center">
                     {icon}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
             </div>
             <div className="flex items-center gap-4">
-                <div className="px-3 py-1 bg-blue-50 rounded-full">
-                    <span className="text-sm text-blue-700">{calculateSectionDevices(section)} devices</span>
+                <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900 rounded-full">
+                    <span className="text-sm text-blue-700 dark:text-blue-400">{calculateSectionDevices(section)} devices</span>
                 </div>
-                <div className="px-3 py-1 bg-emerald-50 rounded-full">
-                    <span className="text-sm text-emerald-700">
+                <div className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900 rounded-full">
+                    <span className="text-sm text-emerald-700 dark:text-emerald-400">
                         {calculateSectionEPS(section)} {section === 'netflow' ? 'FPS' : 'EPS'}
                     </span>
                 </div>
@@ -172,48 +172,48 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
     );
 
     const renderDeviceCard = (key: string, value: any, icon: JSX.Element) => (
-        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900 border border-blue-100 dark:border-blue-800 flex items-center justify-center">
                     {icon}
                 </div>
-                <Label className="font-medium text-base text-gray-900">
+                <Label className="font-medium text-base text-gray-900 dark:text-gray-100">
                     {value.name}
                 </Label>
             </div>
             <div className="space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4">
-                    <Label className="text-sm text-gray-700 font-medium">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <Label className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                         Resource Count
                     </Label>
                     <Input
                         type="text"
                         value={safeDevices[key.toLowerCase() as keyof typeof safeDevices] || 0}
                         onChange={(e) => updateDeviceCount(key.toLowerCase(), parseInt(e.target.value) || 0)}
-                        className="mt-2 bg-white border-gray-200"
+                        className="mt-2 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                         placeholder="Enter count..."
                     />
                 </div>
 
                 {showDetails && (
-                    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Activity className="w-4 h-4 text-blue-700" />
-                                <span className="text-gray-700 font-medium">
+                                <Activity className="w-4 h-4 text-blue-700 dark:text-blue-400" />
+                                <span className="text-gray-700 dark:text-gray-300 font-medium">
                                     {key === 'netflowDevices' ? 'FPS per Device' : 'EPS per Device'}
                                 </span>
                             </div>
-                            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                            <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
                                 {value.eps || value.fps}
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <HardDrive className="w-4 h-4 text-blue-700" />
-                                <span className="text-gray-700 font-medium">Average Size</span>
+                                <HardDrive className="w-4 h-4 text-blue-700 dark:text-blue-400" />
+                                <span className="text-gray-700 dark:text-gray-300 font-medium">Average Size</span>
                             </div>
-                            <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                            <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
                                 {value.bytes} bytes
                             </div>
                         </div>
@@ -227,10 +227,10 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
     return (
         <div className="space-y-4">
             {/* System Logs Section */}
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                {renderSectionHeader('System Logs', 'logs', <MessageSquare className="w-5 h-5 text-blue-700" />)}
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+                {renderSectionHeader('System Logs', 'logs', <MessageSquare className="w-5 h-5 text-blue-700 dark:text-blue-400" />)}
                 {expandedSections.has('logs') && (
-                    <div className="p-4 bg-gray-50">
+                    <div className="p-4 bg-gray-50 dark:bg-gray-800">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {Object.entries(defaultLogTypes).map(([key, value]) => 
                                 <div key={key}>
@@ -243,13 +243,13 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
             </div>
 
             {/* SNMP Traps Section */}
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                {renderSectionHeader('SNMP Traps', 'traps', <AlertTriangle className="w-5 h-5 text-blue-700" />)}
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+                {renderSectionHeader('SNMP Traps', 'traps', <AlertTriangle className="w-5 h-5 text-blue-700 dark:text-blue-400" />)}
                 {expandedSections.has('traps') && (
-                    <div className="p-4 bg-gray-50">
+                    <div className="p-4 bg-gray-50 dark:bg-gray-800">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div key="snmptraps">
-                                {renderDeviceCard('snmptraps', defaultTrapTypes.SNMP, <AlertTriangle className="w-5 h-5 text-blue-700" />)}
+                                {renderDeviceCard('snmptraps', defaultTrapTypes.SNMP, <AlertTriangle className="w-5 h-5 text-blue-700 dark:text-blue-400" />)}
                             </div>
                         </div>
                     </div>
@@ -257,13 +257,13 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
             </div>
 
             {/* NetFlow Section */}
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                {renderSectionHeader('NetFlow', 'netflow', <Activity className="w-5 h-5 text-blue-700" />)}
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+                {renderSectionHeader('NetFlow', 'netflow', <Activity className="w-5 h-5 text-blue-700 dark:text-blue-400" />)}
                 {expandedSections.has('netflow') && (
-                    <div className="p-4 bg-gray-50">
+                    <div className="p-4 bg-gray-50 dark:bg-gray-800">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div key="netflowdevices">
-                                {renderDeviceCard('netflowdevices', defaultFlowTypes.NETFLOW, <Activity className="w-5 h-5 text-blue-700" />)}
+                                {renderDeviceCard('netflowdevices', defaultFlowTypes.NETFLOW, <Activity className="w-5 h-5 text-blue-700 dark:text-blue-400" />)}
                             </div>
                         </div>
                     </div>

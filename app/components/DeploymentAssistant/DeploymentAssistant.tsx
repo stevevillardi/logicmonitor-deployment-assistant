@@ -190,15 +190,15 @@ const DeploymentAssistant = () => {
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
             />
-            <Card className="w-full max-w-[1440px] bg-white shadow-lg">
-                <CardHeader className="border-gray-200 bg-gradient-to-r from-white to-blue-50/50 no-print p-1 sm:p-6">
+            <Card className="w-full max-w-[1440px] bg-white dark:bg-gray-900 dark:border dark:border-blue-800 shadow-lg">
+                <CardHeader className="border-gray-200 dark:border-gray-800 bg-gradient-to-r from-white dark:from-gray-900 to-blue-50/50 dark:to-blue-950/50 no-print p-1 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 py-2">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-8 w-full sm:w-auto">
                             <a href="https://www.logicmonitor.com" target="_blank" rel="noopener noreferrer">
                                 <Logo />
                             </a>
-                            <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
-                            <CardTitle className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                            <div className="hidden sm:block h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
+                            <CardTitle className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
                                 Deployment Assistant
                             </CardTitle>
                         </div>
@@ -206,9 +206,9 @@ const DeploymentAssistant = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => window.location.href = '/portal-reports'}
-                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-200 text-sm text-blue-700 dark:text-blue-400"
                             >
-                                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
                                 <span className="hidden xl:inline">Reports (Beta)</span>
                             </Button>
                             <VersionInfo />
@@ -216,7 +216,7 @@ const DeploymentAssistant = () => {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="p-0 pl-3 pr-3 bg-gray-50">
+                <CardContent className="p-0 pl-3 pr-3 bg-gray-50 dark:bg-gray-900">
                     <div className="space-y-6">
                         <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
 

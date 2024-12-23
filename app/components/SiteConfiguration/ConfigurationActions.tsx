@@ -362,14 +362,14 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
         <div className="space-y-4">
             {/* Warning Dialog */}
             <AlertDialog open={warningDialogOpen} onOpenChange={setWarningDialogOpen}>
-                <AlertDialogContent className="bg-yellow-50 border-yellow-200">
+                <AlertDialogContent className="bg-yellow-50 dark:bg-yellow-900/50 border-yellow-200 dark:border-yellow-800">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-yellow-700">
+                        <AlertDialogTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
                             <Info className="h-5 w-5" />
                             Import Warnings
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            <div className="mt-2 text-yellow-600">
+                            <div className="mt-2 text-yellow-600 dark:text-yellow-300">
                                 <ul className="list-disc list-inside space-y-1">
                                     {warnings.map((warning, index) => (
                                         <li key={index}>{warning}</li>
@@ -381,7 +381,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                     <AlertDialogFooter>
                         <AlertDialogAction 
                             onClick={() => setWarningDialogOpen(false)}
-                            className="bg-yellow-50 border border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                            className="bg-yellow-50 dark:bg-yellow-900/50 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900"
                         >
                             Dismiss
                         </AlertDialogAction>
@@ -391,14 +391,14 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
 
             {/* Error Dialog */}
             <AlertDialog open={errorDialogOpen} onOpenChange={setErrorDialogOpen}>
-                <AlertDialogContent className="bg-red-50 border-red-200">
+                <AlertDialogContent className="bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-800">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-700">
+                        <AlertDialogTitle className="flex items-center gap-2 text-red-700 dark:text-red-400">
                             <AlertTriangle className="h-5 w-5" />
                             Import Error
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            <div className="mt-2 text-red-600">
+                            <div className="mt-2 text-red-600 dark:text-red-300">
                                 {error}
                             </div>
                         </AlertDialogDescription>
@@ -406,7 +406,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                     <AlertDialogFooter>
                         <AlertDialogAction 
                             onClick={() => setErrorDialogOpen(false)}
-                            className="bg-red-50 border border-red-200 text-red-700 hover:bg-red-100"
+                            className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900"
                         >
                             Dismiss
                         </AlertDialogAction>

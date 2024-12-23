@@ -101,21 +101,21 @@ export const VersionInfo = () => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:text-gray-900 hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-800 rounded-lg hover:text-gray-900 dark:hover:text-gray-100 hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-200 text-sm text-blue-700 dark:text-blue-400"
                 >
-                    <Info className="w-3 h-3 text-blue-700" />
-                    <span className="hidden xl:inline">Release Notes</span>
+                    <Info className="w-3 h-3 text-blue-700 dark:text-blue-400" />
+                    <span className="hidden xl:inline text-blue-700 dark:text-blue-400">Release Notes</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
-                <DialogHeader className="border-b border-blue-100 pb-3">
-                    <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+            <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-900 dark:border dark:border-blue-800 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
+                <DialogHeader className="border-b border-blue-100 dark:border-blue-800 pb-3">
+                    <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-blue-100">
                         <div className="flex items-center gap-2">
-                            <GitBranch className="h-5 w-5" />
+                            <GitBranch className="h-5 w-5 dark:text-blue-400" />
                             Version {APP_VERSION} Release Notes
                         </div>
                     </DialogTitle>
-                    <DialogDescription className="text-sm text-gray-600">
+                    <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
                         Released on {RELEASE_DATE}
                     </DialogDescription>
                 </DialogHeader>
@@ -123,14 +123,16 @@ export const VersionInfo = () => {
                 <ScrollArea className="h-[600px] pr-4 overflow-y-auto">
                     <div className="space-y-4 py-3 pr-4">
                         {CHANGELOG_SECTIONS.map((section, index) => (
-                            <div key={index} className="bg-white rounded-lg border border-blue-200 shadow-sm p-3">
+                            <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700 shadow-sm p-3">
                                 <div className="flex items-start gap-2 mb-2">
-                                    {section.icon}
-                                    <h3 className="font-medium text-gray-900">
+                                    {React.cloneElement(section.icon, {
+                                        className: "w-4 h-4 text-blue-600 dark:text-blue-400"
+                                    })}
+                                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
                                         {section.title}
                                     </h3>
                                 </div>
-                                <ul className="space-y-1.5 text-sm text-gray-600 ml-6">
+                                <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400 ml-6">
                                     {section.items.map((item, itemIndex) => (
                                         <li key={itemIndex} className="list-disc">
                                             {item}
@@ -142,9 +144,9 @@ export const VersionInfo = () => {
                     </div>
                 </ScrollArea>
 
-                <div className="border-t border-blue-100 pt-3 mt-4">
-                    <div className="bg-white border border-blue-100 rounded-lg p-3">
-                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700">
+                <div className="border-t border-blue-100 dark:border-blue-800 pt-3 mt-4">
+                    <div className="bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-700 rounded-lg p-3">
+                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-400">
                             <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                             <p>
                                 For feature requests and bug reports, please visit the github repository and create an issue.
