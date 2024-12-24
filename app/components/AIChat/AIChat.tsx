@@ -38,20 +38,43 @@ Feel free to ask any questions about LogicMonitor!`,
 };
 
 export default function RAGChat() {
-  // Early return if chat is disabled
-  if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
-    return null;
-  }
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [height, setHeight] = useState(400); // Default height
+  const [height, setHeight] = useState(400);
   const resizeRef = useRef<HTMLDivElement>(null);
   const startHeightRef = useRef(0);
   const startYRef = useRef(0);
+
+  // Load chat history and show welcome message if first visit
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') return;
+    
+    const savedMessages = localStorage.getItem(STORAGE_KEY);
+    const welcomeShown = localStorage.getItem(WELCOME_SHOWN_KEY);
+    
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+      }
+    } else if (!welcomeShown) {
+      setMessages([WELCOME_MESSAGE]);
+      localStorage.setItem(WELCOME_SHOWN_KEY, 'true');
+    }
+  }, []);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') return;
+    if (messages.length > 0) {
+      const messagesToStore = messages.slice(-MAX_MESSAGES);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messagesToStore));
+    }
+  }, [messages]);
 
   const handleResizeStart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,32 +95,6 @@ export default function RAGChat() {
     document.addEventListener('mousemove', handleResizeMove);
     document.addEventListener('mouseup', handleResizeEnd);
   };
-
-  // Load chat history and show welcome message if first visit
-  useEffect(() => {
-    const savedMessages = localStorage.getItem(STORAGE_KEY);
-    const welcomeShown = localStorage.getItem(WELCOME_SHOWN_KEY);
-    
-    if (savedMessages) {
-      try {
-        setMessages(JSON.parse(savedMessages));
-      } catch (error) {
-        console.error('Failed to load chat history:', error);
-      }
-    } else if (!welcomeShown) {
-      // Show welcome message on first visit
-      setMessages([WELCOME_MESSAGE]);
-      localStorage.setItem(WELCOME_SHOWN_KEY, 'true');
-    }
-  }, []);
-
-  // Save messages to localStorage when they change
-  useEffect(() => {
-    if (messages.length > 0) {
-      const messagesToStore = messages.slice(-MAX_MESSAGES);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messagesToStore));
-    }
-  }, [messages]);
 
   const handleCopy = async (text: string, index: number) => {
     try {
@@ -165,6 +162,10 @@ export default function RAGChat() {
     setMessages([]);
     localStorage.removeItem(STORAGE_KEY);
   };
+
+  if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
