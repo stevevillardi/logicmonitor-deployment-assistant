@@ -1,5 +1,5 @@
 import React from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight } from 'lucide-react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -12,11 +12,22 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Version information
-const APP_VERSION = "1.0.1";
-const RELEASE_DATE = "2024-12-21";
+const APP_VERSION = "1.0.2";
+const RELEASE_DATE = "2024-12-24";
 
 // Changelog sections with icons
 const CHANGELOG_SECTIONS = [
+    {
+        title: "AI Documentation Assistant (beta)",
+        icon: <Bot className="w-4 h-4 text-blue-600" />,
+        items: [
+            "Context-aware documentation search",
+            "Source-linked responses",
+            "Persistent conversation history",
+            "Resizable chat interface",
+            "Minimizable window accessible from any page"
+        ]
+    },
     {
         title: "Platform Tour",
         icon: <Play className="w-4 h-4 text-blue-600" />,

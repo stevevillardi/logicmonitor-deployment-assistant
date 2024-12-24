@@ -4,6 +4,7 @@ import PWAInstallPrompt from './components/Shared/PWAInstallPrompt';
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { ThemeProvider } from './components/Shared/ThemeProvider';
+import RAGChat from './components/AIChat/AIChat';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -50,6 +51,7 @@ export default function RootLayout({
         {/* </ThemeProvider> */}
         <PWAInstallPrompt />
         <Analytics/>
+        <RAGChat />
       </body>
     </html>
   );
