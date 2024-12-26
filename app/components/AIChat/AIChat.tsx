@@ -37,6 +37,20 @@ Feel free to ask any questions about LogicMonitor!`,
   timestamp: Date.now()
 };
 
+const INTRO_MESSAGE = {
+  type: 'assistant' as const,
+  content: `I'm here to help you find information about LogicMonitor! You can ask me about:
+
+• Product features and capabilities
+• Configuration and setup guides
+• Troubleshooting common issues
+• Best practices and recommendations
+• API and integration details
+
+What would you like to know?`,
+  timestamp: Date.now()
+};
+
 export default function RAGChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -159,7 +173,7 @@ export default function RAGChat() {
   };
 
   const clearHistory = () => {
-    setMessages([]);
+    setMessages([INTRO_MESSAGE]);
     localStorage.removeItem(STORAGE_KEY);
   };
 
