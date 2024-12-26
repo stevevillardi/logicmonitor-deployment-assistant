@@ -51,7 +51,8 @@ export async function POST(request: Request) {
 
     // Get embedding using Voyage AI
     console.log('🚀 Getting embedding from Voyage AI...');
-    let queryEmbedding;
+    let queryEmbedding: number[] = [];
+
     try {
       // Preprocess the query to be more search-friendly
       const searchQuery = `${query} This text is about LogicMonitor documentation and features.`;
@@ -59,19 +60,12 @@ export async function POST(request: Request) {
       const embeddingResponse = await voyage.embed({
         input: searchQuery,
         model: "voyage-3-lite",
-      }).catch(error => {
-        console.error('🔥 Voyage API Error Details:', {
-          message: error.message,
-          status: error.status,
-          response: error.response,
-          stack: error.stack
-        });
-        throw error;
       });
       
+      const embedding = embeddingResponse.data?.[0]?.embedding;
+      if (!embedding) throw new Error('Failed to generate embedding');
+      queryEmbedding = embedding;
       console.log('✅ Embedding received:', embeddingResponse);
-      // Extract just the embedding array from the response
-      queryEmbedding = embeddingResponse.data?.[0]?.embedding;
       console.log('📊 Embedding formatted, length:', queryEmbedding?.length);
     } catch (error) {
       console.error('❌ Voyage API call failed:', error);
@@ -144,8 +138,69 @@ Content: ${doc.content}
       messages: [{
         role: "user",
         content: `
-You are a LogicMonitor documentation assistant. Use the following documentation content and conversation history to answer the user's question.
-If you can't find a relevant answer in the provided content, say so.
+You are a LogicMonitor documentation assistant. Base your responses on the provided documentation and chat history content and use the following guidelines:
+
+For API-related questions:
+- Prioritize Swagger/OpenAPI documentation content
+- Structure responses in this format:
+  ### Endpoint Overview
+  - Method: \`POST|GET|PUT|DELETE\`
+  - Path: \`/api/v2/...\`
+  - Description: Brief description
+
+  ### Parameters
+  #### Required Parameters
+  - \`paramName\` (type): Description
+  
+  #### Optional Parameters
+  - \`paramName\` (type): Description
+    - Default: value
+    - Example: value
+
+  ### Request Example
+  \`\`\`json
+  {
+    // Properly formatted JSON example
+  }
+  \`\`\`
+
+  ### Response Example
+  \`\`\`json
+  {
+    // Properly formatted JSON example
+  }
+  \`\`\`
+
+  > **Note**: Important information or warnings
+
+  ### Code Examples
+  \`\`\`python
+  # Python example if relevant
+  \`\`\`
+
+  \`\`\`powershell
+  # PowerShell example if relevant
+  \`\`\`
+
+For automation questions:
+- Structure PowerShell examples as:
+  ### Cmdlet Usage
+  \`\`\`powershell
+  # Example with comments
+  \`\`\`
+
+  ### Parameters
+  - \`-ParameterName\`: Description
+    - Type: type
+    - Required: Yes/No
+    - Default: value
+
+  ### Examples
+  \`\`\`powershell
+  # Practical examples from docs
+  \`\`\`
+
+  > **Tips**: Usage notes or best practices
 
 Previous conversation:
 ${conversationContext}
@@ -155,7 +210,7 @@ ${context}
 
 User's question: ${query}
 
-Please provide a clear and concise answer based on the documentation content and conversation history provided.`
+Please provide a clear and well-formatted answer based on the documentation content and conversation history provided.`
       }],
       temperature: 0.7,
     });
@@ -169,7 +224,7 @@ Please provide a clear and concise answer based on the documentation content and
     console.log('📚 Total rows in database:', rowCount);
 
     return NextResponse.json({
-      answer: response.content[0]?.text,
+      answer: response.content[0].type === 'text' ? response.content[0].text : '',
       sources: documents.map((doc: DocumentMatch) => ({
         title: doc.title,
         url: doc.url,

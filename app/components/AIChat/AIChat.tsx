@@ -3,6 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SendHorizontal, Loader2, ExternalLink, Bot, MinusCircle, Copy, Check, GripHorizontal } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeHighlight from 'rehype-highlight';
 
 type Source = {
   title: string;
@@ -61,6 +65,7 @@ export default function RAGChat() {
   const resizeRef = useRef<HTMLDivElement>(null);
   const startHeightRef = useRef(0);
   const startYRef = useRef(0);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load chat history and show welcome message if first visit
   useEffect(() => {
@@ -177,6 +182,15 @@ export default function RAGChat() {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+  };
+
+  // Scroll when messages change or chat is opened
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isMinimized]);
+
   if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
     return null;
   }
@@ -192,7 +206,7 @@ export default function RAGChat() {
           <span>Ask Assistant</span>
         </button>
       ) : (
-        <Card className="w-[400px] shadow-xl border border-blue-200">
+        <Card className="w-[500px] shadow-xl border border-blue-200">
           <div
             ref={resizeRef}
             onMouseDown={handleResizeStart}
@@ -260,7 +274,65 @@ export default function RAGChat() {
                         )}
                       </button>
                     )}
-                    <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                    {message.type === 'assistant' ? (
+                      <div className="prose prose-xs max-w-none dark:prose-invert 
+                        [&>*]:text-sm 
+                        [&_p]:text-sm 
+                        [&_li]:text-sm 
+                        [&_h3]:text-base
+                        prose-headings:font-semibold 
+                        prose-h3:text-base prose-h3:mt-4 prose-h3:mb-2
+                        prose-h4:text-sm prose-h4:mt-3 prose-h4:mb-1
+                        prose-ul:my-2 prose-ul:pl-6 
+                        prose-ul:list-disc 
+                        prose-ul:marker:text-gray-400
+                        prose-li:pl-0 
+                        prose-li:my-1
+                        prose-li:marker:text-gray-400
+                        [&_li>p]:my-0
+                        [&_li>p:first-child]:inline
+                        prose-p:my-2
+                        prose-code:text-sm prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded
+                        prose-blockquote:border-l-2 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:my-2
+                        prose-pre:bg-gray-900">
+                        <ReactMarkdown
+                          rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
+                          components={{
+                            code: ({ inline, className, children, ...props }: React.ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
+                              const match = /language-(\w+)/.exec(className || '');
+                              return !inline && match ? (
+                                <div className="relative group">
+                                  <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                      onClick={() => handleCopy(String(children), -1)}
+                                      className="bg-white/10 hover:bg-white/20 rounded px-2 py-1 text-xs text-white/80"
+                                    >
+                                      Copy
+                                    </button>
+                                  </div>
+                                  <div className="overflow-x-auto max-w-full">
+                                    <code
+                                      className={`${className} block p-4 rounded-lg`}
+                                      {...props}
+                                    >
+                                      {children}
+                                    </code>
+                                  </div>
+                                </div>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            }
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                    )}
                     
                     {message.sources && message.sources.length > 0 && (
                       <div className="mt-3 pt-2 border-t border-gray-200">
@@ -296,6 +368,8 @@ export default function RAGChat() {
                   </div>
                 </div>
               )}
+
+              <div ref={messagesEndRef} />
             </div>
 
             <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 bg-white">

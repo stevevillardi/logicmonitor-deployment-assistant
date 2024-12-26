@@ -128,3 +128,60 @@ pre[class*="language-"] {
 .token.constant {
     color: #0184bc;
 }
+
+/* Add these to your existing styles */
+.prose pre {
+  background-color: rgb(17 24 39); /* Tailwind gray-900 */
+  margin: 0;
+  color: rgb(243 244 246); /* Tailwind gray-100 */
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.prose code {
+  background-color: rgba(0,0,0,0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.875em;
+}
+
+.prose h3 {
+  font-size: 1.25em;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1em;
+  color: #4b5563;
+  margin: 1em 0;
+}
+
+/* Syntax highlighting colors using Tailwind colors */
+.hljs-keyword { color: rgb(196 181 253); } /* Tailwind violet-300 */
+.hljs-string { color: rgb(110 231 183); } /* Tailwind emerald-300 */
+.hljs-number { color: rgb(251 146 60); } /* Tailwind orange-400 */
+.hljs-function { color: rgb(147 197 253); } /* Tailwind blue-300 */
+.hljs-comment { color: rgb(156 163 175); } /* Tailwind gray-400 */
+
+.prose pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+.prose pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prose pre::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
