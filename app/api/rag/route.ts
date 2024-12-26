@@ -26,6 +26,7 @@ type DocumentMatch = {
   title: string;
   content: string;
   similarity: number;
+  type?: string;
 };
 
 export async function POST(request: Request) {
@@ -228,7 +229,8 @@ Please provide a clear and well-formatted answer based on the documentation cont
       sources: documents.map((doc: DocumentMatch) => ({
         title: doc.title,
         url: doc.url,
-        similarity: doc.similarity
+        similarity: doc.similarity,
+        type: doc.type
       }))
     });
 

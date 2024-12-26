@@ -12,6 +12,7 @@ type Source = {
   title: string;
   url: string;
   similarity: number;
+  type?: string;
 };
 
 type Message = {
@@ -66,6 +67,7 @@ export default function RAGChat() {
   const startHeightRef = useRef(0);
   const startYRef = useRef(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [copiedCodeIndex, setCopiedCodeIndex] = useState<number | null>(null);
 
   // Load chat history and show welcome message if first visit
   useEffect(() => {
@@ -115,9 +117,18 @@ export default function RAGChat() {
     document.addEventListener('mouseup', handleResizeEnd);
   };
 
-  const handleCopy = async (text: string, index: number) => {
+  const handleCopy = async (text: string | React.ReactNode[], index: number) => {
     try {
-      await navigator.clipboard.writeText(text);
+      let copyText = '';
+      if (Array.isArray(text)) {
+        copyText = text
+          .map(node => (typeof node === 'string' ? node : ''))
+          .join('')
+          .replace(/\n\s*\n/g, '\n'); // Clean up extra newlines
+      } else {
+        copyText = String(text);
+      }
+      await navigator.clipboard.writeText(copyText);
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
     } catch (error) {
@@ -206,7 +217,7 @@ export default function RAGChat() {
           <span>Ask Assistant</span>
         </button>
       ) : (
-        <Card className="w-[500px] shadow-xl border border-blue-200">
+        <Card className="w-[600px] shadow-xl border border-blue-200">
           <div
             ref={resizeRef}
             onMouseDown={handleResizeStart}
@@ -276,45 +287,108 @@ export default function RAGChat() {
                     )}
                     {message.type === 'assistant' ? (
                       <div className="prose prose-xs max-w-none dark:prose-invert 
+                        /* Base text sizes */
                         [&>*]:text-sm 
                         [&_p]:text-sm 
                         [&_li]:text-sm 
+                        
+                        /* Heading styling */
+                        [&_h1]:text-lg
+                        [&_h1]:font-semibold
+                        [&_h1]:mt-6
+                        [&_h1]:mb-4
+                        
+                        [&_h2]:text-base
+                        [&_h2]:font-semibold
+                        [&_h2]:mt-5
+                        [&_h2]:mb-3
+                        
                         [&_h3]:text-base
-                        prose-headings:font-semibold 
-                        prose-h3:text-base prose-h3:mt-4 prose-h3:mb-2
-                        prose-h4:text-sm prose-h4:mt-3 prose-h4:mb-1
-                        prose-ul:my-2 prose-ul:pl-6 
-                        prose-ul:list-disc 
-                        prose-ul:marker:text-gray-400
-                        prose-li:pl-0 
-                        prose-li:my-1
-                        prose-li:marker:text-gray-400
-                        [&_li>p]:my-0
-                        [&_li>p:first-child]:inline
-                        prose-p:my-2
-                        prose-code:text-sm prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded
-                        prose-blockquote:border-l-2 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:my-2
-                        prose-pre:bg-gray-900">
+                        [&_h3]:font-semibold
+                        [&_h3]:mt-4
+                        [&_h3]:mb-2
+                        
+                        [&_h4]:text-sm
+                        [&_h4]:font-semibold
+                        [&_h4]:mt-3
+                        [&_h4]:mb-1
+                        
+                        /* Paragraph spacing */
+                        [&_p]:my-2
+                        [&_p]:leading-relaxed
+                        
+                        /* List styling */
+                        [&_ul]:list-disc 
+                        [&_ul]:pl-6 
+                        [&_ul]:my-2
+                        [&_ol]:list-decimal
+                        [&_ol]:pl-6
+                        [&_ol]:my-2
+                        [&_li]:list-item
+                        [&_li]:ml-4
+                        [&_li]:pl-0
+                        [&_li]:my-1
+                        
+                        /* Code styling */
+                        [&_pre]:bg-gray-900
+                        [&_pre]:rounded-lg
+                        [&_pre]:my-3
+                        [&_code:not(pre code)]:text-sm
+                        [&_code:not(pre code)]:bg-gray-100
+                        [&_code:not(pre code)]:px-1.5
+                        [&_code:not(pre code)]:py-0.5
+                        [&_code:not(pre code)]:rounded
+                        
+                        /* Blockquote styling */
+                        [&_blockquote]:border-l-2
+                        [&_blockquote]:border-blue-500
+                        [&_blockquote]:pl-4
+                        [&_blockquote]:my-3
+                        [&_blockquote]:italic
+                        [&_blockquote]:text-gray-600
+                        
+                        /* Section spacing */
+                        [&>*:first-child]:mt-0
+                        [&>*:last-child]:mb-0">
                         <ReactMarkdown
                           rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
                           components={{
                             code: ({ inline, className, children, ...props }: React.ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
                               const match = /language-(\w+)/.exec(className || '');
+                              const codeText = React.Children.toArray(children)
+                                .map(child => {
+                                  if (typeof child === 'string') return child;
+                                  if (React.isValidElement(child)) return child.props.children;
+                                  return '';
+                                })
+                                .join('')
+                                .trim();
+
                               return !inline && match ? (
                                 <div className="relative group">
                                   <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
-                                      onClick={() => handleCopy(String(children), -1)}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleCopy(codeText, -1);
+                                        setCopiedCodeIndex(index);
+                                        setTimeout(() => setCopiedCodeIndex(null), 2000);
+                                      }}
                                       className="bg-white/10 hover:bg-white/20 rounded px-2 py-1 text-xs text-white/80"
                                     >
-                                      Copy
+                                      {copiedCodeIndex === index ? (
+                                        <span className="flex items-center gap-1">
+                                          <Check className="w-3 h-3" />
+                                          Copied
+                                        </span>
+                                      ) : (
+                                        'Copy'
+                                      )}
                                     </button>
                                   </div>
                                   <div className="overflow-x-auto max-w-full">
-                                    <code
-                                      className={`${className} block p-4 rounded-lg`}
-                                      {...props}
-                                    >
+                                    <code className={`${className} block p-6 rounded-lg m-2`} {...props}>
                                       {children}
                                     </code>
                                   </div>
@@ -329,6 +403,14 @@ export default function RAGChat() {
                         >
                           {message.content}
                         </ReactMarkdown>
+                        {process.env.NODE_ENV === 'development' && (
+                          <details className="mt-4 p-2 bg-gray-100 rounded text-xs">
+                            <summary>Raw Response</summary>
+                            <pre className="whitespace-pre-wrap">
+                              {message.content}
+                            </pre>
+                          </details>
+                        )}
                       </div>
                     ) : (
                       <p className="whitespace-pre-wrap text-sm">{message.content}</p>
@@ -339,17 +421,22 @@ export default function RAGChat() {
                         <p className="text-xs font-semibold mb-1 text-gray-500">Sources:</p>
                         <div className="space-y-1">
                           {message.sources.map((source, idx) => (
-                            <div key={idx} className="flex items-start space-x-1">
-                              <ExternalLink className="w-3 h-3 mt-0.5 flex-shrink-0 text-blue-600" />
-                              <div className="text-xs">
+                            <div key={idx} className="flex items-start gap-2">
+                              <ExternalLink className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
+                              <div className="flex flex-wrap items-center gap-2">
                                 <a
                                   href={source.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-600 hover:underline"
+                                  className="text-xs text-blue-600 hover:underline"
                                 >
                                   {source.title}
                                 </a>
+                                {source.type && (
+                                  <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-medium whitespace-nowrap">
+                                    {source.type}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           ))}
