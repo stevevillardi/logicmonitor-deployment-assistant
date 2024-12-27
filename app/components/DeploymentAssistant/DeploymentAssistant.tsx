@@ -20,6 +20,7 @@ import SwaggerUIComponent from '../APIExplorer/SwaggerUI';
 import { VersionInfo } from '../VersionInfo/VersionInfo';
 import { LaunchTour } from '../PlatformTour/LaunchTour';
 import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
+import { CartProvider } from '@/app/contexts/CartContext';
 const Logo = () => {
     return (
         <div className="flex items-center">
@@ -264,7 +265,9 @@ const DeploymentAssistant = () => {
 
                         {activeTab === 'dashboard-explorer' && (
                             <div className="mt-6">
-                                <DashboardExplorer />
+                                <CartProvider>
+                                    <DashboardExplorer />
+                                </CartProvider>
                             </div>
                         )}
 

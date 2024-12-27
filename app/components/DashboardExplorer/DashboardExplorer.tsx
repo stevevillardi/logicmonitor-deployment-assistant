@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Layout, Info } from 'lucide-react';
+import { Search, Filter, Layout, Info, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -9,6 +9,8 @@ import { createClient } from '@supabase/supabase-js';
 import DashboardPreview from './DashboardPreview';
 import DashboardMiniPreview from './DashboardMiniPreview';
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useCart } from '../../contexts/CartContext';
+import CartModal from './CartModal';
 
 // Define the dashboard type
 interface Dashboard {
@@ -41,6 +43,8 @@ const DashboardExplorer = () => {
     const [selectedDashboard, setSelectedDashboard] = useState<any>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [categoryGroups, setCategoryGroups] = useState<Record<string, string[]>>({});
+    const { selectedDashboards, addDashboard, removeDashboard, isDashboardSelected } = useCart();
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     // Reset page when category or search changes
     useEffect(() => {
@@ -157,14 +161,38 @@ const DashboardExplorer = () => {
         );
     }
 
+    const cartButton = (
+        <Button
+            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 w-full sm:w-auto"
+            onClick={() => setIsCartOpen(true)}
+        >
+            <Layout className="w-4 h-4" />
+            Dashboard Cart
+            <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs">
+                {selectedDashboards.length}
+            </span>
+        </Button>
+    );
+
+    const toggleDashboardSelection = (dashboard: any) => {
+        if (isDashboardSelected(dashboard.path)) {
+            removeDashboard(dashboard.path);
+        } else {
+            addDashboard(dashboard);
+        }
+    };
+
     return (
         <TooltipProvider>
             <div className="space-y-6">
                 <Card>
                     <CardHeader className="border-b border-gray-200 bg-gray-50">
-                        <div className="flex items-center gap-3">
-                            <Layout className="w-6 h-6 text-blue-700" />
-                            <CardTitle>Dashboard Explorer</CardTitle>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Layout className="w-6 h-6 text-blue-700" />
+                                <CardTitle>Dashboard Explorer</CardTitle>
+                            </div>
+                            {cartButton}
                         </div>
                     </CardHeader>
                     <CardContent className="p-4 sm:p-6">
@@ -255,30 +283,35 @@ const DashboardExplorer = () => {
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         {currentDashboards.map((dashboard) => (
                                             <DashboardMiniPreview key={dashboard.path} dashboard={dashboard.content}>
-                                                <div className="group bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all">
+                                                <div className="group bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all relative">
                                                     <div className="flex justify-between items-start">
                                                         <div className="flex-1">
-                                                            <h3 
-                                                                className={`text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors cursor-pointer ${
-                                                                    dashboard.path.includes('Legacy') || dashboard.path.includes('Previous') ? 'italic' : ''
-                                                                }`}
-                                                                onClick={() => {
-                                                                    setSelectedDashboard(dashboard.content);
-                                                                    setIsPreviewOpen(true);
-                                                                }}
-                                                            >
-                                                                {dashboard.name}
-                                                                {dashboard.path.includes('Legacy') && (
-                                                                    <span className="ml-2 text-xs font-normal text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                                                                        Legacy
-                                                                    </span>
-                                                                )}
-                                                                {dashboard.path.includes('Previous') && (
-                                                                    <span className="ml-2 text-xs font-normal text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                                                                        Previous
-                                                                    </span>
-                                                                )}
-                                                            </h3>
+                                                            <div className="flex items-center justify-between">
+                                                                <h3 
+                                                                    className={`text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors cursor-pointer ${
+                                                                        dashboard.path.includes('Legacy') || dashboard.path.includes('Previous') ? 'italic' : ''
+                                                                    }`}
+                                                                    onClick={() => {
+                                                                        setSelectedDashboard(dashboard.content);
+                                                                        setIsPreviewOpen(true);
+                                                                    }}
+                                                                >
+                                                                    {dashboard.name}
+                                                                    {dashboard.path.includes('Legacy') && (
+                                                                        <span className="ml-2 text-xs font-normal text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                                                                            Legacy
+                                                                        </span>
+                                                                    )}
+                                                                    {dashboard.path.includes('Previous') && (
+                                                                        <span className="ml-2 text-xs font-normal text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
+                                                                            Previous
+                                                                        </span>
+                                                                    )}
+                                                                </h3>
+                                                                <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
+                                                                    {dashboard.category}
+                                                                </span>
+                                                            </div>
                                                             <p className="text-sm text-gray-600 mt-1 line-clamp-2">{dashboard.description}</p>
                                                             <div className="flex items-center gap-4 mt-3">
                                                                 <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
@@ -292,13 +325,13 @@ const DashboardExplorer = () => {
                                                             </div>
                                                             <div className="flex items-center gap-3 mt-4 pt-3 border-t">
                                                                 <a
-                                                                    href={`https://github.com/logicmonitor/dashboards/blob/master/${dashboard.path}`}
+                                                                    href={dashboard.url}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="text-xs text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
                                                                 >
-                                                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                                                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                                     </svg>
                                                                     View Source
                                                                 </a>
@@ -322,11 +355,28 @@ const DashboardExplorer = () => {
                                                                     </svg>
                                                                     Download
                                                                 </button>
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        toggleDashboardSelection(dashboard);
+                                                                    }}
+                                                                    className="text-xs text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+                                                                >
+                                                                    {isDashboardSelected(dashboard.path) ? (
+                                                                        <>
+                                                                            <Minus className="w-4 h-4" />
+                                                                            Remove from Dashboard Import
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <Plus className="w-4 h-4" />
+                                                                            Add to DashboardImport
+                                                                        </>
+                                                                    )}
+                                                                </button>
                                                             </div>
                                                         </div>
-                                                        <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                                                            {dashboard.category}
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </DashboardMiniPreview>
@@ -364,6 +414,10 @@ const DashboardExplorer = () => {
                     isOpen={isPreviewOpen}
                     onClose={() => setIsPreviewOpen(false)}
                     dashboard={selectedDashboard}
+                />
+                <CartModal 
+                    isOpen={isCartOpen}
+                    onClose={() => setIsCartOpen(false)}
                 />
             </div>
         </TooltipProvider>

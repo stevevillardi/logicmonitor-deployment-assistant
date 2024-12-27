@@ -11,7 +11,7 @@ const DashboardExplorerPage = memo(function DashboardExplorerPage() {
         <main className="flex-grow py-4 sm:p-8">
         <DeploymentAssistant />
       </main>
-      <Footer />
+        <Footer />
       </div>
     </ProtectedRoute>
   );
