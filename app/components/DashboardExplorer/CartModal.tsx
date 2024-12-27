@@ -243,7 +243,11 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                             <TooltipTrigger>
                               <AlertCircle className="w-4 h-4 text-red-500 cursor-help" />
                             </TooltipTrigger>
-                            <TooltipContent side="left" sideOffset={5}>
+                            <TooltipContent 
+                              side="left" 
+                              sideOffset={5}
+                              className="bg-gray-900 text-white border-none shadow-lg"
+                            >
                               {dashboard.error}
                             </TooltipContent>
                           </Tooltip>
@@ -265,7 +269,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
               className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Enter your portal name (e.g., "company" from company.logicmonitor.com)
+              Enter your portal name (e.g., &quot;company&quot; from company.logicmonitor.com)
             </p>
           </div>
 
