@@ -213,7 +213,7 @@ const DeploymentAssistant = () => {
                                 className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                             >
                                 <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="hidden xl:inline">Reports (Beta)</span>
+                                <span className="hidden xl:inline">Reports (Preview)</span>
                             </Button>
                             <VersionInfo />
                             <LaunchTour />

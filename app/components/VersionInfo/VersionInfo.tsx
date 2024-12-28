@@ -148,6 +148,77 @@ const VERSIONS = [
         version: "1.0.2",
         date: "2024-12-24",
         sections: CHANGELOG_SECTIONS // Previous changelog sections
+    },
+    {
+        version: "1.0.1",
+        date: "2024-12-15",
+        sections: [
+            {
+                title: "Deployment Assistant Core",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Initial release of the LogicMonitor Deployment Assistant",
+                    "Interactive deployment configuration interface",
+                    "Automated collector sizing calculations",
+                    "Resource requirement estimations",
+                    "Multi-site deployment support"
+                ]
+            },
+            {
+                title: "Collector Configuration",
+                icon: <Server className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Basic collector sizing calculations",
+                    "Support for multiple collector deployment scenarios",
+                    "Device and instance count based sizing",
+                    "Automatic collector distribution recommendations",
+                    "Basic protocol load calculations (SNMP, WMI, etc.)"
+                ]
+            },
+            {
+                title: "Monitoring Scope",
+                icon: <Network className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Device count based calculations",
+                    "Instance count estimations",
+                    "Basic monitoring protocol support",
+                    "Resource metrics collection configuration",
+                    "Performance metric calculations"
+                ]
+            },
+            {
+                title: "Cloud Integration",
+                icon: <Cloud className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Basic cloud provider support (AWS, Azure, GCP)",
+                    "Cloud instance size recommendations",
+                    "Resource allocation guidelines",
+                    "Cloud deployment considerations"
+                ]
+            },
+            {
+                title: "Reports & Documentation",
+                icon: <Code className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Basic deployment reports generation",
+                    "Resource requirement documentation",
+                    "Configuration recommendations",
+                    "Best practices documentation",
+                    "Deployment architecture diagrams"
+                ]
+            },
+            {
+                title: "User Interface",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Clean, intuitive web interface",
+                    "Step-by-step configuration workflow",
+                    "Interactive form controls",
+                    "Real-time calculation updates",
+                    "Mobile-responsive design"
+                ]
+            }
+        ]
     }
 ];
 

@@ -405,8 +405,8 @@ export default function RAGChat() {
                         </ReactMarkdown>
                         {process.env.NODE_ENV === 'development' && (
                           <details className="mt-4 p-2 bg-gray-100 rounded text-xs">
-                            <summary>Raw Response</summary>
-                            <pre className="whitespace-pre-wrap">
+                            <summary className="cursor-pointer hover:text-blue-600">Raw Response</summary>
+                            <pre className="whitespace-pre-wrap mt-2 px-3 py-2 bg-white rounded border border-gray-200">
                               {message.content}
                             </pre>
                           </details>
