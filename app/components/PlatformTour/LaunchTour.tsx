@@ -26,7 +26,7 @@ export const LaunchTour = () => {
                     aria-label="Launch Platform Tour"
                 >
                     <Play className="w-4 h-4 text-blue-700" />
-                    <span className="hidden xl:inline">Platform Tour</span>
+                    <span className="hidden 2xl:inline">Platform Tour</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className={cn(

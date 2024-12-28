@@ -89,7 +89,6 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         try {
           const parsedAuth = JSON.parse(savedAuth);
 
-          console.log('parsedAuth', parsedAuth);
           if (parsedAuth?.BearerToken?.value) {
             setBearerToken(parsedAuth.BearerToken.value);
           }
