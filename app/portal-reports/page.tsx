@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { FileText, ChevronLeft, Info } from 'lucide-react';
+import { FileText, ChevronLeft, Info, Eye, EyeOff } from 'lucide-react';
 import DeviceReport from './components/DeviceReport';
 import ResourceGroupReport from './components/ResourceGroupReport';
 import AlertReport from './components/AlertReport';
@@ -16,35 +16,61 @@ const PortalReports = () => {
   const [portalName, setPortalName] = useState('');
   const [bearerToken, setBearerToken] = useState('');
   const [reportType, setReportType] = useState<ReportType>(null);
+  const [showToken, setShowToken] = useState(false);
 
   useEffect(() => {
     // Load stored values after component mounts
-    const storedPortal = localStorage.getItem('portalName');
-    const storedToken = sessionStorage.getItem('bearerToken');
+    const savedPortalName = localStorage.getItem('portalName');
+    const savedAuth = localStorage.getItem('authorized');
     
-    if (storedPortal) setPortalName(storedPortal);
-    if (storedToken) setBearerToken(storedToken);
-  }, []); // Empty dependency array means this runs once on mount
+    if (savedPortalName) setPortalName(savedPortalName);
+    if (savedAuth) {
+      try {
+        // Validate that we have a non-empty string before parsing
+        if (typeof savedAuth === 'string' && savedAuth.trim()) {
+          const parsedAuth = JSON.parse(savedAuth);
+          // Validate the expected structure exists
+          if (parsedAuth && 
+              typeof parsedAuth === 'object' && 
+              parsedAuth.BearerToken?.value &&
+              typeof parsedAuth.BearerToken.value === 'string') {
+            setBearerToken(parsedAuth.BearerToken.value);
+          } else {
+            console.warn('Invalid bearer token structure in localStorage');
+          }
+        }
+      } catch (err) {
+        console.error('Error parsing bearer token from localStorage:', err);
+        // Optionally clear invalid data
+        localStorage.removeItem('authorized');
+      }
+    }
+  }, []); 
+
+  const handleBearerTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setBearerToken(value);
+    
+    // Rebuild the authorized object structure
+    const authorizedData = {
+      BearerToken: {
+        name: "BearerToken",
+        schema: {
+          type: "http",
+          scheme: "bearer"
+        },  
+        value: value
+      }
+    };
+
+    localStorage.setItem('authorized', JSON.stringify(authorizedData));
+  };
 
   useEffect(() => {
     if (portalName) {
       localStorage.setItem('portalName', portalName);
     }
   }, [portalName]);
-
-  useEffect(() => {
-    if (bearerToken) {
-      // Use sessionStorage for bearer token (more secure than localStorage)
-      sessionStorage.setItem('bearerToken', bearerToken);
-    }
-  }, [bearerToken]);
-
-  useEffect(() => {
-    return () => {
-      // Optionally clear token on component unmount
-      // sessionStorage.removeItem('bearerToken');
-    };
-  }, []);
 
   return (
     <ProtectedRoute>
@@ -94,13 +120,26 @@ const PortalReports = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Bearer Token</label>
-                    <Input
-                      type="password"
-                      placeholder="Enter your bearer token..."
-                      value={bearerToken}
-                      onChange={(e) => setBearerToken(e.target.value)}
-                      className="bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
-                    />
+                    <div className="relative">
+                      <Input
+                        type={showToken ? "text" : "password"}
+                        placeholder="Enter your bearer token..."
+                        value={bearerToken}
+                        onChange={handleBearerTokenChange}
+                        className="bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowToken(!showToken)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showToken ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Report Type</label>

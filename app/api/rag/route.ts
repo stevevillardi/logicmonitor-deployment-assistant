@@ -1,15 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+
 import Anthropic from '@anthropic-ai/sdk';
 import { VoyageAIClient } from 'voyageai';
 import { NextResponse } from 'next/server';
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-// Initialize clients
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_KEY!
-);
+import supabase from '../../lib/supabase';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,

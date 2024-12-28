@@ -1,5 +1,5 @@
-import React from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot } from 'lucide-react';
+import React, { useState } from 'react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -10,10 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-// Version information
-const APP_VERSION = "1.0.2";
-const RELEASE_DATE = "2024-12-24";
 
 // Changelog sections with icons
 const CHANGELOG_SECTIONS = [
@@ -107,7 +103,65 @@ const CHANGELOG_SECTIONS = [
     }
 ];
 
+// Version information
+const VERSIONS = [
+    {
+        version: "1.0.3",
+        date: "2024-12-28",
+        sections: [
+            {
+                title: "Enhanced AI Chat Experience",
+                icon: <Bot className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Improved response quality with enhanced RAG models for more accurate and contextual answers",
+                    "Rich markdown formatting with syntax highlighting for code snippets",
+                    "Expanded knowledge base with support for multiple data types and sources",
+                    "Real-time source attribution for transparent and verifiable responses",
+                    "Improved code block styling for better readability"
+                ]
+            },
+            {
+                title: "Dashboard Explorer",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added new Dashboard Explorer feature for browsing and importing dashboards",
+                    "Support for filtering and organizing dashboards by category",
+                    "Preview functionality for dashboard widgets",
+                    "Cart style import system for selecting multiple dashboards",
+                    "Automatic sync with core LogicMonitor GitHub repository every 6 hours"
+                ]
+            },
+            {
+                title: "API/Portal Improvements",
+                icon: <Code className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added dynamic repository branch detection",
+                    "New routes for dashboard syncing and fetching",
+                    "Enhanced error handling for GitHub API requests",
+                    "Supabase integration for dashboard storage",
+                    "Portal authentication details unified accross Reports, API Explorer, and Dashboard Explorer"
+                ]
+            }
+        ]
+    },
+    {
+        version: "1.0.2",
+        date: "2024-12-24",
+        sections: CHANGELOG_SECTIONS // Previous changelog sections
+    }
+];
+
 export const VersionInfo = () => {
+    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.3"]);
+
+    const toggleVersion = (version: string) => {
+        setExpandedVersions(prev => 
+            prev.includes(version) 
+                ? prev.filter(v => v !== version)
+                : [...prev, version]
+        );
+    };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -123,31 +177,54 @@ export const VersionInfo = () => {
                     <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
                         <div className="flex items-center gap-2">
                             <GitBranch className="h-5 w-5" />
-                            Version {APP_VERSION} Release Notes
+                            Release Notes
                         </div>
                     </DialogTitle>
-                    <DialogDescription className="text-sm text-gray-600">
-                        Released on {RELEASE_DATE}
-                    </DialogDescription>
                 </DialogHeader>
 
                 <ScrollArea className="h-[600px] pr-4 overflow-y-auto">
-                    <div className="space-y-4 py-3 pr-4">
-                        {CHANGELOG_SECTIONS.map((section, index) => (
-                            <div key={index} className="bg-white rounded-lg border border-blue-200 shadow-sm p-3">
-                                <div className="flex items-start gap-2 mb-2">
-                                    {section.icon}
-                                    <h3 className="font-medium text-gray-900">
-                                        {section.title}
-                                    </h3>
-                                </div>
-                                <ul className="space-y-1.5 text-sm text-gray-600 ml-6">
-                                    {section.items.map((item, itemIndex) => (
-                                        <li key={itemIndex} className="list-disc">
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
+                    <div className="space-y-6 py-3 pr-4">
+                        {VERSIONS.map((versionInfo) => (
+                            <div key={versionInfo.version} className="bg-white rounded-lg border border-blue-200 shadow-sm p-4">
+                                <button
+                                    onClick={() => toggleVersion(versionInfo.version)}
+                                    className="w-full flex items-center justify-between mb-2 text-left"
+                                >
+                                    <div>
+                                        <h2 className="text-lg font-semibold text-gray-900">
+                                            Version {versionInfo.version}
+                                        </h2>
+                                        <p className="text-sm text-gray-600">
+                                            Released on {versionInfo.date}
+                                        </p>
+                                    </div>
+                                    {expandedVersions.includes(versionInfo.version) 
+                                        ? <ChevronUp className="h-5 w-5 text-gray-500" />
+                                        : <ChevronDown className="h-5 w-5 text-gray-500" />
+                                    }
+                                </button>
+
+                                {expandedVersions.includes(versionInfo.version) && (
+                                    <div className="space-y-4 mt-4">
+                                        {versionInfo.sections.map((section, index) => (
+                                            <div key={index} className="bg-blue-50 rounded-lg border border-blue-100 p-3">
+                                                <div className="flex items-start gap-2 mb-2">
+                                                    {section.icon}
+                                                    <h3 className="font-medium text-gray-900">
+                                                        {section.title}
+                                                    </h3>
+                                                </div>
+                                                <ul className="space-y-1.5 text-sm text-gray-600 ml-6">
+                                                    {section.items.map((item, itemIndex) => (
+                                                        <li key={itemIndex} className="list-disc">
+                                                            {item}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

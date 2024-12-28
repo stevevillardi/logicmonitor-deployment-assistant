@@ -1,0 +1,6 @@
+{
+  "crons": [{
+    "path": "/api/cron/sync-dashboards",
+    "schedule": "0 */6 * * *"
+  }]
+} 

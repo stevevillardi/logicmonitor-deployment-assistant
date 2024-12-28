@@ -8,7 +8,7 @@ import SiteOverview from '../SiteOverview/SiteOverview';
 import CollectorInfo from '../CollectorInfo/CollectorInfo';
 import { Config, Site } from './types/types';
 import Image from 'next/image';
-import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText } from 'lucide-react';
+import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -19,6 +19,8 @@ import { getInitialConfig, getInitialSites } from './utils/storage';
 import SwaggerUIComponent from '../APIExplorer/SwaggerUI';
 import { VersionInfo } from '../VersionInfo/VersionInfo';
 import { LaunchTour } from '../PlatformTour/LaunchTour';
+import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
+import { CartProvider } from '@/app/contexts/CartContext';
 const Logo = () => {
     return (
         <div className="flex items-center">
@@ -42,7 +44,8 @@ const TAB_PATHS = {
     'collector-info': '/collector-info',
     'api-explorer': '/api-explorer',
     'device-onboarding': '/device-onboarding',
-    'video-library': '/video-library'
+    'video-library': '/video-library',
+    'dashboard-explorer': '/dashboard-explorer' 
 } as const;
 
 const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
@@ -58,6 +61,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
         { id: 'overview', label: 'Deployment Overview', icon: <BookText className="w-4 h-4" /> },
         { id: 'device-onboarding', label: 'Device Information', icon: <Server className="w-4 h-4" /> },
         { id: 'collector-info', label: 'Collector Information', icon: <Bot className="w-4 h-4" /> },
+        { id: 'dashboard-explorer', label: 'Dashboard Explorer', icon: <ChartLine className="w-4 h-4" /> },
         { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
         { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
         { id: 'system', label: 'System Settings', icon: <Settings className="w-4 h-4" /> },
@@ -256,6 +260,14 @@ const DeploymentAssistant = () => {
                         {activeTab === 'collector-info' && (
                             <div className="mt-6">
                                 <CollectorInfo config={config} />
+                            </div>
+                        )}
+
+                        {activeTab === 'dashboard-explorer' && (
+                            <div className="mt-6">
+                                <CartProvider>
+                                    <DashboardExplorer />
+                                </CartProvider>
                             </div>
                         )}
 
