@@ -2,11 +2,6 @@ import supabase from '../../../lib/supabase';
 import { NextResponse } from 'next/server';
 import { getDefaultBranch } from '../../../utils/github';
 
-// Suppress SSL certificate errors for dev environment
-if (process.env.NODE_ENV !== 'production') {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
 export async function POST() {
   try {
     // First, get the default branch
