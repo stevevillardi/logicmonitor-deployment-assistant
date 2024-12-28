@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Layout, Info, ShoppingCart, Plus, Minus } from 'lucide-react';
+import { Search, Filter, Layout, Info, ShoppingCart, Plus, Minus, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { createClient } from '@supabase/supabase-js';
 import DashboardPreview from './DashboardPreview';
 import DashboardMiniPreview from './DashboardMiniPreview';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCart } from '../../contexts/CartContext';
 import CartModal from './CartModal';
+import supabase from '../../lib/supabase';
 
 // Define the dashboard type
 interface Dashboard {
@@ -26,11 +26,6 @@ interface Dashboard {
     lastUpdated?: string;
 }
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 const DashboardExplorer = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
@@ -43,7 +38,13 @@ const DashboardExplorer = () => {
     const [selectedDashboard, setSelectedDashboard] = useState<any>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [categoryGroups, setCategoryGroups] = useState<Record<string, string[]>>({});
-    const { selectedDashboards, addDashboard, removeDashboard, isDashboardSelected } = useCart();
+    const { 
+        selectedDashboards, 
+        addDashboard, 
+        removeDashboard, 
+        isDashboardSelected,
+        clearCart
+    } = useCart();
     const [isCartOpen, setIsCartOpen] = useState(false);
 
     // Reset page when category or search changes
@@ -132,18 +133,64 @@ const DashboardExplorer = () => {
         return (
             <div className="space-y-6">
                 <Card>
-                    <CardHeader className="border-b border-gray-200 bg-gray-50">
-                        <div className="flex items-center gap-3">
-                            <Layout className="w-6 h-6 text-blue-700" />
-                            <CardTitle>Dashboard Explorer</CardTitle>
+                    <CardHeader className="border-b border-gray-200 bg-gray-50 p-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Layout className="w-6 h-6 text-blue-700" />
+                                <CardTitle>Dashboard Explorer</CardTitle>
+                            </div>
+                            <div className="animate-pulse w-40 h-10 bg-gray-200 rounded-lg" />
                         </div>
                     </CardHeader>
                     <CardContent className="p-4 sm:p-6">
-                        <div className="flex justify-center items-center min-h-[400px]">
-                            <div className="animate-pulse space-y-4">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="h-24 bg-gray-200 rounded-lg w-full" />
-                                ))}
+                        <div className="flex flex-col min-h-[800px]">
+                            {/* Info Banner Skeleton */}
+                            <div className="mb-6">
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-pulse">
+                                    <div className="h-4 bg-blue-100 rounded w-3/4 mb-3" />
+                                    <div className="h-4 bg-blue-100 rounded w-1/2" />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-6">
+                                {/* Left Sidebar Skeleton */}
+                                <div className="hidden md:block w-64 shrink-0 space-y-2">
+                                    {[...Array(6)].map((_, i) => (
+                                        <div key={i} className="h-8 bg-gray-100 rounded animate-pulse" />
+                                    ))}
+                                </div>
+
+                                {/* Main Content Skeleton */}
+                                <div className="flex-1">
+                                    {/* Search Bar Skeleton */}
+                                    <div className="mb-6">
+                                        <div className="h-10 bg-gray-100 rounded-lg animate-pulse" />
+                                    </div>
+
+                                    {/* Dashboard Grid Skeleton */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                        {[...Array(6)].map((_, i) => (
+                                            <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
+                                                <div className="animate-pulse space-y-3">
+                                                    <div className="flex justify-between">
+                                                        <div className="h-6 bg-gray-200 rounded w-1/2" />
+                                                        <div className="h-6 bg-gray-200 rounded w-20" />
+                                                    </div>
+                                                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                                                    <div className="flex gap-2">
+                                                        <div className="h-4 bg-gray-200 rounded w-16" />
+                                                        <div className="h-4 bg-gray-200 rounded w-24" />
+                                                    </div>
+                                                    <div className="pt-3 border-t flex gap-3">
+                                                        <div className="h-4 bg-gray-200 rounded w-20" />
+                                                        <div className="h-4 bg-gray-200 rounded w-20" />
+                                                        <div className="h-4 bg-gray-200 rounded w-32" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </CardContent>
@@ -167,7 +214,7 @@ const DashboardExplorer = () => {
             onClick={() => setIsCartOpen(true)}
         >
             <Layout className="w-4 h-4" />
-            Dashboard Cart
+            Dashboard Import List
             <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs">
                 {selectedDashboards.length}
             </span>
@@ -182,11 +229,20 @@ const DashboardExplorer = () => {
         }
     };
 
+    const handleSelectAll = () => {
+        // Add all filtered dashboards to cart
+        filteredDashboards.forEach(dashboard => {
+            if (!isDashboardSelected(dashboard.path)) {
+                addDashboard(dashboard);
+            }
+        });
+    };
+
     return (
         <TooltipProvider>
             <div className="space-y-6">
                 <Card>
-                    <CardHeader className="border-b border-gray-200 bg-gray-50">
+                    <CardHeader className="border-b border-gray-200 bg-gray-50 p-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Layout className="w-6 h-6 text-blue-700" />
@@ -205,7 +261,7 @@ const DashboardExplorer = () => {
                                         <span className="font-medium">Explore LogicMonitor Dashboards</span>
                                     </div>
                                     <p className="text-sm text-blue-600">
-                                        Browse through our collection of pre-configured dashboards. Each dashboard is designed to provide comprehensive monitoring for specific aspects of your infrastructure.
+                                        Browse through our collection of pre-configured dashboards. Each dashboard is designed to provide comprehensive monitoring for specific aspects of your infrastructure. Add dashboards to your dashboard import list to import them into your LogicMonitor portal.
                                     </p>
                                 </div>
                             </div>
@@ -248,14 +304,32 @@ const DashboardExplorer = () => {
                                 <div className="flex-1">
                                     {/* Search Bar */}
                                     <div className="mb-6">
-                                        <div className="relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                                            <Input
-                                                placeholder="Search dashboards..."
-                                                value={searchTerm}
-                                                onChange={(e) => setSearchTerm(e.target.value)}
-                                                className="w-full pl-9 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-200"
-                                            />
+                                        <div className="flex gap-3">
+                                            <div className="relative flex-1">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                                <Input
+                                                    placeholder="Search dashboards..."
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="w-full pl-9 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                                                />
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                onClick={handleSelectAll}
+                                                className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                                            >
+                                                <Plus className="w-4 h-4 mr-2" />
+                                                Select All
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                onClick={clearCart}
+                                                className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                                            >
+                                                <X className="w-4 h-4 mr-2" />
+                                                Clear All
+                                            </Button>
                                         </div>
                                         <div className="mt-2 text-sm text-gray-500">
                                             {filteredDashboards.length} {filteredDashboards.length === 1 ? 'dashboard' : 'dashboards'} found
@@ -275,6 +349,11 @@ const DashboardExplorer = () => {
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[240px]">
                                                 {/* Same category content as sidebar */}
+                                                {categories.map(category => (
+                                                    <div key={category} className="px-3 py-2 rounded-md cursor-pointer text-sm">
+                                                        {category}
+                                                    </div>
+                                                ))}
                                             </PopoverContent>
                                         </Popover>
                                     </div>

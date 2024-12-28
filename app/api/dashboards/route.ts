@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getDefaultBranch } from '../../utils/github';
 
 interface GithubTreeItem {
   path: string;
@@ -17,13 +18,16 @@ interface GithubContent {
 
 export async function GET() {
   try {
-    // First, get the repository tree to find all JSON files
+    // First, get the default branch
+    const defaultBranch = await getDefaultBranch('logicmonitor', 'dashboards');
+
+    // Then get the repository tree using the default branch
     const treeResponse = await fetch(
-      'https://api.github.com/repos/logicmonitor/dashboards/git/trees/master?recursive=1',
+      `https://api.github.com/repos/logicmonitor/dashboards/git/trees/${defaultBranch}?recursive=1`,
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'Authorization': `Bearer ${process.env.GITHUB_TOKEN}` // Optional: for higher rate limits
+          'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`
         }
     });
 
