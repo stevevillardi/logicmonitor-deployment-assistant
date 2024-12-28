@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -109,6 +109,15 @@ const VERSIONS = [
         version: "1.0.3",
         date: "2024-12-28",
         sections: [
+            {
+                title: "Improved Login Experience",
+                icon: <LogIn className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Removed the previous basic auth login page",
+                    "Added Google and GitHub OAuth login support",
+                    "Added initial user profile page"
+                ]
+            },
             {
                 title: "Enhanced AI Chat Experience",
                 icon: <Bot className="w-4 h-4 text-blue-600" />,
@@ -240,7 +249,7 @@ export const VersionInfo = () => {
                     className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:text-gray-900 hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                 >
                     <Info className="w-3 h-3 text-blue-700" />
-                    <span className="hidden xl:inline">Release Notes</span>
+                    <span className="hidden 2xl:inline">Release Notes</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">

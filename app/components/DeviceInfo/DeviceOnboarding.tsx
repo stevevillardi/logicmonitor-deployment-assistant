@@ -2,7 +2,8 @@ import React from 'react';
 import { CodeSamples } from './CodeSamples';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FaAws, FaSlack } from "react-icons/fa6";
-import { SiMicrosoftazure, SiPowershell } from "react-icons/si";
+import { TfiMicrosoftAlt } from "react-icons/tfi";
+import { BsFillTerminalFill } from "react-icons/bs";
 import { FaGoogle } from "react-icons/fa";
 import { SiKubernetes } from "react-icons/si";
 import { TbLicense } from "react-icons/tb";
@@ -37,7 +38,7 @@ const methodRefs: MethodRef[] = [
     {
         id: 'csv-import',
         title: 'PowerShell CSV Import',
-        icon: SiPowershell,
+        icon: TfiMicrosoftAlt,
         shortDesc: 'for bulk device onboarding'
     },
     {
@@ -265,7 +266,7 @@ const DeviceOnboarding: React.FC = () => {
                                 <div className="space-y-6">
                                     <OnboardingMethod
                                         id="csv-import"
-                                        icon={SiPowershell}
+                                        icon={TfiMicrosoftAlt}
                                         title="PowerShell Module - CSV Import"
                                         description="Bulk import devices using a CSV file with predefined properties and resource configurations."
                                         recommended
@@ -417,7 +418,7 @@ const DeviceOnboarding: React.FC = () => {
                                             </div>
                                             <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
                                                 <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base flex items-center gap-2">
-                                                    <SiMicrosoftazure className="w-4 h-4" />
+                                                    <BsFillTerminalFill className="w-4 h-4" />
                                                     <span>Azure</span>
                                                 </h4>
                                                 <div className="space-y-2">

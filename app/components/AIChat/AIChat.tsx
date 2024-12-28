@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
+import { useAuth } from '../../hooks/useAuth';
 
 type Source = {
   title: string;
@@ -57,6 +58,7 @@ What would you like to know?`,
 };
 
 export default function RAGChat() {
+  const { isAuthenticated } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -202,7 +204,8 @@ export default function RAGChat() {
     scrollToBottom();
   }, [messages, isMinimized]);
 
-  if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
+  // Early return if not authenticated
+  if (!isAuthenticated || process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
     return null;
   }
 

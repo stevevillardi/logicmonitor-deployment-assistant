@@ -21,6 +21,7 @@ import { VersionInfo } from '../VersionInfo/VersionInfo';
 import { LaunchTour } from '../PlatformTour/LaunchTour';
 import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
 import { CartProvider } from '@/app/contexts/CartContext';
+import { Profile } from '../Authentication/Profile';
 const Logo = () => {
     return (
         <div className="flex items-center">
@@ -213,10 +214,11 @@ const DeploymentAssistant = () => {
                                 className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
                             >
                                 <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="hidden xl:inline">Reports (Preview)</span>
+                                <span className="hidden 2xl:inline">Reports (Preview)</span>
                             </Button>
                             <VersionInfo />
                             <LaunchTour />
+                            <Profile />
                         </div>
                     </div>
                 </CardHeader>

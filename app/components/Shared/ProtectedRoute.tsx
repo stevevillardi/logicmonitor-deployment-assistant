@@ -1,17 +1,33 @@
-import React from 'react';
+'use client';
+
 import { useAuth } from '../../hooks/useAuth';
-import LoginPage from '../Authentication/LoginPage';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import LoadingPlaceholder from './LoadingPlaceholder';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, setIsAuthenticated, isLoading } = useAuth();
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
 
-  if (isLoading) {
-    return (<LoadingPlaceholder/>);
-  }
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
 
-  if (!isAuthenticated) {
-    return <LoginPage onLogin={setIsAuthenticated} />;
+  useEffect(() => {
+    console.log('Protected Route:', { 
+      isAuthenticated, 
+      isLoading, 
+      path: window.location.pathname 
+    });
+    
+    if (!isLoading && !isAuthenticated) {
+      console.log('Redirecting to login from:', window.location.pathname);
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading || !isAuthenticated) {
+    return <LoadingPlaceholder />;
   }
 
   return <>{children}</>;

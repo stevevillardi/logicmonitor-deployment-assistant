@@ -1,8 +1,8 @@
 'use client';
 
+import DeploymentAssistant from './components/DeploymentAssistant/DeploymentAssistant';
 import { Footer } from './components/Shared/Footer';
 import ProtectedRoute from './components/Shared/ProtectedRoute';
-import DeploymentAssistant from './components/DeploymentAssistant/DeploymentAssistant';
 
 export default function Home() {
   return (

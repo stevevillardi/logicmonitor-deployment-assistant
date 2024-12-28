@@ -1,96 +1,70 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Input, Button } from "@/components/ui/enhanced-components";
-import { Lock, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Lock } from 'lucide-react';
+import { FcGoogle } from 'react-icons/fc';
+import { FaGithub } from 'react-icons/fa';
+import { supabaseBrowser } from '../../lib/supabase';
 
-interface LoginPageProps {
-    onLogin: (isAuthenticated: boolean) => void;
-}
-
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError(false);
-
+const LoginPage = () => {
+    const supabase = supabaseBrowser;
+    
+    const handleOAuthSignIn = async (provider: 'google' | 'github') => {
         try {
-            const response = await fetch('/api/authenticate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ password }),
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`
+                }
             });
 
-            const data = await response.json();
-
-            if (data.success) {
-                onLogin(true);
-                localStorage.setItem('isAuthenticated', 'true');
-            } else {
-                setError(true);
+            if (error) {
+                console.error('Authentication error:', error);
             }
         } catch (error) {
-            console.error('Authentication error:', error);
-            setError(true);
-        } finally {
-            setIsLoading(false);
+            console.error('Sign in error:', error);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100">
-            <Card className="w-full max-w-md shadow-lg">
-                <CardHeader className="space-y-4 flex flex-col items-center bg-blue-50 border-b border-blue-200 p-6">
-                    <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
-                        Deployment Assistant
-                    </span>
-                    <div className="flex items-center gap-2">
-                        <Lock className="w-6 h-6 text-[#040F4B]" />
-                        <h2 className="text-2xl font-bold text-[#040F4B]">Authentication Required</h2>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {error && (
-                            <Alert variant="destructive" className="py-2 border-red-200 bg-red-50">
-                                <div className="flex items-center gap-2">
-                                    <AlertCircle className="h-4 w-4 shrink-0 text-red-800" />
-                                    <AlertDescription className="text-sm text-red-800">
-                                        Invalid password. Please try again.
-                                    </AlertDescription>
-                                </div>
-                            </Alert>
-                        )}
-                        <div className="space-y-2">
-                            <Input
-                                type="password"
-                                placeholder="Enter password"
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    setError(false);
-                                }}
-                                className={error ? 'border-red-500 ring-red-500' : ''}
-                                disabled={isLoading}
-                            />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#040F4B] to-blue-900">
+            <div className="w-full max-w-md px-4">
+                <Card className="w-full shadow-2xl border-0">
+                    <CardHeader className="space-y-6 flex flex-col items-center bg-gradient-to-b from-blue-50 to-white p-8 rounded-t-xl">
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                            <Lock className="w-8 h-8 text-[#040F4B]" />
                         </div>
+                        <div className="text-center space-y-2">
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                                Welcome Back
+                            </h1>
+                            <p className="text-sm text-gray-500">
+                                Sign in to access the Deployment Assistant
+                            </p>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-4">
                         <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={isLoading}
+                            onClick={() => handleOAuthSignIn('google')}
+                            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200 py-6 text-base font-medium"
                         >
-                            {isLoading ? 'Authenticating...' : 'Login'}
+                            <FcGoogle className="w-6 h-6" />
+                            Continue with Google
                         </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                        <Button
+                            onClick={() => handleOAuthSignIn('github')}
+                            className="w-full flex items-center justify-center gap-3 bg-[#24292e] hover:bg-[#2f363d] text-white border-0 shadow-sm transition-all duration-200 py-6 text-base font-medium"
+                        >
+                            <FaGithub className="w-6 h-6" />
+                            Continue with GitHub
+                        </Button>
+                        <p className="text-xs text-center text-gray-500 mt-6">
+                            Deployment Assistant is a community project and is not affiliated with LogicMonitor.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 };
