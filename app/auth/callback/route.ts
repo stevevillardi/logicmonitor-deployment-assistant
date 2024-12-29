@@ -6,8 +6,11 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
+  // Get the base URL from environment variable, fallback to request origin
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || requestUrl.origin;
+
   if (code) {
-    const response = NextResponse.redirect(new URL('/', requestUrl.origin));
+    const response = NextResponse.redirect(new URL('/', baseUrl));
     const cookieStore = await cookies();
     
     const supabase = createServerClient(
@@ -31,11 +34,11 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       console.error('Auth error:', error);
-      return NextResponse.redirect(new URL('/login', requestUrl.origin));
+      return NextResponse.redirect(new URL('/login', baseUrl));
     }
 
     return response;
   }
 
-  return NextResponse.redirect(new URL('/login', requestUrl.origin));
+  return NextResponse.redirect(new URL('/login', baseUrl));
 } 
