@@ -6,8 +6,9 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
-  // Get the base URL from environment variable, fallback to request origin
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || requestUrl.origin;
+  // Use request origin for development, NEXT_PUBLIC_BASE_URL for production
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const baseUrl = isDevelopment ? requestUrl.origin : process.env.NEXT_PUBLIC_BASE_URL;
 
   if (code) {
     const response = NextResponse.redirect(new URL('/', baseUrl));

@@ -174,7 +174,7 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                                             size="sm"
                                                         >
                                                             <Pencil className="w-4 h-4" />
-                                                            <span>Rename</span>
+                                                            <span className="hidden sm:inline">Rename</span>
                                                         </Button>
                                                         <Button
                                                             onClick={() => setDeleteConfirmId(deployment.id)}
