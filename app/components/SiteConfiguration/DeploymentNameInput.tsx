@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
-import { Building2, Info } from 'lucide-react';
+import { Building2, Info, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/enhanced-components'
 import { Config, Site } from '../DeploymentAssistant/types/types';
@@ -19,6 +19,17 @@ import {
 import { RxReset } from "react-icons/rx";
 import { Switch } from "@/components/ui/switch"
 import { CollectorCalcMethodSelect } from './CollectorCalcMethodSelect';
+import { useDeployments } from '@/app/contexts/DeploymentsContext';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { SaveDeploymentDialog } from './SaveDeploymentDialog';
+import { LoadDeploymentDialog } from './LoadDeploymentDialog';
+
 interface DeploymentNameInputProps {
     value: string;
     onDeploymentNameChange: (name: string) => void;
@@ -29,9 +40,15 @@ interface DeploymentNameInputProps {
     showDetails?: boolean;
     onShowDetailsChange?: (show: boolean) => void;
     onShowAdvancedSettingsChange: (show: boolean) => void;
+    sites: Site[];
 }
 
-const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateConfig, onUpdateSites, onSiteExpand, showDetails, onShowDetailsChange, onShowAdvancedSettingsChange }: DeploymentNameInputProps) => {
+const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateConfig, onUpdateSites, onSiteExpand, showDetails, onShowDetailsChange, onShowAdvancedSettingsChange, sites }: DeploymentNameInputProps) => {
+    const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+    const [saveName, setSaveName] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const { saveDeployment } = useDeployments();
+
     const handleReset = () => {
         console.log('Reset initiated');
 
@@ -79,6 +96,28 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
             showAdvancedSettings: config.showAdvancedSettings
         });
     }, [value, config, showDetails]);
+
+    // Add this useEffect to update saveName when the dialog opens
+    useEffect(() => {
+        if (saveDialogOpen) {
+            setSaveName(value || 'New Deployment'); // Use the current deployment name or default
+        }
+    }, [saveDialogOpen, value]);
+
+    const handleSave = async () => {
+        if (!saveName.trim()) return;
+        
+        setIsSaving(true);
+        try {
+            await saveDeployment(saveName, config, sites);
+            setSaveDialogOpen(false);
+            setSaveName('');
+        } catch (error) {
+            console.error('Failed to save deployment:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -130,8 +169,21 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                             </Label>
                         </div>
 
-                        {/* Reset Button */}
-                        <div className="flex justify-center w-full sm:w-auto sm:ml-auto">
+                        {/* Save and Reset Buttons */}
+                        <div className="flex justify-center gap-2 w-full sm:w-auto sm:ml-auto">
+                            <LoadDeploymentDialog 
+                                onLoadConfig={(newConfig, newSites) => {
+                                    onUpdateConfig(newConfig);
+                                    onUpdateSites(newSites);
+                                }}
+                                className="text-blue-600 bg-blue-50 border border-blue-200 truncate hover:bg-blue-100 hover:text-blue-700 w-full sm:w-auto h-9"
+                            />
+                            <SaveDeploymentDialog 
+                                config={config}
+                                sites={sites}
+                                className="text-blue-600 bg-blue-50 border border-blue-200 truncate hover:bg-blue-100 hover:text-blue-700 w-full sm:w-auto h-9"
+                            />
+                            {/* Reset Button */}
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
@@ -140,7 +192,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                                         className="text-red-600 bg-red-50 border border-red-200 truncate hover:bg-red-100 hover:text-red-700 w-full sm:w-auto h-9"
                                     >
                                         <RxReset className="w-4 h-4 mr-2" />
-                                        Reset Deployment
+                                        <span className="hidden xl:inline">Reset Deployment</span>
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="max-w-[95vw] mx-4 bg-blue-50 sm:max-w-2xl">
@@ -154,18 +206,16 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <div className="py-3">
-                                        <div className="bg-white border border-blue-100 rounded-lg p-3">
-                                            <div className="flex gap-2 text-sm text-blue-700">
-                                                <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                                                <div>
-                                                    <p className="text-sm">The following will be reset:</p>
-                                                    <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1 mt-2">
-                                                        <li>Deployment name</li>
-                                                        <li>All site configurations</li>
-                                                        <li>Device counts and settings</li>
-                                                        <li>System configurations</li>
-                                                    </ul>
-                                                </div>
+                                        <div className="flex gap-2 text-sm text-blue-700">
+                                            <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="text-sm">The following will be reset:</p>
+                                                <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1 mt-2">
+                                                    <li>Deployment name</li>
+                                                    <li>All site configurations</li>
+                                                    <li>Device counts and settings</li>
+                                                    <li>System configurations</li>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>

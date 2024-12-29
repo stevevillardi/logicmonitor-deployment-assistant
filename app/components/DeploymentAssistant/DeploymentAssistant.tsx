@@ -22,6 +22,8 @@ import { LaunchTour } from '../PlatformTour/LaunchTour';
 import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { Profile } from '../Authentication/Profile';
+import { DeploymentsProvider } from '@/app/contexts/DeploymentsContext';
+
 const Logo = () => {
     return (
         <div className="flex items-center">
@@ -65,7 +67,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
         { id: 'dashboard-explorer', label: 'Dashboard Explorer', icon: <ChartLine className="w-4 h-4" /> },
         { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
         { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
-        { id: 'system', label: 'System Settings', icon: <Settings className="w-4 h-4" /> },
+        { id: 'system', label: 'Deployment Settings', icon: <Settings className="w-4 h-4" /> },
     ];
 
     return (
@@ -189,7 +191,8 @@ const DeploymentAssistant = () => {
         setSites(newSites);
     }, []);
 
-    return (
+    return (    
+        <DeploymentsProvider>
         <div className="min-h-screen w-full flex items-center justify-center">
             <FirstTimeVisit
                 isOpen={helpDialogOpen}
@@ -203,7 +206,7 @@ const DeploymentAssistant = () => {
                                 <Logo />
                             </a>
                             <div className="hidden sm:block h-10 w-px bg-gray-200"></div>
-                            <CardTitle className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                            <CardTitle className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
                                 Deployment Assistant
                             </CardTitle>
                         </div>
@@ -294,6 +297,7 @@ const DeploymentAssistant = () => {
                 </CardContent>
             </Card>
         </div>
+        </DeploymentsProvider>
     );
 };
 

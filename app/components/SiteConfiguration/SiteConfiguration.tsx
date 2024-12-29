@@ -13,11 +13,11 @@ import EnhancedCard from '@/components/ui/enhanced-card';
 import ConfigurationActions from './ConfigurationActions';
 import { Plus, ChevronUp, ChevronDown, ChevronRight, HardDrive, HelpCircle, Bolt } from 'lucide-react';
 import { FirstTimeVisit } from './FirstTimeVisit';
-import DeploymentNameInput from './DeploymentNameInput';
 import { devLog } from '../Shared/utils/debug';
 import { RxReset } from "react-icons/rx";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import DisclaimerBox from '../Shared/DisclaimerBox';
+import DeploymentNameInput from './DeploymentNameInput';
 
 interface SiteConfigurationProps {
     sites: Site[];
@@ -205,6 +205,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 onSiteExpand={onSiteExpand}
                 config={config}
                 showDetails={config.showDetails}
+                sites={sites}
             />
             
             {sites.length === 0 ? (

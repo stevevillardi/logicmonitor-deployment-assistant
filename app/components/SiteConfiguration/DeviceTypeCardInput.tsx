@@ -56,8 +56,6 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
         }, 0);
     };
 
-    const singleDeviceLoad = calculateSingleDeviceLoad();
-
     const renderProtocolToggle = () => {
         if (!isLinuxDevice && !isWindowsDevice) return null;
 
