@@ -44,9 +44,9 @@ export const Profile = () => {
         <>
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                 <DropdownMenuTrigger className="outline-none">
-                    <Avatar className="border-2 border-blue-200 bg-blue-50">
+                    <Avatar className="border-2 border-blue-200 bg-blue-50 hover:border-blue-300 hover:bg-blue-100 transition-all duration-200">
                         <AvatarImage src={avatarUrl} />
-                        <AvatarFallback className="bg-blue-50 text-blue-700">
+                        <AvatarFallback className="bg-blue-50 text-blue-700 hover:bg-blue-100">
                             <User className="h-5 w-5" />
                         </AvatarFallback>
                     </Avatar>
