@@ -19,7 +19,7 @@ import {
 import { RxReset } from "react-icons/rx";
 import { Switch } from "@/components/ui/switch"
 import { CollectorCalcMethodSelect } from './CollectorCalcMethodSelect';
-import { useDeployments } from '@/app/contexts/DeploymentsContext';
+import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext';
 import {
     Dialog,
     DialogContent,
@@ -47,7 +47,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
     const [saveName, setSaveName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
-    const { saveDeployment } = useDeployments();
+    const { saveDeployment } = useDeploymentsContext();
 
     const handleReset = () => {
         console.log('Reset initiated');

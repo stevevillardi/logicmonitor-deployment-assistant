@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn } from 'lucide-react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -11,100 +11,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Changelog sections with icons
-const CHANGELOG_SECTIONS = [
-    {
-        title: "AI Documentation Assistant (beta)",
-        icon: <Bot className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Context-aware documentation search",
-            "Source-linked responses",
-            "Persistent conversation history",
-            "Resizable chat interface",
-            "Minimizable window accessible from any page"
-        ]
-    },
-    {
-        title: "Platform Tour",
-        icon: <Play className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Added interactive platform architecture diagram",
-            "Detailed component descriptions and features",
-            "Category-based component organization (Core, Integration, Collection, Automation)",
-            "Direct links to product documentation",
-            "Fullscreen mode for better visibility"
-        ]
-    },
-    {
-        title: "Collector Sizing Enhancements",
-        icon: <Server className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Added collector sizing method selection with auto and manual modes, with manual mode you can set the collector size used for load calculations based on a specified collector size",
-            "Added special vCenter sizing logic based on VM count",
-            "Automatic size adjustment for environments with >2000 VMs per vCenter (beta)",
-            "Smart distribution calculations for multi-vCenter environments"
-        ]
-    },
-    {
-        title: "Protocol Support",
-        icon: <Network className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Added protocol selection for Windows (WMI/WinRM) and Linux (SSH/SNMP)",
-            "Enhanced protocol-specific load calculations"
-        ]
-    },
-    {
-        title: "Monitoring Capacity",
-        icon: <History className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Added NetFlow ingestion (FPS) support for device level calculations",
-            "Added Log ingestion (EPS) for device level calculations",
-            "Implemented SNMP trap load calculations",
-            "Added FPS as configurable collector capacity metric under collector settings"
-        ]
-    },
-    {
-        title: "Cloud Provider Integration",
-        icon: <Cloud className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Added recommended instance sizes for AWS, Azure, and GCP",
-            "Instance recommendations based on collector sizing",
-            "Added fixed performance instance recommendations"
-        ]
-    },
-    {
-        title: "Container Support",
-        icon: <Box className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Added container support information",
-            "Included container-specific resource limitations",
-            "Added container installation documentation"
-        ]
-    },
-    {
-        title: "UI Improvements",
-        icon: <Layout className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Redesigned deployment configuration interface",
-            "Split collector types into separate categories for polling, log ingestion, and netflow",
-            "Enhanced PDF report generation with improved formatting and layout",
-            "Improved resource utilization displays for mobile devices"
-        ]
-    },
-    {
-        title: "Technical Improvements",
-        icon: <Code className="w-4 h-4 text-blue-600" />,
-        items: [
-            "Enhanced collector calculation algorithms",
-            "Improved load distribution logic",
-            "Added null checks and error handling",
-            "Optimized performance for large-scale deployments"
-        ]
-    }
-];
-
 // Version information
 const VERSIONS = [
+    {
+        version: "1.0.4",
+        date: "2024-12-29",
+        sections: [
+            {
+                title: "Deployment Management",
+                icon: <Save className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added ability to save deployment configurations to your account",
+                    "Load previously saved deployments with preserved settings",
+                    "Manage saved deployments through user account profile",
+                    "Rename and delete saved configurations",
+                    "Secure per-user deployment storage",
+                    "Cross-device access to saved configurations"
+                ]
+            }
+        ]
+    },
     {
         version: "1.0.3",
         date: "2024-12-28",
@@ -156,7 +82,96 @@ const VERSIONS = [
     {
         version: "1.0.2",
         date: "2024-12-24",
-        sections: CHANGELOG_SECTIONS // Previous changelog sections
+        sections: [
+            {
+                title: "AI Documentation Assistant (beta)",
+                icon: <Bot className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Context-aware documentation search",
+                    "Source-linked responses",
+                    "Persistent conversation history",
+                    "Resizable chat interface",
+                    "Minimizable window accessible from any page"
+                ]
+            },
+            {
+                title: "Platform Tour",
+                icon: <Play className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added interactive platform architecture diagram",
+                    "Detailed component descriptions and features",
+                    "Category-based component organization (Core, Integration, Collection, Automation)",
+                    "Direct links to product documentation",
+                    "Fullscreen mode for better visibility"
+                ]
+            },
+            {
+                title: "Collector Sizing Enhancements",
+                icon: <Server className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added collector sizing method selection with auto and manual modes, with manual mode you can set the collector size used for load calculations based on a specified collector size",
+                    "Added special vCenter sizing logic based on VM count",
+                    "Automatic size adjustment for environments with >2000 VMs per vCenter (beta)",
+                    "Smart distribution calculations for multi-vCenter environments"
+                ]
+            },
+            {
+                title: "Protocol Support",
+                icon: <Network className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added protocol selection for Windows (WMI/WinRM) and Linux (SSH/SNMP)",
+                    "Enhanced protocol-specific load calculations"
+                ]
+            },
+            {
+                title: "Monitoring Capacity",
+                icon: <History className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added NetFlow ingestion (FPS) support for device level calculations",
+                    "Added Log ingestion (EPS) for device level calculations",
+                    "Implemented SNMP trap load calculations",
+                    "Added FPS as configurable collector capacity metric under collector settings"
+                ]
+            },
+            {
+                title: "Cloud Provider Integration",
+                icon: <Cloud className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added recommended instance sizes for AWS, Azure, and GCP",
+                    "Instance recommendations based on collector sizing",
+                    "Added fixed performance instance recommendations"
+                ]
+            },
+            {
+                title: "Container Support",
+                icon: <Box className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added container support information",
+                    "Included container-specific resource limitations",
+                    "Added container installation documentation"
+                ]
+            },
+            {
+                title: "UI Improvements",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Redesigned deployment configuration interface",
+                    "Split collector types into separate categories for polling, log ingestion, and netflow",
+                    "Enhanced PDF report generation with improved formatting and layout",
+                    "Improved resource utilization displays for mobile devices"
+                ]
+            },
+            {
+                title: "Technical Improvements",
+                icon: <Code className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Enhanced collector calculation algorithms",
+                    "Improved load distribution logic",
+                    "Added null checks and error handling",
+                    "Optimized performance for large-scale deployments"
+                ]
+            }
+        ]
     },
     {
         version: "1.0.1",

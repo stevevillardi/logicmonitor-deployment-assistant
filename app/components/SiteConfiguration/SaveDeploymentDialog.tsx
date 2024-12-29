@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Save, Info, AlertTriangle, Building2, Server, Settings, Calculator } from 'lucide-react';
-import { useDeployments } from '@/app/contexts/DeploymentsContext'
+import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext'
 import { Config, Site } from '../DeploymentAssistant/types/types';
 import { Label } from "@/components/ui/label";
 import {
@@ -38,7 +38,7 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
   const [isSaving, setIsSaving] = useState(false);
   const [showOverwriteDialog, setShowOverwriteDialog] = useState(false);
   const [existingDeployment, setExistingDeployment] = useState<{ id: string } | null>(null);
-  const { saveDeployment, updateDeployment, deployments } = useDeployments();
+  const { saveDeployment, updateDeployment, deployments, reorderDevices } = useDeploymentsContext();
 
   useEffect(() => {
     if (open) {
@@ -68,10 +68,16 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
   const performSave = async (isOverwrite = false) => {
     setIsSaving(true);
     try {
+      const configWithName = {
+        ...config,
+        deploymentName: name
+      };
+
       if (isOverwrite && existingDeployment) {
-        await updateDeployment(existingDeployment.id, name, config, sites);
+        await updateDeployment(existingDeployment.id, name, configWithName, sites);
       } else {
-        await saveDeployment(name, config, sites);
+        const orderedSites = reorderDevices(sites, configWithName.deviceDefaults);
+        await saveDeployment(name, configWithName, orderedSites);
       }
       setOpen(false);
       setName('');
@@ -136,13 +142,13 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
                 </div>
               </div>
 
-              {/* What's Included Section */}
+              {/* What is Included Section */}
               <div className="bg-white border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
                     <Info className="w-4 h-4 text-blue-700" />
                   </div>
-                  <h3 className="font-medium text-gray-900">What's Included</h3>
+                  <h3 className="font-medium text-gray-900">What&apos;s Included</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -209,7 +215,7 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
             <AlertDialogDescription asChild>
               <div className="space-y-3">
                 <p className="text-yellow-700">
-                  A deployment with the name "<span className="font-medium">{name}</span>" already exists.
+                  A deployment with the name &quot;<span className="font-medium">{name}</span>&quot; already exists.
                 </p>
                 <div className="bg-white border border-yellow-200 rounded-lg p-3">
                   <p className="text-sm text-yellow-600">

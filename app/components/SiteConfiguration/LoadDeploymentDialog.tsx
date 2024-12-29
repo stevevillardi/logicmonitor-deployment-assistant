@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FolderOpen, Info, AlertTriangle, Clock, Building2, Server, Bot, Gauge, MessageSquare, Activity, Network } from 'lucide-react';
-import { useDeployments, type Deployment } from '@/app/contexts/DeploymentsContext'
+import { useDeploymentsContext, type Deployment } from '@/app/contexts/DeploymentsContext'
 import { Config, Site } from '../DeploymentAssistant/types/types';
 import {
   AlertDialog,
@@ -31,7 +31,7 @@ export function LoadDeploymentDialog({ onLoadConfig, className }: LoadDeployment
   const [open, setOpen] = useState(false);
   const [warningDialogOpen, setWarningDialogOpen] = useState(false);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const { deployments, isLoading } = useDeployments();
+  const { deployments, isLoading } = useDeploymentsContext();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -139,7 +139,7 @@ export function LoadDeploymentDialog({ onLoadConfig, className }: LoadDeployment
                 </div>
                 <h3 className="text-gray-900 font-medium mb-2">No Saved Deployments</h3>
                 <p className="text-sm text-gray-600">
-                  You haven't saved any deployments yet. Save your current configuration to access it later.
+                  You haven&apos;t saved any deployments yet. Save your current configuration to access it later.
                 </p>
               </div>
             ) : (

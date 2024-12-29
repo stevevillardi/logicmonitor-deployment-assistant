@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { useDeployments } from '@/app/contexts/DeploymentsContext'
+import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,7 +22,7 @@ interface ManageDeploymentsDialogProps {
 }
 
 export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeploymentsDialogProps) {
-    const { deployments, isLoading, updateDeployment, deleteDeployment } = useDeployments()
+    const { deployments, isLoading, updateDeployment, deleteDeployment } = useDeploymentsContext()
     const [editingId, setEditingId] = useState<string | null>(null)
     const [editName, setEditName] = useState('')
     const [expandedDeployments, setExpandedDeployments] = useState<Set<string>>(new Set())
@@ -107,7 +107,7 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                 </div>
                                 <h3 className="text-gray-900 font-medium mb-2">No Saved Deployments</h3>
                                 <p className="text-sm text-gray-600">
-                                    You haven't saved any deployments yet. Save your current configuration to access it later.
+                                    You haven&apos;t saved any deployments yet. Save your current configuration to access it later.
                                 </p>
                             </div>
                         ) : (
