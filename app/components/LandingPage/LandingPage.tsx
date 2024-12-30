@@ -193,8 +193,8 @@ export default function LandingPage() {
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
                     {features.map((feature, index) => (
-                        <Card 
-                            key={index} 
+                        <Card
+                            key={index}
                             className={`
                                 group hover:scale-105 transition-all duration-300
                                 bg-white/95 backdrop-blur-sm border-blue-200 
@@ -228,7 +228,7 @@ export default function LandingPage() {
                 {/* Enhanced Footer */}
                 <div className="mt-6 text-center">
                     <p className="text-blue-200 text-sm font-medium">
-                        Powered by LogicMonitor&apos;s REST API | Built for efficiency by the LM Community
+                        Built by the Community | Powered by LogicMonitor&apos;s REST API
                     </p>
                 </div>
             </div>
