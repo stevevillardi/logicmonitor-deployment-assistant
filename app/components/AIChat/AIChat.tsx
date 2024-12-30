@@ -433,13 +433,19 @@ export default function RAGChat() {
                                   href={source.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 hover:underline"
+                                  className="text-xs text-blue-600 hover:underline truncate max-w-[125px] sm:max-w-[200px] inline-block"
+                                  title={source.title || 'Untitled Document'}
                                 >
-                                  {source.title}
+                                  {source.title || 'Untitled Document'}
                                 </a>
                                 {source.type && (
                                   <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-medium whitespace-nowrap">
                                     {source.type}
+                                  </span>
+                                )}
+                                {source.similarity && (
+                                  <span className="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-medium whitespace-nowrap">
+                                    {Math.round(source.similarity * 100)}% match
                                   </span>
                                 )}
                               </div>

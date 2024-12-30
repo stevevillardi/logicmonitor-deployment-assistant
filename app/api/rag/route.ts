@@ -220,8 +220,8 @@ Please provide a clear and well-formatted answer based on the documentation cont
     return NextResponse.json({
       answer: response.content[0].type === 'text' ? response.content[0].text : '',
       sources: documents.map((doc: DocumentMatch) => ({
-        title: doc.title,
-        url: doc.url,
+        title: doc.url,
+        url: doc.title,
         similarity: doc.similarity,
         type: doc.type
       }))
