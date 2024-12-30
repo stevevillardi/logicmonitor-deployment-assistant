@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 console.log("authHeader:",authHeader)
 console.log("cronSecret:",cronSecret)
 
-    if (!authHeader !== `Bearer ${cronSecret}`) {
+    if (authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
