@@ -14,8 +14,8 @@ const features = [
         gradient: "from-blue-50 to-indigo-50"
     },
     {
-        title: "Deployment Management",
-        description: "Save, load, and manage deployment configurations securely across devices with cloud synchronization.",
+        title: "Collector Deployment Management",
+        description: "Save, load, and manage collector deployment configurations securely across devices with cloud synchronization.",
         icon: <Save className="w-6 h-6 text-blue-600" />,
         gradient: "from-blue-50 to-sky-50"
     },
@@ -26,7 +26,7 @@ const features = [
         gradient: "from-sky-50 to-blue-50"
     },
     {
-        title: "Collector Deployment",
+        title: "Deployment Sizing Calculator",
         description: "Optimize your collector deployment with sizing recommendations, failover configurations, and best practices.",
         icon: <Network className="w-6 h-6 text-blue-600" />,
         gradient: "from-indigo-50 to-blue-50"
@@ -77,13 +77,13 @@ export default function LandingPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#040F4B] to-blue-900">
-            {/* Hero Section */}
-            <div className="container mx-auto px-4 py-6 sm:py-12">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6">
-                       LM Deployment Assistant
+            {/* Hero Section with enhanced styling */}
+            <div className="container mx-auto px-4 pt-12 pb-6">
+                <div className="text-center mb-12 relative">
+                    <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 tracking-tight">
+                        LM Deployment Assistant
                     </h1>
-                    <p className="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                    <p className="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
                         Streamline your LogicMonitor deployment with our intelligent assistant platform
                     </p>
                     <Button
@@ -104,23 +104,32 @@ export default function LandingPage() {
                     </Button>
                 </div>
 
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Features Grid with enhanced styling */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
                     {features.map((feature, index) => (
                         <Card 
                             key={index} 
-                            className="bg-white border-blue-200 hover:shadow-lg transition-all duration-200 antialiased overflow-hidden"
+                            className={`
+                                group hover:scale-105 transition-all duration-300
+                                bg-white/95 backdrop-blur-sm border-blue-200 
+                                hover:shadow-lg hover:border-blue-300
+                                relative overflow-hidden
+                            `}
                         >
-                            <CardContent className="p-6 antialiased">
+                            <CardContent className="p-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="bg-blue-50 p-3 rounded-lg shadow-sm antialiased">
+                                    <div className={`
+                                        p-3 rounded-lg shadow-sm
+                                        bg-gradient-to-br ${feature.gradient}
+                                        group-hover:shadow-md transition-all duration-300
+                                    `}>
                                         {feature.icon}
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
                                             {feature.title}
                                         </h3>
-                                        <p className="text-gray-600">
+                                        <p className="text-gray-600 leading-relaxed">
                                             {feature.description}
                                         </p>
                                     </div>
@@ -130,9 +139,11 @@ export default function LandingPage() {
                     ))}
                 </div>
 
-                {/* Footer */}
-                <div className="mt-10 text-center text-blue-200 text-sm">
-                    <p>Powered by LogicMonitor&apos;s REST API • Built for efficiency by the LM Community</p>
+                {/* Enhanced Footer */}
+                <div className="mt-6 text-center">
+                    <p className="text-blue-200 text-sm font-medium">
+                        Powered by LogicMonitor&apos;s REST API | Built for efficiency by the LM Community
+                    </p>
                 </div>
             </div>
         </div>
