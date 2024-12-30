@@ -51,7 +51,7 @@ export function LegalDisclaimer({ open, onOpenChange }: LegalDisclaimerProps) {
                                         No Warranty
                                     </h3>
                                     <p className="text-sm text-gray-600 leading-relaxed">
-                                        This tool is provided "as is" without any warranties of any kind. The calculations and recommendations provided are estimates only and should not be solely relied upon for production deployments.
+                                        This tool is provided &quot;as is&quot; without any warranties of any kind. The calculations and recommendations provided are estimates only and should not be solely relied upon for production deployments.
                                     </p>
                                 </section>
 
