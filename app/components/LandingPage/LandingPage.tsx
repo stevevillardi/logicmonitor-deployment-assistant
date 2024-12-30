@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Bot, Layout, Save, Server, Network, Settings, FileText, Play, ArrowRight, Database, Cloud, ChartLine, Terminal, PlayCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
+import Image from 'next/image';
 
 const features = [
     {
@@ -77,34 +78,119 @@ export default function LandingPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#040F4B] to-blue-900">
-            {/* Hero Section with enhanced styling */}
-            <div className="container mx-auto px-4 pt-12 pb-6">
-                <div className="text-center mb-12 relative">
+            {/* Navigation Bar */}
+            <div className="fixed top-0 right-0 left-0 z-50 bg-gradient-to-b from-[#040F4B]/90 to-transparent backdrop-blur-sm">
+                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                    {/* Title */}
+                    <div className="flex items-center gap-2">
+                        <Terminal className="w-5 h-5 text-white" />
+                        <span className="text-white font-semibold text-lg hidden sm:inline">
+                            LM Deployment Assistant
+                        </span>
+                        <span className="text-white font-semibold text-lg sm:hidden">
+                            LM Assistant
+                        </span>
+                    </div>
+
+                    {/* Get Started Button */}
+                    <Button
+                        onClick={handleGetStarted}
+                        className="bg-white text-[#040F4B] hover:bg-blue-50 px-6 py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 antialiased"
+                    >
+                        {user ? (
+                            <>
+                                Back to Dashboard
+                                <ArrowRight className="w-4 h-4" />
+                            </>
+                        ) : (
+                            <>
+                                Get Started
+                                <ArrowRight className="w-4 h-4" />
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+
+            {/* Hero Section */}
+            <div className="container mx-auto px-4 py-8">
+                <div className="text-center mb-12 relative pt-16">
                     <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 tracking-tight">
                         LM Deployment Assistant
                     </h1>
                     <p className="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
                         Streamline your LogicMonitor deployment with our intelligent assistant platform
                     </p>
-                    <Button
-                        onClick={handleGetStarted}
-                        className="bg-white text-[#040F4B] hover:bg-blue-50 px-8 py-6 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 antialiased"
-                    >
-                        {user ? (
-                            <>
-                                Back to Dashboard
-                                <ArrowRight className="w-5 h-5" />
-                            </>
-                        ) : (
-                            <>
-                                Get Started
-                                <ArrowRight className="w-5 h-5" />
-                            </>
-                        )}
-                    </Button>
                 </div>
 
-                {/* Features Grid with enhanced styling */}
+                {/* Screenshot Section */}
+                <div className="mt-12 mb-32 relative">
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-blue-900/20 to-transparent" />
+                    </div>
+
+                    {/* Screenshots Display */}
+                    <div className="relative max-w-7xl mx-auto">
+                        {/* Desktop Mockups */}
+                        <div className="flex flex-col sm:flex-row justify-center items-center gap-8 sm:gap-0">
+                            {/* Left Screenshot */}
+                            <div className="transform sm:-rotate-6 sm:-translate-x-6 sm:translate-y-8 z-10 hover:z-30 transition-all duration-300 hover:-translate-y-8">
+                                <div className="relative w-[280px] sm:w-[300px] md:w-[400px] aspect-[7/6] rounded-2xl border-[4px] border-gray-900 shadow-xl hover:shadow-2xl bg-gray-900 overflow-hidden transition-all duration-500 hover:scale-150 origin-center">
+                                    <Image
+                                        src="/screenshots/onboarding.png"
+                                        alt="Collector Configuration"
+                                        fill
+                                        className="object-cover rounded-lg transition-transform duration-500"
+                                        priority
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Center Screenshot (larger) */}
+                            <div className="z-20 hover:z-30 transition-all duration-300 hover:-translate-y-8">
+                                <div className="relative w-[320px] sm:w-[360px] md:w-[480px] aspect-[7/6] rounded-2xl border-[4px] border-gray-900 shadow-xl hover:shadow-2xl bg-gray-900 overflow-hidden transition-all duration-500 hover:scale-150 origin-center">
+                                    <Image
+                                        src="/screenshots/home.png"
+                                        alt="Dashboard View"
+                                        fill
+                                        className="object-cover rounded-lg transition-transform duration-500"
+                                        priority
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Right Screenshot */}
+                            <div className="transform sm:rotate-6 sm:translate-x-6 sm:translate-y-8 z-10 hover:z-30 transition-all duration-300 hover:-translate-y-8">
+                                <div className="relative w-[280px] sm:w-[300px] md:w-[400px] aspect-[7/6] rounded-2xl border-[4px] border-gray-900 shadow-xl hover:shadow-2xl bg-gray-900 overflow-hidden transition-all duration-500 hover:scale-150 origin-center">
+                                    <Image
+                                        src="/screenshots/overview.png"
+                                        alt="AI Chat Assistant"
+                                        fill
+                                        className="object-cover rounded-lg transition-transform duration-500"
+                                        priority
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Decorative Elements */}
+                        <div className="absolute -bottom-16 inset-x-0">
+                            <div className="h-px bg-gradient-to-r from-transparent via-blue-300/50 to-transparent" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Features Label */}
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                        Platform Features
+                    </h2>
+                    <p className="text-lg text-blue-100 max-w-2xl mx-auto">
+                        Everything you need to streamline your LogicMonitor deployment
+                    </p>
+                </div>
+
+                {/* Features Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
                     {features.map((feature, index) => (
                         <Card 
