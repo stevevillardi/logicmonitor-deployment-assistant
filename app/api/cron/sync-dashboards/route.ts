@@ -3,8 +3,16 @@ import { NextResponse } from 'next/server';
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Verify the cron secret
+    const authHeader = request.headers.get('authorization');
+    const cronSecret = process.env.CRON_SECRET;
+
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -13,6 +21,7 @@ export async function GET() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cronSecret}` // Pass the secret to the sync endpoint
       },
     });
     

@@ -2,7 +2,7 @@ import supabase from '../../../lib/supabase';
 import { NextResponse } from 'next/server';
 import { getDefaultBranch } from '../../../utils/github';
 
-export async function POST() {
+async function handleSync() {
   try {
     // First, get the default branch
     const defaultBranch = await getDefaultBranch('logicmonitor', 'dashboards');
@@ -62,6 +62,26 @@ export async function POST() {
   }
 }
 
-export async function GET() {
-  return POST();
+export async function POST(request: Request) {
+  // Verify the cron secret
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return handleSync();
+}
+
+export async function GET(request: Request) {
+  // Verify the cron secret
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return handleSync();
 } 
