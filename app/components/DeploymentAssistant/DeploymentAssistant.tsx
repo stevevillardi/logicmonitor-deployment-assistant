@@ -41,7 +41,7 @@ const Logo = () => {
 
 // Map URL paths to tab values
 const TAB_PATHS = {
-    sites: '/',
+    sites: '/home',
     overview: '/overview',
     system: '/system',
     'collector-info': '/collector-info',
@@ -210,18 +210,23 @@ const DeploymentAssistant = () => {
                                 Deployment Assistant
                             </CardTitle>
                         </div>
-                        <div className="hidden md:flex flex-wrap items-center gap-2 lg:gap-4">
-                            <Button
-                                variant="outline"
-                                onClick={() => window.location.href = '/portal-reports'}
-                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
-                            >
-                                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                <span className="hidden 2xl:inline">Reports (Preview)</span>
-                            </Button>
-                            <VersionInfo />
-                            <LaunchTour />
-                            <Profile />
+                        <div className="flex items-center gap-2 lg:gap-4">
+                            <div className="flex md:hidden items-center gap-2">
+                                <Profile />
+                            </div>
+                            <div className="hidden md:flex items-center gap-2 lg:gap-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => window.location.href = '/portal-reports'}
+                                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                                >
+                                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                    <span className="hidden 2xl:inline">Reports (Preview)</span>
+                                </Button>
+                                <VersionInfo />
+                                <LaunchTour />
+                                <Profile />
+                            </div>
                         </div>
                     </div>
                 </CardHeader>

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Github, ExternalLink, MessageCircleQuestion, HelpCircle } from 'lucide-react';
-import { LaunchTour } from '../PlatformTour/LaunchTour'
+import { Github, ExternalLink, MessageCircleQuestion, HelpCircle, Scale, GlobeLock } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import { ThemeToggle } from './ThemeToggle';
+import { PrivacyPolicy } from '../Legal/PrivacyPolicy';
+import { LegalDisclaimer } from '../Legal/LegalDisclaimer';
 
 export const Footer = () => {
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
+    const [privacyOpen, setPrivacyOpen] = useState(false);
+    const [legalOpen, setLegalOpen] = useState(false);
 
     return (
         <>
@@ -18,25 +21,21 @@ export const Footer = () => {
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                             <span className="text-xs sm:text-sm text-gray-600">
-                                © {new Date().getFullYear()} LogicMonitor | Steve Villardi
+                                © {new Date().getFullYear()} Steve Villardi
                             </span>
                             <div className="hidden sm:block h-4 w-px bg-gray-200" />
-                            <a 
-                                href="https://www.logicmonitor.com/legal" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-xs sm:text-sm text-gray-600 hover:text-blue-700 flex items-center gap-1"
+                            <button 
+                                onClick={() => setLegalOpen(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200"
                             >
-                                Legal <ExternalLink className="w-3 h-3" />
-                            </a>
-                            <a 
-                                href="https://www.logicmonitor.com/privacy" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-xs sm:text-sm text-gray-600 hover:text-blue-700 flex items-center gap-1"
+                               <Scale className="w-4 h-4" /> Legal
+                            </button>
+                            <button
+                                onClick={() => setPrivacyOpen(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200"
                             >
-                                Privacy <ExternalLink className="w-3 h-3" />
-                            </a>
+                               <GlobeLock className="w-4 h-4" /> Privacy
+                            </button>
                         </div>
                         <div className="flex flex-col sm:flex-row items-center gap-4">
                             <a 
@@ -75,12 +74,19 @@ export const Footer = () => {
                                 <HelpCircle className="w-4 h-4" />
                                 Help Guide
                             </button>
-                            {/* <div className="hidden sm:block h-4 w-px bg-gray-200" />
-                            <ThemeToggle /> */}
                         </div>
                     </div>
                 </div>
             </footer>
+
+            <PrivacyPolicy 
+                open={privacyOpen} 
+                onOpenChange={setPrivacyOpen} 
+            />
+            <LegalDisclaimer 
+                open={legalOpen} 
+                onOpenChange={setLegalOpen} 
+            />
         </>
     );
 }; 

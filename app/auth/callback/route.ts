@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const baseUrl = isDevelopment ? requestUrl.origin : process.env.NEXT_PUBLIC_BASE_URL;
 
   if (code) {
-    const response = NextResponse.redirect(new URL('/', baseUrl));
+    const response = NextResponse.redirect(new URL('/home', baseUrl));
     const cookieStore = await cookies();
     
     const supabase = createServerClient(

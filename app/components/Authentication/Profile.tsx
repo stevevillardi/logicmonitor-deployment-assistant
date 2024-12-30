@@ -34,21 +34,44 @@ export const Profile = () => {
         setDropdownOpen(false); // Close dropdown when opening dialog
     };
 
-    if (!user) return null
+    const getSecureAvatarUrl = () => {
+        if (!user) return null;
+        
+        // Check for picture from Google OAuth
+        const picture = user.user_metadata.picture;
+        if (picture && picture.startsWith('https://lh3.googleusercontent.com')) {
+            // Convert to secure Google avatar URL
+            return picture.replace(/^http:\/\//i, 'https://');
+        }
 
-    const avatarUrl = user.user_metadata.avatar_url || 
-                     user.user_metadata.picture || 
-                     null
+        // Check for GitHub avatar
+        const avatarUrl = user.user_metadata.avatar_url;
+        if (avatarUrl && avatarUrl.includes('githubusercontent.com')) {
+            return avatarUrl;
+        }
+
+        return null;
+    };
+
+    const avatarUrl = getSecureAvatarUrl();
+
+    if (!user) return null
 
     return (
         <>
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                 <DropdownMenuTrigger className="outline-none">
                     <Avatar className="border-2 border-blue-200 bg-blue-50 hover:border-blue-300 hover:bg-blue-100 transition-all duration-200">
-                        <AvatarImage src={avatarUrl} />
-                        <AvatarFallback className="bg-blue-50 text-blue-700 hover:bg-blue-100">
-                            <User className="h-5 w-5" />
-                        </AvatarFallback>
+                        {avatarUrl ? (
+                            <AvatarImage 
+                                src={avatarUrl} 
+                                referrerPolicy="no-referrer"
+                            />
+                        ) : (
+                            <AvatarFallback className="bg-blue-50 text-blue-700 hover:bg-blue-100">
+                                <User className="h-5 w-5" />
+                            </AvatarFallback>
+                        )}
                     </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 

@@ -12,7 +12,7 @@ const DashboardMiniPreview: React.FC<MiniPreviewProps> = ({ dashboard, children 
     const gridDimensions = dashboard.widgets.reduce(
         (acc: { rows: number; cols: number }, widget: any) => ({
             rows: Math.max(acc.rows, widget.position.row + widget.position.sizey),
-            cols: Math.max(acc.cols, widget.position.col + widget.position.sizex)
+            cols: Math.max(acc.cols, widget.position.col + widget.position.sizex - 1)
         }),
         { rows: 0, cols: 0 }
     );

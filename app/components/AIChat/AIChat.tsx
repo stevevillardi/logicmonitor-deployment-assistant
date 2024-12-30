@@ -204,23 +204,25 @@ export default function RAGChat() {
     scrollToBottom();
   }, [messages, isMinimized]);
 
-  // Early return if not authenticated
-  if (!isAuthenticated || process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
+  // Early return if not authenticated or on landing page
+  if (!isAuthenticated || 
+      process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true' || 
+      window.location.pathname === '/') {
     return null;
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] sm:max-w-none">
       {isMinimized ? (
         <button
           onClick={() => setIsMinimized(false)}
           className="flex items-center border border-white/20 gap-2 px-4 py-2 bg-[#040F4B] text-white rounded-full shadow-lg hover:bg-[#0A1B6F] transition-colors duration-200"
         >
           <Bot className="w-5 h-5" />
-          <span>Ask Assistant</span>
+          <span className="text-sm">Ask Assistant</span>
         </button>
       ) : (
-        <Card className="w-[600px] shadow-xl border border-blue-200">
+        <Card className="w-full sm:w-[600px] shadow-xl border border-blue-200">
           <div
             ref={resizeRef}
             onMouseDown={handleResizeStart}
@@ -254,7 +256,7 @@ export default function RAGChat() {
 
           <CardContent className="p-0">
             <div 
-              className="overflow-y-auto p-4 space-y-4 bg-gray-50"
+              className="overflow-y-auto p-2 sm:p-4 space-y-4 bg-gray-50"
               style={{ height: `${height}px` }}
             >
               {messages.map((message, index) => (
@@ -263,7 +265,7 @@ export default function RAGChat() {
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-lg p-3 relative group ${
+                    className={`max-w-[95%] sm:max-w-[85%] rounded-lg p-2 sm:p-3 relative group ${
                       message.type === 'user'
                         ? 'bg-[#040F4B] text-white'
                         : 'bg-white shadow-sm border border-gray-200'
@@ -462,7 +464,7 @@ export default function RAGChat() {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 bg-white">
+            <form onSubmit={handleSubmit} className="p-2 sm:p-3 border-t border-gray-200 bg-white">
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -475,7 +477,7 @@ export default function RAGChat() {
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="bg-[#040F4B] text-white rounded-lg px-3 py-2 hover:bg-[#0A1B6F]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="bg-[#040F4B] text-white rounded-lg px-3 py-2 hover:bg-[#0A1B6F]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

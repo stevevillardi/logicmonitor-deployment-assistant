@@ -2,7 +2,7 @@ import { CookieOptions, createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const PROTECTED_PATHS = [
-    '/',
+    '/home',
     '/overview',
     '/system',
     '/collector-info',

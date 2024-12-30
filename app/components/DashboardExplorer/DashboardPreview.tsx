@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { getWidgetIcon } from './utils';
 import { X } from 'lucide-react';
 import { LayoutDashboard, Palette, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 interface DashboardPreviewProps {
     isOpen: boolean;
@@ -449,33 +450,44 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
     const gridDimensions = dashboard.widgets?.reduce(
         (acc: { rows: number; cols: number }, widget: any) => ({
             rows: Math.max(acc.rows, widget.position.row + widget.position.sizey),
-            cols: Math.max(acc.cols, widget.position.col + widget.position.sizex)
+            cols: Math.max(acc.cols, widget.position.col + widget.position.sizex - 1)
         }),
         { rows: 0, cols: 0 }
     );
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 640);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-[90vw] h-[90vh] p-0 bg-gray-50/95 backdrop-blur-sm flex flex-col">
-                <DialogHeader className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b bg-white">
+            <DialogContent aria-describedby={undefined} className="max-w-[95vw] w-full h-[90vh] p-0 bg-gray-50/95 backdrop-blur-sm flex flex-col">
+                <DialogHeader className="flex-shrink-0 p-4 sm:p-6 pb-3 sm:pb-4 border-b bg-white">
                     <div className="space-y-1">
-                        <DialogTitle className="text-xl font-semibold text-gray-900">
+                        <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-900 pr-8">
                             {dashboard.name}
                         </DialogTitle>
                         {dashboard.description && (
-                            <p className="text-sm text-gray-600">
+                            <p className="text-xs sm:text-sm text-gray-600">
                                 {dashboard.description}
                             </p>
                         )}
                     </div>
                 </DialogHeader>
                 
-                <div className="flex-1 overflow-auto p-6">
-                    <div className="bg-white rounded-lg border shadow-sm p-4">
+                <div className="flex-1 overflow-auto p-3 sm:p-6">
+                    <div className="bg-white rounded-lg border shadow-sm p-2 sm:p-4">
                         <div 
-                            className="grid gap-3"
+                            className="grid gap-2 sm:gap-3"
                             style={{
-                                gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(0, 1fr))`,
+                                gridTemplateColumns: `repeat(${
+                                    isMobile ? 1 : gridDimensions.cols
+                                }, minmax(0, 1fr))`,
                                 gridAutoRows: 'minmax(100px, auto)'
                             }}
                         >
@@ -483,25 +495,29 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
                                 <div
                                     key={index}
                                     style={{
-                                        gridColumn: `${widget.position.col} / span ${widget.position.sizex}`,
-                                        gridRow: `${widget.position.row} / span ${widget.position.sizey}`
+                                        gridColumn: window.innerWidth < 640 
+                                            ? '1 / -1' 
+                                            : `${widget.position.col} / span ${widget.position.sizex}`,
+                                        gridRow: window.innerWidth < 640 
+                                            ? 'auto' 
+                                            : `${widget.position.row} / span ${widget.position.sizey}`
                                     }}
                                     className="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow group flex flex-col"
                                 >
-                                    <div className="p-3 border-b bg-gray-50/50 flex-shrink-0">
+                                    <div className="p-2 sm:p-3 border-b bg-gray-50/50 flex-shrink-0">
                                         <div className="flex items-center gap-2">
                                             {getWidgetIcon(widget.config.type)}
-                                            <h3 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600">
+                                            <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate group-hover:text-blue-600">
                                                 {widget.config.name}
                                             </h3>
                                         </div>
                                         {widget.config.description && (
-                                            <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                                            <p className="mt-1 text-[10px] sm:text-xs text-gray-500 line-clamp-2">
                                                 {widget.config.description}
                                             </p>
                                         )}
                                     </div>
-                                    <div className="p-4 flex-1">
+                                    <div className="p-2 sm:p-4 flex-1">
                                         {getWidgetPreview(widget)}
                                     </div>
                                 </div>
@@ -510,8 +526,8 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
                     </div>
                 </div>
 
-                <div className="flex-shrink-0 p-4 border-t bg-white">
-                    <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex-shrink-0 p-3 sm:p-4 border-t bg-white">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 text-xs sm:text-sm text-gray-500">
                         <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1.5">
                                 <LayoutDashboard className="w-4 h-4" />

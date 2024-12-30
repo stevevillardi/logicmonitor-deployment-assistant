@@ -18,7 +18,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "LogicMonitor Deployment Assistant",
+  title: "LM Deployment Assistant",
   description: "Help estimate the number of LogicMonitor collectors needed for your environment, explore the LogicMonitor API, and more.",
   manifest: '/manifest.json',
   appleWebApp: {

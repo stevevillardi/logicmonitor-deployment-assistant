@@ -15,16 +15,37 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const VERSIONS = [
     {
         version: "1.0.4",
-        date: "2024-12-29",
+        date: "2024-12-30",
         sections: [
             {
                 title: "Deployment Management",
                 icon: <Save className="w-4 h-4 text-blue-600" />,
                 items: [
                     "Added ability to save deployment configurations to your account",
+                    "Cloud storage of deployment configurations with automatic device ordering",
                     "Load previously saved deployments with preserved settings",
-                    "Manage saved deployments through user account profile",
-                    "Rename and delete saved configurations",
+                    "Manage saved deployments through user profile",
+                    "Rename and delete saved configurations"
+                ]
+            },
+            {
+                title: "Platform Enhancements",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "New modern landing page showcasing platform capabilities",
+                    "Improved navigation and user experience",
+                    "Added API-based reports section",
+                    "Enhanced mobile responsiveness",
+                    "Streamlined authentication flow"
+                ]
+            },
+            {
+                title: "Data Management",
+                icon: <Database className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Automatic device type ordering preservation",
+                    "Consistent configuration state management",
+                    "Overwrite protection for existing deployments",
                     "Secure per-user deployment storage",
                     "Cross-device access to saved configurations"
                 ]
@@ -247,7 +268,7 @@ const VERSIONS = [
 ];
 
 export const VersionInfo = () => {
-    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.3"]);
+    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.4"]);
 
     const toggleVersion = (version: string) => {
         setExpandedVersions(prev => 
@@ -267,7 +288,10 @@ export const VersionInfo = () => {
                     <span className="hidden 2xl:inline">Release Notes</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
+            <DialogContent 
+                className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
+                aria-describedby={undefined}
+            >
                 <DialogHeader className="border-b border-blue-100 pb-3">
                     <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
                         <div className="flex items-center gap-2">
@@ -275,6 +299,9 @@ export const VersionInfo = () => {
                             Release Notes
                         </div>
                     </DialogTitle>
+                    <DialogDescription id="version-info-description">
+                        View the latest updates and changes to the Deployment Assistant
+                    </DialogDescription>
                 </DialogHeader>
 
                 <ScrollArea className="h-[600px] pr-4 overflow-y-auto">
