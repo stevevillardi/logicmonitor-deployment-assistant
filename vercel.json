@@ -1,9 +1,6 @@
 {
   "crons": [{
     "path": "/api/cron/sync-dashboards",
-    "schedule": "0 0 * * *",
-    "headers": {
-      "authorization": "@cron_secret"
-    }
+    "schedule": "0 0 * * *"
   }]
 } 
