@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database } from 'lucide-react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database, Users, Shield, Paintbrush } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,40 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Version information
 const VERSIONS = [
+    {
+        version: "1.0.5",
+        date: "2024-12-31",
+        sections: [
+            {
+                title: "Community Dashboard Features",
+                icon: <Users className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Added ability for users to upload and share dashboards",
+                    "New dashboard management interface for uploaded dashboards",
+                    "Display name support for better dashboard readability",
+                    "Category organization for community dashboards"
+                ]
+            },
+            {
+                title: "Security & Access Control",
+                icon: <Shield className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Initial RBAC implementation for permission handling",
+                    "Domain-based authorization for protected features",
+                    "Secure dashboard management for contributors"
+                ]
+            },
+            {
+                title: "UI Improvements",
+                icon: <Paintbrush className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Enhanced empty state visualizations",
+                    "Improved dashboard preview and management interfaces",
+                    "Consistent styling across management dialogs"
+                ]
+            }
+        ]
+    },
     {
         version: "1.0.4",
         date: "2024-12-30",
@@ -268,7 +302,7 @@ const VERSIONS = [
 ];
 
 export const VersionInfo = () => {
-    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.4"]);
+    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.5"]);
 
     const toggleVersion = (version: string) => {
         setExpandedVersions(prev => 
@@ -328,7 +362,7 @@ export const VersionInfo = () => {
 
                                 {expandedVersions.includes(versionInfo.version) && (
                                     <div className="space-y-4 mt-4">
-                                        {versionInfo.sections.map((section, index) => (
+                                        {versionInfo.sections?.map((section, index) => (
                                             <div key={index} className="bg-blue-50 rounded-lg border border-blue-100 p-3">
                                                 <div className="flex items-start gap-2 mb-2">
                                                     {section.icon}
