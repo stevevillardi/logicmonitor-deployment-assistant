@@ -3,7 +3,7 @@ import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Building2, Trash2, Save, Clock, Server, Info, MessageSquare, Activity, ChevronDown, ChevronRight, Network, Pencil, AlertTriangle } from 'lucide-react'
+import { Building2, Trash2, Save, Clock, Server, Info, MessageSquare, Activity, ChevronDown, ChevronRight, Network, Pencil, AlertTriangle, Folder } from 'lucide-react'
 import { useState } from "react"
 import {
     AlertDialog,
@@ -99,16 +99,14 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700" />
                             </div>
                         ) : deployments.length === 0 ? (
-                            <div className="bg-white border border-blue-200 rounded-lg p-6 text-center">
-                                <div className="flex justify-center mb-4">
-                                    <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <Info className="w-6 h-6 text-blue-700" />
-                                    </div>
+                            <div className="border-2 border-dashed border-blue-200 rounded-lg p-6 text-center bg-white">
+                                <div className="flex flex-col items-center justify-center gap-2">
+                                    <Folder className="h-8 w-8 text-blue-400" />
+                                    <h3 className="font-medium text-blue-900">No Saved Deployments</h3>
+                                    <p className="text-sm text-blue-600">
+                                        Your saved deployments will appear here
+                                    </p>
                                 </div>
-                                <h3 className="text-gray-900 font-medium mb-2">No Saved Deployments</h3>
-                                <p className="text-sm text-gray-600">
-                                    You haven&apos;t saved any deployments yet. Save your current configuration to access it later.
-                                </p>
                             </div>
                         ) : (
                             <ScrollArea className="h-[400px] pr-4">

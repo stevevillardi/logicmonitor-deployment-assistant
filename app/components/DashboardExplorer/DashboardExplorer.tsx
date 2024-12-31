@@ -17,6 +17,7 @@ import { useAuth } from '@/app/hooks/useAuth';
 // Define the dashboard type
 interface Dashboard {
     filename: string;
+    displayname: string;
     path: string;
     url: string;
     category: string;
@@ -77,6 +78,7 @@ const DashboardExplorer = () => {
                         .replace(/[-_]+/g, ' ')
                         .trim()}${item.path.includes('Legacy') ? ' (Legacy)' : 
                           item.path.includes('Previous') ? ' (Previous)' : ''}`,
+                    displayname: item.displayname,
                     description: item.content?.description || `${item.category} dashboard`,
                     widgets: item.content?.widgets?.length || 0,
                     lastUpdated: new Date(item.last_updated).toLocaleDateString('en-US', {
@@ -468,7 +470,7 @@ const DashboardExplorer = () => {
                                                                         setIsPreviewOpen(true);
                                                                     }}
                                                                 >
-                                                                    {dashboard.name}
+                                                                    {dashboard.displayname}
                                                                     {dashboard.path.includes('Legacy') && (
                                                                         <span className="ml-2 text-xs font-normal text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                                                                             Legacy

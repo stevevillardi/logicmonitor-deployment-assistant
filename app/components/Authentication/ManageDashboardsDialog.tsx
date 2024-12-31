@@ -11,10 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Trash2, Edit2, Save, X } from 'lucide-react';
 import { supabaseBrowser } from '@/app/lib/supabase';
 import { useAuth } from '@/app/hooks/useAuth';
+import { Label } from "@/components/ui/label";
+import { Layout } from 'lucide-react';
 
 interface Dashboard {
     id: string;
     filename: string;
+    displayname: string;
     category: string;
     path: string;
     submitted_by: string;
@@ -57,7 +60,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
 
     const handleEdit = (dashboard: Dashboard) => {
         setEditingId(dashboard.id);
-        setEditName(dashboard.filename.replace('.json', ''));
+        setEditName(dashboard.displayname);
         setEditCategory(dashboard.category);
     };
 
@@ -66,8 +69,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
             .from('dashboard-configs')
             .update({
                 category: editCategory,
-                filename: `${editName}.json`,
-                path: `${editCategory}/${editName}.json`,
+                displayname: editName,
                 last_updated: new Date().toISOString()
             })
             .eq('id', dashboard.id);
@@ -91,8 +93,17 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
         }
     };
 
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            setEditingId(null);
+            setEditName('');
+            setEditCategory('');
+        }
+        onOpenChange(newOpen);
+    };
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-2xl bg-blue-50 border-blue-200">
                 <DialogHeader className="pb-4 border-b border-blue-200">
                     <DialogTitle className="text-xl font-semibold text-blue-900">
@@ -107,8 +118,14 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                     {isLoading ? (
                         <div className="text-center py-4 text-blue-700">Loading...</div>
                     ) : dashboards.length === 0 ? (
-                        <div className="text-center py-4 text-blue-700">
-                            No published dashboards
+                        <div className="border-2 border-dashed border-blue-200 rounded-lg p-6 text-center bg-white">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <Layout className="h-8 w-8 text-blue-400" />
+                                <h3 className="font-medium text-blue-900">No Published Dashboards</h3>
+                                <p className="text-sm text-blue-600">
+                                    Your published dashboards will appear here
+                                </p>
+                            </div>
                         </div>
                     ) : (
                         <div className="space-y-2">
@@ -118,20 +135,32 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                     className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200 shadow-sm"
                                 >
                                     {editingId === dashboard.id ? (
-                                        <div className="flex-1 flex items-center gap-2">
-                                            <Input
-                                                value={editName}
-                                                onChange={(e) => setEditName(e.target.value)}
-                                                placeholder="Dashboard name"
-                                                className="flex-1 bg-white border-blue-200"
-                                            />
-                                            <Input
-                                                value={editCategory}
-                                                onChange={(e) => setEditCategory(e.target.value.replace(/,/g, ''))}
-                                                placeholder="Category"
-                                                className="flex-1 bg-white border-blue-200"
-                                            />
-                                            <div className="flex items-center gap-2">
+                                        <div className="flex-1 flex items-start gap-4">
+                                            <div className="flex-1">
+                                                <Label htmlFor="name" className="text-xs text-blue-700 mb-1">
+                                                    Display Name
+                                                </Label>
+                                                <Input
+                                                    id="name"
+                                                    value={editName}
+                                                    onChange={(e) => setEditName(e.target.value)}
+                                                    placeholder="Display name"
+                                                    className="bg-white border-blue-200"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <Label htmlFor="category" className="text-xs text-blue-700 mb-1">
+                                                    Category
+                                                </Label>
+                                                <Input
+                                                    id="category"
+                                                    value={editCategory}
+                                                    onChange={(e) => setEditCategory(e.target.value.replace(/,/g, ''))}
+                                                    placeholder="Category"
+                                                    className="bg-white border-blue-200"
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-2 mt-6">
                                                 <Button
                                                     size="sm"
                                                     onClick={() => handleSave(dashboard)}
@@ -155,7 +184,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                         <>
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-medium text-blue-900">
-                                                    {dashboard.filename.replace('.json', '')}
+                                                    {dashboard.displayname}
                                                 </span>
                                                 <span className="text-xs text-blue-700">
                                                     {dashboard.category}

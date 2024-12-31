@@ -18,7 +18,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { dashboard, category } = await request.json();
+        const { dashboard, category, displayname } = await request.json();
 
         // Basic validation
         if (!dashboard || !dashboard.name || !dashboard.widgets) {
@@ -38,6 +38,7 @@ export async function POST(request: Request) {
                 .insert({
                     category: category || 'Community',
                     filename,
+                    displayname: displayname,
                     path: `Community/${filename}`,
                     content: dashboard,
                     submitted_by: user.email,

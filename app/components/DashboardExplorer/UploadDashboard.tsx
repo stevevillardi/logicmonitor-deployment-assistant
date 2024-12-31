@@ -104,18 +104,18 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
     const [isUploading, setIsUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [category, setCategory] = useState('Community');
+    const [displayname, setDisplayname] = useState('');
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>({ status: 'pending' });
 
     // Reset state when dialog closes
     const handleDialogChange = (open: boolean) => {
         if (!open) {
-            // Reset all state
             setFile(null);
             setCategory('Community');
+            setDisplayname('');
             setUploadStatus({ status: 'pending' });
             setIsUploading(false);
 
-            // Clear the file input
             const fileInput = document.getElementById('file') as HTMLInputElement;
             if (fileInput) {
                 fileInput.value = '';
@@ -124,10 +124,26 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
         onOpenChange(open);
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.[0]) {
-            setFile(e.target.files[0]);
+            const file = e.target.files[0];
+            setFile(file);
             setUploadStatus({ status: 'pending' });
+
+            // Parse the file to get the dashboard name
+            try {
+                const content = await file.text();
+                const dashboard = JSON.parse(content);
+                if (dashboard.name) {
+                    // Format the name: replace underscores/hyphens with spaces
+                    const formattedName = dashboard.name
+                        .replace(/[_-]/g, ' ')
+                        .replace(/\b\w/g, (c: string) => c.toUpperCase()); // Capitalize first letter of each word
+                    setDisplayname(formattedName);
+                }
+            } catch (error) {
+                console.error('Error parsing dashboard file:', error);
+            }
         }
     };
 
@@ -143,11 +159,10 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
                 throw new Error('Authentication required');
             }
 
-            // Validate category (no commas allowed)
             if (category.includes(',')) {
                 setUploadStatus({ 
                     status: 'error', 
-                    error: 'Category cannot contain commas. Please use a single category name.',
+                    error: 'Category cannot contain commas',
                     filename: file.name 
                 });
                 return;
@@ -156,7 +171,6 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
             const fileContent = await file.text();
             const dashboard = JSON.parse(fileContent);
 
-            // Validate dashboard JSON
             const validation = validateDashboardJson(dashboard);
             if (!validation.isValid) {
                 setUploadStatus({ 
@@ -173,7 +187,11 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.access_token}`
                 },
-                body: JSON.stringify({ dashboard, category: category.trim() }),
+                body: JSON.stringify({ 
+                    dashboard, 
+                    category: category.trim(),
+                    displayname: displayname.trim() || dashboard.name // Use displayname if set, fallback to dashboard.name
+                }),
             });
 
             if (!response.ok) {
@@ -263,6 +281,18 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="displayname" className="text-sm font-medium text-gray-900">
+                                    Display Name
+                                </Label>
+                                <Input
+                                    id="displayname"
+                                    value={displayname}
+                                    onChange={(e) => setDisplayname(e.target.value)}
+                                    placeholder="Enter display name"
+                                    className="bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="category" className="text-sm font-medium text-gray-900">
