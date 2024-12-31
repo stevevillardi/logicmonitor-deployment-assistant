@@ -342,7 +342,7 @@ const DashboardExplorer = () => {
                                         <span className="font-medium">Explore LogicMonitor Dashboards</span>
                                     </div>
                                     <p className="text-sm text-blue-600">
-                                        Browse through our collection of pre-configured dashboards. Each dashboard is designed to provide comprehensive monitoring for specific aspects of your infrastructure. Add dashboards to your dashboard import list to import them into your LogicMonitor portal. Have a dashboard you'd like to share? Upload your dashboard for inclusion in the community dashboard collection.
+                                        Browse through our collection of pre-configured dashboards. Each dashboard is designed to provide comprehensive monitoring for specific aspects of your infrastructure. Add dashboards to your dashboard import list to import them into your LogicMonitor portal. Have a dashboard you&apos;d like to share? Upload your dashboard for inclusion in the community dashboard collection.
                                     </p>
                                 </div>
                             </div>
