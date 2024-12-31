@@ -6,6 +6,7 @@ import { Bot, Layout, Save, Server, Network, Settings, FileText, Play, ArrowRigh
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const features = [
     {
@@ -226,10 +227,32 @@ export default function LandingPage() {
                 </div>
 
                 {/* Enhanced Footer */}
-                <div className="mt-6 text-center">
-                    <p className="text-blue-200 text-sm font-medium">
-                        Built by the Community | Powered by LogicMonitor&apos;s REST API
-                    </p>
+                <div className="mt-12 pb-8 border-t border-blue-800/20">
+                    <div className="container mx-auto px-4">
+                        <div className="flex flex-col items-center gap-6">
+                            {/* Attribution */}
+                            <p className="text-blue-200 text-sm font-medium">
+                                Built by the Community | Powered by LogicMonitor&apos;s REST API
+                            </p>
+
+                            {/* Legal Links */}
+                            <div className="flex items-center gap-6">
+                                <Link 
+                                    href="/privacy" 
+                                    className="text-sm text-blue-200 hover:text-white transition-colors duration-200"
+                                >
+                                    Privacy Policy
+                                </Link>
+                                <span className="text-blue-700">•</span>
+                                <Link 
+                                    href="/legal" 
+                                    className="text-sm text-blue-200 hover:text-white transition-colors duration-200"
+                                >
+                                    Legal Disclaimer
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
