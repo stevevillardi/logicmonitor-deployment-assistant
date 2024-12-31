@@ -45,6 +45,7 @@ async function handleSync() {
         .upsert({
           category,
           filename: pathParts[pathParts.length - 1],
+          displayname: content.name,
           path: file.path,
           content,
           last_updated: new Date().toISOString(),
