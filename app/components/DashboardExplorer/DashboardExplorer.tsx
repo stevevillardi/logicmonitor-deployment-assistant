@@ -13,7 +13,6 @@ import CartModal from './CartModal';
 import supabase, { supabaseBrowser } from '../../lib/supabase';
 import { UploadDashboard } from './UploadDashboard';
 import { useAuth } from '@/app/hooks/useAuth';
-import { toast } from '@/hooks/use-toast';
 
 // Define the dashboard type
 interface Dashboard {
@@ -263,18 +262,7 @@ const DashboardExplorer = () => {
         });
     };
 
-    const handleUploadOpen = async () => {
-        const { data: { session } } = await supabaseBrowser.auth.getSession();
-        
-        if (!session) {
-            toast({
-                title: "Authentication Required",
-                description: "Please sign in to upload dashboards.",
-                variant: "destructive",
-            });
-            return;
-        }
-        
+    const handleUploadOpen = async () => {        
         setIsUploadOpen(true);
     };
 
