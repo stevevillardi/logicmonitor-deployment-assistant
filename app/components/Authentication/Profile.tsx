@@ -11,8 +11,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, User, Folder } from 'lucide-react'
+import { LogOut, User, Folder, Layout } from 'lucide-react'
 import ManageDeploymentsDialog from './ManageDeploymentsDialog'
+import ManageDashboardsDialog from './ManageDashboardsDialog'
 import { useState } from 'react'
 
 export const Profile = () => {
@@ -20,6 +21,7 @@ export const Profile = () => {
     const router = useRouter()
     const supabase = supabaseBrowser;
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [dashboardsDialogOpen, setDashboardsDialogOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const handleSignOut = async () => {
@@ -31,7 +33,14 @@ export const Profile = () => {
         e.preventDefault();
         e.stopPropagation();
         setDialogOpen(true);
-        setDropdownOpen(false); // Close dropdown when opening dialog
+        setDropdownOpen(false);
+    };
+
+    const handleManageDashboards = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDashboardsDialogOpen(true);
+        setDropdownOpen(false);
     };
 
     const getSecureAvatarUrl = () => {
@@ -40,7 +49,6 @@ export const Profile = () => {
         // Check for picture from Google OAuth
         const picture = user.user_metadata.picture;
         if (picture && picture.startsWith('https://lh3.googleusercontent.com')) {
-            // Convert to secure Google avatar URL
             return picture.replace(/^http:\/\//i, 'https://');
         }
 
@@ -100,6 +108,16 @@ export const Profile = () => {
                         <span>Manage Deployments</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
+                        onSelect={(e) => {
+                            e.preventDefault();
+                            handleManageDashboards(e as unknown as React.MouseEvent);
+                        }}
+                        className="text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors duration-200"
+                    >
+                        <Layout className="mr-2 h-4 w-4" />
+                        <span>Manage Dashboards</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
                         onClick={handleSignOut} 
                         className="text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors duration-200"
                     >
@@ -112,6 +130,10 @@ export const Profile = () => {
             <ManageDeploymentsDialog 
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
+            />
+            <ManageDashboardsDialog 
+                open={dashboardsDialogOpen}
+                onOpenChange={setDashboardsDialogOpen}
             />
         </>
     )

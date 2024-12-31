@@ -10,7 +10,8 @@ const PROTECTED_PATHS = [
     '/device-onboarding',
     '/portal-reports',
     '/dashboard-explorer',
-    '/video-library'
+    '/video-library',
+    '/pov'
 ];
 
 export async function middleware(request: NextRequest) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { Terminal } from 'lucide-react';
+import { Rocket, Terminal } from 'lucide-react';
 
 const LoadingPlaceholder = () => {
   return (
@@ -19,7 +19,7 @@ const LoadingPlaceholder = () => {
                   className="w-[150px] h-auto sm:w-[200px] lg:w-[250px]"
                   priority
                 /> */}
-                <Terminal className="w-10 h-10 text-[#040F4B]" />
+                <Rocket className="w-10 h-10 text-[#040F4B]" />
               </div>
               <div className="hidden sm:block h-10 w-px bg-gray-200"></div>
               <CardTitle className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent antialiased">

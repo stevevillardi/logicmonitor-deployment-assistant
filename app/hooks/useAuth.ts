@@ -5,8 +5,13 @@ import { User } from '@supabase/supabase-js';
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const allowedDomain = process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAIN || '@logicmonitor.com';
 
     const supabase = supabaseBrowser;
+
+    const isAllowedDomain = (email?: string | null) => {
+        return email?.endsWith(allowedDomain);
+    };
 
     useEffect(() => {
         const getUser = async () => {
@@ -23,13 +28,11 @@ export function useAuth() {
             return subscription
         }
 
-        // Execute getUser and store the subscription
         let subscription: { unsubscribe: () => void } | undefined;
         getUser().then(sub => {
             subscription = sub;
         });
 
-        // Return the cleanup function directly in useEffect
         return () => {
             subscription?.unsubscribe();
         }
@@ -37,6 +40,7 @@ export function useAuth() {
 
     return {
         isAuthenticated: !!user,
+        isAuthorized: isAllowedDomain(user?.email),
         user,
         isLoading,
     }

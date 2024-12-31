@@ -23,6 +23,8 @@ import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { Profile } from '../Authentication/Profile';
 import { DeploymentsProvider } from '@/app/contexts/DeploymentsContext';
+import POVReadiness from '../POVReadiness/POVReadiness';
+import { useAuth } from '@/app/hooks/useAuth';
 
 const Logo = () => {
     return (
@@ -48,7 +50,8 @@ const TAB_PATHS = {
     'api-explorer': '/api-explorer',
     'device-onboarding': '/device-onboarding',
     'video-library': '/video-library',
-    'dashboard-explorer': '/dashboard-explorer' 
+    'dashboard-explorer': '/dashboard-explorer', 
+    'pov': '/pov'
 } as const;
 
 const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
@@ -58,16 +61,18 @@ const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
 
 const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (value: string) => void }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { isAuthorized } = useAuth();
 
     const navigationItems = [
         { id: 'sites', label: 'Deployment Configuration', icon: <Bolt className="w-4 h-4" /> },
         { id: 'overview', label: 'Deployment Overview', icon: <BookText className="w-4 h-4" /> },
-        { id: 'device-onboarding', label: 'Device Information', icon: <Server className="w-4 h-4" /> },
-        { id: 'collector-info', label: 'Collector Information', icon: <Bot className="w-4 h-4" /> },
+        { id: 'device-onboarding', label: 'Device Info', icon: <Server className="w-4 h-4" /> },
+        { id: 'collector-info', label: 'Collector Info', icon: <Bot className="w-4 h-4" /> },
         { id: 'dashboard-explorer', label: 'Dashboard Explorer', icon: <ChartLine className="w-4 h-4" /> },
         { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
         { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
         { id: 'system', label: 'Deployment Settings', icon: <Settings className="w-4 h-4" /> },
+        ...(isAuthorized ? [{ id: 'pov', label: 'POV Readiness', icon: <FileText className="w-4 h-4" /> }] : []),
     ];
 
     return (
@@ -79,7 +84,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                         <button
                             key={item.id}
                             onClick={() => onTabChange(item.id)}
-                            className={`flex items-center text-sm  gap-2 px-4 py-2 font-medium rounded-lg transition-colors whitespace-nowrap
+                            className={`flex items-center text-sm gap-2 px-4 py-2 font-medium rounded-lg transition-colors whitespace-nowrap
                                 ${activeTab === item.id 
                                     ? 'bg-[#1a2b7f] text-white' 
                                     : 'text-white/85 hover:bg-[#0A1B6F] hover:text-white'}`}
@@ -96,17 +101,18 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                 <div className="relative">
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="w-full flex items-center justify-between px-4 py-2 text-white bg-[#1a2b7f] rounded-lg"
+                        className="w-full flex items-center justify-between text-white px-4 py-2 rounded-lg bg-[#0A1B6F] hover:bg-[#1a2b7f]"
                     >
                         <div className="flex items-center gap-2">
                             {navigationItems.find(item => item.id === activeTab)?.icon}
-                            <span>{navigationItems.find(item => item.id === activeTab)?.label}</span>
+                            <span className="font-medium">
+                                {navigationItems.find(item => item.id === activeTab)?.label}
+                            </span>
                         </div>
                         <ChevronDown className={`w-5 h-5 transition-transform ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
-
                     {isMobileMenuOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-2 py-2 bg-[#040F4B] rounded-lg shadow-lg z-50">
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A1B6F] rounded-lg shadow-lg overflow-hidden z-50">
                             {navigationItems.map((item) => (
                                 <button
                                     key={item.id}
@@ -114,10 +120,10 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                                         onTabChange(item.id);
                                         setIsMobileMenuOpen(false);
                                     }}
-                                    className={`w-full flex items-center gap-2 px-4 py-2 transition-colors
+                                    className={`w-full flex items-center text-sm gap-2 px-4 py-3 font-medium transition-colors
                                         ${activeTab === item.id 
                                             ? 'bg-[#1a2b7f] text-white' 
-                                            : 'text-white/85 hover:bg-[#0A1B6F] hover:text-white'}`}
+                                            : 'text-white/85 hover:bg-[#1a2b7f] hover:text-white'}`}
                                 >
                                     {item.icon}
                                     <span>{item.label}</span>
@@ -295,6 +301,12 @@ const DeploymentAssistant = () => {
                         {activeTab === 'video-library' && (
                             <div className="mt-6">
                                 <VideoLibrary />
+                            </div>
+                        )}
+
+                        {activeTab === 'pov' && (
+                            <div className="mt-6">
+                                <POVReadiness />
                             </div>
                         )}
                     </div>
