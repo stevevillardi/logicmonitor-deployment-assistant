@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bot, Layout, Save, Server, Network, Settings, FileText, Play, ArrowRight, Database, Cloud, ChartLine, Terminal, PlayCircle } from 'lucide-react';
+import { Bot, Layout, Save, Server, Network, Settings, FileText, Play, ArrowRight, Database, Cloud, ChartLine, Terminal, PlayCircle, Rocket } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
 import Image from 'next/image';
@@ -84,7 +84,7 @@ export default function LandingPage() {
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                     {/* Title */}
                     <div className="flex items-center gap-2">
-                        <Terminal className="w-5 h-5 text-white" />
+                        <Rocket className="w-5 h-5 text-white" />
                         <span className="text-white font-semibold text-lg hidden sm:inline">
                             LM Deployment Assistant
                         </span>

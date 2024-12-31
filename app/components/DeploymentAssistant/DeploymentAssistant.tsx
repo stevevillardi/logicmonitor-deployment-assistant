@@ -8,7 +8,7 @@ import SiteOverview from '../SiteOverview/SiteOverview';
 import CollectorInfo from '../CollectorInfo/CollectorInfo';
 import { Config, Site } from './types/types';
 import Image from 'next/image';
-import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine } from 'lucide-react';
+import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine, Rocket } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
@@ -202,7 +202,7 @@ const DeploymentAssistant = () => {
                 <CardHeader className="border-gray-200 dark:border-gray-800 bg-gradient-to-r from-white dark:from-gray-900 to-blue-50/50 dark:to-blue-950/50 no-print p-1 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 py-2">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-8 w-full sm:w-auto">
-                        <Terminal className="w-10 h-10 text-[#040F4B]" />
+                        <Rocket className="w-10 h-10 text-[#040F4B]" />
                         {/* <Logo /> */}
                             <div className="hidden sm:block h-10 w-px bg-gray-200"></div>
                             <CardTitle className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">

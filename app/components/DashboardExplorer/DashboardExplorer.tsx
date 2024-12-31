@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Layout, Info, ShoppingCart, Plus, Minus, X } from 'lucide-react';
+import { Search, Filter, Layout, Info, ShoppingCart, Plus, Minus, X, Upload, RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -10,7 +10,10 @@ import DashboardMiniPreview from './DashboardMiniPreview';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCart } from '../../contexts/CartContext';
 import CartModal from './CartModal';
-import supabase from '../../lib/supabase';
+import supabase, { supabaseBrowser } from '../../lib/supabase';
+import { UploadDashboard } from './UploadDashboard';
+import { useAuth } from '@/app/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
 
 // Define the dashboard type
 interface Dashboard {
@@ -24,6 +27,7 @@ interface Dashboard {
     description?: string;
     widgets?: number;
     lastUpdated?: string;
+    submitted_by?: string;
 }
 
 const DashboardExplorer = () => {
@@ -46,6 +50,10 @@ const DashboardExplorer = () => {
         clearCart
     } = useCart();
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
+    console.log('Upload dialog state:', isUploadOpen);
+    const { user } = useAuth();
+    console.log('Current user:', user);
 
     // Reset page when category or search changes
     useEffect(() => {
@@ -106,6 +114,13 @@ const DashboardExplorer = () => {
         fetchDashboards();
     }, []);
 
+    useEffect(() => {
+        return () => {
+            // Cleanup function to ensure dialog is closed when component unmounts
+            setIsUploadOpen(false);
+        };
+    }, []);
+
     // Filter and sort dashboards based on search and category
     const filteredDashboards = dashboards
         .filter(dashboard => {
@@ -127,6 +142,16 @@ const DashboardExplorer = () => {
         (currentPage - 1) * dashboardsPerPage,
         currentPage * dashboardsPerPage
     );
+
+    // Add session check effect
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            console.log('Current session:', !!session);
+        };
+        
+        checkSession();
+    }, []);
 
     // Add loading state
     if (isLoading) {
@@ -238,6 +263,62 @@ const DashboardExplorer = () => {
         });
     };
 
+    const handleUploadOpen = async () => {
+        const { data: { session } } = await supabaseBrowser.auth.getSession();
+        
+        if (!session) {
+            toast({
+                title: "Authentication Required",
+                description: "Please sign in to upload dashboards.",
+                variant: "destructive",
+            });
+            return;
+        }
+        
+        setIsUploadOpen(true);
+    };
+
+    const handleUploadClose = (open: boolean) => {
+        console.log('Setting upload dialog state:', open);
+        setIsUploadOpen(open);
+    };
+
+    const handleRefresh = async () => {
+        try {
+            setIsLoading(true);
+            const { data, error } = await supabase
+                .from('dashboard-configs')
+                .select('*')
+                .order('category');
+
+            if (error) throw error;
+
+            const allDashboards = data.map(item => ({
+                ...item,
+                name: `${item.filename
+                    .replace('.json', '')
+                    .replace(/[-_]+/g, ' ')
+                    .trim()}${item.path.includes('Legacy') ? ' (Legacy)' : 
+                      item.path.includes('Previous') ? ' (Previous)' : ''}`,
+                description: item.content?.description || `${item.category} dashboard`,
+                widgets: item.content?.widgets?.length || 0,
+                lastUpdated: new Date(item.last_updated).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                })
+            }));
+
+            setDashboards(allDashboards);
+            setError(null);
+        } catch (err) {
+            setError('Failed to refresh dashboards');
+            console.error('Error refreshing dashboards:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <TooltipProvider>
             <div className="space-y-6">
@@ -248,7 +329,19 @@ const DashboardExplorer = () => {
                                 <Layout className="w-6 h-6 text-blue-700" />
                                 <CardTitle>Dashboard Explorer</CardTitle>
                             </div>
-                            {cartButton}
+                            <div className="flex items-center gap-3">
+                                {user ? (
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleUploadOpen}
+                                        className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700 gap-2"
+                                    >
+                                        <Upload className="w-4 h-4" />
+                                        Upload Dashboard
+                                    </Button>
+                                ) : null}
+                                {cartButton}
+                            </div>
                         </div>
                     </CardHeader>
                     <CardContent className="p-4 sm:p-6">
@@ -314,22 +407,34 @@ const DashboardExplorer = () => {
                                                     className="w-full pl-9 bg-white border-gray-200 focus:border-blue-500 focus:ring-blue-200"
                                                 />
                                             </div>
-                                            <Button
-                                                variant="outline"
-                                                onClick={handleSelectAll}
-                                                className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
-                                            >
-                                                <Plus className="w-4 h-4 mr-2" />
-                                                Select All
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                onClick={clearCart}
-                                                className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
-                                            >
-                                                <X className="w-4 h-4 mr-2" />
-                                                Clear All
-                                            </Button>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-2">
+                                                <Button
+                                                        variant="outline"
+                                                        onClick={handleRefresh}
+                                                        className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                                                        disabled={isLoading}
+                                                    >
+                                                        <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={handleSelectAll}
+                                                        className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                                                    >
+                                                        <Plus className="w-4 h-4 mr-2" />
+                                                        Select All
+                                                    </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={clearCart}
+                                                    className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                                                >
+                                                    <X className="w-4 h-4 mr-2" />
+                                                    Clear All
+                                                </Button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="mt-2 text-sm text-gray-500">
                                             {filteredDashboards.length} {filteredDashboards.length === 1 ? 'dashboard' : 'dashboards'} found
@@ -396,6 +501,15 @@ const DashboardExplorer = () => {
                                                                 <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
                                                                     {dashboard.widgets} widgets
                                                                 </span>
+                                                                {dashboard.submitted_by ? (
+                                                                    <span className="text-xs text-gray-500">
+                                                                        Submitted by: {dashboard.submitted_by}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full">
+                                                                        Core Dashboard
+                                                                    </span>
+                                                                )}
                                                                 {dashboard.lastUpdated && (
                                                                     <span className="text-xs text-gray-500">
                                                                         Updated: {dashboard.lastUpdated}
@@ -403,17 +517,19 @@ const DashboardExplorer = () => {
                                                                 )}
                                                             </div>
                                                             <div className="flex items-center gap-3 mt-4 pt-3 border-t">
-                                                                <a
-                                                                    href={dashboard.url}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="text-xs text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
-                                                                >
-                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                    </svg>
-                                                                    View Source
-                                                                </a>
+                                                                {dashboard.url && (
+                                                                    <a
+                                                                        href={dashboard.url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-xs text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+                                                                    >
+                                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                        </svg>
+                                                                        View Source
+                                                                    </a>
+                                                                )}
                                                                 <button
                                                                     onClick={() => {
                                                                         const dataStr = JSON.stringify(dashboard.content, null, 2);
@@ -497,6 +613,10 @@ const DashboardExplorer = () => {
                 <CartModal 
                     isOpen={isCartOpen}
                     onClose={() => setIsCartOpen(false)}
+                />
+                <UploadDashboard 
+                    open={isUploadOpen}
+                    onOpenChange={setIsUploadOpen}
                 />
             </div>
         </TooltipProvider>

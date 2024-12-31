@@ -47,7 +47,8 @@ async function handleSync() {
           filename: pathParts[pathParts.length - 1],
           path: file.path,
           content,
-          last_updated: new Date().toISOString()
+          last_updated: new Date().toISOString(),
+          url: `https://raw.githubusercontent.com/logicmonitor/dashboards/${defaultBranch}/${file.path}`
         }, {
           onConflict: 'path'
         });
