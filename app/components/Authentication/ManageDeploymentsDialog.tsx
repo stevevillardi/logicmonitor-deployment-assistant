@@ -3,7 +3,7 @@ import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Building2, Trash2, Save, Clock, Server, Info, MessageSquare, Activity, ChevronDown, ChevronRight, Network, Pencil, AlertTriangle, Folder } from 'lucide-react'
+import { Building2, Trash2, Save, Clock, Server, Info, MessageSquare, Activity, ChevronDown, ChevronRight, Network, Pencil, AlertTriangle, Folder, Edit2, X } from 'lucide-react'
 import { useState } from "react"
 import {
     AlertDialog,
@@ -15,6 +15,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label"
 
 interface ManageDeploymentsDialogProps {
     open: boolean
@@ -116,78 +117,90 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                             key={deployment.id}
                                             className="bg-white border border-blue-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                                         >
-                                            <div className="flex items-center justify-between gap-4">
-                                                <div className="flex items-center gap-3 flex-1">
-                                                    <button
-                                                        onClick={() => toggleDeployment(deployment.id)}
-                                                        className="flex items-center gap-2"
-                                                    >
-                                                        <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                                            <Building2 className="w-4 h-4 text-blue-700" />
-                                                        </div>
-                                                        {expandedDeployments.has(deployment.id) ? (
-                                                            <ChevronDown className="w-4 h-4 text-blue-700" />
-                                                        ) : (
-                                                            <ChevronRight className="w-4 h-4 text-blue-700" />
-                                                        )}
-                                                    </button>
-                                                    
-                                                    {editingId === deployment.id ? (
-                                                        <div className="flex-1 flex items-center gap-2">
-                                                            <Input
-                                                                value={editName}
-                                                                onChange={(e) => setEditName(e.target.value)}
-                                                                className="flex-1 bg-white border-blue-200"
-                                                                autoFocus
-                                                            />
-                                                            <Button
-                                                                onClick={() => handleSave(deployment.id)}
-                                                                className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
-                                                                size="sm"
-                                                            >
-                                                                <Save className="w-4 h-4" /> Save
-                                                            </Button>
-                                                        </div>
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => toggleDeployment(deployment.id)}
+                                                    className="flex items-center gap-2"
+                                                >
+                                                    <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                                        <Building2 className="w-4 h-4 text-blue-700" />
+                                                    </div>
+                                                    {expandedDeployments.has(deployment.id) ? (
+                                                        <ChevronDown className="w-4 h-4 text-blue-700" />
                                                     ) : (
-                                                        <div className="flex-1">
-                                                            <h3 className="font-medium text-gray-900">
-                                                                {deployment.name}
-                                                            </h3>
-                                                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                                                                <Clock className="w-3 h-3" />
-                                                                {formatDate(deployment.updated_at)}
+                                                        <ChevronRight className="w-4 h-4 text-blue-700" />
+                                                    )}
+                                                </button>
+                                                
+                                                {editingId === deployment.id ? (
+                                                    <div className="flex-1 flex flex-col gap-4">
+                                                        <div className="flex flex-col sm:flex-row items-start gap-4">
+                                                            <div className="flex-1">
+                                                                <Label htmlFor="name" className="text-xs text-blue-700">
+                                                                    Deployment Name
+                                                                </Label>
+                                                                <Input
+                                                                    id="name"
+                                                                    value={editName}
+                                                                    onChange={(e) => setEditName(e.target.value)}
+                                                                    placeholder="Enter deployment name"
+                                                                    className="bg-white border-blue-200"
+                                                                />
+                                                            </div>
+                                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto sm:mt-[22px]">
+                                                                <Button
+                                                                    onClick={() => handleSave(deployment.id)}
+                                                                    className="flex-1 sm:flex-initial bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+                                                                >
+                                                                    <Save className="h-4 w-4 mr-1" />
+                                                                    Save
+                                                                </Button>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    onClick={() => setEditingId(null)}
+                                                                    className="flex-1 sm:flex-initial bg-white hover:bg-gray-50"
+                                                                >
+                                                                    <X className="h-4 w-4 mr-1" />
+                                                                    Cancel
+                                                                </Button>
                                                             </div>
                                                         </div>
-                                                    )}
-                                                </div>
-                                                
-                                                {editingId !== deployment.id && (
-                                                    <div className="flex items-center gap-2">
-                                                        <Button
-                                                            onClick={() => {
-                                                                setEditingId(deployment.id);
-                                                                setEditName(deployment.name);
-                                                            }}
-                                                            className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200 gap-2"
-                                                            size="sm"
-                                                        >
-                                                            <Pencil className="w-4 h-4" />
-                                                            <span className="hidden sm:inline">Rename</span>
-                                                        </Button>
-                                                        <Button
-                                                            onClick={() => setDeleteConfirmId(deployment.id)}
-                                                            className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors duration-200 gap-2"
-                                                            size="sm"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                            <span className="hidden sm:inline">Delete</span>
-                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-medium text-blue-900">
+                                                                {deployment.name}
+                                                            </span>
+                                                            <span className="text-xs text-blue-700">
+                                                                Last updated: {new Date(deployment.updated_at).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setEditingId(deployment.id);
+                                                                    setEditName(deployment.name);
+                                                                }}
+                                                                className="flex-1 sm:flex-initial bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200 gap-2"
+                                                            >
+                                                                <Edit2 className="h-4 w-4 mr-1" />
+                                                                Edit
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setDeleteConfirmId(deployment.id)}
+                                                                className="flex-1 sm:flex-initial bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors duration-200 gap-2"
+                                                            >
+                                                                <Trash2 className="h-4 w-4 mr-1" />
+                                                                Delete
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
 
                                             {expandedDeployments.has(deployment.id) && (
-                                                <div className="mt-4 space-y-3">
+                                                <div className="mt-4 space-y-3 border-t border-blue-100 pt-4">
                                                     {deployment.sites.map((site, index) => (
                                                         <div 
                                                             key={index}

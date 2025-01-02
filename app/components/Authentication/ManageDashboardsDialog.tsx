@@ -135,32 +135,34 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                     className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200 shadow-sm"
                                 >
                                     {editingId === dashboard.id ? (
-                                        <div className="flex-1 flex items-start gap-4">
-                                            <div className="flex-1">
-                                                <Label htmlFor="name" className="text-xs text-blue-700 mb-1">
-                                                    Display Name
-                                                </Label>
-                                                <Input
-                                                    id="name"
-                                                    value={editName}
-                                                    onChange={(e) => setEditName(e.target.value)}
-                                                    placeholder="Display name"
-                                                    className="bg-white border-blue-200"
-                                                />
+                                        <div className="flex-1 flex flex-col gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="name" className="text-xs text-blue-700">
+                                                        Display Name
+                                                    </Label>
+                                                    <Input
+                                                        id="name"
+                                                        value={editName}
+                                                        onChange={(e) => setEditName(e.target.value)}
+                                                        placeholder="Display name"
+                                                        className="bg-white border-blue-200"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="category" className="text-xs text-blue-700">
+                                                        Category
+                                                    </Label>
+                                                    <Input
+                                                        id="category"
+                                                        value={editCategory}
+                                                        onChange={(e) => setEditCategory(e.target.value.replace(/,/g, ''))}
+                                                        placeholder="Category"
+                                                        className="bg-white border-blue-200"
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <Label htmlFor="category" className="text-xs text-blue-700 mb-1">
-                                                    Category
-                                                </Label>
-                                                <Input
-                                                    id="category"
-                                                    value={editCategory}
-                                                    onChange={(e) => setEditCategory(e.target.value.replace(/,/g, ''))}
-                                                    placeholder="Category"
-                                                    className="bg-white border-blue-200"
-                                                />
-                                            </div>
-                                            <div className="flex items-center gap-2 mt-6">
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                                 <Button
                                                     size="sm"
                                                     onClick={() => handleSave(dashboard)}
@@ -181,7 +183,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                             </div>
                                         </div>
                                     ) : (
-                                        <>
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4">
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-medium text-blue-900">
                                                     {dashboard.displayname}
@@ -190,11 +192,11 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                                     {dashboard.category}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 w-full sm:w-auto">
                                                 <Button
                                                     size="sm"
                                                     onClick={() => handleEdit(dashboard)}
-                                                    className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200 gap-2"
+                                                    className="flex-1 sm:flex-initial bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200 gap-2"
                                                 >
                                                     <Edit2 className="h-4 w-4 mr-1" />
                                                     Edit
@@ -202,13 +204,13 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                                 <Button
                                                     size="sm"
                                                     onClick={() => handleDelete(dashboard)}
-                                                    className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors duration-200 gap-2"
+                                                    className="flex-1 sm:flex-initial bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors duration-200 gap-2"
                                                 >
                                                     <Trash2 className="h-4 w-4 mr-1" />
                                                     Delete
                                                 </Button>
                                             </div>
-                                        </>
+                                        </div>
                                     )}
                                 </div>
                             ))}
