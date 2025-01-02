@@ -103,14 +103,14 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
           </Button>
         </DialogTrigger>
         <DialogContent 
-          className="max-w-[95vw] w-full lg:max-w-4xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
+          className="max-w-[95vw] w-full lg:max-w-4xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
           onInteractOutside={(e) => e.preventDefault()}
         >
-          <DialogHeader className="border-b border-blue-100 pb-3">
-            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+          <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
+            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
               Save Deployment Configuration
             </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600">
+            <DialogDescription className="text-sm text-gray-600 dark:text-blue-300">
               Save your current deployment configuration to your account
             </DialogDescription>
           </DialogHeader>
@@ -119,23 +119,23 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
             {/* Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Features Section */}
-              <div className="bg-white border border-blue-200 rounded-lg p-4">
+              <div className="bg-white dark:bg-gray-900 border border-blue-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
                     <Save className="w-4 h-4 text-blue-700" />
                   </div>
-                  <h3 className="font-medium text-gray-900">Save to Your Account</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100">Save to Your Account</h3>
                 </div>
                 <div className="grid grid-cols-1 gap-2">
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                     <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
                     <span>Access from any device</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                     <div className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />
                     <span>Secure cloud storage</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                     <div className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
                     <span>Easy load and modify</span>
                   </div>
@@ -143,27 +143,27 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
               </div>
 
               {/* What is Included Section */}
-              <div className="bg-white border border-blue-200 rounded-lg p-4">
+              <div className="bg-white dark:bg-gray-900 border border-blue-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
                     <Info className="w-4 h-4 text-blue-700" />
                   </div>
-                  <h3 className="font-medium text-gray-900">What&apos;s Included</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100">What&apos;s Included</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <Building2 className="w-4 h-4 text-blue-600" />
                     <span>Site configs</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <Server className="w-4 h-4 text-blue-600" />
                     <span>Device settings</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <Settings className="w-4 h-4 text-blue-600" />
                     <span>System settings</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <Calculator className="w-4 h-4 text-blue-600" />
                     <span>Calculations</span>
                   </div>
@@ -172,11 +172,11 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
             </div>
 
             {/* Input Section */}
-            <div className="bg-white border border-blue-200 rounded-lg p-4">
+            <div className="bg-white dark:bg-gray-900 border border-blue-200 dark:border-gray-700 rounded-lg p-4">
               <div className="space-y-1.5">
                 <Label 
                   htmlFor="saveName" 
-                  className="text-sm font-medium text-gray-900"
+                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
                   Deployment Name
                 </Label>
@@ -185,14 +185,14 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
                   placeholder="Enter deployment name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="bg-white border-gray-200"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                   autoFocus
                 />
               </div>
             </div>
           </div>
 
-          <DialogFooter className="border-t border-blue-100 pt-3">
+          <DialogFooter className="border-t border-blue-100 dark:border-gray-700 pt-3">
             <Button 
               onClick={handleSaveAttempt}
               disabled={!name.trim() || isSaving}

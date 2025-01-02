@@ -242,39 +242,39 @@ const TOUR_STEPS: TourStep[] = [
     }
 ];
 
-// Update categoryStyles to use consistent Tailwind classes
+// Update categoryStyles to include dark mode classes
 const categoryStyles = {
     core: { 
         icon: Cpu,
-        bgColor: 'bg-blue-50',
-        accentColor: 'bg-blue-200',
-        borderColor: 'border-blue-300',
-        textColor: 'text-blue-700',
-        iconBg: 'bg-blue-100'
+        bgColor: 'bg-blue-50 dark:bg-blue-950',
+        accentColor: 'bg-blue-200 dark:bg-blue-800',
+        borderColor: 'border-blue-300 dark:border-blue-800',
+        textColor: 'text-blue-700 dark:text-blue-400',
+        iconBg: 'bg-blue-100 dark:bg-blue-900'
     },
     integration: { 
         icon: Link,
-        bgColor: 'bg-yellow-50',
-        accentColor: 'bg-yellow-200',
-        borderColor: 'border-yellow-300',
-        textColor: 'text-yellow-700',
-        iconBg: 'bg-yellow-100'
+        bgColor: 'bg-yellow-50 dark:bg-yellow-950',
+        accentColor: 'bg-yellow-200 dark:bg-yellow-800',
+        borderColor: 'border-yellow-300 dark:border-yellow-800',
+        textColor: 'text-yellow-700 dark:text-yellow-400',
+        iconBg: 'bg-yellow-100 dark:bg-yellow-900'
     },
     collection: { 
         icon: Database,
-        bgColor: 'bg-orange-50',
-        accentColor: 'bg-orange-200',
-        borderColor: 'border-orange-300',
-        textColor: 'text-orange-700',
-        iconBg: 'bg-orange-100'
+        bgColor: 'bg-orange-50 dark:bg-orange-950',
+        accentColor: 'bg-orange-200 dark:bg-orange-800',
+        borderColor: 'border-orange-300 dark:border-orange-800',
+        textColor: 'text-orange-700 dark:text-orange-400',
+        iconBg: 'bg-orange-100 dark:bg-orange-900'
     },
     automation: { 
         icon: Zap,
-        bgColor: 'bg-emerald-50',
-        accentColor: 'bg-emerald-200',
-        borderColor: 'border-emerald-300',
-        textColor: 'text-emerald-700',
-        iconBg: 'bg-emerald-100'
+        bgColor: 'bg-emerald-50 dark:bg-emerald-950',
+        accentColor: 'bg-emerald-200 dark:bg-emerald-800',
+        borderColor: 'border-emerald-300 dark:border-emerald-800',
+        textColor: 'text-emerald-700 dark:text-emerald-400',
+        iconBg: 'bg-emerald-100 dark:bg-emerald-900'
     }
 } as const;
 
@@ -351,7 +351,7 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
             {/* Dialog - remove fullscreen classes */}
             <Dialog open={!!activeStep} onOpenChange={(open) => !open && setActiveStep(null)}>
                 <DialogContent className={cn(
-                    "max-w-xl",
+                    "max-w-xl dark:border-gray-800",
                     activeStep && categoryStyles[activeStep.category].bgColor
                 )}>
                     {activeStep && (
@@ -365,7 +365,7 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                         })}
                                     </div>
                                     <div>
-                                        <DialogTitle className="text-xl font-bold text-gray-900">
+                                        <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                             {activeStep.title}
                                         </DialogTitle>
                                         <p className={`text-sm ${categoryStyles[activeStep.category].textColor} font-medium mt-1`}>
@@ -376,15 +376,15 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                             </DialogHeader>
 
                             <div className="space-y-6">
-                                <p className="text-gray-700 leading-relaxed text-lg">
+                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
                                     {activeStep.description}
                                 </p>
                                 
                                 {activeStep.details && (
-                                    <div className="bg-white/80 backdrop-blur-sm rounded-xl border shadow-sm p-6 space-y-8">
+                                    <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl border dark:border-gray-800 shadow-sm p-6 space-y-8">
                                         {activeStep.details.keyPoints && (
                                             <div>
-                                                <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-base">
+                                                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 text-base">
                                                     <div className={`w-1.5 h-6 rounded-full ${categoryStyles[activeStep.category].accentColor}`} />
                                                     Key Capabilities
                                                 </h4>
@@ -392,7 +392,7 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                                     {activeStep.details.keyPoints.map((point, i) => (
                                                         <li key={i} className="flex items-start gap-3">
                                                             <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${categoryStyles[activeStep.category].accentColor}`} />
-                                                            <span className="text-gray-600 leading-relaxed">{point}</span>
+                                                            <span className="text-gray-600 dark:text-gray-400 leading-relaxed">{point}</span>
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -401,7 +401,7 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                         
                                         {activeStep.details.features && (
                                             <div>
-                                                <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-base">
+                                                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 text-base">
                                                     <div className={`w-1.5 h-6 rounded-full ${categoryStyles[activeStep.category].accentColor}`} />
                                                     Features
                                                 </h4>
@@ -411,7 +411,7 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                                             <div className={`p-1 rounded-full mt-0.5 flex-shrink-0 ${categoryStyles[activeStep.category].accentColor}`}>
                                                                 <div className={`w-1.5 h-1.5 rounded-full bg-white`} />
                                                             </div>
-                                                            <span className="text-gray-600 leading-relaxed">{feature}</span>
+                                                            <span className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature}</span>
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -426,7 +426,7 @@ export const PlatformTour = ({ isFullScreen }: PlatformTourProps) => {
                                                     })}
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <p className="text-gray-600">
+                                                    <p className="text-gray-600 dark:text-gray-400">
                                                         {activeStep.details.note.text}
                                                     </p>
                                                     {activeStep.details.note.link && (

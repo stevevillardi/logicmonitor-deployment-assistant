@@ -301,30 +301,30 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
-        <DialogHeader className="border-b border-blue-100 pb-3">
-          <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+      <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
+        <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-blue-900 dark:text-gray-100">
             <div className="flex items-center gap-2">
               <Layout className="h-5 w-5" />
               Import Dashboards
             </div>
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
+          <DialogDescription className="text-sm text-blue-700 dark:text-blue-300">
             Import selected dashboards into your LogicMonitor portal
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-3">
-          <div className="bg-white rounded-lg border border-blue-200 shadow-sm p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm p-3">
             <div className="flex items-start gap-2 mb-2">
-              <h3 className="font-medium text-gray-900">
+              <h3 className="font-medium text-blue-900 dark:text-gray-100">
                 Selected Dashboards ({selectedDashboards.length})
               </h3>
             </div>
             <div className="max-h-[200px] overflow-y-auto space-y-2">
               {importStatuses.map(dashboard => (
                 <div key={dashboard.path} 
-                  className="text-sm text-gray-600 flex items-center justify-between gap-2 p-2 bg-gray-50 rounded-md border border-gray-200"
+                  className="text-sm text-blue-700 dark:text-blue-300 flex items-center justify-between gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700"
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full" />
@@ -384,47 +384,47 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg border border-blue-200 shadow-sm p-3 space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm p-3 space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-900">Dashboard Group Name</label>
+              <label className="text-sm font-medium text-blue-900 dark:text-gray-100">Dashboard Group Name</label>
               <Input
                 value={dashboardGroupName}
                 onChange={handleDashboardGroupNameChange}
                 placeholder="LMDA Dashboards"
-                className="border-gray-200"
+                className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
               />
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
                 Enter the name of the dashboard group to import the dashboards into
               </p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-900">Portal Name</label>
+              <label className="text-sm font-medium text-blue-900 dark:text-gray-100">Portal Name</label>
               <Input
                 value={portalName}
                 onChange={handlePortalNameChange}
                 placeholder="company"
-                className="border-gray-200"
+                className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
               />
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
                 Enter your portal name (e.g., &quot;company&quot; from company.logicmonitor.com)
               </p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Bearer Token</label>
+              <label className="text-sm font-medium text-blue-900 dark:text-gray-100">Bearer Token</label>
               <div className="relative">
                 <Input
                   type={showToken ? "text" : "password"}
                   value={bearerToken}
                   onChange={handleBearerTokenChange}
                   placeholder="Bearer Token..."
-                  className="border-gray-200 pr-10"
+                  className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowToken(!showToken)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 >
                   {showToken ? (
                     <EyeOff className="h-4 w-4" />
@@ -437,8 +437,8 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <div className="flex gap-2 text-xs sm:text-sm text-red-700">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+              <div className="flex gap-2 text-xs sm:text-sm text-red-700 dark:text-red-300">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{error}</p>
               </div>
@@ -446,20 +446,20 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        <div className="border-t border-blue-100 pt-3 mt-4">
+        <div className="border-t border-blue-100 dark:border-gray-700 pt-3 mt-4">
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
               onClick={handleClose}
               disabled={isImporting}
-              className="border-gray-200"
+              className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
             >
               Close
             </Button>
             <Button 
               onClick={handleImport}
               disabled={isImporting || !portalName || !bearerToken}
-              className="bg-[#040F4B] text-white hover:bg-[#040F4B]/80"
+              className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
             >
               {isImporting ? (
                 <>

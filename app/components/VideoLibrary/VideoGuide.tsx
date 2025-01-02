@@ -44,24 +44,24 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
             );
         }
         return (
-            <div className="w-full aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">Video has not been uploaded yet</p>
+            <div className="w-full aspect-video bg-gray-50 dark:bg-gray-900 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-800">
+                <p className="text-gray-500 dark:text-gray-400">Video has not been uploaded yet</p>
             </div>
         );
     };
 
     return (
-        <div className="bg-gray-50 rounded-lg border border-gray-200 transition-all duration-200 hover:border-gray-300">
+        <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all">
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full text-left px-4 py-3"
+                className="w-full text-left"
             >
                 <div className="flex gap-3">
                     <div className="flex-shrink-0 mt-0.5">
                         {isExpanded ? (
-                            <ChevronUp className="w-4 h-4 text-blue-700" />
+                            <ChevronUp className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                         ) : (
-                            <PlayCircle className="w-4 h-4 text-blue-700" />
+                            <PlayCircle className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                         )}
                     </div>
                     <div className="flex flex-grow min-w-0 gap-4">
@@ -69,24 +69,24 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                         <div className="flex-grow min-w-0">
                             {/* Title and Tags Row */}
                             <div className="flex items-center gap-2 flex-wrap">
-                                <h4 className="font-medium text-gray-900 truncate text-sm">
+                                <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">
                                     {title}
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     {duration && (
-                                        <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-medium whitespace-nowrap">
+                                        <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-medium whitespace-nowrap">
                                             <Clock className="w-3 h-3 mr-1" />
                                             {duration}
                                         </div>
                                     )}
                                     {category && (
-                                        <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium whitespace-nowrap">
+                                        <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-medium whitespace-nowrap">
                                             <Tag className="w-3 h-3 mr-1" />
                                             {category}
                                         </div>
                                     )}
                                     {!isExpanded && (
-                                        <span className="text-xs text-blue-700 font-normal whitespace-nowrap hidden sm:inline-block">
+                                        <span className="text-xs text-blue-700 dark:text-blue-400 font-normal whitespace-nowrap hidden sm:inline-block">
                                             Click to watch
                                         </span>
                                     )}
@@ -94,7 +94,7 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                             </div>
 
                             {/* Description */}
-                            <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
                                 {description}
                             </p>
                         </div>
@@ -117,8 +117,8 @@ const VideoGuide: React.FC<VideoGuideProps> = ({
                 </div>
             </button>
             {isExpanded && (
-                <div className="px-4 pb-3">
-                    <div className="mt-2 bg-white rounded-lg border border-gray-200 p-2">
+                <div className="mt-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
                         {getVideoEmbed()}
                     </div>
                 </div>

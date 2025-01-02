@@ -79,11 +79,13 @@ const SwaggerUIComponent = () => {
     };
 
     return (
-        <Card className="bg-white border-gray-200 h-full min-h-[800px]">
-            <CardHeader className="border-b border-gray-200 bg-gray-50 p-4 sm:p-6">
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 h-full min-h-[800px]">
+            <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 sm:p-6">
                 <div className="flex items-center gap-3">
-                    <Terminal className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700" />
-                    <CardTitle className="text-base sm:text-lg">LogicMonitor API Explorer</CardTitle>
+                    <Terminal className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700 dark:text-blue-400" />
+                    <CardTitle className="text-base sm:text-lg text-gray-900 dark:text-gray-100">
+                        LogicMonitor API Explorer
+                    </CardTitle>
                 </div>
             </CardHeader>
 
@@ -92,9 +94,26 @@ const SwaggerUIComponent = () => {
 
                 <div className="min-h-[800px]">
                     {isLoading ? (
-                        <SwaggerLoadingPlaceholder />
+                        <div className="space-y-6 p-4">
+                            {[1, 2, 3, 4].map((i) => (
+                                <div key={i} className="border border-gray-200 dark:border-gray-700 rounded-lg">
+                                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                                        <div className="flex items-center gap-4">
+                                            <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            <div className="animate-pulse h-6 w-96 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-white dark:bg-gray-900">
+                                        <div className="space-y-4">
+                                            <div className="animate-pulse h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            <div className="animate-pulse h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     ) : error ? (
-                        <div className="flex items-center justify-center text-red-600 text-sm sm:text-base p-4">
+                        <div className="flex items-center justify-center text-red-600 dark:text-red-400 text-sm sm:text-base p-4">
                             {error}
                         </div>
                     ) : (
@@ -125,6 +144,71 @@ const SwaggerUIComponent = () => {
                     margin: 0;
                     max-width: none;
                     overflow-x: auto;
+                }
+
+                /* Dark mode colors - updated */
+                :root[class~="dark"] .swagger-ui,
+                :root[class~="dark"] .swagger-ui .info .title,
+                :root[class~="dark"] .swagger-ui .info li, 
+                :root[class~="dark"] .swagger-ui .info p, 
+                :root[class~="dark"] .swagger-ui .info table {
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .opblock {
+                    background: rgba(17, 24, 39, 0.7);
+                    border: 1px solid rgba(75, 85, 99, 0.4);
+                }
+
+                :root[class~="dark"] .swagger-ui .opblock .opblock-summary-description {
+                    color: #9ca3af;
+                }
+
+                :root[class~="dark"] .swagger-ui .opblock .opblock-section-header {
+                    background: rgba(31, 41, 55, 0.7);
+                    border: 1px solid rgba(75, 85, 99, 0.4);
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .opblock-description-wrapper,
+                :root[class~="dark"] .swagger-ui .opblock-external-docs-wrapper,
+                :root[class~="dark"] .swagger-ui .opblock-title_normal {
+                    color: #e5e7eb;
+                    background: rgba(17, 24, 39, 0.7);
+                }
+
+                :root[class~="dark"] .swagger-ui .opblock-body {
+                    background: rgba(17, 24, 39, 0.7);
+                }
+
+                :root[class~="dark"] .swagger-ui .scheme-container {
+                    background: rgba(17, 24, 39, 0.7);
+                    border-bottom: 1px solid rgba(75, 85, 99, 0.4);
+                }
+
+                :root[class~="dark"] .swagger-ui section.models {
+                    background: rgba(17, 24, 39, 0.7);
+                    border: 1px solid rgba(75, 85, 99, 0.4);
+                }
+
+                :root[class~="dark"] .swagger-ui section.models.is-open h4 {
+                    border-bottom: 1px solid rgba(75, 85, 99, 0.4);
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .model-container {
+                    background: rgba(31, 41, 55, 0.7);
+                    border: 1px solid rgba(75, 85, 99, 0.4);
+                }
+
+                :root[class~="dark"] .swagger-ui .parameter__name,
+                :root[class~="dark"] .swagger-ui .parameter__type,
+                :root[class~="dark"] .swagger-ui table.model tr.property-row td {
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .parameter__in {
+                    color: #9ca3af;
                 }
 
                 /* Mobile-first info section */
@@ -292,6 +376,54 @@ const SwaggerUIComponent = () => {
                         padding: 8px 16px;
                         font-size: 14px;
                     }
+                }
+
+                /* Dark mode colors - updated */
+                :root[class~="dark"] .swagger-ui select,
+                :root[class~="dark"] .swagger-ui input[type=text],
+                :root[class~="dark"] .swagger-ui .parameters-col_description input[type=text],
+                :root[class~="dark"] .swagger-ui .parameters-col_description select {
+                    background-color: rgba(31, 41, 55, 0.9);
+                    border: 1px solid rgba(75, 85, 99, 0.4);
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .servers-title,
+                :root[class~="dark"] .swagger-ui .servers > label select {
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .servers > label {
+                    color: #9ca3af;
+                }
+
+                :root[class~="dark"] .swagger-ui .btn {
+                    background: rgba(31, 41, 55, 0.9);
+                    border: 1px solid rgba(75, 85, 99, 0.4);
+                    color: #e5e7eb;
+                }
+
+                :root[class~="dark"] .swagger-ui .btn:hover {
+                    background: rgba(55, 65, 81, 0.9);
+                }
+
+                :root[class~="dark"] .swagger-ui .execute-wrapper {
+                    background: rgba(17, 24, 39, 0.7);
+                }
+
+                :root[class~="dark"] .swagger-ui .btn.execute {
+                    background: #1d4ed8;
+                    border-color: #1e40af;
+                    color: white;
+                }
+
+                :root[class~="dark"] .swagger-ui .btn.execute:hover {
+                    background: #1e40af;
+                }
+
+                :root[class~="dark"] .swagger-ui .servers > label select:focus {
+                    outline: none;
+                    border-color: #60a5fa;
                 }
 
                 /* ... rest of your existing styles ... */

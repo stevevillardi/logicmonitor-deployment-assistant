@@ -16,24 +16,29 @@ import { collectorCapacities } from "../DeploymentAssistant/utils/constants"
 interface CollectorCalcMethodSelectProps {
     value: string;
     onChange: (value: string) => void;
+    className?: string;
+    labelClassName?: string;
 }
 
-export const CollectorCalcMethodSelect = ({ value, onChange }: CollectorCalcMethodSelectProps) => {
+export const CollectorCalcMethodSelect = ({ value, onChange, className, labelClassName }: CollectorCalcMethodSelectProps) => {
     return (
         <div className="rounded-lg transition-all">
             <div className="flex items-center gap-2">
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            <Info className="w-4 h-4 text-gray-600" />
+                            <Info className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                         </TooltipTrigger>
-                        <TooltipContent className="bg-white border-gray-200">
-                            <p className="text-sm">Choose how collector sizes are calculated.</p>
-                            <p className="text-sm text-muted-foreground">Auto (recommended) will optimize for your workload.</p>
+                        <TooltipContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                            <p className="text-sm dark:text-gray-100">Choose how collector sizes are calculated.</p>
+                            <p className="text-sm text-muted-foreground dark:text-gray-400">Auto (recommended) will optimize for your workload.</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-                <Label htmlFor="collector-calc-method" className="text-sm text-gray-600 whitespace-nowrap">
+                <Label 
+                    htmlFor="collector-calc-method" 
+                    className={`text-sm whitespace-nowrap ${labelClassName || 'text-gray-600 dark:text-gray-300'}`}
+                >
                     Collector Sizing:
                 </Label>
                 <Select
@@ -41,25 +46,25 @@ export const CollectorCalcMethodSelect = ({ value, onChange }: CollectorCalcMeth
                     onValueChange={onChange}
                 >
                     <SelectTrigger 
-                        className="w-[200px] h-9 bg-white border-gray-200 text-gray-900"
+                        className={className || "w-[200px] h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"}
                     >
                         <SelectValue placeholder="Select a method" />
                     </SelectTrigger>
                     <SelectContent 
-                        className="bg-white border-gray-200"
+                        className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                     >
                         <SelectGroup>
                             <SelectLabel 
-                                className="text-gray-500"
+                                className="text-gray-500 dark:text-gray-400"
                             >
                                 Collector Size Method
                             </SelectLabel>
                             <SelectItem 
                                 value="auto" 
-                                className="text-gray-900 focus:bg-gray-100"
+                                className="text-gray-900 dark:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700"
                             >
                                 <div className="flex items-center gap-2">
-                                    <Zap className="w-4 h-4 text-blue-700" />
+                                    <Zap className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                     <span>Auto</span>
                                 </div>
                             </SelectItem>
@@ -67,10 +72,10 @@ export const CollectorCalcMethodSelect = ({ value, onChange }: CollectorCalcMeth
                                 <SelectItem 
                                     key={size} 
                                     value={size}
-                                    className="text-gray-900 focus:bg-gray-100"
+                                    className="text-gray-900 dark:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700"
                                 >
                                     <div className="flex items-center gap-2">
-                                        <Server className="w-4 h-4 text-blue-700" />
+                                        <Server className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                         <span>Force {size}</span>
                                     </div>
                                 </SelectItem>

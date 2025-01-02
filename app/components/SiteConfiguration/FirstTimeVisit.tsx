@@ -52,13 +52,13 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent 
-                className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
+                className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
             >
-                <DialogHeader className="border-b border-blue-100 pb-3">
-                    <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+                <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
+                    <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
                         Welcome to the LogicMonitor Deployment Assistant
                     </DialogTitle>
-                    <DialogDescription className="text-sm text-gray-600">
+                    <DialogDescription className="text-sm text-gray-600 dark:text-blue-300">
                         Get started with configuring your LogicMonitor deployment
                     </DialogDescription>
                 </DialogHeader>
@@ -66,7 +66,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                 {/* Quick Start Guide */}
                 <div className="space-y-4 py-3">
                     <div className="space-y-3">
-                        <h3 className="text-sm sm:text-base font-semibold text-gray-900">
+                        <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">
                             Deployment Assistant Features
                         </h3>
                         <div className="grid gap-2">
@@ -74,15 +74,15 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                                 <a
                                     key={index}
                                     href={step.link}
-                                    className="flex items-start gap-2 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 shadow-sm hover:bg-blue-50 transition-colors duration-200 group cursor-pointer"
+                                    className="flex items-start gap-2 p-2 sm:p-3 bg-white dark:bg-gray-900 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors duration-200 group cursor-pointer"
                                 >
                                     <div className="flex-1 flex items-start gap-2">
                                         <div className="mt-0.5">{step.icon}</div>
                                         <div>
-                                            <h4 className="font-medium text-xs sm:text-sm text-gray-900">
+                                            <h4 className="font-medium text-xs sm:text-sm text-gray-900 dark:text-gray-100">
                                                 {step.title}
                                             </h4>
-                                            <p className="text-xs text-gray-600 hidden sm:block">
+                                            <p className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block">
                                                 {step.description}
                                             </p>
                                         </div>
@@ -94,15 +94,15 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                     </div>
 
                     {/* Important Note */}
-                    <div className="bg-white border border-blue-100 rounded-lg p-2 sm:p-3">
-                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700">
+                    <div className="bg-white dark:bg-gray-900 border border-blue-100 dark:border-gray-700 rounded-lg p-2 sm:p-3">
+                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300">
                             <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                             <div>
                                 <p className="mb-2">
                                     Recommendations are estimates based on typical usage patterns.
                                     Actual requirements may vary based on:
                                 </p>
-                                <ul className="text-xs space-y-1 text-gray-600 list-disc list-inside pl-1">
+                                <ul className="text-xs space-y-1 text-gray-600 dark:text-gray-400 list-disc list-inside pl-1">
                                     <li>Specific monitoring configurations</li>
                                     <li>Network conditions and device response times</li>
                                     <li>Collection frequencies and custom requirements</li>
@@ -112,7 +112,7 @@ export const FirstTimeVisit = ({ isOpen, onOpenChange }: FirstTimeVisitProps) =>
                     </div>
                 </div>
 
-                <DialogFooter className="border-t border-blue-100 pt-3">
+                <DialogFooter className="border-t border-blue-100 dark:border-gray-700 pt-3">
                     <Button
                         onClick={() => onOpenChange(false)}
                         className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"

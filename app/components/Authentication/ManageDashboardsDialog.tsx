@@ -104,25 +104,25 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-2xl bg-blue-50 border-blue-200">
-                <DialogHeader className="pb-4 border-b border-blue-200">
-                    <DialogTitle className="text-xl font-semibold text-blue-900">
+            <DialogContent className="max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
+                <DialogHeader className="pb-4 border-b border-blue-200 dark:border-gray-700">
+                    <DialogTitle className="text-xl font-semibold text-blue-900 dark:text-gray-100">
                         Manage Dashboards
                     </DialogTitle>
-                    <DialogDescription className="text-blue-700">
+                    <DialogDescription className="text-blue-700 dark:text-blue-300">
                         Manage your published dashboards. You can edit names, categories, or remove dashboards.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto py-4">
                     {isLoading ? (
-                        <div className="text-center py-4 text-blue-700">Loading...</div>
+                        <div className="text-center py-4 text-blue-700 dark:text-blue-300">Loading...</div>
                     ) : dashboards.length === 0 ? (
-                        <div className="border-2 border-dashed border-blue-200 rounded-lg p-6 text-center bg-white">
+                        <div className="border-2 border-dashed border-blue-200 dark:border-gray-700 rounded-lg p-6 text-center bg-white dark:bg-gray-900">
                             <div className="flex flex-col items-center justify-center gap-2">
-                                <Layout className="h-8 w-8 text-blue-400" />
-                                <h3 className="font-medium text-blue-900">No Published Dashboards</h3>
-                                <p className="text-sm text-blue-600">
+                                <Layout className="h-8 w-8 text-blue-400 dark:text-blue-500" />
+                                <h3 className="font-medium text-blue-900 dark:text-gray-100">No Published Dashboards</h3>
+                                <p className="text-sm text-blue-600 dark:text-blue-300">
                                     Your published dashboards will appear here
                                 </p>
                             </div>
@@ -132,13 +132,13 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                             {dashboards.map((dashboard) => (
                                 <div
                                     key={dashboard.id}
-                                    className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200 shadow-sm"
+                                    className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm"
                                 >
                                     {editingId === dashboard.id ? (
                                         <div className="flex-1 flex flex-col gap-4">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="name" className="text-xs text-blue-700">
+                                                    <Label htmlFor="name" className="text-xs text-blue-700 dark:text-blue-300">
                                                         Display Name
                                                     </Label>
                                                     <Input
@@ -146,11 +146,11 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                                         value={editName}
                                                         onChange={(e) => setEditName(e.target.value)}
                                                         placeholder="Display name"
-                                                        className="bg-white border-blue-200"
+                                                        className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="category" className="text-xs text-blue-700">
+                                                    <Label htmlFor="category" className="text-xs text-blue-700 dark:text-blue-300">
                                                         Category
                                                     </Label>
                                                     <Input
@@ -158,7 +158,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                                         value={editCategory}
                                                         onChange={(e) => setEditCategory(e.target.value.replace(/,/g, ''))}
                                                         placeholder="Category"
-                                                        className="bg-white border-blue-200"
+                                                        className="bg-white dark:bg-gray-800 border-blue-200 dark:border-gray-700"
                                                     />
                                                 </div>
                                             </div>
@@ -175,7 +175,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => setEditingId(null)}
-                                                    className="bg-white hover:bg-gray-50"
+                                                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                                                 >
                                                     <X className="h-4 w-4 mr-1" />
                                                     Cancel
@@ -185,10 +185,10 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                     ) : (
                                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4">
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-blue-900">
+                                                <span className="text-sm font-medium text-blue-900 dark:text-gray-100">
                                                     {dashboard.displayname}
                                                 </span>
-                                                <span className="text-xs text-blue-700">
+                                                <span className="text-xs text-blue-700 dark:text-blue-300">
                                                     {dashboard.category}
                                                 </span>
                                             </div>

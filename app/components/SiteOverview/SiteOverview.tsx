@@ -314,8 +314,8 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
     return (
         
-        <div className="space-y-6 overflow-y-auto min-h-[800px]">
-            <EnhancedCard className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300 ">
+        <div className="space-y-6 overflow-y-auto min-h-[800px] mb-4">
+            <EnhancedCard className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-300 ">
                 <div className="p-6 space-y-6">
                     {/* Global Section */}
                     <div className="space-y-6">
@@ -324,7 +324,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                             <div className="flex items-start gap-3">
                                 <Earth className="w-7 h-7 text-blue-700 mt-1" />
                                 <div>
-                                    <h2 className="text-2xl font-semibold text-gray-900">{config.deploymentName || "Deployment Configuration"}</h2>
+                                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{config.deploymentName || "Deployment Configuration"}</h2>
                                     <p className="text-sm text-gray-500 mt-1">Global Collector Distribution</p>
                                 </div>
                             </div>
@@ -338,60 +338,60 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                         </div>
 
                         {/* Global Content with Border */}
-                        <div className="border border-blue-200 rounded-lg p-6 space-y-6">
+                        <div className="border border-blue-200 dark:border-gray-700 rounded-lg p-6 space-y-6">
                             {/* Global Metrics */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                                 {/* Total Sites */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Building className="w-4 h-4 text-blue-700" />
-                                        <span className="text-sm text-blue-900">Total Sites</span>
+                                        <span className="text-sm text-blue-900 dark:text-blue-100">Total Sites</span>
                                     </div>
-                                    <p className="text-lg font-bold text-blue-700">
+                                    <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
                                         {sites.length}
                                     </p>
                                 </div>
 
                                 {/* Total Devices */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Server className="w-4 h-4 text-blue-700" />
-                                        <span className="text-sm text-blue-900">Devices</span>
+                                        <span className="text-sm text-blue-900 dark:text-blue-100">Devices</span>
                                     </div>
-                                    <p className="text-lg font-bold text-blue-700">
+                                    <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
                                         {Math.round(getTotalDevicesBySites()).toLocaleString()}
                                     </p>
                                 </div>
 
                                 {/* Total Instances */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Component className="w-4 h-4 text-blue-700" />
-                                        <span className="text-sm text-blue-900">Instances</span>
+                                        <span className="text-sm text-blue-900 dark:text-blue-100">Instances</span>
                                     </div>
-                                    <p className="text-lg font-bold text-blue-700">
+                                    <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
                                         {Math.round(getTotalInstanceCount()).toLocaleString()}
                                     </p>
                                 </div>
 
                                 {/* Total EPS */}
-                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <MessageSquare className="w-4 h-4 text-orange-700" />
-                                        <span className="text-sm text-orange-900">Events/Sec</span>
+                                        <span className="text-sm text-orange-900 dark:text-orange-100">Events/Sec</span>
                                     </div>
-                                    <p className="text-lg font-bold text-orange-700">
+                                    <p className="text-lg font-bold text-orange-700 dark:text-orange-400">
                                         {Math.round(getTotalEPSBySites()).toLocaleString()}
                                     </p>
                                 </div>
 
                                 {/* Total FPS */}
-                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Activity className="w-4 h-4 text-purple-700" />
-                                        <span className="text-sm text-purple-900">Flows/Sec</span>
+                                        <span className="text-sm text-purple-900 dark:text-purple-100">Flows/Sec</span>
                                     </div>
-                                    <p className="text-lg font-bold text-purple-700">
+                                    <p className="text-lg font-bold text-purple-700 dark:text-purple-400">
                                         {Math.round(getTotalFPSBySites()).toLocaleString()}
                                     </p>
                                 </div>
@@ -400,14 +400,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                             {/* Global Collector Distribution */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {/* Polling Collectors */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
                                             <Server className="w-4 h-4 text-blue-700" />
-                                            <h3 className="font-medium text-blue-900">Polling Collectors</h3>
+                                            <h3 className="font-medium text-blue-900 dark:text-blue-100">Polling Collectors</h3>
                                         </div>
                                         {config.enablePollingFailover && (Object.entries(globalCollectorSummary.polling).length > 0) && (
-                                            <div className="flex items-center gap-1 text-xs text-blue-700">
+                                            <div className="flex items-center gap-1 text-xs text-blue-700 dark:text-blue-400">
                                                 <Info className="w-3 h-3" />
                                                 <span>N+1 enabled</span>
                                             </div>
@@ -421,21 +421,21 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
                                                 })
                                                 .map(([size, count]) => (
-                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded-lg hover:bg-blue-50/50">
+                                                    <div key={size} className="flex items-center justify-between p-2 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-800 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/20">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                                            <div className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                                                                 <Server className="w-3 h-3 text-blue-700" />
                                                             </div>
-                                                            <span className="text-sm font-medium text-blue-900">{size}</span>
+                                                            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">{size}</span>
                                                         </div>
-                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                                                        <span className="text-xs bg-blue-100 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full font-medium">
                                                             {count}x
                                                         </span>
                                                     </div>
                                                 ))}
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-2 p-2 bg-white border border-blue-100 rounded-lg text-blue-500 text-sm">
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-800 rounded-lg text-blue-500 dark:text-blue-400 text-sm">
                                             <Server className="w-4 h-4" />
                                             <span>No collectors required</span>
                                         </div>
@@ -443,15 +443,15 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 </div>
 
                                 {/* Logs Collectors */}
-                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
                                             <MessageSquare className="w-4 h-4 text-orange-700" />
-                                            <h3 className="font-medium text-orange-900">Logs Collectors</h3>
+                                            <h3 className="font-medium text-orange-900 dark:text-orange-100">Logs Collectors</h3>
                                         </div>
                                         {config.enableLogsFailover && 
                                             Object.values(globalCollectorSummary.logs).reduce((sum, count) => sum + count, 0) > 1 && (
-                                            <div className="flex items-center gap-1 text-xs text-orange-700">
+                                            <div className="flex items-center gap-1 text-xs text-orange-700 dark:text-orange-400">
                                                 <Info className="w-3 h-3" />
                                                 <span>N+1 enabled</span>
                                             </div>
@@ -459,7 +459,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                     </div>
                                     {(Object.keys(globalCollectorSummary.logs).length === 0 || 
                                       (config.enableLogsFailover && Object.values(globalCollectorSummary.logs).reduce((sum, count) => sum + count, 0) <= 1)) ? (
-                                        <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 border border-orange-100 dark:border-orange-800 rounded-lg text-orange-500 dark:text-orange-400 text-sm">
                                             <MessageSquare className="w-4 h-4" />
                                             <span>No collectors required</span>
                                         </div>
@@ -471,14 +471,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
                                                 })
                                                 .map(([size, count]) => (
-                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
+                                                    <div key={size} className="flex items-center justify-between p-2 bg-white dark:bg-gray-900 border border-orange-100 dark:border-orange-800 rounded-lg hover:bg-orange-50/50 dark:hover:bg-orange-900/20">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                                            <div className="w-6 h-6 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
                                                                 <MessageSquare className="w-3 h-3 text-orange-700" />
                                                             </div>
-                                                            <span className="text-sm font-medium text-orange-900">{size}</span>
+                                                            <span className="text-sm font-medium text-orange-900 dark:text-orange-100">{size}</span>
                                                         </div>
-                                                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
+                                                        <span className="text-xs bg-orange-100 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-full font-medium">
                                                             {count}x
                                                         </span>
                                                     </div>
@@ -488,15 +488,15 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                 </div>
 
                                 {/* NetFlow Collectors */}
-                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
                                             <Activity className="w-4 h-4 text-purple-700" />
-                                            <h3 className="font-medium text-purple-900">NetFlow Collectors</h3>
+                                            <h3 className="font-medium text-purple-900 dark:text-purple-100">NetFlow Collectors</h3>
                                         </div>
                                         {config.enableLogsFailover && 
                                             Object.values(globalCollectorSummary.netflow).reduce((sum, count) => sum + count, 0) > 1 && (
-                                            <div className="flex items-center gap-1 text-xs text-purple-700">
+                                            <div className="flex items-center gap-1 text-xs text-purple-700 dark:text-purple-400">
                                                 <Info className="w-3 h-3" />
                                                 <span>N+1 enabled</span>
                                             </div>
@@ -504,7 +504,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                     </div>
                                     {(Object.keys(globalCollectorSummary.netflow).length === 0 || 
                                       (config.enableLogsFailover && Object.values(globalCollectorSummary.netflow).reduce((sum, count) => sum + count, 0) <= 1)) ? (
-                                        <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 border border-purple-100 dark:border-purple-800 rounded-lg text-purple-500 dark:text-purple-400 text-sm">
                                             <Activity className="w-4 h-4" />
                                             <span>No collectors required</span>
                                         </div>
@@ -516,14 +516,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                     return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
                                                 })
                                                 .map(([size, count]) => (
-                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-purple-100 rounded-lg hover:bg-purple-50/50">
+                                                    <div key={size} className="flex items-center justify-between p-2 bg-white dark:bg-gray-900 border border-purple-100 dark:border-purple-800 rounded-lg hover:bg-purple-50/50 dark:hover:bg-purple-900/20">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                                            <div className="w-6 h-6 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
                                                                 <Activity className="w-3 h-3 text-purple-700" />
                                                             </div>
-                                                            <span className="text-sm font-medium text-purple-900">{size}</span>
+                                                            <span className="text-sm font-medium text-purple-900 dark:text-purple-100">{size}</span>
                                                         </div>
-                                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                        <span className="text-xs bg-purple-100 text-purple-700 dark:text-purple-400 px-2 py-0.5 rounded-full font-medium">
                                                             {count}x
                                                         </span>
                                                     </div>
@@ -551,14 +551,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                     </div>
 
                     {/* Separator */}
-                    <div className="border-t border-gray-200" />
+                    <div className="border-t border-gray-200 dark:border-gray-700" />
 
                     {/* Sites Section */}
                     <div className="space-y-6">
                         {/* Sites Header */}
                         <div className="flex items-center gap-3">
                             <Building2 className="w-7 h-7 text-blue-700" />
-                            <h2 className="text-2xl font-semibold text-gray-900">Site Distribution ({sites.length} sites)</h2>
+                            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Site Distribution ({sites.length} sites)</h2>
                         </div>
 
                         {/* Sites List */}
@@ -566,11 +566,11 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                             {sites.map((site, index) => {
                                 const metrics = calculateSiteMetrics(site);
                                 return (
-                                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                                    <div key={index} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                         {/* Site Header */}
                                         <div className="flex items-center gap-2 mb-4">
                                             <Building className="w-5 h-5 text-blue-700" />
-                                            <h3 className="text-lg font-semibold text-gray-900">{site.name}</h3>
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{site.name}</h3>
                                         </div>
 
                                         {/* Site Content */}
@@ -578,56 +578,56 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                             {/* Sites List - Site Level Metrics */}
                                             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 mb-4 sm:mb-6">
                                                 {/* Devices */}
-                                                <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-2 sm:p-4">
                                                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                                         <Server className="w-3 h-3 sm:w-4 sm:h-4 text-blue-700" />
-                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900">Devices</h3>
+                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900 dark:text-blue-100">Devices</h3>
                                                     </div>
-                                                    <p className="text-lg sm:text-xl font-bold text-blue-700">
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-700 dark:text-blue-400">
                                                         {Object.values(site.devices).reduce((sum, dev) => sum + dev.count, 0).toLocaleString()}
                                                     </p>
                                                 </div>
 
                                                 {/* Load Score */}
-                                                <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-2 sm:p-4">
                                                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                                         <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900">Load Score</h3>
+                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900 dark:text-blue-100">Load Score</h3>
                                                     </div>
-                                                    <p className="text-lg sm:text-xl font-bold text-blue-700">
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-700 dark:text-blue-400">
                                                         {Math.round(metrics.totalWeight).toLocaleString()}
                                                     </p>
                                                 </div>
 
                                                 {/* Instances */}
-                                                <div className="bg-blue-50 rounded-lg border border-blue-200 p-2 sm:p-4">
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-2 sm:p-4">
                                                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                                         <Component className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900">Instances</h3>
+                                                        <h3 className="text-xs sm:text-sm font-medium text-blue-900 dark:text-blue-100">Instances</h3>
                                                     </div>
-                                                    <p className="text-lg sm:text-xl font-bold text-blue-700">
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-700 dark:text-blue-400">
                                                         {metrics.estimatedInstances.toLocaleString()}
                                                     </p>
                                                 </div>
 
                                                 {/* Events Per Second */}
-                                                <div className="bg-orange-50 rounded-lg border border-orange-200 p-2 sm:p-4">
+                                                <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 p-2 sm:p-4">
                                                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                                         <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-700" />
-                                                        <h3 className="text-xs sm:text-sm font-medium text-orange-900">Events/Sec</h3>
+                                                        <h3 className="text-xs sm:text-sm font-medium text-orange-900 dark:text-orange-100">Events/Sec</h3>
                                                     </div>
-                                                    <p className="text-lg sm:text-xl font-bold text-orange-700">
+                                                    <p className="text-lg sm:text-xl font-bold text-orange-700 dark:text-orange-400">
                                                         {Math.round(metrics.totalEPS).toLocaleString()}
                                                     </p>
                                                 </div>
 
                                                 {/* Flows Per Second */}
-                                                <div className="bg-purple-50 rounded-lg border border-purple-200 p-2 sm:p-4">
+                                                <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800 p-2 sm:p-4">
                                                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                                                         <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-700" />
-                                                        <h3 className="text-xs sm:text-sm font-medium text-purple-900">Flows/Sec</h3>
+                                                        <h3 className="text-xs sm:text-sm font-medium text-purple-900 dark:text-purple-100">Flows/Sec</h3>
                                                     </div>
-                                                    <p className="text-lg sm:text-xl font-bold text-purple-700">
+                                                    <p className="text-lg sm:text-xl font-bold text-purple-700 dark:text-purple-400">
                                                         {Math.round(metrics.totalFPS).toLocaleString()}
                                                     </p>
                                                 </div>
@@ -636,14 +636,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                             {/* Site Collector Distribution */}
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                 {/* Polling Collectors */}
-                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex items-center gap-2">
                                                             <Server className="w-4 h-4 text-blue-700" />
-                                                            <h3 className="font-medium text-blue-900">Polling Collectors</h3>
+                                                            <h3 className="font-medium text-blue-900 dark:text-blue-100">Polling Collectors</h3>
                                                         </div>
                                                         {config.enablePollingFailover && metrics.avgPollingLoad > 0 && (
-                                                            <div className="flex items-center gap-1 text-xs text-blue-700">
+                                                            <div className="flex items-center gap-1 text-xs text-blue-700 dark:text-blue-400">
                                                                 <Info className="w-3 h-3" />
                                                                 <span>N+1 enabled</span>
                                                             </div>
@@ -657,21 +657,21 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                                     return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
                                                                 })
                                                                 .map(([size, count]) => (
-                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded-lg hover:bg-blue-50/50">
+                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-800 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/20">
                                                                         <div className="flex items-center gap-2">
-                                                                            <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                                                                            <div className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                                                                                 <Server className="w-3 h-3 text-blue-700" />
                                                                             </div>
-                                                                            <span className="text-sm font-medium text-blue-900">{size}</span>
+                                                                            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">{size}</span>
                                                                         </div>
-                                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                                                                        <span className="text-xs bg-blue-100 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full font-medium">
                                                                             {count}x
                                                                         </span>
                                                                     </div>
                                                                 ))}
                                                         </div>
                                                     ) : (
-                                                        <div className="flex items-center gap-2 p-2 bg-white border border-blue-100 rounded-lg text-blue-500 text-sm">
+                                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-800 rounded-lg text-blue-500 dark:text-blue-400 text-sm">
                                                             <Server className="w-4 h-4" />
                                                             <span>No collectors required</span>
                                                         </div>
@@ -679,14 +679,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                 </div>
 
                                                 {/* Logs Collectors */}
-                                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex items-center gap-2">
                                                             <MessageSquare className="w-4 h-4 text-orange-700" />
-                                                            <h3 className="font-medium text-orange-900">Logs Collectors</h3>
+                                                            <h3 className="font-medium text-orange-900 dark:text-orange-100">Logs Collectors</h3>
                                                         </div>
                                                         {config.enableLogsFailover && metrics.avgLogsLoad > 0 && (
-                                                            <div className="flex items-center gap-1 text-xs text-orange-700">
+                                                            <div className="flex items-center gap-1 text-xs text-orange-700 dark:text-orange-400">
                                                                 <Info className="w-3 h-3" />
                                                                 <span>N+1 enabled</span>
                                                             </div>
@@ -700,21 +700,21 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                                     return sizes.indexOf(sizeA) - sizes.indexOf(sizeB);
                                                                 })
                                                                 .map(([size, count]) => (
-                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-orange-100 rounded-lg hover:bg-orange-50/50">
+                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white dark:bg-gray-900 border border-orange-100 dark:border-orange-800 rounded-lg hover:bg-orange-50/50 dark:hover:bg-orange-900/20">
                                                                         <div className="flex items-center gap-2">
-                                                                            <div className="w-6 h-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                                                            <div className="w-6 h-6 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
                                                                                 <MessageSquare className="w-3 h-3 text-orange-700" />
                                                                             </div>
-                                                                            <span className="text-sm font-medium text-orange-900">{size}</span>
+                                                                            <span className="text-sm font-medium text-orange-900 dark:text-orange-100">{size}</span>
                                                                         </div>
-                                                                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
+                                                                        <span className="text-xs bg-orange-100 text-orange-700 dark:text-orange-400 px-2 py-0.5 rounded-full font-medium">
                                                                             {count}x
                                                                         </span>
                                                                     </div>
                                                                 ))}
                                                         </div>
                                                     ) : (
-                                                        <div className="flex items-center gap-2 p-2 bg-white border border-orange-100 rounded-lg text-orange-500 text-sm">
+                                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 border border-orange-100 dark:border-orange-800 rounded-lg text-orange-500 dark:text-orange-400 text-sm">
                                                             <MessageSquare className="w-4 h-4" />
                                                             <span>No collectors required</span>
                                                         </div>
@@ -722,14 +722,14 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                 </div>
 
                                                 {/* NetFlow Collectors */}
-                                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex items-center gap-2">
                                                             <Activity className="w-4 h-4 text-purple-700" />
-                                                            <h3 className="font-medium text-purple-900">NetFlow Collectors</h3>
+                                                            <h3 className="font-medium text-purple-900 dark:text-purple-100">NetFlow Collectors</h3>
                                                         </div>
                                                         {config.enableLogsFailover && metrics.avgNetflowLoad > 0 && (
-                                                            <div className="flex items-center gap-1 text-xs text-purple-700">
+                                                            <div className="flex items-center gap-1 text-xs text-purple-700 dark:text-purple-400">
                                                                 <Info className="w-3 h-3" />
                                                                 <span>N+1 enabled</span>
                                                             </div>
@@ -744,21 +744,21 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                                 })
                                                                 .filter(() => !config.enableLogsFailover || Object.values(metrics.collectorsBySize.netflow).reduce((sum, count) => sum + count, 0) > 1)
                                                                 .map(([size, count]) => (
-                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white border border-purple-100 rounded-lg hover:bg-purple-50/50">
+                                                                    <div key={size} className="flex items-center justify-between p-2 bg-white dark:bg-gray-900 border border-purple-100 dark:border-purple-800 rounded-lg hover:bg-purple-50/50 dark:hover:bg-purple-900/20">
                                                                         <div className="flex items-center gap-2">
-                                                                            <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center">
+                                                                            <div className="w-6 h-6 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
                                                                                 <Activity className="w-3 h-3 text-purple-700" />
                                                                             </div>
-                                                                            <span className="text-sm font-medium text-purple-900">{size}</span>
+                                                                            <span className="text-sm font-medium text-purple-900 dark:text-purple-100">{size}</span>
                                                                         </div>
-                                                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                                        <span className="text-xs bg-purple-100 text-purple-700 dark:text-purple-400 px-2 py-0.5 rounded-full font-medium">
                                                                             {count}x
                                                                         </span>
                                                                     </div>
                                                                 ))}
                                                         </div>
                                                     ) : (
-                                                        <div className="flex items-center gap-2 p-2 bg-white border border-purple-100 rounded-lg text-purple-500 text-sm">
+                                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 border border-purple-100 dark:border-purple-800 rounded-lg text-purple-500 dark:text-purple-400 text-sm">
                                                             <Activity className="w-4 h-4" />
                                                             <span>No collectors required</span>
                                                         </div>
@@ -780,7 +780,7 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
 
                                             {/* Device Distribution */}
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-3">Device Distribution</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Device Distribution</h3>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                                                     {Object.entries(site.devices)
                                                         .filter(([_, data]) => data.count > 0)
@@ -791,17 +791,17 @@ const SiteOverview: React.FC<SiteOverviewProps> = ({ sites, config }) => {
                                                             return (
                                                                 <div
                                                                     key={type}
-                                                                    className="flex items-center justify-between px-3 py-2.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-all duration-300"
+                                                                    className="flex items-center justify-between px-3 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-sm transition-all duration-300"
                                                                 >
                                                                     <div className="flex items-center gap-2">
-                                                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                                                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                                                                             <IconComponent className="w-6 h-6 text-blue-700" />
                                                                         </div>
                                                                         <div className="min-w-0">
                                                                             <div className="flex items-center gap-2">
-                                                                                <span className="font-medium text-gray-900 text-sm truncate">{type}</span>
+                                                                                <span className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{type}</span>
                                                                             </div>
-                                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1 text-xs text-gray-600">
+                                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
                                                                                 <div className="flex items-center gap-1">
                                                                                     <HardDrive className="w-3 h-3 text-blue-700" />
                                                                                     <span>Devices: {data.count}</span>

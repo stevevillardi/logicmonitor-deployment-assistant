@@ -93,11 +93,11 @@ const MethodLink: React.FC<{ methodId: string; icon: React.ElementType; title: s
     return (
         <button
             onClick={scrollToSection}
-            className="flex items-start gap-2 group hover:bg-blue-100/50 p-2 rounded-lg transition-colors w-full text-left"
+            className="flex items-start gap-2 group hover:bg-blue-100/50 dark:hover:bg-blue-900/50 p-2 rounded-lg transition-colors w-full text-left"
         >
-            <Icon className="w-4 h-4 text-blue-700 mt-1 flex-shrink-0" />
-            <span className="text-sm text-blue-700">
-                Use <span className="font-medium group-hover:text-blue-900 transition-colors">{title}</span> {description}
+            <Icon className="w-4 h-4 text-blue-700 dark:text-blue-300 mt-1 flex-shrink-0" />
+            <span className="text-sm text-blue-700 dark:text-blue-300">
+                Use <span className="font-medium group-hover:text-blue-900 dark:group-hover:text-blue-100 transition-colors">{title}</span> {description}
             </span>
         </button>
     );
@@ -105,15 +105,15 @@ const MethodLink: React.FC<{ methodId: string; icon: React.ElementType; title: s
 
 const MethodsOverview: React.FC = () => {
     return (
-        <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 border border-blue-200 rounded-lg p-4 sm:p-6 mb-6">
+        <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 dark:from-blue-950 dark:to-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6 mb-6">
             <div className="flex gap-3 sm:gap-4">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center flex-shrink-0">
                     <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
                 </div>
                 <div className="space-y-3">
                     <div>
-                        <h3 className="text-base sm:text-lg font-semibold text-blue-900">Choose Your Onboarding Method</h3>
-                        <p className="text-sm text-blue-700 mt-1">
+                        <h3 className="text-base sm:text-lg font-semibold text-blue-900 dark:text-blue-100">Choose Your Onboarding Method</h3>
+                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
                             Select the most appropriate method based on your requirements:
                         </p>
                     </div>
@@ -130,8 +130,8 @@ const MethodsOverview: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-700" />
-                        <p className="text-sm text-blue-700">
-                            Need help choosing? Contact <a href="mailto:saleseng@logicmonitor.com" className="font-medium underline hover:text-blue-800">LogicMonitor Sales Engineering</a>
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                            Need help choosing? Contact <a href="mailto:saleseng@logicmonitor.com" className="font-medium underline hover:text-blue-800 dark:hover:text-blue-200">LogicMonitor Sales Engineering</a>
                         </p>
                     </div>
                 </div>
@@ -162,19 +162,19 @@ const OnboardingMethod: React.FC<OnboardingMethodProps> = ({
     recommended,
     children
 }) => (
-    <div id={id} className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6 scroll-mt-6">
+    <div id={id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6 scroll-mt-6">
         <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-50 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700 dark:text-blue-300" />
                 </div>
                 <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">{title}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 mt-1">{description}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">{description}</p>
                 </div>
             </div>
             {recommended && (
-                <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-200">
+                <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800">
                     Recommended
                 </Badge>
             )}
@@ -188,7 +188,7 @@ const ResourceLink: React.FC<ResourceLinkProps> = ({ href, title }) => (
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 text-blue-700 hover:text-blue-800 transition-colors"
+        className="flex items-center gap-2 text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
     >
         <ExternalLink className="w-4 h-4" />
         <span className="text-sm">{title}</span>
@@ -197,9 +197,9 @@ const ResourceLink: React.FC<ResourceLinkProps> = ({ href, title }) => (
 
 const DeviceOnboarding: React.FC = () => {
     return (
-        <div className="space-y-6 overflow-y-auto">
+        <div className="space-y-6 overflow-y-auto mb-4">
             <Tabs defaultValue="onboarding" className="w-full">
-                <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white p-1 rounded-lg border border-gray-200 mb-6">
+                <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
                     <TabsTrigger
                         value="onboarding"
                         className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
@@ -207,8 +207,13 @@ const DeviceOnboarding: React.FC = () => {
                             data-[state=active]:text-blue-700 
                             data-[state=active]:border-blue-200
                             data-[state=active]:shadow-sm
+                            dark:data-[state=active]:bg-blue-900/50
+                            dark:data-[state=active]:text-blue-300
+                            dark:data-[state=active]:border-blue-800
                             hover:bg-gray-50 
+                            dark:hover:bg-gray-700
                             text-gray-600
+                            dark:text-gray-300
                             font-medium
                             transition-all
                             border border-transparent
@@ -224,8 +229,13 @@ const DeviceOnboarding: React.FC = () => {
                             data-[state=active]:text-blue-700 
                             data-[state=active]:border-blue-200
                             data-[state=active]:shadow-sm
+                            dark:data-[state=active]:bg-blue-900/50
+                            dark:data-[state=active]:text-blue-300
+                            dark:data-[state=active]:border-blue-800
                             hover:bg-gray-50 
+                            dark:hover:bg-gray-700
                             text-gray-600
+                            dark:text-gray-300
                             font-medium
                             transition-all
                             border border-transparent"
@@ -240,8 +250,13 @@ const DeviceOnboarding: React.FC = () => {
                             data-[state=active]:text-blue-700 
                             data-[state=active]:border-blue-200
                             data-[state=active]:shadow-sm
+                            dark:data-[state=active]:bg-blue-900/50
+                            dark:data-[state=active]:text-blue-300
+                            dark:data-[state=active]:border-blue-800
                             hover:bg-gray-50 
+                            dark:hover:bg-gray-700
                             text-gray-600
+                            dark:text-gray-300
                             font-medium
                             transition-all
                             border border-transparent"
@@ -252,14 +267,14 @@ const DeviceOnboarding: React.FC = () => {
                 </TabsList>
 
                 <TabsContent value="onboarding">
-                    <Card>
-                        <CardHeader className="border-b border-gray-200 bg-gray-50">
+                    <Card className="border border-gray-200 dark:border-gray-700">
+                        <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                             <div className="flex items-center gap-3">
-                                <Server className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Onboarding Methods</CardTitle>
+                                <Server className="w-6 h-6 text-blue-700 dark:text-blue-400" />
+                                <CardTitle className="dark:text-gray-100">Onboarding Methods</CardTitle>
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-6">
+                        <CardContent className="pt-6 bg-white dark:bg-gray-800">
                             <div className="space-y-6">
                                 <MethodsOverview />
 
@@ -272,17 +287,17 @@ const DeviceOnboarding: React.FC = () => {
                                         recommended
                                     >
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Best For</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Best For</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Initial bulk device imports</li>
                                                     <li>• Migration from other monitoring platforms</li>
                                                     <li>• Structured device onboarding with consistent properties</li>
                                                 </ul>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Key Features</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Key Features</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Property templating</li>
                                                     <li>• Resource mapping</li>
                                                     <li>• Resource Group creation</li>
@@ -290,7 +305,7 @@ const DeviceOnboarding: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <h4 className="font-medium text-gray-900">Resources</h4>
+                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Resources</h4>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                                 <div className="col-span-1">
                                                     <ResourceLink
@@ -326,23 +341,23 @@ const DeviceOnboarding: React.FC = () => {
                                         description="Bulk import devices using a CSV file, IP address range, or custom script on a schedule or on-demand."
                                     >
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Best For</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Best For</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Onboarding specific devices using vendor APIs or custom scripts</li>
                                                     <li>• Migration from other monitoring platforms</li>
                                                 </ul>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Key Features</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Key Features</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Regularly scheduled imports</li>
                                                     <li>• Custom script execution</li>
                                                 </ul>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <h4 className="font-medium text-gray-900">Resources</h4>
+                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Resources</h4>
                                             <div className="space-y-1">
                                                 <ResourceLink
                                                     href="https://www.logicmonitor.com/support/creating-netscans"
@@ -364,17 +379,17 @@ const DeviceOnboarding: React.FC = () => {
                                         description="Interactive guided workflow for adding individual or small groups of devices."
                                     >
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Best For</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Best For</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Adding individual devices</li>
                                                     <li>• Learning device configuration options</li>
                                                     <li>• Testing new device types</li>
                                                 </ul>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Key Features</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Key Features</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Step-by-step guidance</li>
                                                     <li>• Interactive property configuration</li>
                                                     <li>• Immediate validation</li>
@@ -382,7 +397,7 @@ const DeviceOnboarding: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <h4 className="font-medium text-gray-900">Resources</h4>
+                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Resources</h4>
                                             <div className="space-y-1">
                                                 <ResourceLink
                                                     href="https://www.logicmonitor.com/support/devices/adding-managing-devices/how-do-i-add-devices"
@@ -404,9 +419,9 @@ const DeviceOnboarding: React.FC = () => {
                                         recommended
                                     >
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base flex items-center gap-2">
-                                                    <FaAws className="w-4 h-4" />
+                                            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm sm:text-base flex items-center gap-2">
+                                                    <FaAws className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                                     <span>AWS</span>
                                                 </h4>
                                                 <div className="space-y-2">
@@ -416,8 +431,8 @@ const DeviceOnboarding: React.FC = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base flex items-center gap-2">
+                                            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm sm:text-base flex items-center gap-2">
                                                     <BsFillTerminalFill className="w-4 h-4" />
                                                     <span>Azure</span>
                                                 </h4>
@@ -428,8 +443,8 @@ const DeviceOnboarding: React.FC = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base flex items-center gap-2">
+                                            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm sm:text-base flex items-center gap-2">
                                                     <FaGoogle className="w-4 h-4" />
                                                     <span>GCP</span>
                                                 </h4>
@@ -440,8 +455,8 @@ const DeviceOnboarding: React.FC = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base flex items-center gap-2">
+                                            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm sm:text-base flex items-center gap-2">
                                                     <FaSlack className="w-4 h-4" />
                                                     <span>SaaS</span>
                                                 </h4>
@@ -454,7 +469,7 @@ const DeviceOnboarding: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="space-y-2 gap-4">
-                                            <h4 className="font-medium text-gray-900">Resources</h4>
+                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Resources</h4>
                                             <div className="space-y-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                                                 <div className="col-span-1">
                                                     <ResourceLink
@@ -498,17 +513,17 @@ const DeviceOnboarding: React.FC = () => {
                                         recommended
                                     >
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                                <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Key Features</h4>
-                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm sm:text-base">Key Features</h4>
+                                                <ul className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                                     <li>• Onboarding K8s & OpenShift clusters</li>
                                                     <li>• Full lifecycle management of K8s & OpenShift clusters</li>
                                                     <li>• Automated discovery of workloads and nodes</li>
                                                     <li>• Integration with existing LogicMonitor LogicModules</li>
                                                 </ul>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base">Collector Sizing</h4>
+                                            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm sm:text-base">Collector Sizing</h4>
                                                 <div className="space-y-2">
                                                     <ResourceLink
                                                         href="https://www.logicmonitor.com/support/resource-sizing-for-performance-optimization-and-tuning-recommendations"
@@ -516,8 +531,8 @@ const DeviceOnboarding: React.FC = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base">Installation Methods</h4>
+                                            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm sm:text-base">Installation Methods</h4>
                                                 <div className="space-y-2">
                                                     <ResourceLink
                                                         href="https://www.logicmonitor.com/support/adding-kubernetes-cluster-using-logicmonitor-web-portal"
@@ -540,11 +555,11 @@ const DeviceOnboarding: React.FC = () => {
                                         description="Programmatic device management using REST API and automation tools."
                                     >
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                                 <div className="space-y-4">
                                                     <div className="flex items-center gap-2">
-                                                        <Code2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">SDKs & Modules</h4>
+                                                        <Code2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
+                                                        <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">SDKs & Modules</h4>
                                                     </div>
                                                     <div className="space-y-2">
                                                         <ResourceLink
@@ -558,11 +573,11 @@ const DeviceOnboarding: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                            <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                                 <div className="space-y-4">
                                                     <div className="flex items-center gap-2">
-                                                        <FileJson className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">Automation Integrations</h4>
+                                                        <FileJson className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
+                                                        <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">Automation Integrations</h4>
                                                     </div>
                                                     <div className="space-y-2">
                                                         <ResourceLink
@@ -577,10 +592,10 @@ const DeviceOnboarding: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="hidden sm:block p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                        <div className="hidden sm:block p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                             <div className="flex items-center gap-2 mb-2">
-                                                <Workflow className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
-                                                <h4 className="font-medium text-gray-900 text-sm sm:text-base">Automation Examples (Adding Devices)</h4>
+                                                <Workflow className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">Automation Examples (Adding Devices)</h4>
                                             </div>
                                             <CodeSamples />
                                         </div>
@@ -593,14 +608,14 @@ const DeviceOnboarding: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="credentials">
-                    <Card>
-                        <CardHeader className="border-b border-gray-200 bg-gray-50">
+                    <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                        <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                             <div className="flex items-center gap-3">
-                                <Key className="w-6 h-6 text-blue-700" />
-                                <CardTitle>Common Credential Requirements</CardTitle>
+                                <Key className="w-6 h-6 text-blue-700 dark:text-blue-400" />
+                                <CardTitle className="dark:text-gray-100">Common Credential Requirements</CardTitle>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6">
+                        <CardContent className="p-6 bg-white dark:bg-gray-800">
                             <div className="space-y-6">
                                 <DeviceCatalog />
                             </div>
@@ -609,14 +624,14 @@ const DeviceOnboarding: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="licenses">
-                <Card>
-                        <CardHeader className="border-b border-gray-200 bg-gray-50">
+                <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                        <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                             <div className="flex items-center gap-3">
-                                <TbLicense className="w-6 h-6 text-blue-700" />
-                                <CardTitle>License Information</CardTitle>
+                                <TbLicense className="w-6 h-6 text-blue-700 dark:text-blue-400" />
+                                <CardTitle className="dark:text-gray-100">License Information</CardTitle>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6">
+                        <CardContent className="p-6 bg-white dark:bg-gray-800">
                             <div className="space-y-6">
                                 <LicenseInfo />
                             </div>

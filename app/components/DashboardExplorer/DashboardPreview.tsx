@@ -466,14 +466,14 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent aria-describedby={undefined} className="max-w-[95vw] w-full h-[90vh] p-0 bg-gray-50/95 backdrop-blur-sm flex flex-col">
-                <DialogHeader className="flex-shrink-0 p-4 sm:p-6 pb-3 sm:pb-4 border-b bg-white">
+            <DialogContent aria-describedby={undefined} className="max-w-[95vw] w-full h-[90vh] p-0 bg-gray-50 dark:bg-gray-900/95 backdrop-blur-sm flex flex-col border-blue-200 dark:border-gray-700">
+                <DialogHeader className="flex-shrink-0 p-4 sm:p-6 pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div className="space-y-1">
-                        <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-900 pr-8">
+                        <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 pr-8">
                             {dashboard.name}
                         </DialogTitle>
                         {dashboard.description && (
-                            <p className="text-xs sm:text-sm text-gray-600">
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                 {dashboard.description}
                             </p>
                         )}
@@ -481,7 +481,7 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
                 </DialogHeader>
                 
                 <div className="flex-1 overflow-auto p-3 sm:p-6">
-                    <div className="bg-white rounded-lg border shadow-sm p-2 sm:p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-2 sm:p-4">
                         <div 
                             className="grid gap-2 sm:gap-3"
                             style={{
@@ -502,17 +502,17 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
                                             ? 'auto' 
                                             : `${widget.position.row} / span ${widget.position.sizey}`
                                     }}
-                                    className="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+                                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow group flex flex-col"
                                 >
-                                    <div className="p-2 sm:p-3 border-b bg-gray-50/50 flex-shrink-0">
+                                    <div className="p-2 sm:p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex-shrink-0">
                                         <div className="flex items-center gap-2">
                                             {getWidgetIcon(widget.config.type)}
-                                            <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate group-hover:text-blue-600">
+                                            <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
                                                 {widget.config.name}
                                             </h3>
                                         </div>
                                         {widget.config.description && (
-                                            <p className="mt-1 text-[10px] sm:text-xs text-gray-500 line-clamp-2">
+                                            <p className="mt-1 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                                                 {widget.config.description}
                                             </p>
                                         )}
@@ -526,8 +526,8 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ isOpen, onClose, da
                     </div>
                 </div>
 
-                <div className="flex-shrink-0 p-3 sm:p-4 border-t bg-white">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 text-xs sm:text-sm text-gray-500">
+                <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1.5">
                                 <LayoutDashboard className="w-4 h-4" />

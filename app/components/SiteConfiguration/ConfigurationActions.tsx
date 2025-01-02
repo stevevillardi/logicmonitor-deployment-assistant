@@ -362,14 +362,14 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
         <div className="space-y-4">
             {/* Warning Dialog */}
             <AlertDialog open={warningDialogOpen} onOpenChange={setWarningDialogOpen}>
-                <AlertDialogContent className="bg-yellow-50 border-yellow-200">
+                <AlertDialogContent className="bg-yellow-50 dark:bg-gray-800 border-yellow-200 dark:border-gray-700">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-yellow-700">
+                        <AlertDialogTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
                             <Info className="h-5 w-5" />
                             Import Warnings
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            <div className="mt-2 text-yellow-600">
+                            <div className="mt-2 text-yellow-600 dark:text-yellow-300">
                                 <ul className="list-disc list-inside space-y-1">
                                     {warnings.map((warning, index) => (
                                         <li key={index}>{warning}</li>
@@ -381,7 +381,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                     <AlertDialogFooter>
                         <AlertDialogAction 
                             onClick={() => setWarningDialogOpen(false)}
-                            className="bg-yellow-50 border border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                            className="bg-yellow-50 dark:bg-gray-800 border border-yellow-200 dark:border-yellow-600 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-gray-700"
                         >
                             Dismiss
                         </AlertDialogAction>
@@ -391,14 +391,14 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
 
             {/* Error Dialog */}
             <AlertDialog open={errorDialogOpen} onOpenChange={setErrorDialogOpen}>
-                <AlertDialogContent className="bg-red-50 border-red-200">
+                <AlertDialogContent className="bg-red-50 dark:bg-gray-800 border-red-200 dark:border-gray-700">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-700">
+                        <AlertDialogTitle className="flex items-center gap-2 text-red-700 dark:text-red-400">
                             <AlertTriangle className="h-5 w-5" />
                             Import Error
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            <div className="mt-2 text-red-600">
+                            <div className="mt-2 text-red-600 dark:text-red-300">
                                 {error}
                             </div>
                         </AlertDialogDescription>
@@ -406,7 +406,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                     <AlertDialogFooter>
                         <AlertDialogAction 
                             onClick={() => setErrorDialogOpen(false)}
-                            className="bg-red-50 border border-red-200 text-red-700 hover:bg-red-100"
+                            className="bg-red-50 dark:bg-gray-800 border border-red-200 dark:border-red-600 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-gray-700"
                         >
                             Dismiss
                         </AlertDialogAction>
@@ -417,7 +417,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <Button
                     onClick={handleExportConfig}
-                    className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 w-full sm:w-auto"
+                    className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white gap-2 w-full sm:w-auto dark:bg-gray-800 dark:hover:bg-gray-700"
                 >
                     <Download className="w-4 h-4" />
                     Export Deployment
@@ -425,7 +425,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
                 <Button
                     onClick={handleImportClick}
                     variant="outline"
-                    className="gap-2 w-full sm:w-auto"
+                    className="gap-2 w-full sm:w-auto border-gray-200 dark:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-400 dark:hover:text-gray-800"
                 >
                     <Upload className="w-4 h-4" />
                     Import Deployment

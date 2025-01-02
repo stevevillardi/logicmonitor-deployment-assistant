@@ -316,24 +316,24 @@ export const VersionInfo = () => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:text-gray-900 hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-200 text-sm text-blue-700 hover:text-gray-900 dark:text-blue-400"
                 >
-                    <Info className="w-3 h-3 text-blue-700" />
+                    <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
                     <span className="hidden 2xl:inline">Release Notes</span>
                 </Button>
             </DialogTrigger>
             <DialogContent 
-                className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
+                className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0 border-blue-200 dark:border-gray-700"
                 aria-describedby={undefined}
             >
-                <DialogHeader className="border-b border-blue-100 pb-3">
-                    <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+                <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
+                    <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
                         <div className="flex items-center gap-2">
                             <GitBranch className="h-5 w-5" />
                             Release Notes
                         </div>
                     </DialogTitle>
-                    <DialogDescription id="version-info-description">
+                    <DialogDescription id="version-info-description" className="text-blue-700 dark:text-blue-300">
                         View the latest updates and changes to the Deployment Assistant
                     </DialogDescription>
                 </DialogHeader>
@@ -341,36 +341,36 @@ export const VersionInfo = () => {
                 <ScrollArea className="h-[600px] pr-4 overflow-y-auto">
                     <div className="space-y-6 py-3 pr-4">
                         {VERSIONS.map((versionInfo) => (
-                            <div key={versionInfo.version} className="bg-white rounded-lg border border-blue-200 shadow-sm p-4">
+                            <div key={versionInfo.version} className="bg-white dark:bg-gray-900 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm p-4">
                                 <button
                                     onClick={() => toggleVersion(versionInfo.version)}
                                     className="w-full flex items-center justify-between mb-2 text-left"
                                 >
                                     <div>
-                                        <h2 className="text-lg font-semibold text-gray-900">
+                                        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                             Version {versionInfo.version}
                                         </h2>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
                                             Released on {versionInfo.date}
                                         </p>
                                     </div>
                                     {expandedVersions.includes(versionInfo.version) 
-                                        ? <ChevronUp className="h-5 w-5 text-gray-500" />
-                                        : <ChevronDown className="h-5 w-5 text-gray-500" />
+                                        ? <ChevronUp className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                                        : <ChevronDown className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                                     }
                                 </button>
 
                                 {expandedVersions.includes(versionInfo.version) && (
                                     <div className="space-y-4 mt-4">
                                         {versionInfo.sections?.map((section, index) => (
-                                            <div key={index} className="bg-blue-50 rounded-lg border border-blue-100 p-3">
+                                            <div key={index} className="bg-blue-50 dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-gray-700 p-3">
                                                 <div className="flex items-start gap-2 mb-2">
                                                     {section.icon}
-                                                    <h3 className="font-medium text-gray-900">
+                                                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
                                                         {section.title}
                                                     </h3>
                                                 </div>
-                                                <ul className="space-y-1.5 text-sm text-gray-600 ml-6">
+                                                <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300 ml-6">
                                                     {section.items.map((item, itemIndex) => (
                                                         <li key={itemIndex} className="list-disc">
                                                             {item}
@@ -386,9 +386,9 @@ export const VersionInfo = () => {
                     </div>
                 </ScrollArea>
 
-                <div className="border-t border-blue-100 pt-3 mt-4">
-                    <div className="bg-white border border-blue-100 rounded-lg p-3">
-                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700">
+                <div className="border-t border-blue-100 dark:border-gray-700 pt-3 mt-4">
+                    <div className="bg-white dark:bg-gray-900 border border-blue-100 dark:border-gray-700 rounded-lg p-3">
+                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300">
                             <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                             <p>
                                 For feature requests and bug reports, please visit the github repository and create an issue.

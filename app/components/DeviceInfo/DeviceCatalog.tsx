@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Search, Filter, ExternalLink, ChevronRight, Info, LayoutGrid, List } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -84,12 +84,29 @@ const DeviceCatalog = () => {
         return items.slice(startIndex, endIndex);
     };
 
+    // Memoize handlers
+    const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    }, []);
+
+    const handleCredentialSelect = useCallback((credential: string) => {
+        setSelectedCredential(credential);
+    }, []);
+
+    const handleViewModeToggle = useCallback((mode: 'grid' | 'list') => {
+        setViewMode(mode);
+    }, []);
+
+    const handlePageChange = useCallback((direction: 'next' | 'prev') => {
+        setCurrentPage(p => direction === 'next' ? p + 1 : Math.max(1, p - 1));
+    }, []);
+
     // Add loading state handling in the return
     if (isLoading) {
         return (
             <div className="min-h-[600px] space-y-4">
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-gray-100 animate-pulse h-24 rounded-lg" />
+                    <div key={i} className="bg-gray-100 dark:bg-gray-800 animate-pulse h-24 rounded-lg" />
                 ))}
             </div>
         );
@@ -101,7 +118,7 @@ const DeviceCatalog = () => {
         return (
             <Dialog>
                 <DialogTrigger asChild>
-                    <Card className="group cursor-pointer transition-all h-full border hover:border-blue-300 hover:shadow-md relative">
+                    <Card className="group cursor-pointer transition-all h-full border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md relative bg-white dark:bg-gray-800">
                         <div className="absolute right-3 top-3 text-gray-400 group-hover:text-blue-500 transition-colors">
                             <ExternalLink className="w-4 h-4" />
                         </div>
@@ -114,27 +131,27 @@ const DeviceCatalog = () => {
                                 )}
                                 <div className="flex-1 min-w-0 pr-6">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <CardTitle className="text-base sm:text-lg group-hover:text-blue-700 transition-colors">
+                                        <CardTitle className="text-base sm:text-lg group-hover:text-blue-700 dark:text-gray-100 dark:group-hover:text-blue-300 transition-colors">
                                             {credential.name}
                                         </CardTitle>
-                                        <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                                        <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
                                             {credential.type}
                                         </Badge>
                                     </div>
-                                    <p className="text-sm text-gray-600 line-clamp-2">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                                         {credential.description}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                <Badge variant="secondary" className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
                                     {credential.category}
                                 </Badge>
                                 {credential.tags?.map(tag => (
                                     <Badge 
                                         key={tag} 
                                         variant="outline"
-                                        className="text-xs bg-gray-50 text-gray-600 border-gray-200"
+                                        className="text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
                                     >
                                         {tag}
                                     </Badge>
@@ -143,23 +160,23 @@ const DeviceCatalog = () => {
                         </CardHeader>
                     </Card>
                 </DialogTrigger>
-                <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
-                    <DialogHeader className="border-b border-blue-100 pb-3">
+                <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
+                    <DialogHeader className="border-b border-blue-100 dark:border-blue-800 pb-3">
                         <div className="flex items-start justify-between">
-                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-blue-100">
                                 <div className="flex items-center gap-3">
                                     {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />}
                                     <span>{credential.name}</span>
                                 </div>
                             </DialogTitle>
                         </div>
-                        <p className="text-xs sm:text-sm text-gray-600 mt-1">{credential.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">{credential.description}</p>
                     </DialogHeader>
 
                     <div className="space-y-4 py-3">
                         {/* Properties Section */}
                         <div className="space-y-3">
-                            <h3 className="text-sm sm:text-base font-semibold text-gray-900">Required Properties</h3>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">Required Properties</h3>
                             <div className="grid gap-2">
                                 {credential.properties.map(prop => (
                                     <PropRow key={prop.name} prop={prop} />
@@ -170,21 +187,21 @@ const DeviceCatalog = () => {
                         {/* Permissions Section */}
                         {credential.permissions && credential.permissions.length > 0 && (
                             <div className="space-y-3">
-                                <h3 className="text-sm sm:text-base font-semibold text-gray-900">Required Permissions</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">Required Permissions</h3>
                                 <div className="grid gap-2">
                                     {credential.permissions.map(perm => (
                                         <div 
                                             key={perm.name}
-                                            className="flex items-start gap-2 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 shadow-sm"
+                                            className="flex items-start gap-2 p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm"
                                         >
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-medium text-xs sm:text-sm text-gray-900">{perm.name}</h4>
-                                                    <Badge className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                                    <h4 className="font-medium text-xs sm:text-sm text-gray-900 dark:text-gray-100">{perm.name}</h4>
+                                                    <Badge className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800">
                                                         {perm.type}
                                                     </Badge>
                                                 </div>
-                                                <p className="text-xs text-gray-600">{perm.description}</p>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">{perm.description}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -195,7 +212,7 @@ const DeviceCatalog = () => {
                         {/* Onboarding Methods Section */}
                         {credential.recommendedOnboarding && credential.recommendedOnboarding.length > 0 && (
                             <div className="space-y-3">
-                                <h3 className="text-sm sm:text-base font-semibold text-gray-900">
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">
                                     Recommended Onboarding Methods
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -214,8 +231,8 @@ const DeviceCatalog = () => {
 
                         {/* Documentation Link */}
                         {credential.documentationUrl && (
-                            <div className="bg-white border border-blue-100 rounded-lg p-2 sm:p-3">
-                                <div className="flex gap-2 text-blue-700">
+                            <div className="bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-800 rounded-lg p-2 sm:p-3">
+                                <div className="flex gap-2 text-blue-700 dark:text-blue-400">
                                     <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-xs sm:text-sm mb-2">
@@ -225,7 +242,7 @@ const DeviceCatalog = () => {
                                             href={credential.documentationUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-xs sm:text-sm flex items-center gap-1 text-blue-700 hover:text-blue-800"
+                                            className="text-xs sm:text-sm flex items-center gap-1 text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                                         >
                                             View Documentation
                                             <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -236,11 +253,11 @@ const DeviceCatalog = () => {
                         )}
                     </div>
 
-                    <DialogFooter className="border-t border-blue-100 pt-3 flex flex-col sm:flex-row justify-end gap-3">
+                    <DialogFooter className="border-t border-blue-100 dark:border-blue-800 pt-3 flex flex-col sm:flex-row justify-end gap-3">
                         <DialogClose asChild>
                             <Button
                                 variant="outline"
-                                className="w-full sm:w-auto bg-white hover:bg-gray-50"
+                                className="w-full sm:w-auto bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700"
                             >
                                 Close
                             </Button>
@@ -248,7 +265,7 @@ const DeviceCatalog = () => {
                         {credential.documentationUrl && (
                             <Button
                                 onClick={() => window.open(credential.documentationUrl, '_blank')}
-                                className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white gap-2"
+                                className="w-full sm:w-auto bg-[#040F4B] dark:bg-blue-900 hover:bg-[#0A1B6F]/80 dark:hover:bg-blue-800 text-white gap-2"
                             >
                                 <ExternalLink className="w-4 h-4" />
                                 Go to Documentation
@@ -266,29 +283,33 @@ const DeviceCatalog = () => {
         return (
             <Dialog>
                 <DialogTrigger asChild>
-                    <div className="group flex items-start gap-4 p-4 rounded-lg cursor-pointer border border-gray-200 hover:border-blue-300 hover:shadow-md relative bg-white">
+                    <div className="group flex items-start gap-4 p-4 rounded-lg cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md relative bg-white dark:bg-gray-800">
                         {Icon && (
-                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
-                                <Icon className="w-6 h-6 text-blue-700" />
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-800 transition-colors">
+                                <Icon className="w-6 h-6 text-blue-700 dark:text-blue-400" />
                             </div>
                         )}
                         <div className="flex-1 min-w-0 pr-6">
                             <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">{credential.name}</h3>
-                                <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                                    {credential.type}
+                                <h3 className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+                                    {credential.name}
+                                </h3>
+                                <Badge variant="secondary" className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                                    {credential.category}
                                 </Badge>
                             </div>
-                            <p className="text-sm text-gray-600 line-clamp-2">{credential.description}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                                {credential.description}
+                            </p>
                             <div className="flex flex-wrap gap-2 mt-2">
-                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                <Badge variant="secondary" className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
                                     {credential.category}
                                 </Badge>
                                 {credential.tags?.map(tag => (
                                     <Badge 
                                         key={tag}
                                         variant="outline" 
-                                        className="text-xs bg-gray-50 text-gray-600 border-gray-200"
+                                        className="text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"
                                     >
                                         {tag}
                                     </Badge>
@@ -300,23 +321,23 @@ const DeviceCatalog = () => {
                         </div>
                     </div>
                 </DialogTrigger>
-                <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
-                    <DialogHeader className="border-b border-blue-100 pb-3">
+                <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0">
+                    <DialogHeader className="border-b border-blue-100 dark:border-blue-800 pb-3">
                         <div className="flex items-start justify-between">
-                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+                            <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-blue-100">
                                 <div className="flex items-center gap-3">
                                     {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />}
                                     <span>{credential.name}</span>
                                 </div>
                             </DialogTitle>
                         </div>
-                        <p className="text-xs sm:text-sm text-gray-600 mt-1">{credential.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-blue-300 mt-1">{credential.description}</p>
                     </DialogHeader>
 
                     <div className="space-y-4 py-3">
                         {/* Properties Section */}
                         <div className="space-y-3">
-                            <h3 className="text-sm sm:text-base font-semibold text-gray-900">Required Properties</h3>
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">Required Properties</h3>
                             <div className="grid gap-2">
                                 {credential.properties.map(prop => (
                                     <PropRow key={prop.name} prop={prop} />
@@ -327,21 +348,21 @@ const DeviceCatalog = () => {
                         {/* Permissions Section */}
                         {credential.permissions && credential.permissions.length > 0 && (
                             <div className="space-y-3">
-                                <h3 className="text-sm sm:text-base font-semibold text-gray-900">Required Permissions</h3>
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">Required Permissions</h3>
                                 <div className="grid gap-2">
                                     {credential.permissions.map(perm => (
                                         <div 
                                             key={perm.name}
-                                            className="flex items-start gap-2 p-2 sm:p-3 bg-white rounded-lg border border-blue-200 shadow-sm"
+                                            className="flex items-start gap-2 p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm"
                                         >
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-medium text-xs sm:text-sm text-gray-900">{perm.name}</h4>
-                                                    <Badge className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                                    <h4 className="font-medium text-xs sm:text-sm text-gray-900 dark:text-gray-100">{perm.name}</h4>
+                                                    <Badge className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800">
                                                         {perm.type}
                                                     </Badge>
                                                 </div>
-                                                <p className="text-xs text-gray-600">{perm.description}</p>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">{perm.description}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -352,7 +373,7 @@ const DeviceCatalog = () => {
                         {/* Onboarding Methods Section */}
                         {credential.recommendedOnboarding && credential.recommendedOnboarding.length > 0 && (
                             <div className="space-y-3">
-                                <h3 className="text-sm sm:text-base font-semibold text-gray-900">
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">
                                     Recommended Onboarding Methods
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -371,8 +392,8 @@ const DeviceCatalog = () => {
 
                         {/* Documentation Link */}
                         {credential.documentationUrl && (
-                            <div className="bg-white border border-blue-100 rounded-lg p-2 sm:p-3">
-                                <div className="flex gap-2 text-blue-700">
+                            <div className="bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-800 rounded-lg p-2 sm:p-3">
+                                <div className="flex gap-2 text-blue-700 dark:text-blue-400">
                                     <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-xs sm:text-sm mb-2">
@@ -382,7 +403,7 @@ const DeviceCatalog = () => {
                                             href={credential.documentationUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-xs sm:text-sm flex items-center gap-1 text-blue-700 hover:text-blue-800"
+                                            className="text-xs sm:text-sm flex items-center gap-1 text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                                         >
                                             View Documentation
                                             <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -393,11 +414,11 @@ const DeviceCatalog = () => {
                         )}
                     </div>
 
-                    <DialogFooter className="border-t border-blue-100 pt-3 flex flex-col sm:flex-row justify-end gap-3">
+                    <DialogFooter className="border-t border-blue-100 dark:border-blue-800 pt-3 flex flex-col sm:flex-row justify-end gap-3">
                         <DialogClose asChild>
                             <Button
                                 variant="outline"
-                                className="w-full sm:w-auto bg-white hover:bg-gray-50"
+                                className="w-full sm:w-auto bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700"
                             >
                                 Close
                             </Button>
@@ -405,7 +426,7 @@ const DeviceCatalog = () => {
                         {credential.documentationUrl && (
                             <Button
                                 onClick={() => window.open(credential.documentationUrl, '_blank')}
-                                className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white gap-2"
+                                className="w-full sm:w-auto bg-[#040F4B] dark:bg-blue-900 hover:bg-[#0A1B6F]/80 dark:hover:bg-blue-800 text-white gap-2"
                             >
                                 <ExternalLink className="w-4 h-4" />
                                 Go to Documentation
@@ -420,13 +441,13 @@ const DeviceCatalog = () => {
     return (
         <div className="space-y-6 min-h-[600px]">
             <div className="space-y-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <div className="flex items-center gap-2 text-blue-700 mb-2">
+                <div className="bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 mb-2">
                         <Info className="w-5 h-5" />
                         <span className="font-medium">Resource Credential and Property Details</span>
                     </div>
-                    <p className="text-sm text-blue-600">
-                        This section contains the required properties and permissions for a list of common technologies. Click on a technology to view more details about what is required to onboard it. For the full list of LogicMontior&apos;s 3000+ supported technologies, please see the <a className="font-medium text-blue-700 hover:text-blue-800" href="https://www.logicmonitor.com/integrations">Integrations</a> page.
+                    <p className="text-sm text-blue-600 dark:text-blue-400">
+                        This section contains the required properties and permissions for a list of common technologies. Click on a technology to view more details about what is required to onboard it. For the full list of LogicMontior&apos;s 3000+ supported technologies, please see the <a className="font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200" href="https://www.logicmonitor.com/integrations">Integrations</a> page.
                     </p>
                 </div>
             </div>
@@ -434,33 +455,33 @@ const DeviceCatalog = () => {
             {/* Search and Filter Bar */}
             <div className="flex items-center gap-4">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
                     <Input
                         placeholder="Search..."
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                        onChange={handleSearch}
+                        className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-300 dark:focus:border-blue-600 focus:ring-blue-200 dark:focus:ring-blue-900"
                     />
                 </div>
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button 
                             variant="outline" 
-                            className="gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 w-[180px] justify-between"
+                            className="gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 w-[180px] justify-between"
                         >
                             <div className="flex items-center gap-2">
                                 <Filter className="w-4 h-4" />
-                                <span className="truncate">{selectedCredential || 'All Credentials'}</span>
+                                <span className="truncate dark:text-gray-200">{selectedCredential || 'All Credentials'}</span>
                             </div>
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[220px] p-0 bg-white border border-gray-200 max-h-[400px] overflow-y-auto">
+                    <PopoverContent className="w-[220px] p-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 max-h-[400px] overflow-y-auto">
                         <Command>
                             <CommandList>
                                 <CommandGroup heading="Protocols">
                                     <CommandItem
                                         onSelect={() => setSelectedCredential('All Credentials')}
-                                        className={`px-2 py-1.5 cursor-pointer text-gray-900 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-900 hover:bg-gray-50`}
+                                        className={`px-2 py-1.5 cursor-pointer text-gray-900 dark:text-gray-200 data-[selected=true]:bg-blue-50 dark:data-[selected=true]:bg-blue-900/50 data-[selected=true]:text-blue-900 dark:data-[selected=true]:text-blue-200 hover:bg-gray-50 dark:hover:bg-gray-700`}
                                     >
                                         All Credentials
                                     </CommandItem>
@@ -468,7 +489,7 @@ const DeviceCatalog = () => {
                                         <CommandItem
                                             key={`protocol-${name}`}
                                             onSelect={() => setSelectedCredential(name)}
-                                            className={`px-2 py-1.5 cursor-pointer text-gray-900 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-900 hover:bg-gray-50`}
+                                            className={`px-2 py-1.5 cursor-pointer text-gray-900 dark:text-gray-200 data-[selected=true]:bg-blue-50 dark:data-[selected=true]:bg-blue-900/50 data-[selected=true]:text-blue-900 dark:data-[selected=true]:text-blue-200 hover:bg-gray-50 dark:hover:bg-gray-700`}
                                         >
                                             {name}
                                         </CommandItem>
@@ -482,7 +503,7 @@ const DeviceCatalog = () => {
                                         <CommandItem
                                             key={`system-${name}`}
                                             onSelect={() => setSelectedCredential(name === 'All Systems' ? 'All Credentials' : name)}
-                                            className={`px-2 py-1.5 cursor-pointer text-gray-900 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-900 hover:bg-gray-50`}
+                                            className={`px-2 py-1.5 cursor-pointer text-gray-900 dark:text-gray-200 data-[selected=true]:bg-blue-50 dark:data-[selected=true]:bg-blue-900/50 data-[selected=true]:text-blue-900 dark:data-[selected=true]:text-blue-200 hover:bg-gray-50 dark:hover:bg-gray-700`}
                                         >
                                             {name}
                                         </CommandItem>
@@ -496,7 +517,7 @@ const DeviceCatalog = () => {
 
             {/* View Toggle and Results Count */}
             <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                     Showing {filteredCredentials.length} results
                 </p>
                 <div className="flex gap-2">
@@ -504,8 +525,8 @@ const DeviceCatalog = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => setViewMode('grid')}
-                        className={`gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 ${
-                            viewMode === 'grid' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'text-gray-600'
+                        className={`gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 ${
+                            viewMode === 'grid' ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' : 'text-gray-600 dark:text-gray-400'
                         }`}
                     >
                         <LayoutGrid className="w-4 h-4" />
@@ -515,8 +536,8 @@ const DeviceCatalog = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => setViewMode('list')}
-                        className={`gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 ${
-                            viewMode === 'list' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'text-gray-600'
+                        className={`gap-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 ${
+                            viewMode === 'list' ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' : 'text-gray-600 dark:text-gray-400'
                         }`}
                     >
                         <List className="w-4 h-4" />
@@ -527,7 +548,7 @@ const DeviceCatalog = () => {
 
             {/* Combined Results View */}
             {viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800">
                     {paginateResults(filteredCredentials).map((credential) => (
                         <CredentialDialog 
                             key={credential.id} 
@@ -536,7 +557,7 @@ const DeviceCatalog = () => {
                     ))}
                 </div>
             ) : (
-                <div className="space-y-2">
+                <div className="space-y-2 bg-white dark:bg-gray-800">
                     {paginateResults(filteredCredentials).map((credential) => (
                         <CredentialListItem 
                             key={credential.id} 
@@ -553,17 +574,17 @@ const DeviceCatalog = () => {
                         <button
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
+                            className="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 text-gray-700 dark:text-gray-300"
                         >
                             Previous
                         </button>
-                        <span className="text-sm text-gray-700 order-first sm:order-none">
+                        <span className="text-sm text-gray-700 dark:text-gray-300 order-first sm:order-none">
                             Page {currentPage} of {Math.ceil(filteredCredentials.length / itemsPerPage)}
                         </span>
                         <button
                             onClick={() => setCurrentPage(p => p + 1)}
                             disabled={currentPage >= Math.ceil(filteredCredentials.length / itemsPerPage)}
-                            className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
+                            className="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 text-gray-700 dark:text-gray-300"
                         >
                             Next
                         </button>
@@ -587,41 +608,42 @@ interface PropRowProps {
 const PropRow = ({ prop }: PropRowProps) => {
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = () => {
+    // Memoize the copy handler
+    const handleCopy = useCallback(() => {
         if (prop.name) {
             navigator.clipboard.writeText(prop.name);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
-    };
+    }, [prop.name]);
 
     return (
         <div 
             onClick={handleCopy}
-            className={`flex items-center w-full cursor-pointer transition-colors bg-white border border-blue-200 rounded-lg p-2 ${
-                copied ? 'bg-green-50' : 'hover:bg-gray-50'
+            className={`flex items-center w-full cursor-pointer transition-colors bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg p-2 ${
+                copied ? 'bg-green-50 dark:bg-green-900/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
             title="Click to copy property name"
         >
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm text-blue-900">
+                    <h4 className="font-semibold text-sm text-blue-900 dark:text-blue-300">
                         {prop.name}
                     </h4>
                     {prop.required && (
-                        <Badge variant="default" className="bg-blue-100 text-blue-700">
+                        <Badge variant="default" className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
                             Required
                         </Badge>
                     )}
                 </div>
-                <p className="text-xs text-gray-600 mt-1">{prop.description}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{prop.description}</p>
             </div>
             <div className="ml-auto pl-4 flex-shrink-0 w-24 text-center">
                 <span className="text-xs">
                     {copied ? (
-                        <span className="text-green-600 font-medium">Copied!</span>
+                        <span className="text-green-600 dark:text-green-400 font-medium">Copied!</span>
                     ) : (
-                        <span className="text-blue-600">click to copy</span>
+                        <span className="text-blue-600 dark:text-blue-400">click to copy</span>
                     )}
                 </span>
             </div>

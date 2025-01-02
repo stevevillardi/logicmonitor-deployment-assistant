@@ -216,22 +216,22 @@ export default function RAGChat() {
       {isMinimized ? (
         <button
           onClick={() => setIsMinimized(false)}
-          className="flex items-center border border-white/20 gap-2 px-4 py-2 bg-[#040F4B] text-white rounded-full shadow-lg hover:bg-[#0A1B6F] transition-colors duration-200"
+          className="flex items-center border border-white/20 gap-2 px-4 py-2 bg-[#040F4B] dark:bg-gray-800 text-white rounded-full shadow-lg hover:bg-[#0A1B6F] dark:hover:bg-gray-700 transition-colors duration-200 antialiased"
         >
           <Bot className="w-5 h-5" />
           <span className="text-sm">Ask Assistant</span>
         </button>
       ) : (
-        <Card className="w-full sm:w-[600px] shadow-xl border border-blue-200">
+        <Card className="w-full sm:w-[600px] shadow-xl border border-blue-200 dark:border-gray-700">
           <div
             ref={resizeRef}
             onMouseDown={handleResizeStart}
             className="absolute -top-3 left-0 w-full h-6 flex items-center justify-center cursor-ns-resize group"
           >
-            <div className="w-12 h-1 rounded-full bg-gray-300 group-hover:bg-gray-400 transition-colors" />
+            <div className="w-12 h-1 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-gray-400 dark:group-hover:bg-gray-500 transition-colors" />
           </div>
 
-          <div className="bg-gradient-to-r from-[#040F4B] to-blue-600 p-3 rounded-t-lg flex items-center justify-between">
+          <div className="bg-gradient-to-r from-[#040F4B] to-blue-600 dark:from-gray-800 dark:to-gray-700 p-3 rounded-t-lg flex items-center justify-between antialiased overflow-hidden">
             <div className="flex items-center gap-2 text-white">
               <Bot className="w-5 h-5" />
               <span className="font-semibold">LogicMonitor Assistant</span>
@@ -256,7 +256,7 @@ export default function RAGChat() {
 
           <CardContent className="p-0">
             <div 
-              className="overflow-y-auto p-2 sm:p-4 space-y-4 bg-gray-50"
+              className="overflow-y-auto p-2 sm:p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
               style={{ height: `${height}px` }}
             >
               {messages.map((message, index) => (
@@ -267,14 +267,14 @@ export default function RAGChat() {
                   <div
                     className={`max-w-[95%] sm:max-w-[85%] rounded-lg p-2 sm:p-3 relative group ${
                       message.type === 'user'
-                        ? 'bg-[#040F4B] text-white'
-                        : 'bg-white shadow-sm border border-gray-200'
+                        ? 'bg-[#040F4B] dark:bg-gray-800 text-white antialiased'
+                        : 'bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 antialiased'
                     }`}
                   >
                     {message.type === 'assistant' && (
                       <button
                         onClick={() => handleCopy(message.content, index)}
-                        className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-gray-50 border border-gray-200"
+                        className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-gray-50 border border-gray-200 antialiased"
                         title="Copy response"
                       >
                         {copiedIndex === index ? (
@@ -294,29 +294,33 @@ export default function RAGChat() {
                       <div className="prose prose-xs max-w-none dark:prose-invert 
                         /* Base text sizes */
                         [&>*]:text-sm 
-                        [&_p]:text-sm 
-                        [&_li]:text-sm 
+                        [&_p]:text-sm dark:[&_p]:text-gray-300
+                        [&_li]:text-sm dark:[&_li]:text-gray-300
                         
                         /* Heading styling */
                         [&_h1]:text-lg
                         [&_h1]:font-semibold
                         [&_h1]:mt-6
                         [&_h1]:mb-4
+                        dark:[&_h1]:text-gray-100
                         
                         [&_h2]:text-base
                         [&_h2]:font-semibold
                         [&_h2]:mt-5
                         [&_h2]:mb-3
+                        dark:[&_h2]:text-gray-200
                         
                         [&_h3]:text-base
                         [&_h3]:font-semibold
                         [&_h3]:mt-4
                         [&_h3]:mb-2
+                        dark:[&_h3]:text-gray-200
                         
                         [&_h4]:text-sm
                         [&_h4]:font-semibold
                         [&_h4]:mt-3
                         [&_h4]:mb-1
+                        dark:[&_h4]:text-gray-200
                         
                         /* Paragraph spacing */
                         [&_p]:my-2
@@ -343,6 +347,8 @@ export default function RAGChat() {
                         [&_code:not(pre code)]:px-1.5
                         [&_code:not(pre code)]:py-0.5
                         [&_code:not(pre code)]:rounded
+                        dark:[&_code:not(pre code)]:bg-gray-800
+                        dark:[&_code:not(pre code)]:text-gray-300
                         
                         /* Blockquote styling */
                         [&_blockquote]:border-l-2
@@ -351,6 +357,7 @@ export default function RAGChat() {
                         [&_blockquote]:my-3
                         [&_blockquote]:italic
                         [&_blockquote]:text-gray-600
+                        dark:[&_blockquote]:text-gray-400
                         
                         /* Section spacing */
                         [&>*:first-child]:mt-0
@@ -433,18 +440,18 @@ export default function RAGChat() {
                                   href={source.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 hover:underline truncate max-w-[125px] sm:max-w-[200px] inline-block"
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[125px] sm:max-w-[200px] inline-block"
                                   title={source.title || 'Untitled Document'}
                                 >
                                   {source.title || 'Untitled Document'}
                                 </a>
                                 {source.type && (
-                                  <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-medium whitespace-nowrap">
+                                  <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full text-[10px] font-medium whitespace-nowrap">
                                     {source.type}
                                   </span>
                                 )}
                                 {source.similarity && (
-                                  <span className="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-medium whitespace-nowrap">
+                                  <span className="inline-flex items-center px-2 py-0.5 bg-green-50 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-full text-[10px] font-medium whitespace-nowrap">
                                     {Math.round(source.similarity * 100)}% match
                                   </span>
                                 )}
@@ -460,9 +467,9 @@ export default function RAGChat() {
               
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 flex items-center space-x-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                    <p className="text-sm text-gray-600">Thinking...</p>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 flex items-center space-x-2 antialiased">
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Thinking...</p>
                   </div>
                 </div>
               )}
@@ -470,20 +477,20 @@ export default function RAGChat() {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSubmit} className="p-2 sm:p-3 border-t border-gray-200 bg-white">
+            <form onSubmit={handleSubmit} className="p-2 sm:p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <div className="flex space-x-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about LogicMonitor..."
-                  className="flex-1 text-sm rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 text-sm rounded-lg border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                   disabled={isLoading}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="bg-[#040F4B] text-white rounded-lg px-3 py-2 hover:bg-[#0A1B6F]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
+                  className="bg-[#040F4B] dark:bg-gray-700 text-white rounded-lg px-3 py-2 hover:bg-[#0A1B6F]/90 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

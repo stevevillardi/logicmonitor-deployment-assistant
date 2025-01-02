@@ -82,14 +82,14 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                 onOpenChange={handleOpenChange}
             >
                 <DialogContent 
-                    className="max-w-[95vw] w-full lg:max-w-4xl bg-blue-50 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
+                    className="max-w-[95vw] w-full lg:max-w-4xl bg-blue-50 dark:bg-gray-800 dark:border-gray-700 fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mx-0 my-0"
                     onInteractOutside={(e) => e.preventDefault()}
                 >
-                    <DialogHeader className="border-b border-blue-100 pb-3">
-                        <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B]">
+                    <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
+                        <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
                             Manage Deployments
                         </DialogTitle>
-                        <DialogDescription className="text-sm text-gray-600">
+                        <DialogDescription className="text-sm text-gray-600 dark:text-blue-300">
                             Rename or delete your saved deployment configurations
                         </DialogDescription>
                     </DialogHeader>
@@ -97,14 +97,14 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                     <div className="space-y-4 py-3">
                         {isLoading ? (
                             <div className="flex items-center justify-center py-8">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700" />
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 dark:border-blue-400" />
                             </div>
                         ) : deployments.length === 0 ? (
-                            <div className="border-2 border-dashed border-blue-200 rounded-lg p-6 text-center bg-white">
+                            <div className="border-2 border-dashed border-blue-200 dark:border-gray-700 rounded-lg p-6 text-center bg-white dark:bg-gray-900">
                                 <div className="flex flex-col items-center justify-center gap-2">
-                                    <Folder className="h-8 w-8 text-blue-400" />
-                                    <h3 className="font-medium text-blue-900">No Saved Deployments</h3>
-                                    <p className="text-sm text-blue-600">
+                                    <Folder className="h-8 w-8 text-blue-400 dark:text-blue-500" />
+                                    <h3 className="font-medium text-blue-900 dark:text-gray-100">No Saved Deployments</h3>
+                                    <p className="text-sm text-blue-600 dark:text-blue-300">
                                         Your saved deployments will appear here
                                     </p>
                                 </div>
@@ -115,18 +115,18 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                     {deployments.map((deployment) => (
                                         <div 
                                             key={deployment.id}
-                                            className="bg-white border border-blue-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                                            className="bg-white dark:bg-gray-900 border border-blue-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
                                         >
                                             <div className="flex items-center gap-3">
                                                 <button
                                                     onClick={() => toggleDeployment(deployment.id)}
                                                     className="flex items-center gap-2"
                                                 >
-                                                    <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                                        <Building2 className="w-4 h-4 text-blue-700" />
+                                                    <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-gray-800 border border-blue-100 dark:border-gray-700 flex items-center justify-center">
+                                                        <Building2 className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                                     </div>
                                                     {expandedDeployments.has(deployment.id) ? (
-                                                        <ChevronDown className="w-4 h-4 text-blue-700" />
+                                                        <ChevronDown className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                                     ) : (
                                                         <ChevronRight className="w-4 h-4 text-blue-700" />
                                                     )}
@@ -136,7 +136,7 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                                     <div className="flex-1 flex flex-col gap-4">
                                                         <div className="flex flex-col sm:flex-row items-start gap-4">
                                                             <div className="flex-1">
-                                                                <Label htmlFor="name" className="text-xs text-blue-700">
+                                                                <Label htmlFor="name" className="text-xs text-blue-700 dark:text-blue-300">
                                                                     Deployment Name
                                                                 </Label>
                                                                 <Input
@@ -144,21 +144,23 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                                                     value={editName}
                                                                     onChange={(e) => setEditName(e.target.value)}
                                                                     placeholder="Enter deployment name"
-                                                                    className="bg-white border-blue-200"
+                                                                    className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                                                 />
                                                             </div>
                                                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto sm:mt-[22px]">
                                                                 <Button
+                                                                    size="sm"
                                                                     onClick={() => handleSave(deployment.id)}
-                                                                    className="flex-1 sm:flex-initial bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+                                                                    className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
                                                                 >
                                                                     <Save className="h-4 w-4 mr-1" />
                                                                     Save
                                                                 </Button>
                                                                 <Button
                                                                     variant="outline"
+                                                                    size="sm"
                                                                     onClick={() => setEditingId(null)}
-                                                                    className="flex-1 sm:flex-initial bg-white hover:bg-gray-50"
+                                                                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                                                                 >
                                                                     <X className="h-4 w-4 mr-1" />
                                                                     Cancel
@@ -169,10 +171,10 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                                 ) : (
                                                     <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm font-medium text-blue-900">
+                                                            <span className="text-sm font-medium text-blue-900 dark:text-gray-100">
                                                                 {deployment.name}
                                                             </span>
-                                                            <span className="text-xs text-blue-700">
+                                                            <span className="text-xs text-blue-700 dark:text-blue-300">
                                                                 Last updated: {new Date(deployment.updated_at).toLocaleDateString()}
                                                             </span>
                                                         </div>
@@ -204,33 +206,33 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
                                                     {deployment.sites.map((site, index) => (
                                                         <div 
                                                             key={index}
-                                                            className="bg-gray-50 border border-gray-100 rounded-lg p-3 hover:bg-gray-100/50 transition-colors"
+                                                            className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-3 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors"
                                                         >
                                                             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                                                                 <div className="flex items-center gap-2 min-w-[150px]">
                                                                     <Server className="w-4 h-4 flex-shrink-0 text-gray-500" />
-                                                                    <h4 className="font-medium text-gray-900 truncate">
+                                                                    <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                                                                         {site.name || `Site ${index + 1}`}
                                                                     </h4>
                                                                 </div>
                                                                 <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 lg:gap-3">
-                                                                    <div className="px-3 py-1.5 bg-blue-50 rounded-full flex items-center gap-2 whitespace-nowrap">
-                                                                        <Server className="w-4 h-4 flex-shrink-0 text-blue-600" />
-                                                                        <span className="text-blue-700 text-sm font-medium">
+                                                                    <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center gap-2 whitespace-nowrap">
+                                                                        <Server className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+                                                                        <span className="text-blue-700 dark:text-blue-300 text-sm font-medium">
                                                                             {Object.values(site.devices).reduce((sum, device) => 
                                                                                 sum + (device.count || 0), 0
                                                                             ).toLocaleString()}
                                                                         </span>
                                                                     </div>
-                                                                    <div className="px-3 py-1.5 bg-emerald-50 rounded-full flex items-center gap-2 whitespace-nowrap">
-                                                                        <MessageSquare className="w-4 h-4 flex-shrink-0 text-emerald-600" />
-                                                                        <span className="text-emerald-700 text-sm font-medium">
+                                                                    <div className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center gap-2 whitespace-nowrap">
+                                                                        <MessageSquare className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
+                                                                        <span className="text-emerald-700 dark:text-emerald-300 text-sm font-medium">
                                                                             {(site.logs?.events?.eps || 0).toLocaleString()} EPS
                                                                         </span>
                                                                     </div>
-                                                                    <div className="px-3 py-1.5 bg-cyan-50 rounded-full flex items-center gap-2 whitespace-nowrap">
-                                                                        <Activity className="w-4 h-4 flex-shrink-0 text-cyan-600" />
-                                                                        <span className="text-cyan-700 text-sm font-medium">
+                                                                    <div className="px-3 py-1.5 bg-cyan-50 dark:bg-cyan-900/30 rounded-full flex items-center gap-2 whitespace-nowrap">
+                                                                        <Activity className="w-4 h-4 flex-shrink-0 text-cyan-600 dark:text-cyan-400" />
+                                                                        <span className="text-cyan-700 dark:text-cyan-300 text-sm font-medium">
                                                                             {(site.logs?.netflow?.fps || 0).toLocaleString()} FPS
                                                                         </span>
                                                                     </div>

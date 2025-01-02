@@ -140,7 +140,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
     };
 
     return (
-        <div className="space-y-3 min-h-[900px]">
+        <div className="space-y-3 min-h-[900px] mb-4 dark:bg-gray-900">
             <FirstTimeVisit
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
@@ -149,7 +149,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <Button
                         onClick={addSite}
-                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 w-full sm:w-auto"
+                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2 w-full sm:w-auto dark:bg-gray-800 dark:hover:bg-gray-700"
                     >
                         <Plus className="w-4 h-4" />
                         Add New Site
@@ -163,7 +163,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                 onSiteExpand(new Set(shouldExpandAll ? allSiteIndexes : []));
                             }}
                             variant="outline"
-                            className="gap-2 w-full sm:w-auto"
+                            className="gap-2 w-full sm:w-auto dark:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-400 dark:hover:text-gray-800"
                         >
                             {expandedSites.size === sites.length ? (
                                 <>
@@ -209,15 +209,15 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
             />
             
             {sites.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
-                    <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
-                        <Building className="w-8 h-8 text-gray-400" />
+                <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-900/30 flex items-center justify-center mb-4">
+                        <Building className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Sites Configured</h3>
-                    <p className="text-gray-500 text-center mb-6">Get started by adding your first site to calculate collector requirements.</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No Sites Configured</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-center mb-6">Get started by adding your first site to calculate collector requirements.</p>
                     <Button
                         onClick={addSite}
-                        className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                        className="bg-[#040F4B] hover:bg-[#0A1B6F] dark:bg-blue-600 dark:hover:bg-blue-700 text-white gap-2"
                     >
                         <Plus className="w-4 h-4" />
                         Add First Site
@@ -227,10 +227,9 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                 sites.map((site, index) => (
                     <EnhancedCard
                         key={`site-${index}`}
-                        className="mb-4"
+                        className="mb-4 border-gray-200 dark:border-gray-700"
                     >
-                        <CardHeader className="border-gray-200 bg-white">
-                            {/* Mobile-friendly layout */}
+                        <CardHeader className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                             <div className="flex flex-col gap-4">
                                 {/* Site Name Row */}
                                 <div className="flex items-center gap-3">
@@ -242,14 +241,14 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
-                                                            <Building className="w-4 h-4 text-blue-700" />
+                                                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 flex items-center justify-center flex-shrink-0">
+                                                            <Building className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                                         </div>
-                                                        <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expandedSites.has(index) ? 'rotate-90' : ''}`} />
+                                                        <ChevronRight className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${expandedSites.has(index) ? 'rotate-90' : ''}`} />
                                                     </div>
                                                 </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>Click to {expandedSites.has(index) ? 'collapse' : 'expand'} site</p>
+                                                <TooltipContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                                                    <p className="dark:text-gray-100">Click to {expandedSites.has(index) ? 'collapse' : 'expand'} site</p>
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
@@ -263,7 +262,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             }}
                                             onClick={(e) => e.stopPropagation()}
                                             placeholder={`Enter Site Name...`}
-                                            className="w-full"
+                                            className="w-full dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -273,49 +272,49 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                             e.stopPropagation();
                                             deleteSite(index);
                                         }}
-                                        className="text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-700 shrink-0"
+                                        className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 hover:text-red-700 dark:hover:text-red-300 shrink-0"
                                     >
                                         <Trash2 className="w-4 h-4 mr-2" />
                                         Remove Site
                                     </Button>
                                 </div>
 
-                                {/* Stats Grid - Full width on mobile */}
+                                {/* Stats Grid */}
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     {/* Polling Stats */}
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5">
+                                    <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-1.5">
-                                                <Server className="w-4 h-4 text-blue-700" />
-                                                <span className="text-sm font-medium text-blue-900">Polling</span>
+                                                <Server className="w-4 h-4 text-blue-700 dark:text-blue-400" />
+                                                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Polling</span>
                                             </div>
                                             <div className="text-right">
                                                 <div className="flex items-center gap-1.5 justify-end">
-                                                    <span className="text-sm font-semibold text-blue-700">
+                                                    <span className="text-sm font-semibold text-blue-700 dark:text-blue-400">
                                                         {(() => {
                                                             const collectors = getSiteResults(site).polling.collectors;
                                                             const count = collectors.filter(c => c.type === "Primary").length;
                                                             return count > 0 ? count : "0";
                                                         })()}
                                                     </span>
-                                                    <span className="text-xs text-blue-600">
+                                                    <span className="text-xs text-blue-600 dark:text-blue-300">
                                                         {(() => {
                                                             const count = getSiteResults(site).polling.collectors.filter(c => c.type === "Primary").length;
                                                             return count === 1 ? "collector" : "collectors";
                                                         })()}
                                                     </span>
                                                     {config.enablePollingFailover && getSiteResults(site).polling.collectors.length > 0 && (
-                                                        <span className="text-xs text-blue-600 bg-blue-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                                        <span className="text-xs text-blue-600 dark:text-blue-300 bg-blue-100/50 dark:bg-blue-900/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
                                                             <Info className="w-3 h-3" />N+1
                                                         </span>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-1.5 mt-1 justify-end">
-                                                    <span className="text-xs text-blue-600">
+                                                    <span className="text-xs text-blue-600 dark:text-blue-300">
                                                         {Object.values(site.devices).reduce((sum, device) => sum + (device.count || 0), 0).toLocaleString()} devices
                                                     </span>
                                                     <div className="flex items-center gap-1">
-                                                        <div className="w-12 h-1.5 bg-blue-100 rounded-full overflow-hidden">
+                                                        <div className="w-12 h-1.5 bg-blue-100 dark:bg-blue-900/50 rounded-full overflow-hidden">
                                                             <div 
                                                                 className="h-full bg-blue-600 rounded-full"
                                                                 style={{ 
@@ -325,7 +324,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                                 }}
                                                             />
                                                         </div>
-                                                        <span className="text-xs font-medium text-blue-700 bg-blue-100/50 px-1.5 py-0.5 rounded">
+                                                        <span className="text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-100/50 dark:bg-blue-900/50 px-1.5 py-0.5 rounded">
                                                             {calculateAverageLoad(getSiteResults(site).polling.collectors)}%
                                                         </span>
                                                     </div>
@@ -335,39 +334,39 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     </div>
 
                                     {/* Logs Stats */}
-                                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-2.5">
+                                    <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-2.5">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-1.5">
-                                                <MessageSquare className="w-4 h-4 text-orange-700" />
-                                                <span className="text-sm font-medium text-orange-900">Logs</span>
+                                                <MessageSquare className="w-4 h-4 text-orange-700 dark:text-orange-400" />
+                                                <span className="text-sm font-medium text-orange-900 dark:text-orange-100">Logs</span>
                                             </div>
                                             <div className="text-right">
                                                 <div className="flex items-center gap-1.5 justify-end">
-                                                    <span className="text-sm font-semibold text-orange-700">
+                                                    <span className="text-sm font-semibold text-orange-700 dark:text-orange-400">
                                                         {(() => {
                                                             const collectors = getSiteResults(site).logs.eventCollectors;
                                                             const count = collectors.filter(c => c.type === "Primary").length;
                                                             return count > 0 ? count : "0";
                                                         })()}
                                                     </span>
-                                                    <span className="text-xs text-orange-600">
+                                                    <span className="text-xs text-orange-600 dark:text-orange-300">
                                                         {(() => {
                                                             const count = getSiteResults(site).logs.eventCollectors.filter(c => c.type === "Primary").length;
                                                             return count === 1 ? "collector" : "collectors";
                                                         })()}
                                                     </span>
                                                     {config.enableLogsFailover && getSiteResults(site).logs.eventCollectors.length > 0 && (
-                                                        <span className="text-xs text-orange-600 bg-orange-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                                        <span className="text-xs text-orange-600 dark:text-orange-300 bg-orange-100/50 dark:bg-orange-900/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
                                                             <Info className="w-3 h-3" />N+1
                                                         </span>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-1.5 mt-1 justify-end">
-                                                    <span className="text-xs text-orange-600">
+                                                    <span className="text-xs text-orange-600 dark:text-orange-300">
                                                         {(site.logs?.events?.eps || 0).toLocaleString()} EPS
                                                     </span>
                                                     <div className="flex items-center gap-1">
-                                                        <div className="w-12 h-1.5 bg-orange-100 rounded-full overflow-hidden">
+                                                        <div className="w-12 h-1.5 bg-orange-100 dark:bg-orange-900/50 rounded-full overflow-hidden">
                                                             <div 
                                                                 className="h-full bg-orange-600 rounded-full"
                                                                 style={{ 
@@ -377,7 +376,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                                 }}
                                                             />
                                                         </div>
-                                                        <span className="text-xs font-medium text-orange-700 bg-orange-100/50 px-1.5 py-0.5 rounded">
+                                                        <span className="text-xs font-medium text-orange-700 dark:text-orange-400 bg-orange-100/50 dark:bg-orange-900/50 px-1.5 py-0.5 rounded">
                                                             {calculateAverageLoad(getSiteResults(site).logs.eventCollectors)}%
                                                         </span>
                                                     </div>
@@ -387,39 +386,39 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                     </div>
 
                                     {/* NetFlow Stats */}
-                                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-2.5">
+                                    <div className="bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg p-2.5">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-1.5">
-                                                <Activity className="w-4 h-4 text-purple-700" />
-                                                <span className="text-sm font-medium text-purple-900">NetFlow</span>
+                                                <Activity className="w-4 h-4 text-purple-700 dark:text-purple-400" />
+                                                <span className="text-sm font-medium text-purple-900 dark:text-purple-100">NetFlow</span>
                                             </div>
                                             <div className="text-right">
                                                 <div className="flex items-center gap-1.5 justify-end">
-                                                    <span className="text-sm font-semibold text-purple-700">
+                                                    <span className="text-sm font-semibold text-purple-700 dark:text-purple-400">
                                                         {(() => {
                                                             const collectors = getSiteResults(site).logs.netflowCollectors;
                                                             const count = collectors.filter(c => c.type === "Primary").length;
                                                             return count > 0 ? count : "0";
                                                         })()}
                                                     </span>
-                                                    <span className="text-xs text-purple-600">
+                                                    <span className="text-xs text-purple-600 dark:text-purple-300">
                                                         {(() => {
                                                             const count = getSiteResults(site).logs.netflowCollectors.filter(c => c.type === "Primary").length;
                                                             return count === 1 ? "collector" : "collectors";
                                                         })()}
                                                     </span>
                                                     {config.enableLogsFailover && getSiteResults(site).logs.netflowCollectors.length > 0 && (
-                                                        <span className="text-xs text-purple-600 bg-purple-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                                        <span className="text-xs text-purple-600 dark:text-purple-300 bg-purple-100/50 dark:bg-purple-900/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
                                                             <Info className="w-3 h-3" />N+1
                                                         </span>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-1.5 mt-1 justify-end">
-                                                    <span className="text-xs text-purple-600">
+                                                    <span className="text-xs text-purple-600 dark:text-purple-300">
                                                         {(site.logs?.netflow?.fps || 0).toLocaleString()} FPS
                                                     </span>
                                                     <div className="flex items-center gap-1">
-                                                        <div className="w-12 h-1.5 bg-purple-100 rounded-full overflow-hidden">
+                                                        <div className="w-12 h-1.5 bg-purple-100 dark:bg-purple-900/50 rounded-full overflow-hidden">
                                                             <div 
                                                                 className="h-full bg-purple-600 rounded-full"
                                                                 style={{ 
@@ -429,7 +428,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                                 }}
                                                             />
                                                         </div>
-                                                        <span className="text-xs font-medium text-purple-700 bg-purple-100/50 px-1.5 py-0.5 rounded">
+                                                        <span className="text-xs font-medium text-purple-700 dark:text-purple-400 bg-purple-100/50 dark:bg-purple-900/50 px-1.5 py-0.5 rounded">
                                                             {calculateAverageLoad(getSiteResults(site).logs.netflowCollectors)}%
                                                         </span>
                                                     </div>
@@ -441,29 +440,28 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                             </div>
                         </CardHeader>
                         {expandedSites.has(index) && (
-                            <CardContent>
+                            <CardContent className="dark:bg-gray-800">
                                 <div className="flex flex-col gap-4 justify-center">
                                     <Tabs defaultValue="devices" className="flex-1">
-                                            <TabsList className="bg-white border border-gray-200 p-1 rounded-lg">
-                                                <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="devices">
-                                                    Devices
-                                                </TabsTrigger>
-                                                <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="logs">
-                                                    Logs, Traps & NetFlow
-                                                </TabsTrigger>
-                                                <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700" value="collectors">
-                                                    Collectors
-                                                </TabsTrigger>
-                                            </TabsList>
-
+                                        <TabsList className="bg-white dark:text-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-lg">
+                                            <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-400" value="devices">
+                                                Devices
+                                            </TabsTrigger>
+                                            <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-400" value="logs">
+                                                Logs, Traps & NetFlow
+                                            </TabsTrigger>
+                                            <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-400" value="collectors">
+                                                Collectors
+                                            </TabsTrigger>
+                                        </TabsList>
 
                                         <TabsContent value="devices" className="px-2 sm:px-0">
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="text-lg font-semibold">Devices</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Devices</h3>
                                                 <Button
                                                     onClick={() => resetSite(index, "devices")}
                                                     variant="outline"
-                                                    className="text-red-600 hover:text-red-700"
+                                                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 dark:bg-red-900/30 dark:border-red-800 dark:hover:bg-red-900/50 dark:hover:border-red-700"
                                                 >
                                                     <RxReset className="w-4 h-4 mr-2" />
                                                     Reset Devices
@@ -501,11 +499,11 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
 
                                         <TabsContent value="logs">
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="text-lg font-semibold">Logs, Traps & NetFlow</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Logs, Traps & NetFlow</h3>
                                                 <Button
                                                     onClick={() => resetSite(index, "logs")}
                                                     variant="outline"
-                                                    className="text-red-600 hover:text-red-700"
+                                                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 dark:bg-red-900/30 dark:border-red-800 dark:hover:bg-red-900/50 dark:hover:border-red-700"
                                                 >
                                                     <RxReset className="w-4 h-4 mr-2" />
                                                     Reset Logs
@@ -543,7 +541,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                     </EnhancedCard>
                 ))
             )}
-            <div className="mb-3">
+            <div>
                 <DisclaimerBox />
             </div>
         </div>

@@ -71,14 +71,14 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
         { id: 'dashboard-explorer', label: 'Dashboard Explorer', icon: <ChartLine className="w-4 h-4" /> },
         { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
         { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
-        { id: 'system', label: 'Deployment Settings', icon: <Settings className="w-4 h-4" /> },
         ...(isAuthorized ? [{ id: 'pov', label: 'POV Readiness', icon: <FileText className="w-4 h-4" /> }] : []),
+        { id: 'system', label: 'Deployment Settings', icon: <Settings className="w-4 h-4" /> },
     ];
 
     return (
         <>
             {/* Desktop Navigation */}
-            <div className="hidden lg:block rounded-lg w-full bg-[#040F4B] px-4 py-2">
+            <div className="hidden lg:block rounded-lg w-full bg-[#040F4B] dark:bg-gray-800 px-4 py-2">
                 <div className="flex flex-wrap justify-center gap-2">
                     {navigationItems.map((item) => (
                         <button
@@ -86,8 +86,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                             onClick={() => onTabChange(item.id)}
                             className={`flex items-center text-sm gap-2 px-4 py-2 font-medium rounded-lg transition-colors whitespace-nowrap
                                 ${activeTab === item.id 
-                                    ? 'bg-[#1a2b7f] text-white' 
-                                    : 'text-white/85 hover:bg-[#0A1B6F] hover:text-white'}`}
+                                    ? 'bg-[#1a2b7f] dark:bg-blue-600 text-white' 
+                                    : 'text-white/85 hover:bg-[#0A1B6F] dark:hover:bg-blue-700 hover:text-white'}`}
                         >
                             {item.icon}
                             <span>{item.label}</span>
@@ -97,11 +97,11 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
             </div>
 
             {/* Mobile Navigation */}
-            <div className="lg:hidden w-full bg-[#040F4B] px-4 py-2">
+            <div className="lg:hidden w-full bg-[#040F4B] dark:bg-gray-800 px-4 py-2">
                 <div className="relative">
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="w-full flex items-center justify-between text-white px-4 py-2 rounded-lg bg-[#0A1B6F] hover:bg-[#1a2b7f]"
+                        className="w-full flex items-center justify-between text-white px-4 py-2 rounded-lg bg-[#0A1B6F] dark:bg-blue-600 hover:bg-[#1a2b7f] dark:hover:bg-blue-700"
                     >
                         <div className="flex items-center gap-2">
                             {navigationItems.find(item => item.id === activeTab)?.icon}
@@ -112,7 +112,7 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                         <ChevronDown className={`w-5 h-5 transition-transform ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isMobileMenuOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A1B6F] rounded-lg shadow-lg overflow-hidden z-50">
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A1B6F] dark:bg-blue-600 rounded-lg shadow-lg overflow-hidden z-50">
                             {navigationItems.map((item) => (
                                 <button
                                     key={item.id}
@@ -122,8 +122,8 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
                                     }}
                                     className={`w-full flex items-center text-sm gap-2 px-4 py-3 font-medium transition-colors
                                         ${activeTab === item.id 
-                                            ? 'bg-[#1a2b7f] text-white' 
-                                            : 'text-white/85 hover:bg-[#1a2b7f] hover:text-white'}`}
+                                            ? 'bg-[#1a2b7f] dark:bg-blue-700 text-white' 
+                                            : 'text-white/85 hover:bg-[#1a2b7f] dark:hover:bg-blue-700 hover:text-white'}`}
                                 >
                                     {item.icon}
                                     <span>{item.label}</span>
@@ -199,19 +199,18 @@ const DeploymentAssistant = () => {
 
     return (    
         <DeploymentsProvider>
-        <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="min-h-screen bg-[#040F4B] w-full flex items-center justify-center">
             <FirstTimeVisit
                 isOpen={helpDialogOpen}
                 onOpenChange={setHelpDialogOpen}
             />
             <Card className="w-full max-w-[1700px] bg-white dark:bg-gray-900 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-xl overflow-hidden">
-                <CardHeader className="border-gray-200 dark:border-gray-800 bg-gradient-to-r from-white dark:from-gray-900 to-blue-50/50 dark:to-blue-950/50 no-print p-1 sm:p-6">
+                <CardHeader className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 no-print p-1 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 py-2">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-8 w-full sm:w-auto">
-                        <Rocket className="w-10 h-10 text-[#040F4B]" />
-                        {/* <Logo /> */}
-                            <div className="hidden sm:block h-10 w-px bg-gray-200"></div>
-                            <CardTitle className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 bg-clip-text text-transparent">
+                            <Rocket className="w-10 h-10 text-[#040F4B] dark:text-blue-400" />
+                            <div className="hidden sm:block h-10 w-px bg-gray-200 dark:bg-gray-700"></div>
+                            <CardTitle className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-[#040F4B] to-blue-600 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
                                 Deployment Assistant
                             </CardTitle>
                         </div>
@@ -223,9 +222,9 @@ const DeploymentAssistant = () => {
                                 <Button
                                     variant="outline"
                                     onClick={() => window.location.href = '/portal-reports'}
-                                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm text-blue-700"
+                                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-200 text-sm text-blue-700 dark:text-blue-400"
                                 >
-                                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700" />
+                                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
                                     <span className="hidden 2xl:inline">Reports (Preview)</span>
                                 </Button>
                                 <VersionInfo />

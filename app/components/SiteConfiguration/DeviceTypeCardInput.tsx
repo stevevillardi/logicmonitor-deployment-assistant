@@ -60,15 +60,15 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
         if (!isLinuxDevice && !isWindowsDevice) return null;
 
         return (
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                     {isLinuxDevice && (
                         <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-2">
-                                <Terminal className="w-4 h-4 text-blue-700" />
-                                <Label className="text-sm text-gray-700 font-medium">Collection Protocol</Label>
+                                <Terminal className="w-4 h-4 text-blue-700 dark:text-blue-400" />
+                                <Label className="text-sm text-gray-700 dark:text-gray-300 font-medium">Collection Protocol</Label>
                             </div>
-                            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200">
+                            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">
                                 <span className={`text-sm ${!useSSH ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>SNMP</span>
                                 <Switch
                                     checked={useSSH}
@@ -85,10 +85,10 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                     {isWindowsDevice && (
                         <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-2">
-                                <Terminal className="w-4 h-4 text-blue-700" />
-                                <Label className="text-sm text-gray-700 font-medium">Collection Protocol</Label>
+                                <Terminal className="w-4 h-4 text-blue-700 dark:text-blue-400" />
+                                <Label className="text-sm text-gray-700 dark:text-gray-300 font-medium">Collection Protocol</Label>
                             </div>
-                            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200">
+                            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">
                                 <span className={`text-sm ${!useWinRM ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>WMI</span>
                                 <Switch
                                     checked={useWinRM}
@@ -108,12 +108,12 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-blue-50 rounded-lg">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                     {getIcon()}
                 </div>
-                <h3 className="font-semibold text-gray-900 truncate">{type}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{type}</h3>
                 {type.includes("Virtual Machines") && data.count > 2000 && (
                     <TooltipProvider>
                         <Tooltip>
@@ -142,31 +142,31 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                 )}
             </div>
             <div className="space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4">
+                <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4">
                     <div className="grid grid-cols-1 gap-4">
                         <div>
-                            <Label className="text-sm text-gray-700 font-medium">
+                            <Label className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                                 Resource Count 
                             </Label>
                             <Input
                                 type="text"
                                 value={data.count}
                                 onChange={(e) => onUpdate(parseInt(e.target.value) || 0, data.additional_count)}
-                                className="mt-2 bg-white border-gray-200"
+                                className="mt-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-100"
                                 maxLength={5}
                             />
                         </div>
 
                         {type.includes("Virtual Machines") && (
                             <div>
-                                <Label className="text-sm text-gray-700 font-medium">
+                                <Label className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                                     vCenter Count
                                 </Label>
                                 <Input
                                     type="text"
                                     value={data.additional_count || 0}
                                     onChange={(e) => onUpdate(data.count, parseInt(e.target.value) || 0)}
-                                    className="mt-2 bg-white border-gray-200"
+                                    className="mt-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-100"
                                     maxLength={5}
                                 />
                             </div>
@@ -178,11 +178,11 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
 
                 {showDetails && (
                     <div className="space-y-4">
-                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                        <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4 space-y-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Component className="w-4 h-4 text-blue-700" />
-                                    <span className="text-gray-700 font-medium">Base Instances</span>
+                                    <span className="text-gray-700 dark:text-gray-300 font-medium">Base Instances</span>
                                 </div>
                                 <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
                                     {data.instances}
@@ -191,7 +191,7 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Calculator className="w-4 h-4 text-blue-700" />
-                                    <span className="text-gray-700 font-medium">Load Score</span>
+                                    <span className="text-gray-700 dark:text-gray-300 font-medium">Load Score</span>
                                 </div>
                                 <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
                                     {Math.round(calculateSingleDeviceLoad() * 10) / 10}
@@ -199,22 +199,22 @@ export const DeviceTypeCard = ({ type, data, methodWeights, onUpdate, showDetail
                             </div>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4">
                             <div className="flex items-center gap-2 mb-3">
                                 <Settings className="w-4 h-4 text-blue-700" />
-                                <span className="text-gray-700 font-medium">Collection Methods</span>
+                                <span className="text-gray-700 dark:text-gray-300 font-medium">Collection Methods</span>
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {Object.entries(data.methods).map(([method, ratio]) => (
                                     <div
                                         key={method}
-                                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all duration-300"
+                                        className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
                                     >
-                                        <span className="capitalize text-gray-900 text-sm font-medium">{method}</span>
-                                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                                        <span className="capitalize text-gray-900 dark:text-gray-100 text-sm font-medium">{method}</span>
+                                        <span className="px-2 py-0.5 bg-blue-50 dark:bg-gray-800 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
                                             {Math.round(ratio * 100)}%
                                         </span>
-                                        <div className="flex items-center gap-1 text-gray-500 text-xs">
+                                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs">
                                             <Weight className="w-3 h-3" />
                                             <span className="font-medium">{methodWeights[method]}</span>
                                         </div>

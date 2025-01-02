@@ -20,15 +20,15 @@ const CodeExample: React.FC<CodeExampleProps> = ({ title, language, code }) => {
     return (
         <div>
             <div className="flex items-center justify-between mb-2">
-                <h5 className="text-sm font-medium text-gray-700">{title}</h5>
+                <h5 className="text-sm font-medium text-gray-700 dark:text-gray-200">{title}</h5>
                 <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                     {copied ? (
                         <>
-                            <Check className="w-3.5 h-3.5 text-green-600" />
-                            <span className="text-green-600">Copied!</span>
+                            <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-500" />
+                            <span className="text-green-600 dark:text-green-500">Copied!</span>
                         </>
                     ) : (
                         <>
@@ -38,7 +38,7 @@ const CodeExample: React.FC<CodeExampleProps> = ({ title, language, code }) => {
                     )}
                 </button>
             </div>
-            <pre className="p-4 bg-gray-100 rounded-lg overflow-x-auto border border-gray-200">
+            <pre className="p-4 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-x-auto border border-gray-200 dark:border-gray-700">
                 <code className={`language-${language}`}>{code}</code>
             </pre>
         </div>
@@ -194,12 +194,12 @@ const CodeSamples: React.FC<CodeSamplesProps> = ({
     return (
         <Tabs defaultValue={examples[0].language} className={className}>
             <div className="flex items-center justify-between mb-3">
-                <TabsList className="bg-white border border-gray-200">
+                <TabsList className="bg-white dark:text-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                     {examples.map((example) => (
                         <TabsTrigger
                             key={example.language}
                             value={example.language}
-                            className="px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                            className="px-4 py-2 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/50 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300"
                         >
                             {example.title}
                         </TabsTrigger>
@@ -210,7 +210,7 @@ const CodeSamples: React.FC<CodeSamplesProps> = ({
                 <TabsContent
                     key={example.key}
                     value={example.language}
-                    className="mt-0"
+                    className="mt-0 dark:bg-gray-800"
                 >
                     <EnhancedCodeBlock
                         title={example.title}
