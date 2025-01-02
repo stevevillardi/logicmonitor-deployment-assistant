@@ -1089,7 +1089,7 @@ export const SystemConfiguration = ({ config, onUpdate, sites, onUpdateSites }: 
                                                         icon: <Gauge className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                                                     }
                                                 ].map(({ term, def, icon }) => (
-                                                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-700">
+                                                    <div key={term} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-700">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             {icon}
                                                             <span className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">{term}</span>

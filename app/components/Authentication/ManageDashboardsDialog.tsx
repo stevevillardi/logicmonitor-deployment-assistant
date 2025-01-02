@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -38,13 +38,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
     const [editCategory, setEditCategory] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (open && user?.email) {
-            fetchDashboards();
-        }
-    }, [open, user?.email]);
-
-    const fetchDashboards = async () => {
+    const fetchDashboards = useCallback(async () => {
         setIsLoading(true);
         const { data, error } = await supabaseBrowser
             .from('dashboard-configs')
@@ -56,7 +50,13 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
             setDashboards(data);
         }
         setIsLoading(false);
-    };
+    }, [user?.email]);
+
+    useEffect(() => {
+        if (open && user?.email) {
+            fetchDashboards();
+        }
+    }, [open, user?.email, fetchDashboards]);
 
     const handleEdit = (dashboard: Dashboard) => {
         setEditingId(dashboard.id);

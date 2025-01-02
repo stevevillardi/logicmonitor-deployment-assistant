@@ -139,7 +139,7 @@ export function LoadDeploymentDialog({ onLoadConfig, className }: LoadDeployment
                 </div>
                 <h3 className="text-gray-900 dark:text-gray-100 font-medium mb-2">No Saved Deployments</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  You haven't saved any deployments yet.
+                  You haven&apos;t saved any deployments yet.
                 </p>
               </div>
             ) : (
