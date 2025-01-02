@@ -82,8 +82,8 @@ const SwaggerUIComponent = () => {
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 h-full min-h-[800px]">
             <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 sm:p-6">
                 <div className="flex items-center gap-3">
-                    <Terminal className="w-5 sm:w-6 h-5 sm:h-6 text-blue-700 dark:text-blue-400" />
-                    <CardTitle className="text-base sm:text-lg text-gray-900 dark:text-gray-100">
+                    <Terminal className="w6 h-6 text-blue-700 dark:text-blue-400" />
+                    <CardTitle className="text-gray-900 dark:text-gray-100">
                         LogicMonitor API Explorer
                     </CardTitle>
                 </div>
@@ -424,6 +424,156 @@ const SwaggerUIComponent = () => {
                 :root[class~="dark"] .swagger-ui .servers > label select:focus {
                     outline: none;
                     border-color: #60a5fa;
+                }
+
+                /* Dark mode text colors - enhanced */
+                :root[class~="dark"] .swagger-ui,
+                :root[class~="dark"] .swagger-ui .info .title,
+                :root[class~="dark"] .swagger-ui .info li, 
+                :root[class~="dark"] .swagger-ui .info p, 
+                :root[class~="dark"] .swagger-ui .info table,
+                :root[class~="dark"] .swagger-ui .model,
+                :root[class~="dark"] .swagger-ui .model-title,
+                :root[class~="dark"] .swagger-ui table thead tr th,
+                :root[class~="dark"] .swagger-ui table thead tr td,
+                :root[class~="dark"] .swagger-ui .response-col_status,
+                :root[class~="dark"] .swagger-ui .response-col_description,
+                :root[class~="dark"] .swagger-ui .opblock-description,
+                :root[class~="dark"] .swagger-ui .opblock-external-docs-wrapper,
+                :root[class~="dark"] .swagger-ui .opblock .opblock-section-header h4,
+                :root[class~="dark"] .swagger-ui .tab li,
+                :root[class~="dark"] .swagger-ui .opblock-tag {
+                    color: #e5e7eb;
+                }
+
+                /* Headers and titles */
+                :root[class~="dark"] .swagger-ui .opblock .opblock-summary-operation-id,
+                :root[class~="dark"] .swagger-ui .opblock .opblock-summary-path,
+                :root[class~="dark"] .swagger-ui .opblock .opblock-summary-path__deprecated {
+                    color: #d1d5db;
+                }
+
+                /* Method names and small text */
+                :root[class~="dark"] .swagger-ui .opblock .opblock-summary-method,
+                :root[class~="dark"] .swagger-ui .parameter__name,
+                :root[class~="dark"] .swagger-ui .parameter__type,
+                :root[class~="dark"] .swagger-ui .parameter__deprecated,
+                :root[class~="dark"] .swagger-ui .parameter__in,
+                :root[class~="dark"] .swagger-ui table.headers td {
+                    color: #9ca3af;
+                }
+
+                /* Response codes */
+                :root[class~="dark"] .swagger-ui .response-col_status {
+                    color: #93c5fd;
+                }
+
+                /* Response content */
+                :root[class~="dark"] .swagger-ui .microlight {
+                    color: #e5e7eb;
+                    background-color: rgba(17, 24, 39, 0.7);
+                }
+
+                /* Code blocks and examples */
+                :root[class~="dark"] .swagger-ui .highlight-code {
+                    background-color: rgba(17, 24, 39, 0.7);
+                }
+
+                /* Schema properties */
+                :root[class~="dark"] .swagger-ui .prop-type {
+                    color: #93c5fd;
+                }
+
+                :root[class~="dark"] .swagger-ui .prop-format {
+                    color: #9ca3af;
+                }
+
+                /* Table cells */
+                :root[class~="dark"] .swagger-ui td {
+                    color: #e5e7eb;
+                }
+
+                /* Links */
+                :root[class~="dark"] .swagger-ui a {
+                    color: #60a5fa;
+                }
+
+                :root[class~="dark"] .swagger-ui a:hover {
+                    color: #93c5fd;
+                }
+
+                /* Model property colors */
+                :root[class~="dark"] .swagger-ui .model-box {
+                    background-color: rgba(31, 41, 55, 0.7);
+                }
+
+                :root[class~="dark"] .swagger-ui .model .property.primitive {
+                    color: #93c5fd;
+                }
+
+                /* Required field asterisk */
+                :root[class~="dark"] .swagger-ui .required {
+                    color: #ef4444;
+                }
+
+                /* Model toggle arrows */
+                :root[class~="dark"] .swagger-ui .model-toggle:after {
+                    background: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(229, 231, 235)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") center no-repeat;
+                }
+
+                /* Response examples */
+                :root[class~="dark"] .swagger-ui .example {
+                    color: #d1d5db;
+                    background-color: rgba(31, 41, 55, 0.7);
+                }
+
+                /* Markdown content */
+                :root[class~="dark"] .swagger-ui .markdown p,
+                :root[class~="dark"] .swagger-ui .markdown li {
+                    color: #e5e7eb;
+                }
+
+                /* Operation description */
+                :root[class~="dark"] .swagger-ui .opblock-description-wrapper p {
+                    color: #d1d5db;
+                }
+
+                /* HTTP Method labels styling for dark mode */
+                :root[class~="dark"] .swagger-ui .opblock-summary-method {
+                    min-width: 80px;
+                    text-align: center;
+                    font-weight: bold;
+                    border-radius: 4px;
+                }
+
+                /* GET method */
+                :root[class~="dark"] .swagger-ui .opblock-get .opblock-summary-method {
+                    background-color: #2563eb;
+                    color: white;
+                }
+
+                /* POST method */
+                :root[class~="dark"] .swagger-ui .opblock-post .opblock-summary-method {
+                    background-color: #16a34a;
+                    color: white;
+                }
+
+                /* PUT method */
+                :root[class~="dark"] .swagger-ui .opblock-put .opblock-summary-method {
+                    background-color: #ea580c;
+                    color: white;
+                }
+
+                /* DELETE method */
+                :root[class~="dark"] .swagger-ui .opblock-delete .opblock-summary-method {
+                    background-color: #dc2626;
+                    color: white;
+                }
+
+                /* PATCH method */
+                :root[class~="dark"] .swagger-ui .opblock-patch .opblock-summary-method {
+                    background-color: #059669;
+                    color: white;
                 }
 
                 /* ... rest of your existing styles ... */
