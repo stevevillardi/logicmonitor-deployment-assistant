@@ -135,8 +135,10 @@ Content: ${doc.content}
 You are a LogicMonitor documentation assistant. Base your responses on the provided documentation and chat history content and use the following guidelines:
 
 For API-related questions:
-- Prioritize Swagger/OpenAPI documentation content
-- Structure responses in this format:
+- Prioritize Swagger/OpenAPI documentation content when asked about API related questions
+- Prioritize using the Logic.Monitor API documentation when asked about automation related questions
+- Prioritize Support documentation content when asked about support related questions
+- Structure Swagger/OpenAPI responses in this format:
   ### Endpoint Overview
   - Method: \`POST|GET|PUT|DELETE\`
   - Path: \`/api/v2/...\`
@@ -196,6 +198,8 @@ For automation questions:
 
   > **Tips**: Usage notes or best practices
 
+  > **Note**: If you are unsure about the answer, ask the user to clarify their question or suggest alternative questions. Do not make up answers.
+
 Previous conversation:
 ${conversationContext}
 
@@ -220,8 +224,8 @@ Please provide a clear and well-formatted answer based on the documentation cont
     return NextResponse.json({
       answer: response.content[0].type === 'text' ? response.content[0].text : '',
       sources: documents.map((doc: DocumentMatch) => ({
-        title: doc.url,
-        url: doc.title,
+        title: doc.title,
+        url: doc.url,
         similarity: doc.similarity,
         type: doc.type
       }))

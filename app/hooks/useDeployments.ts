@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabaseBrowser } from '../lib/supabase';
 import { Config, Site } from '../components/DeploymentAssistant/types/types';

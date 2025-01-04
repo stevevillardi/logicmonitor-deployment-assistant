@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import { supabaseBrowser } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
