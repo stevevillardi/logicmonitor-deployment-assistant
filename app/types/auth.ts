@@ -11,6 +11,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     { action: 'read', resource: 'pov' },
     { action: 'update', resource: 'pov' },
     { action: 'delete', resource: 'pov' },
+    { action: 'read', resource: 'users' },
+    { action: 'update', resource: 'users' },
     // Add other admin permissions
 ],
 lm_user: [

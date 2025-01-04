@@ -38,16 +38,14 @@ export async function fetchUserRole(userId: string): Promise<UserRole> {
     // Create new fetch promise
     pendingRoleFetch = (async () => {
         try {
-            const { data: roleData, error } = await supabaseBrowser
-                .from('user_roles')
+            const { data: profileData, error } = await supabaseBrowser
+                .from('profiles')
                 .select('role')
-                .eq('user_id', userId)
+                .eq('id', userId)
                 .single();
 
-            // Handle case where user has no role explicitly
-            if (error || !roleData) {
+            if (error || !profileData) {
                 console.log('No role found for user, defaulting to viewer');
-                // Update cache with default role
                 roleCache = {
                     userId,
                     role: 'viewer',
@@ -56,9 +54,7 @@ export async function fetchUserRole(userId: string): Promise<UserRole> {
                 return 'viewer';
             }
 
-            // We know roleData exists here, so we can safely cast
-            const role = roleData.role as UserRole;
-            // Update cache
+            const role = profileData.role as UserRole;
             roleCache = {
                 userId,
                 role,
