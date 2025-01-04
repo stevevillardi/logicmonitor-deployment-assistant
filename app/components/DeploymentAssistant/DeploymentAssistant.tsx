@@ -22,8 +22,7 @@ import { LaunchTour } from '../PlatformTour/LaunchTour';
 import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { Profile } from '../Authentication/Profile';
-import { DeploymentsProvider } from '@/app/contexts/DeploymentsContext';
-import POVReadiness from '../POVReadiness/POVReadiness';
+import POVReadiness from '../POV/POVReadiness';
 import { useAuth } from '@/app/hooks/useAuth';
 
 const Logo = () => {
@@ -61,7 +60,7 @@ const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
 
 const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (value: string) => void }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { isAuthorized } = useAuth();
+    const { hasPermission } = useAuth();
 
     const navigationItems = [
         { id: 'sites', label: 'Deployment Configuration', icon: <Bolt className="w-4 h-4" /> },
@@ -71,7 +70,10 @@ const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange
         { id: 'dashboard-explorer', label: 'Dashboard Explorer', icon: <ChartLine className="w-4 h-4" /> },
         { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
         { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
-        ...(isAuthorized ? [{ id: 'pov', label: 'POV Readiness', icon: <FileText className="w-4 h-4" /> }] : []),
+        ...(hasPermission({ action: 'read', resource: 'pov' }) 
+            ? [{ id: 'pov', label: 'POV Readiness', icon: <FileText className="w-4 h-4" /> }] 
+            : []
+        ),
         { id: 'system', label: 'Deployment Settings', icon: <Settings className="w-4 h-4" /> },
     ];
 
@@ -198,7 +200,6 @@ const DeploymentAssistant = () => {
     }, []);
 
     return (    
-        <DeploymentsProvider>
         <div className="min-h-screen bg-[#040F4B] w-full flex items-center justify-center">
             <FirstTimeVisit
                 isOpen={helpDialogOpen}
@@ -312,7 +313,6 @@ const DeploymentAssistant = () => {
                 </CardContent>
             </Card>
         </div>
-        </DeploymentsProvider>
     );
 };
 

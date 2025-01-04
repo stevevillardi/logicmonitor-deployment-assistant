@@ -16,9 +16,10 @@ import ManageDeploymentsDialog from './ManageDeploymentsDialog'
 import ManageDashboardsDialog from './ManageDashboardsDialog'
 import { useState } from 'react'
 import { useTheme } from 'next-themes'
+import { UserRole } from '@/app/types/auth'
 
 export const Profile = () => {
-    const { user } = useAuth()
+    const { user, userRole } = useAuth()
     const router = useRouter()
     const supabase = supabaseBrowser;
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -69,6 +70,19 @@ export const Profile = () => {
 
     const avatarUrl = getSecureAvatarUrl();
 
+    const getRoleDisplay = (role: UserRole) => {
+        switch(role) {
+            case 'admin':
+                return 'Administrator';
+            case 'lm_user':
+                return 'LM User';
+            case 'viewer':
+                return 'Viewer';
+            default:
+                return 'Unknown Role';
+        }
+    };
+
     if (!user) return null
 
     return (
@@ -99,6 +113,9 @@ export const Profile = () => {
                             </p>
                             <p className="text-xs leading-none text-blue-700 dark:text-blue-300">
                                 {user.email}
+                            </p>
+                            <p className="text-xs leading-none text-blue-600 dark:text-blue-400 mt-1">
+                                Role: {getRoleDisplay(userRole)}
                             </p>
                         </div>
                     </DropdownMenuLabel>

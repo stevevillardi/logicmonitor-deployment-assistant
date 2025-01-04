@@ -9,30 +9,33 @@ import Unauthorized from './Unauthorized';
 interface ProtectedRouteProps {
     children: React.ReactNode;
     requireAuth?: boolean;
-    requireDomain?: boolean;
+    requiredPermission?: {
+        action: 'create' | 'read' | 'update' | 'delete';
+        resource: 'challenges' | 'pov' | 'criteria' | 'users';
+    };
 }
 
-const ProtectedRoute = ({ children, requireAuth = false, requireDomain = false }: ProtectedRouteProps) => {
-    const { isAuthenticated, isAuthorized, isLoading } = useAuth();
+const ProtectedRoute = ({ 
+    children, 
+    requireAuth = true, 
+    requiredPermission 
+}: ProtectedRouteProps) => {
+    const { isAuthenticated, isLoading, hasPermission } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!isLoading) {
-            if (requireAuth && !isAuthenticated) {
-                router.push('/login');
-            }
+        if (!isLoading && requireAuth && !isAuthenticated) {
+            router.push('/login');
         }
-    }, [isAuthenticated, isAuthorized, isLoading, requireAuth, requireDomain, router]);
+    }, [isAuthenticated, isLoading, requireAuth, router]);
 
+    // Show loading state first
     if (isLoading) {
         return <LoadingPlaceholder />;
     }
 
-    if (requireAuth && !isAuthenticated) {
-        return null;
-    }
-
-    if (requireDomain && !isAuthorized) {
+    // Then check permissions only after loading is complete
+    if (requiredPermission && !hasPermission(requiredPermission)) {
         return <Unauthorized />;
     }
 

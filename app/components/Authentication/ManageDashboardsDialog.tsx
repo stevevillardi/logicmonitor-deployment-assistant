@@ -13,6 +13,8 @@ import { supabaseBrowser } from '@/app/lib/supabase';
 import { useAuth } from '@/app/hooks/useAuth';
 import { Label } from "@/components/ui/label";
 import { Layout } from 'lucide-react';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { AlertTriangle } from 'lucide-react';
 
 interface Dashboard {
     id: string;
@@ -37,6 +39,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
     const [editName, setEditName] = useState('');
     const [editCategory, setEditCategory] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     const fetchDashboards = useCallback(async () => {
         setIsLoading(true);
@@ -80,13 +83,11 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
         }
     };
 
-    const handleDelete = async (dashboard: Dashboard) => {
-        if (!confirm('Are you sure you want to delete this dashboard?')) return;
-
+    const handleDelete = async (id: string) => {
         const { error } = await supabaseBrowser
             .from('dashboard-configs')
             .delete()
-            .eq('id', dashboard.id);
+            .eq('id', id);
 
         if (!error) {
             await fetchDashboards();
@@ -203,7 +204,7 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                                                 </Button>
                                                 <Button
                                                     size="sm"
-                                                    onClick={() => handleDelete(dashboard)}
+                                                    onClick={() => setDeleteConfirmId(dashboard.id)}
                                                     className="flex-1 sm:flex-initial bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors duration-200 gap-2"
                                                 >
                                                     <Trash2 className="h-4 w-4 mr-1" />
@@ -218,6 +219,51 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
                     )}
                 </div>
             </DialogContent>
+
+            <AlertDialog 
+                open={!!deleteConfirmId} 
+                onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+            >
+                <AlertDialogContent className="bg-red-50 border-red-200">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2 text-red-700">
+                            <AlertTriangle className="h-5 w-5" />
+                            Delete Dashboard?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription asChild>
+                            <div className="space-y-3">
+                                <div className="text-red-700">
+                                    Are you sure you want to delete this dashboard configuration?
+                                </div>
+                                <div className="bg-white border border-red-200 rounded-lg p-3">
+                                    <div className="text-sm text-red-600">
+                                        This action:
+                                    </div>
+                                    <ul className="mt-2 text-sm text-red-600 list-disc list-inside space-y-1">
+                                        <li>Cannot be undone</li>
+                                        <li>Will remove this dashboard from your dashboard list as well as the dashboard list of all users who have access to this dashboard</li>
+                                        <li>Will not affect your current working configuration</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="gap-2">
+                        <AlertDialogCancel 
+                            className="bg-white border-red-200 text-red-700 hover:bg-red-50"
+                            onClick={() => setDeleteConfirmId(null)}
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-red-100 border border-red-200 text-red-700 hover:bg-red-200"
+                            onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+                        >
+                            Delete Dashboard
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Dialog>
     );
 };
