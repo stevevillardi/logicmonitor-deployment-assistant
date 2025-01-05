@@ -73,17 +73,12 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
 
     const fetchUsers = async () => {
         try {
-            const { data: { session } } = await supabaseBrowser.auth.getSession();
-            const response = await fetch('/api/users/list', {
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }
-            const users = await response.json();
-            setUsers(users);
+            const { data, error } = await supabaseBrowser
+                .from('profiles')
+                .select('id, email, role, is_disabled');
+            
+            if (error) throw error;
+            setUsers(data);
         } catch (error) {
             console.error('Error fetching users:', error);
             showAlert('Error', 'Failed to fetch users', 'destructive');
@@ -100,23 +95,12 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
 
     const updateUserRole = async (userId: string, newRole: UserRole) => {
         try {
-            const { data: { session } } = await supabaseBrowser.auth.getSession();
-            const response = await fetch('/api/users/update-role', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`
-                },
-                body: JSON.stringify({ 
-                    userId, 
-                    role: newRole 
-                })
-            });
+            const { error } = await supabaseBrowser
+                .from('profiles')
+                .update({ role: newRole })
+                .eq('id', userId);
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to update user role');
-            }
+            if (error) throw error;
 
             setUsers(users.map(user => 
                 user.id === userId ? { ...user, role: newRole } : user
@@ -130,28 +114,17 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
 
     const toggleUserAccess = async (userId: string, currentStatus: boolean) => {
         try {
-            const { data: { session } } = await supabaseBrowser.auth.getSession();
-            const response = await fetch('/api/users/toggle-access', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`
-                },
-                body: JSON.stringify({ 
-                    userId, 
-                    disabled: !currentStatus 
-                })
-            });
+            const { error } = await supabaseBrowser
+                .from('profiles')
+                .update({ is_disabled: !currentStatus })
+                .eq('id', userId);
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to update user access');
-            }
+            if (error) throw error;
 
             setUsers(users.map(user =>
                 user.id === userId ? { ...user, is_disabled: !currentStatus } : user
             ));
-            showAlert('Success', `User ${currentStatus ? 'disabled' : 'enabled'} successfully`);
+            showAlert('Success', `User ${currentStatus ? 'enabled' : 'disabled'} successfully`);
         } catch (error) {
             console.error('Error toggling user access:', error);
             showAlert('Error', 'Failed to update user access', 'destructive');
@@ -219,13 +192,28 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
                                                             updateUserRole(user.id, value)
                                                         }
                                                     >
-                                                        <SelectTrigger className="w-32 bg-white dark:bg-gray-800 border-blue-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700">
+                                                        <SelectTrigger className="w-32 bg-white dark:bg-gray-900 border-blue-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
                                                             <SelectValue />
                                                         </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="admin" className="text-blue-900 dark:text-gray-300">Administrator</SelectItem>
-                                                            <SelectItem value="lm_user" className="text-blue-900 dark:text-gray-300">LM User</SelectItem>
-                                                            <SelectItem value="viewer" className="text-blue-900 dark:text-gray-300">Viewer</SelectItem>
+                                                        <SelectContent className="bg-white dark:bg-gray-900">
+                                                            <SelectItem 
+                                                                value="admin" 
+                                                                className="text-blue-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors duration-200"
+                                                            >
+                                                                Administrator
+                                                            </SelectItem>
+                                                            <SelectItem 
+                                                                value="lm_user" 
+                                                                className="text-blue-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors duration-200"
+                                                            >
+                                                                LM User
+                                                            </SelectItem>
+                                                            <SelectItem 
+                                                                value="viewer" 
+                                                                className="text-blue-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors duration-200"
+                                                            >
+                                                                Viewer
+                                                            </SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </TableCell>
@@ -241,7 +229,6 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
                                                 <TableCell>
                                                     <Button
                                                         size="sm"
-                                                        variant={user.is_disabled ? "default" : "destructive"}
                                                         onClick={() => toggleUserAccess(user.id, user.is_disabled!)}
                                                         className={user.is_disabled 
                                                             ? "bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
