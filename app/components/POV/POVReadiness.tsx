@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import POVLibrary from './POVLibrary';
 import ScopingDocTest from './ScopingDocTest';
+import LogicMonitorDoc from './LogicMonitorDoc';
 
 // Placeholder components for other sections
 // const ScopingDoc = () => (
@@ -129,7 +130,7 @@ const POVReadiness = () => {
                 </TabsContent>
 
                 <TabsContent value="playback" className="rounded-lg overflow-hidden">
-                    <Playback />
+                    <LogicMonitorDoc />
                 </TabsContent>
             </Tabs>
         </div>

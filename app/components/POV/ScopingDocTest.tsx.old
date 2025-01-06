@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../../hooks/useAuth';
-import { FileText, Download, Loader2 } from 'lucide-react';
+import { FileText, ExternalLink, Loader2 } from 'lucide-react';
 
 const ScopingDocTest = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [lastGenerated, setLastGenerated] = useState<Date | null>(null);
+  const [docUrl, setDocUrl] = useState<string | null>(null);
+  const [documentId, setDocumentId] = useState<string | null>(null);
 
   const createTestDocument = async () => {
     if (!user?.email) {
@@ -43,6 +44,7 @@ const ScopingDocTest = () => {
             ['Key Business Success Metrics', 'Status'],
             ['Metric 1', 'In Progress'],
             ['Metric 2', 'Complete'],
+            // Add more rows as needed
           ]
         },
         {
@@ -67,6 +69,7 @@ const ScopingDocTest = () => {
           content: [
             ['Date', 'Progress Notes', 'Status', 'Next Steps'],
             ['2024-03-21', 'Initial meeting completed', 'In Progress', 'Schedule follow-up'],
+            // Add more rows as needed
           ]
         },
         {
@@ -79,6 +82,7 @@ const ScopingDocTest = () => {
             ['Component', 'Description', 'Status'],
             ['Component 1', 'Description...', 'In Scope'],
             ['Component 2', 'Description...', 'Out of Scope'],
+            // Add more rows as needed
           ]
         },
         {
@@ -90,11 +94,12 @@ const ScopingDocTest = () => {
           content: [
             ['Task', 'Owner', 'Start Date', 'End Date', 'Status'],
             ['Task 1', 'Owner 1', '2024-03-21', '2024-03-28', 'In Progress'],
+            // Add more rows as needed
           ]
         }
       ];
 
-      const response = await fetch('/api/docx', {
+      const response = await fetch('/api/docs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,28 +107,17 @@ const ScopingDocTest = () => {
         body: JSON.stringify({
           title: 'POV Scoping Document - Test',
           contents: testContent,
-          userEmail: user.email
+          userEmail: user.email,
+          documentId: documentId
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate document');
+      const result = await response.json();
+      if (result.url) {
+        setDocUrl(result.url);
+        setDocumentId(result.documentId);
+        window.open(result.url, '_blank');
       }
-
-      // Get the blob from the response
-      const blob = await response.blob();
-      
-      // Create a download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'POV-Scoping-Document.docx';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      setLastGenerated(new Date());
     } catch (error) {
       console.error('Error creating document:', error);
     } finally {
@@ -134,13 +128,16 @@ const ScopingDocTest = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Document Generation</h2>
+        <h2 className="text-xl font-semibold">Test Document Creation (Work in Progress)</h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Generate a Word document with various formatting styles and tables.
+          {documentId 
+            ? 'Update the existing document with new content.'
+            : 'Generate a test document with various formatting styles and tables.'
+          }
         </p>
-        {lastGenerated && (
+        {documentId && (
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Last generated: {lastGenerated.toLocaleString()}
+            Document ID: <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{documentId}</code>
           </p>
         )}
       </div>
@@ -154,15 +151,33 @@ const ScopingDocTest = () => {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating Document...
+              {documentId ? 'Updating Document...' : 'Generating Document...'}
             </>
           ) : (
             <>
               <FileText className="mr-2 h-4 w-4" />
-              Generate Document
+              {documentId ? 'Update Document' : 'Generate Test Document'}
             </>
           )}
         </Button>
+
+        {docUrl && (
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Document {documentId ? 'Updated' : 'Created'} Successfully!
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              Your document has been {documentId ? 'updated' : 'created'} and opened in a new tab.
+            </p>
+            <Button
+              onClick={() => window.open(docUrl, '_blank')}
+              className="w-fit"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Open in Google Docs
+            </Button>
+          </div>
+        )}
 
         {!user?.email && (
           <p className="text-sm text-amber-600 dark:text-amber-400">
@@ -174,4 +189,4 @@ const ScopingDocTest = () => {
   );
 };
 
-export default ScopingDocTest;
+export default ScopingDocTest; 

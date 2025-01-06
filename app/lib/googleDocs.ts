@@ -35,6 +35,7 @@ export class GoogleDocsService {
       version: 'v1',
       auth: this.auth
     });
+
     this.drive = drive({
       version: 'v3',
       auth: this.auth
@@ -50,11 +51,9 @@ export class GoogleDocsService {
     try {
       let documentId: string;
       let currentEndIndex = 1;
-
+  
       if (existingDocId) {
         documentId = existingDocId;
-        
-        // Get current document to find its length
         const document = await this.docs.documents.get({
           documentId: existingDocId
         });
@@ -63,7 +62,6 @@ export class GoogleDocsService {
           const lastContent = document.data.body.content[document.data.body.content.length - 1];
           currentEndIndex = lastContent.endIndex || 1;
           
-          // Clear the document, but avoid the final newline
           if (currentEndIndex > 1) {
             await this.docs.documents.batchUpdate({
               documentId,
@@ -72,63 +70,134 @@ export class GoogleDocsService {
                   deleteContentRange: {
                     range: {
                       startIndex: 1,
-                      endIndex: Math.max(1, currentEndIndex - 1) // Subtract 1 to avoid the newline
+                      endIndex: Math.max(1, currentEndIndex - 1)
                     }
                   }
                 }]
               }
             });
-            currentEndIndex = 1; // Reset after clearing
+            currentEndIndex = 1;
           }
         }
       } else {
-        // Create new document
         const document = await this.docs.documents.create({
           requestBody: { title },
         });
         documentId = document.data.documentId!;
-
-        // Share with user and transfer ownership
+  
         await this.drive.permissions.create({
           fileId: documentId,
-          transferOwnership: true,
           requestBody: {
             type: 'user',
-            role: 'owner',
+            role: 'writer',
             emailAddress: userEmail
           },
           supportsAllDrives: true
         });
-
-        // Wait a moment for ownership transfer to complete
+  
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-
-      // Process each content item sequentially
+  
+      // Process each content item
       for (const content of contents) {
-        const requests = this.createContentRequest(content, currentEndIndex);
-        if (requests.length > 0) {
+        if (content.type === 'table') {
+          const rows = content.content;
+          
+          // Step 1: Insert newline and create table with all rows
           await this.docs.documents.batchUpdate({
             documentId,
-            requestBody: { requests },
+            requestBody: {
+              requests: [
+                {
+                  insertText: {
+                    location: { index: currentEndIndex },
+                    text: '\n'
+                  }
+                },
+                {
+                  insertTable: {
+                    location: { index: currentEndIndex + 1 },
+                    rows: rows.length,
+                    columns: rows[0].length
+                  }
+                }
+              ]
+            }
           });
-          
-          // Update currentEndIndex based on content type and actual content
-          switch (content.type) {
-            case 'bulletList':
-            case 'numberedList':
-              const items = Array.isArray(content.content) ? content.content : [content.content];
-              currentEndIndex += items.reduce((acc, item) => acc + item.length + 1, 0);
-              break;
-            case 'image':
-              currentEndIndex += 2; // Account for image (1) and newline (1)
-              break;
-            default:
-              currentEndIndex += content.content.length + 1;
+  
+          // Step 2: Get updated document to find table location
+          const updatedDoc = await this.docs.documents.get({
+            documentId
+          });
+  
+          // Find the table we just created
+          const tableElement = updatedDoc.data.body!.content!.find(
+            element => element.table && 
+            element.startIndex! >= currentEndIndex
+          );
+  
+          if (tableElement && tableElement.startIndex) {
+            let cellIndex = tableElement.startIndex + 1;
+            
+            // Fill in table cells row by row
+            for (let i = 0; i < rows.length; i++) {
+              const cellRequests = rows[i].map((cellContent: any, j: any) => ({
+                insertText: {
+                  location: { index: cellIndex + (j * 2) },
+                  text: cellContent?.toString() || ' '
+                }
+              }));
+  
+              await this.docs.documents.batchUpdate({
+                documentId,
+                requestBody: { requests: cellRequests }
+              });
+  
+              cellIndex += (rows[i].length * 2) + 1; // Move to next row
+            }
+  
+            currentEndIndex = cellIndex + 1;
+          }
+  
+          // Step 3: Add newline after table
+          await this.docs.documents.batchUpdate({
+            documentId,
+            requestBody: {
+              requests: [{
+                insertText: {
+                  location: { index: currentEndIndex },
+                  text: '\n'
+                }
+              }]
+            }
+          });
+          currentEndIndex++;
+  
+        } else {
+          const requests = this.createContentRequest(content, currentEndIndex);
+          if (requests.length > 0) {
+            await this.docs.documents.batchUpdate({
+              documentId,
+              requestBody: { requests },
+            });
+            
+            switch (content.type) {
+              case 'bulletList':
+              case 'numberedList': {
+                const items = Array.isArray(content.content) ? content.content : [content.content];
+                currentEndIndex += items.reduce((acc, item) => acc + item.length + 2, 0);
+                break;
+              }
+              case 'image':
+                currentEndIndex += 2;
+                break;
+              default:
+                currentEndIndex += content.content.length + 1;
+            }
           }
         }
       }
-
+  
       return {
         documentId,
         title,
@@ -139,7 +208,7 @@ export class GoogleDocsService {
       throw error;
     }
   }
-
+  
   private createContentRequest(content: DocumentContent, startIndex: number): docs_v1.Schema$Request[] {
     switch (content.type) {
       case 'paragraph':
@@ -160,7 +229,7 @@ export class GoogleDocsService {
             fields: 'namedStyleType'
           }
         }];
-
+  
       case 'heading':
         return [{
           insertText: {
@@ -179,18 +248,15 @@ export class GoogleDocsService {
             fields: 'namedStyleType'
           }
         }];
-
-      case 'table':
-        // Skip tables for now
-        return [];
-
+  
+      // Remove table case as it's handled in createOrUpdateDocument
+  
       case 'bulletList':
       case 'numberedList': {
         const items = Array.isArray(content.content) ? content.content : [content.content];
         const requests: docs_v1.Schema$Request[] = [];
         let currentIndex = startIndex;
-
-        // Insert all text first
+  
         items.forEach(item => {
           requests.push({
             insertText: {
@@ -200,60 +266,51 @@ export class GoogleDocsService {
           });
           currentIndex += item.length + 1;
         });
-
-        // Then apply bullets/numbering to all items at once
+  
         requests.push({
           createParagraphBullets: {
             range: {
               startIndex: startIndex,
-              endIndex: currentIndex - 1  // Subtract 1 to exclude final newline
+              endIndex: currentIndex - 1
             },
             bulletPreset: content.type === 'bulletList' ? 
               'BULLET_DISC_CIRCLE_SQUARE' : 
               'NUMBERED_DECIMAL_NESTED'
           }
         });
-
+  
         return requests;
       }
-
+  
       case 'image':
         if (typeof content.content !== 'string') {
           return [];
         }
-
-        const imageRequest: docs_v1.Schema$Request[] = [
-          {
-            insertInlineImage: {
-              location: {
-                index: startIndex
-              },
-              uri: content.content,
-              objectSize: content.imageOptions ? {
-                height: content.imageOptions.height ? {
-                  magnitude: content.imageOptions.height,
-                  unit: 'PT'
-                } : undefined,
-                width: content.imageOptions.width ? {
-                  magnitude: content.imageOptions.width,
-                  unit: 'PT'
-                } : undefined
+  
+        return [{
+          insertInlineImage: {
+            location: { index: startIndex },
+            uri: content.content,
+            objectSize: content.imageOptions ? {
+              height: content.imageOptions.height ? {
+                magnitude: content.imageOptions.height,
+                unit: 'PT'
+              } : undefined,
+              width: content.imageOptions.width ? {
+                magnitude: content.imageOptions.width,
+                unit: 'PT'
               } : undefined
-            }
-          },
-          // Add a newline after the image
-          {
-            insertText: {
-              location: { index: startIndex + 1 },
-              text: '\n'
-            }
+            } : undefined
           }
-        ];
-
-        return imageRequest;
-
+        }, {
+          insertText: {
+            location: { index: startIndex + 1 },
+            text: '\n'
+          }
+        }];
+  
       default:
         return [];
     }
   }
-} 
+}
