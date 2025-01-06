@@ -22,6 +22,16 @@ let pendingRoleFetch: Promise<UserRole> | null = null;
 
 // Export the fetchUserRole function so it can be used by auth-utils
 export async function fetchUserRole(userId: string): Promise<UserRole> {
+    // Add cache invalidation if the cache is too old
+    if (Date.now() - roleCache.timestamp > CACHE_DURATION * 2) {
+        roleCache = {
+            userId: undefined,
+            role: 'viewer',
+            timestamp: 0
+        };
+        pendingRoleFetch = null;
+    }
+
     // Check memory cache first
     if (
         roleCache.userId === userId && 
@@ -94,18 +104,37 @@ export function useAuth() {
                 
                 if (!mounted) return;
                 
+                // Set user immediately
                 setUser(session?.user ?? null);
                 
-                if (session?.user) {
-                    const role = await fetchUserRole(session.user.id);
+                // If no session, we can stop loading
+                if (!session?.user) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Fetch role with timeout
+                try {
+                    const role = await Promise.race([
+                        fetchUserRole(session.user.id),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Role fetch timeout')), 5000)
+                        )
+                    ]);
+                    
                     if (mounted) {
-                        setUserRole(role);
-                        setIsLoading(false);
+                        setUserRole(role as UserRole);
                     }
-                } else {
+                } catch (roleError) {
+                    console.error('Role fetch error:', roleError);
+                    // On timeout/error, fallback to viewer role
                     if (mounted) {
-                        setIsLoading(false);
+                        setUserRole('viewer');
                     }
+                }
+                
+                if (mounted) {
+                    setIsLoading(false);
                 }
             } catch (error) {
                 console.error('Auth error:', error);
@@ -122,16 +151,32 @@ export function useAuth() {
                 if (!mounted) return;
                 
                 setUser(session?.user ?? null);
-                if (session?.user) {
-                    const role = await fetchUserRole(session.user.id);
+                
+                if (!session?.user) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                try {
+                    const role = await Promise.race([
+                        fetchUserRole(session.user.id),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Role fetch timeout')), 5000)
+                        )
+                    ]);
+                    
                     if (mounted) {
-                        setUserRole(role);
-                        setIsLoading(false);
+                        setUserRole(role as UserRole);
                     }
-                } else {
+                } catch (roleError) {
+                    console.error('Role fetch error:', roleError);
                     if (mounted) {
-                        setIsLoading(false);
+                        setUserRole('viewer');
                     }
+                }
+                
+                if (mounted) {
+                    setIsLoading(false);
                 }
             }
         );

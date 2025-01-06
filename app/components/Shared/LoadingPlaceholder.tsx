@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Rocket } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const LoadingPlaceholder = () => {
+  const [showRefresh, setShowRefresh] = useState(false);
+
+  useEffect(() => {
+    // Show refresh button after 10 seconds
+    const timer = setTimeout(() => {
+      setShowRefresh(true);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-[#040F4B] w-full flex items-center justify-center py-4 sm:p-8">
       <Card className="w-full max-w-[1700px] bg-white dark:bg-gray-900 shadow-lg rounded-2xl border border-blue-200 dark:border-blue-800 antialiased overflow-hidden">
@@ -59,6 +75,16 @@ const LoadingPlaceholder = () => {
           </div>
         </CardContent>
       </Card>
+      {showRefresh && (
+        <div className="absolute bottom-8 w-full flex justify-center">
+          <Button
+            onClick={handleRefresh}
+            className="bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Refresh Page
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
