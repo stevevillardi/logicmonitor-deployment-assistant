@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabaseBrowser } from '../lib/supabase';
 import { Config, Site } from '../components/DeploymentAssistant/types/types';
@@ -17,17 +19,17 @@ export interface Deployment {
 type DeviceDefaults = typeof defaultDeviceTypes;
 type DeviceType = keyof DeviceDefaults;
 
-export function useDeployments() {
+export function useDeployments(autoFetch: boolean = false) {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Start as false since we're not auto-fetching
   const isMounted = useRef(false);
   const fetchingRef = useRef(false);
+  const dataFetchedRef = useRef(false);
   const { user } = useAuth();
   const supabase = supabaseBrowser;
 
   const fetchDeployments = useCallback(async () => {
-    // Prevent duplicate requests
-    if (fetchingRef.current) return;
+    if (fetchingRef.current || dataFetchedRef.current) return;
     
     try {
       fetchingRef.current = true;
@@ -39,6 +41,7 @@ export function useDeployments() {
 
       if (error) throw error;
       setDeployments(data || []);
+      dataFetchedRef.current = true;
     } catch (error) {
       console.error('Error fetching deployments:', error);
     } finally {
@@ -48,18 +51,17 @@ export function useDeployments() {
   }, []);
 
   useEffect(() => {
-    // Only fetch on initial mount
-    if (!isMounted.current) {
+    // Only fetch on mount if autoFetch is true
+    if (autoFetch && !isMounted.current) {
       isMounted.current = true;
       fetchDeployments();
     }
     
-    // Cleanup
     return () => {
       isMounted.current = false;
       fetchingRef.current = false;
     };
-  }, [fetchDeployments]);
+  }, [fetchDeployments, autoFetch]);
 
   const reorderDevices = (sites: Site[], deviceDefaults: Record<string, any>) => {
     const orderedDeviceTypes = Object.keys(defaultDeviceTypes) as DeviceType[];
@@ -156,6 +158,6 @@ export function useDeployments() {
     saveDeployment,
     updateDeployment,
     deleteDeployment,
-    fetchDeployments
+    fetchDeployments // Expose this so components can trigger fetch when needed
   };
 } 

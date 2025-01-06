@@ -5,6 +5,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { ThemeProvider } from './components/Shared/ThemeProvider';
 import RAGChat from './components/AIChat/AIChat';
+import { DeploymentsProvider } from './components/Providers/DeploymentsProvider';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -46,9 +47,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-          <ThemeProvider>
+        <ThemeProvider>
+          <DeploymentsProvider>
             {children}
-          </ThemeProvider>
+          </DeploymentsProvider>
+        </ThemeProvider>
         <PWAInstallPrompt />
         <Analytics/>
         <RAGChat />

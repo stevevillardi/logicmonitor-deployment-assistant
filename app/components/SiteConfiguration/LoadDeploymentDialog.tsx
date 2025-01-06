@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,14 @@ export function LoadDeploymentDialog({ onLoadConfig, className }: LoadDeployment
   const [open, setOpen] = useState(false);
   const [warningDialogOpen, setWarningDialogOpen] = useState(false);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const { deployments, isLoading } = useDeploymentsContext();
+  const { deployments, isLoading, fetchDeployments } = useDeploymentsContext();
+
+  // Only fetch when dialog opens
+  useEffect(() => {
+    if (open) {
+      fetchDeployments();
+    }
+  }, [open, fetchDeployments]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

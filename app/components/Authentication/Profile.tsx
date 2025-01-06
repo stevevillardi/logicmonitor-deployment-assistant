@@ -11,20 +11,23 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, User, Folder, Layout, Moon, Sun } from 'lucide-react'
+import { LogOut, User, Folder, Layout, Moon, Sun, Users } from 'lucide-react'
 import ManageDeploymentsDialog from './ManageDeploymentsDialog'
 import ManageDashboardsDialog from './ManageDashboardsDialog'
+import ManageUsersDialog from './ManageUsersDialog'
 import { useState } from 'react'
 import { useTheme } from 'next-themes'
+import { UserRole } from '@/app/types/auth'
 
 export const Profile = () => {
-    const { user } = useAuth()
+    const { user, userRole, hasPermission } = useAuth()
     const router = useRouter()
     const supabase = supabaseBrowser;
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dashboardsDialogOpen, setDashboardsDialogOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { theme, setTheme } = useTheme();
+    const [usersDialogOpen, setUsersDialogOpen] = useState(false);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
@@ -42,6 +45,13 @@ export const Profile = () => {
         e.preventDefault();
         e.stopPropagation();
         setDashboardsDialogOpen(true);
+        setDropdownOpen(false);
+    };
+
+    const handleManageUsers = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setUsersDialogOpen(true);
         setDropdownOpen(false);
     };
 
@@ -68,6 +78,19 @@ export const Profile = () => {
     };
 
     const avatarUrl = getSecureAvatarUrl();
+
+    const getRoleDisplay = (role: UserRole) => {
+        switch(role) {
+            case 'admin':
+                return 'Administrator';
+            case 'lm_user':
+                return 'LM User';
+            case 'viewer':
+                return 'Viewer';
+            default:
+                return 'Unknown Role';
+        }
+    };
 
     if (!user) return null
 
@@ -100,6 +123,9 @@ export const Profile = () => {
                             <p className="text-xs leading-none text-blue-700 dark:text-blue-300">
                                 {user.email}
                             </p>
+                            <p className="text-xs leading-none text-blue-600 dark:text-blue-400 mt-1">
+                                Role: {getRoleDisplay(userRole)}
+                            </p>
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-blue-200 dark:bg-gray-700" />
@@ -123,6 +149,18 @@ export const Profile = () => {
                         <Layout className="mr-2 h-4 w-4" />
                         <span>Manage Dashboards</span>
                     </DropdownMenuItem>
+                    {hasPermission({ action: 'read', resource: 'users' }) && (
+                        <DropdownMenuItem 
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                handleManageUsers(e as unknown as React.MouseEvent);
+                            }}
+                            className="text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                            <Users className="mr-2 h-4 w-4" />
+                            <span>Manage Users</span>
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem 
                         onClick={handleThemeToggle}
                         className="text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -151,6 +189,10 @@ export const Profile = () => {
             <ManageDashboardsDialog 
                 open={dashboardsDialogOpen}
                 onOpenChange={setDashboardsDialogOpen}
+            />
+            <ManageUsersDialog 
+                open={usersDialogOpen}
+                onOpenChange={setUsersDialogOpen}
             />
         </>
     )

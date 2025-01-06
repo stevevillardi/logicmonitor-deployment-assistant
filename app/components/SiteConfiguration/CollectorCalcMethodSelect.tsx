@@ -21,6 +21,8 @@ interface CollectorCalcMethodSelectProps {
 }
 
 export const CollectorCalcMethodSelect = ({ value, onChange, className, labelClassName }: CollectorCalcMethodSelectProps) => {
+    const selectId = "collector-calc-method";
+
     return (
         <div className="rounded-lg transition-all">
             <div className="flex items-center gap-2">
@@ -36,7 +38,7 @@ export const CollectorCalcMethodSelect = ({ value, onChange, className, labelCla
                     </Tooltip>
                 </TooltipProvider>
                 <Label 
-                    htmlFor="collector-calc-method" 
+                    htmlFor={selectId}
                     className={`text-sm whitespace-nowrap ${labelClassName || 'text-gray-600 dark:text-gray-300'}`}
                 >
                     Collector Sizing:
@@ -46,6 +48,7 @@ export const CollectorCalcMethodSelect = ({ value, onChange, className, labelCla
                     onValueChange={onChange}
                 >
                     <SelectTrigger 
+                        id={selectId}
                         className={className || "w-[200px] h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"}
                     >
                         <SelectValue placeholder="Select a method" />

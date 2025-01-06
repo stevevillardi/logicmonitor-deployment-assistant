@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Building2, Trash2, Save, Clock, Server, Info, MessageSquare, Activity, ChevronDown, ChevronRight, Network, Pencil, AlertTriangle, Folder, Edit2, X } from 'lucide-react'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,11 +23,17 @@ interface ManageDeploymentsDialogProps {
 }
 
 export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeploymentsDialogProps) {
-    const { deployments, isLoading, updateDeployment, deleteDeployment } = useDeploymentsContext()
+    const { deployments, isLoading, fetchDeployments, updateDeployment, deleteDeployment } = useDeploymentsContext();
     const [editingId, setEditingId] = useState<string | null>(null)
     const [editName, setEditName] = useState('')
     const [expandedDeployments, setExpandedDeployments] = useState<Set<string>>(new Set())
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (open) {
+            fetchDeployments();
+        }
+    }, [open, fetchDeployments]);
 
     const handleOpenChange = (open: boolean) => {
         if (!open) {
