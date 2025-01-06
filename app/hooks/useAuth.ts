@@ -133,8 +133,8 @@ export function useAuth() {
                             setUserRole(role as UserRole);
                         }
                     }
-                } catch (roleError) {
-                    if (roleError.message !== 'Role fetch timeout') {
+                } catch (roleError: unknown) {
+                    if (roleError instanceof Error && roleError.message !== 'Role fetch timeout') {
                         console.error('Role fetch error:', roleError);
                     }
                     if (mounted) {
@@ -195,8 +195,8 @@ export function useAuth() {
                             setUserRole(role as UserRole);
                         }
                     }
-                } catch (roleError) {
-                    if (roleError.message !== 'Role fetch timeout') {
+                } catch (roleError: unknown) {
+                    if (roleError instanceof Error && roleError.message !== 'Role fetch timeout') {
                         console.error('Role fetch error:', roleError);
                     }
                     if (mounted) {
