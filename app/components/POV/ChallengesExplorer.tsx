@@ -35,27 +35,7 @@ const ChallengesExplorer = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-    const debouncedFetch = useCallback(
-        (() => {
-            let timeout: NodeJS.Timeout;
-            const func = () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    fetchChallenges();
-                }, 100);
-            };
-            func.cancel = () => clearTimeout(timeout);
-            return func;
-        })(),
-        []
-    );
-
-    useEffect(() => {
-        debouncedFetch();
-        return () => debouncedFetch.cancel?.();
-    }, [debouncedFetch]);
-
-    const fetchChallenges = async () => {
+    const fetchChallenges = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
@@ -78,7 +58,6 @@ const ChallengesExplorer = () => {
 
             if (error) throw error;
             
-            // Extract unique categories
             const uniqueCategories = [...new Set(
                 data?.flatMap(c => c.challenge_categories?.map((cc: { category: string }) => cc.category) || [])
             )];
@@ -91,7 +70,25 @@ const ChallengesExplorer = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    const debouncedFetch = useCallback(() => {
+        let timeout: NodeJS.Timeout;
+        
+        const doFetch = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(fetchChallenges, 100);
+        };
+
+        doFetch();
+        
+        return () => clearTimeout(timeout);
+    }, [fetchChallenges]);
+
+    useEffect(() => {
+        const cleanup = debouncedFetch();
+        return cleanup;
+    }, [debouncedFetch]);
 
     const filteredChallenges = challenges.filter(item => {
         const matchesSearch = 
@@ -314,13 +311,17 @@ const ChallengesExplorer = () => {
                 open={isCreateOpen}
                 onOpenChange={setIsCreateOpen}
                 type="challenges"
-                onSuccess={fetchChallenges}
+                onSuccess={() => {
+                    fetchChallenges();
+                }}
             />
             <ManagePOVEntriesDialog
                 open={isManageOpen}
                 onOpenChange={setIsManageOpen}
                 type="challenges"
-                onSuccess={fetchChallenges}
+                onSuccess={() => {
+                    fetchChallenges();
+                }}
             />
         </CardContent>
     );

@@ -258,7 +258,7 @@ const LogicMonitorDoc = () => {
             LogicMonitor POV Documentation
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Generate a professionally formatted proof of value document with your organization's details.
+            Generate a professionally formatted proof of value document with your organization&apos;s details.
           </p>
         </div>
 

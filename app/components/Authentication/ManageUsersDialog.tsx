@@ -91,7 +91,7 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
         if (open) {
             fetchUsers();
         }
-    }, [open]);
+    }, [fetchUsers]);
 
     const updateUserRole = async (userId: string, newRole: UserRole) => {
         try {

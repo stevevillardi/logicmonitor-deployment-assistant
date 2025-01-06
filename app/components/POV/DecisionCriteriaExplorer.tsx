@@ -34,27 +34,7 @@ const DecisionCriteriaExplorer = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [categories, setCategories] = useState<string[]>([]);
 
-    const debouncedFetch = useCallback(
-        (() => {
-            let timeout: NodeJS.Timeout;
-            const func = () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    fetchCriteria();
-                }, 100);
-            };
-            func.cancel = () => clearTimeout(timeout);
-            return func;
-        })(),
-        []
-    );
-
-    useEffect(() => {
-        debouncedFetch();
-        return () => debouncedFetch.cancel?.();
-    }, [debouncedFetch]);
-
-    const fetchCriteria = async () => {
+    const fetchCriteria = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
@@ -89,7 +69,25 @@ const DecisionCriteriaExplorer = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    const debouncedFetch = useCallback(() => {
+        let timeout: NodeJS.Timeout;
+        
+        const doFetch = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(fetchCriteria, 100);
+        };
+
+        doFetch();
+        
+        return () => clearTimeout(timeout);
+    }, [fetchCriteria]);
+
+    useEffect(() => {
+        const cleanup = debouncedFetch();
+        return cleanup;
+    }, [debouncedFetch]);
 
     const filteredCriteria = criteria.filter(item => {
         const matchesSearch = 
