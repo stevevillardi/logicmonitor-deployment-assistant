@@ -113,4 +113,5 @@ export interface ComputeRequirementsProps {
     className?: string;
     enablePollingFailover?: boolean;
     enableLogsFailover?: boolean;
+    forceLightMode?: boolean;
 }

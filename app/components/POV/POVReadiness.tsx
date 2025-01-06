@@ -3,25 +3,23 @@ import { FileText, PlayCircle, LibraryBig } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import POVLibrary from './POVLibrary';
-import ScopingDocTest from './ScopingDocTest';
-import LogicMonitorDoc from './LogicMonitorDoc';
 
 // Placeholder components for other sections
-// const ScopingDoc = () => (
-//     <Card className="border border-gray-200 dark:border-gray-700 mb-4 min-h-[800px] dark:bg-gray-800">
-//         <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-//             <div className="flex items-center gap-3">
-//                 <FileText className="w-6 h-6 text-blue-700 dark:text-blue-400" />
-//                 <CardTitle className="dark:text-gray-100">Scoping Document</CardTitle>
-//             </div>
-//         </CardHeader>
-//         <CardContent className="p-6 bg-white dark:bg-gray-800">
-//             <div className="text-gray-600 dark:text-gray-400">
-//                 Scoping document content coming soon...
-//             </div>
-//         </CardContent>
-//     </Card>
-// );
+const PovManagement = () => (
+    <Card className="border border-gray-200 dark:border-gray-700 mb-4 min-h-[800px] dark:bg-gray-800">
+        <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div className="flex items-center gap-3">
+                <FileText className="w-6 h-6 text-blue-700 dark:text-blue-400" />
+                <CardTitle className="dark:text-gray-100">POV Management</CardTitle>
+            </div>
+        </CardHeader>
+        <CardContent className="p-6 bg-white dark:bg-gray-800">
+            <div className="text-gray-600 dark:text-gray-400">
+                POV management coming soon...
+            </div>
+        </CardContent>
+    </Card>
+);
 
 const Playback = () => (
     <Card className="border border-gray-200 dark:border-gray-700 mb-4 min-h-[800px] dark:bg-gray-800">
@@ -67,7 +65,7 @@ const POVReadiness = () => {
                         Content Library
                     </TabsTrigger>
                     <TabsTrigger
-                        value="scoping-doc"
+                        value="pov-management"
                         className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
                             data-[state=active]:bg-blue-50 
                             data-[state=active]:text-blue-700 
@@ -86,7 +84,7 @@ const POVReadiness = () => {
                             mb-2 sm:mb-0 sm:mr-2"
                     >
                         <FileText className="w-4 h-4" />
-                        Scoping Doc
+                        POV Management
                     </TabsTrigger>
                     <TabsTrigger
                         value="playback"
@@ -115,22 +113,12 @@ const POVReadiness = () => {
                     <POVLibrary />
                 </TabsContent>
 
-                <TabsContent value="scoping-doc" className="rounded-lg overflow-hidden">
-                    <Card className="border border-gray-200 dark:border-gray-700 mb-4 min-h-[800px] dark:bg-gray-800">
-                        <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                            <div className="flex items-center gap-3">
-                                <FileText className="w-6 h-6 text-blue-700 dark:text-blue-400" />
-                                <CardTitle className="dark:text-gray-100">Scoping Document</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-6 bg-white dark:bg-gray-800">
-                            <ScopingDocTest />
-                        </CardContent>
-                    </Card>
+                <TabsContent value="pov-management" className="rounded-lg overflow-hidden">
+                    <PovManagement />
                 </TabsContent>
 
                 <TabsContent value="playback" className="rounded-lg overflow-hidden">
-                    <LogicMonitorDoc />
+                    <Playback />
                 </TabsContent>
             </Tabs>
         </div>

@@ -321,11 +321,12 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                         }}
                         enablePollingFailover={config.enablePollingFailover}
                         enableLogsFailover={config.enableLogsFailover}
+                        forceLightMode={true}
                     />
                 </div>
 
                 <div className="mb-6">
-                    <CollectorRecommendation />
+                    <CollectorRecommendation forceLightMode={true} />
                 </div>
                 <div>
                     <SectionDivider />
@@ -530,6 +531,7 @@ const PDFTemplate = ({ sites, config, currentDate, siteMetrics }: PDFTemplatePro
                                 }}
                                 enablePollingFailover={config.enablePollingFailover}
                                 enableLogsFailover={config.enableLogsFailover}
+                                forceLightMode={true}
                             />
                         </div>
 
