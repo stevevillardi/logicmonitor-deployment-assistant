@@ -228,8 +228,8 @@ const DeploymentAssistant = () => {
                                     <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
                                     <span className="hidden 2xl:inline">Reports (Preview)</span>
                                 </Button>
-                                <VersionInfo />
                                 <LaunchTour />
+                                <VersionInfo />
                                 <Profile />
                             </div>
                         </div>

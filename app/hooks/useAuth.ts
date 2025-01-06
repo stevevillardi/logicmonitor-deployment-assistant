@@ -95,8 +95,10 @@ export function useAuth() {
         );
     };
 
+    // Add document visibility tracking
     useEffect(() => {
         let mounted = true;
+        let timeoutId: NodeJS.Timeout;
 
         const getUser = async () => {
             try {
@@ -104,33 +106,42 @@ export function useAuth() {
                 
                 if (!mounted) return;
                 
-                // Set user immediately
                 setUser(session?.user ?? null);
                 
-                // If no session, we can stop loading
                 if (!session?.user) {
                     setIsLoading(false);
                     return;
                 }
 
-                // Fetch role with timeout
+                // Only use timeout if the tab is visible
                 try {
-                    const role = await Promise.race([
-                        fetchUserRole(session.user.id),
-                        new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('Role fetch timeout')), 5000)
-                        )
-                    ]);
-                    
-                    if (mounted) {
-                        setUserRole(role as UserRole);
+                    if (document.visibilityState === 'visible') {
+                        const role = await Promise.race([
+                            fetchUserRole(session.user.id),
+                            new Promise((_, reject) => {
+                                timeoutId = setTimeout(() => reject(new Error('Role fetch timeout')), 5000);
+                            })
+                        ]);
+                        
+                        if (mounted) {
+                            setUserRole(role as UserRole);
+                        }
+                    } else {
+                        // For hidden tabs, just fetch without timeout
+                        const role = await fetchUserRole(session.user.id);
+                        if (mounted) {
+                            setUserRole(role as UserRole);
+                        }
                     }
                 } catch (roleError) {
-                    console.error('Role fetch error:', roleError);
-                    // On timeout/error, fallback to viewer role
+                    if (roleError.message !== 'Role fetch timeout') {
+                        console.error('Role fetch error:', roleError);
+                    }
                     if (mounted) {
                         setUserRole('viewer');
                     }
+                } finally {
+                    clearTimeout(timeoutId);
                 }
                 
                 if (mounted) {
@@ -146,6 +157,15 @@ export function useAuth() {
 
         getUser();
 
+        // Handle visibility changes
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && user) {
+                getUser();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
         const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
             async (_event, session) => {
                 if (!mounted) return;
@@ -158,21 +178,32 @@ export function useAuth() {
                 }
 
                 try {
-                    const role = await Promise.race([
-                        fetchUserRole(session.user.id),
-                        new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('Role fetch timeout')), 5000)
-                        )
-                    ]);
-                    
-                    if (mounted) {
-                        setUserRole(role as UserRole);
+                    if (document.visibilityState === 'visible') {
+                        const role = await Promise.race([
+                            fetchUserRole(session.user.id),
+                            new Promise((_, reject) => {
+                                timeoutId = setTimeout(() => reject(new Error('Role fetch timeout')), 5000);
+                            })
+                        ]);
+                        
+                        if (mounted) {
+                            setUserRole(role as UserRole);
+                        }
+                    } else {
+                        const role = await fetchUserRole(session.user.id);
+                        if (mounted) {
+                            setUserRole(role as UserRole);
+                        }
                     }
                 } catch (roleError) {
-                    console.error('Role fetch error:', roleError);
+                    if (roleError.message !== 'Role fetch timeout') {
+                        console.error('Role fetch error:', roleError);
+                    }
                     if (mounted) {
                         setUserRole('viewer');
                     }
+                } finally {
+                    clearTimeout(timeoutId);
                 }
                 
                 if (mounted) {
@@ -183,7 +214,9 @@ export function useAuth() {
 
         return () => {
             mounted = false;
+            clearTimeout(timeoutId);
             subscription.unsubscribe();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
 
