@@ -12,7 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
-
+import { PlatformArchitecture } from './PlatformArchitecture';
 export const LaunchTour = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -26,7 +26,7 @@ export const LaunchTour = () => {
                     aria-label="Launch Platform Tour"
                 >
                     <Play className="w-4 h-4 text-blue-700 dark:text-blue-400" />
-                    <span className="hidden 2xl:inline">Platform Tour</span>
+                    <span className="hidden 2xl:inline">LM Envision Platform Tour</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className={cn(
@@ -41,7 +41,7 @@ export const LaunchTour = () => {
                             <DialogTitle className="text-lg sm:text-xl font-bold text-blue-900 dark:text-gray-100">
                                 <div className="flex items-center gap-2">
                                     <Info className="h-5 w-5 text-blue-700 dark:text-blue-400" />
-                                    LogicMonitor Platform Tour
+                                    LogicMonitor Envision Platform Tour
                                 </div>
                             </DialogTitle>
                             <DialogDescription className="text-sm text-blue-700 dark:text-blue-400">
@@ -71,16 +71,8 @@ export const LaunchTour = () => {
                     "py-4",
                     isFullScreen && "overflow-y-auto"
                 )}>
-                    <PlatformTour isFullScreen={isFullScreen} />
-                </div>
-
-                <div className="border-t border-blue-200 dark:border-gray-700 pt-3 mt-4">
-                    <div className="bg-white dark:bg-gray-900 border border-blue-200 dark:border-gray-700 rounded-lg p-3">
-                        <div className="flex gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-400">
-                            <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                            <p>Click on different areas of the diagram to learn more about each component.</p>
-                        </div>
-                    </div>
+                    {/* <PlatformTour isFullScreen={isFullScreen} /> */}
+                    <PlatformArchitecture />
                 </div>
             </DialogContent>
         </Dialog>

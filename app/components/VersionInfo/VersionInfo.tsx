@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database, Users, Shield, Paintbrush } from 'lucide-react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database, Users, Shield, Paintbrush, LibraryBig } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,53 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Version information
 const VERSIONS = [
+    {
+        version: "1.0.6",
+        date: "2024-01-06",
+        sections: [
+            {
+                title: "Platform Architecture Improvements",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Redesigned platform architecture diagram with interactive components",
+                    "Added detailed feature descriptions for each platform component",
+                    "Improved visual flow indicators between platform layers",
+                    "Enhanced dark mode support for architecture diagram",
+                    "Added responsive design for mobile devices"
+                ]
+            },
+            {
+                title: "POV Content Library",
+                icon: <LibraryBig className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "New POV Content Library for accessing curated content",
+                    "Decision Criteria Explorer for documenting customer requirements",
+                    "Challenges Explorer for addressing common customer concerns",
+                    "Real-time search and filtering capabilities",
+                    "Category-based content organization"
+                ]
+            },
+            {
+                title: "Security & Access Control",
+                icon: <Shield className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Manage user permissions for secure access to POV content",
+                    "Create user roles with specific permissions",
+                ]
+            },
+            {
+                title: "UI/UX Enhancements",
+                icon: <Paintbrush className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "New tabbed interface for content exploration",
+                    "Improved content cards with better readability",
+                    "Full support for dark mode",
+                    "Consistent styling across new components",
+                    "Better mobile responsiveness for content library"
+                ]
+            }
+        ]
+    },
     {
         version: "1.0.5",
         date: "2024-12-31",
@@ -150,7 +197,7 @@ const VERSIONS = [
                 ]
             },
             {
-                title: "Platform Tour",
+                title: "EnvisionPlatform Tour",
                 icon: <Play className="w-4 h-4 text-blue-600" />,
                 items: [
                     "Added interactive platform architecture diagram",
@@ -302,7 +349,7 @@ const VERSIONS = [
 ];
 
 export const VersionInfo = () => {
-    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.5"]);
+    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.6"]);
 
     const toggleVersion = (version: string) => {
         setExpandedVersions(prev => 
