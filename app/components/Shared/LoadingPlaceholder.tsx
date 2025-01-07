@@ -88,5 +88,4 @@ const LoadingPlaceholder = () => {
     </div>
   );
 };
-
 export default LoadingPlaceholder;

@@ -1,52 +1,56 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabaseBrowser } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
 import { Permission, UserRole, ROLE_PERMISSIONS } from '../types/auth';
 
-// Move cache variables outside and export them if needed by other modules
-export const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+// Constants
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_ROLE: UserRole = 'viewer';
 
-let roleCache: {
-    userId: string | undefined;
-    role: UserRole;
-    timestamp: number;
-} = {
-    userId: undefined,
-    role: 'viewer',
-    timestamp: 0
-};
+// Role cache implementation
+class RoleCache {
+    private static instance: RoleCache;
+    private cache: Map<string, { role: UserRole; timestamp: number }>;
+    private pendingFetches: Map<string, Promise<UserRole>>;
 
-let pendingRoleFetch: Promise<UserRole> | null = null;
-
-// Export the fetchUserRole function so it can be used by auth-utils
-export async function fetchUserRole(userId: string): Promise<UserRole> {
-    // Add cache invalidation if the cache is too old
-    if (Date.now() - roleCache.timestamp > CACHE_DURATION * 2) {
-        roleCache = {
-            userId: undefined,
-            role: 'viewer',
-            timestamp: 0
-        };
-        pendingRoleFetch = null;
+    private constructor() {
+        this.cache = new Map();
+        this.pendingFetches = new Map();
     }
 
-    // Check memory cache first
-    if (
-        roleCache.userId === userId && 
-        Date.now() - roleCache.timestamp < CACHE_DURATION
-    ) {
-        return roleCache.role;
+    static getInstance() {
+        if (!RoleCache.instance) {
+            RoleCache.instance = new RoleCache();
+        }
+        return RoleCache.instance;
     }
 
-    // If there's already a pending fetch, return that instead of making a new request
-    if (pendingRoleFetch) {
-        return pendingRoleFetch;
+    async getRole(userId: string): Promise<UserRole> {
+        // Return cached role if valid
+        const cached = this.cache.get(userId);
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+            return cached.role;
+        }
+
+        // Return pending fetch if exists
+        const pending = this.pendingFetches.get(userId);
+        if (pending) return pending;
+
+        // Create new fetch
+        const fetchPromise = this.fetchRole(userId);
+        this.pendingFetches.set(userId, fetchPromise);
+
+        try {
+            const role = await fetchPromise;
+            return role;
+        } finally {
+            this.pendingFetches.delete(userId);
+        }
     }
 
-    // Create new fetch promise
-    pendingRoleFetch = (async () => {
+    private async fetchRole(userId: string): Promise<UserRole> {
         try {
             const { data: profileData, error } = await supabaseBrowser
                 .from('profiles')
@@ -54,171 +58,117 @@ export async function fetchUserRole(userId: string): Promise<UserRole> {
                 .eq('id', userId)
                 .single();
 
-            if (error || !profileData) {
-                console.log('No role found for user, defaulting to viewer');
-                roleCache = {
-                    userId,
-                    role: 'viewer',
-                    timestamp: Date.now()
-                };
-                return 'viewer';
-            }
-
-            const role = profileData.role as UserRole;
-            roleCache = {
-                userId,
+            const role = (error || !profileData) ? DEFAULT_ROLE : (profileData.role as UserRole);
+            
+            this.cache.set(userId, {
                 role,
                 timestamp: Date.now()
-            };
+            });
 
             return role;
         } catch (error) {
             console.error('Error fetching user role:', error);
-            return 'viewer';
-        } finally {
-            pendingRoleFetch = null;
+            return DEFAULT_ROLE;
         }
-    })();
+    }
 
-    return pendingRoleFetch;
+    clearCache(userId?: string) {
+        if (userId) {
+            this.cache.delete(userId);
+        } else {
+            this.cache.clear();
+        }
+    }
 }
 
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [userRole, setUserRole] = useState<UserRole>('viewer');
+    const [userRole, setUserRole] = useState<UserRole>(DEFAULT_ROLE);
 
-    const hasPermission = (permission: Permission): boolean => {
+    const roleCache = RoleCache.getInstance();
+
+    const updateUserRole = useCallback(async (userId: string) => {
+        try {
+            const role = await roleCache.getRole(userId);
+            setUserRole(role);
+        } catch (error) {
+            console.error('Error updating user role:', error);
+            setUserRole(DEFAULT_ROLE);
+        }
+    }, []);
+
+    const handleVisibilityChange = useCallback(() => {
+        if (document.visibilityState === 'visible' && user) {
+            updateUserRole(user.id);
+        }
+    }, [user, updateUserRole]);
+
+    const hasPermission = useCallback((permission: Permission): boolean => {
         const rolePermissions = ROLE_PERMISSIONS[userRole];
         return rolePermissions.some(
             p => p.action === permission.action && p.resource === permission.resource
         );
-    };
+    }, [userRole]);
 
-    // Add document visibility tracking
     useEffect(() => {
         let mounted = true;
-        let timeoutId: NodeJS.Timeout;
-
-        const getUser = async () => {
+        
+        const handleAuthStateChange = async (session: any) => {
             try {
-                const { data: { session } } = await supabaseBrowser.auth.getSession();
-                
-                if (!mounted) return;
-                
-                setUser(session?.user ?? null);
-                
-                if (!session?.user) {
-                    setIsLoading(false);
-                    return;
-                }
-
-                // Only use timeout if the tab is visible
-                try {
-                    if (document.visibilityState === 'visible') {
-                        const role = await Promise.race([
-                            fetchUserRole(session.user.id),
-                            new Promise((_, reject) => {
-                                timeoutId = setTimeout(() => reject(new Error('Role fetch timeout')), 5000);
-                            })
-                        ]);
-                        
-                        if (mounted) {
-                            setUserRole(role as UserRole);
-                        }
-                    } else {
-                        // For hidden tabs, just fetch without timeout
-                        const role = await fetchUserRole(session.user.id);
-                        if (mounted) {
-                            setUserRole(role as UserRole);
-                        }
-                    }
-                } catch (roleError: unknown) {
-                    if (roleError instanceof Error && roleError.message !== 'Role fetch timeout') {
-                        console.error('Role fetch error:', roleError);
-                    }
-                    if (mounted) {
-                        setUserRole('viewer');
-                    }
-                } finally {
-                    clearTimeout(timeoutId);
-                }
+                const currentUser = session?.user ?? null;
                 
                 if (mounted) {
-                    setIsLoading(false);
+                    setUser(currentUser);
+                    
+                    if (currentUser) {
+                        await updateUserRole(currentUser.id);
+                    } else {
+                        setUserRole(DEFAULT_ROLE);
+                    }
                 }
             } catch (error) {
-                console.error('Auth error:', error);
+                console.error('Auth state change error:', error);
+            } finally {
                 if (mounted) {
                     setIsLoading(false);
                 }
             }
         };
 
-        getUser();
-
-        // Handle visibility changes
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible' && user) {
-                getUser();
+        // Initial session check
+        const initializeAuth = async () => {
+            try {
+                const { data: { session } } = await supabaseBrowser.auth.getSession();
+                await handleAuthStateChange(session);
+            } catch (error) {
+                console.error('Initial auth check error:', error);
+                if (mounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
-        document.addEventListener('visibilitychange', handleVisibilityChange);
+        initializeAuth();
 
+        // Subscribe to auth changes
         const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
-            async (_event, session) => {
-                if (!mounted) return;
-                
-                setUser(session?.user ?? null);
-                
-                if (!session?.user) {
-                    setIsLoading(false);
-                    return;
+            async (event, session) => {
+                if (event === 'SIGNED_OUT') {
+                    roleCache.clearCache();
                 }
-
-                try {
-                    if (document.visibilityState === 'visible') {
-                        const role = await Promise.race([
-                            fetchUserRole(session.user.id),
-                            new Promise((_, reject) => {
-                                timeoutId = setTimeout(() => reject(new Error('Role fetch timeout')), 5000);
-                            })
-                        ]);
-                        
-                        if (mounted) {
-                            setUserRole(role as UserRole);
-                        }
-                    } else {
-                        const role = await fetchUserRole(session.user.id);
-                        if (mounted) {
-                            setUserRole(role as UserRole);
-                        }
-                    }
-                } catch (roleError: unknown) {
-                    if (roleError instanceof Error && roleError.message !== 'Role fetch timeout') {
-                        console.error('Role fetch error:', roleError);
-                    }
-                    if (mounted) {
-                        setUserRole('viewer');
-                    }
-                } finally {
-                    clearTimeout(timeoutId);
-                }
-                
-                if (mounted) {
-                    setIsLoading(false);
-                }
+                await handleAuthStateChange(session);
             }
         );
 
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
         return () => {
             mounted = false;
-            clearTimeout(timeoutId);
             subscription.unsubscribe();
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, []);
+    }, [updateUserRole, handleVisibilityChange]);
 
     return {
         isAuthenticated: !!user,

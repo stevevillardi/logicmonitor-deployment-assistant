@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine, Rocket, Home, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
@@ -11,6 +11,52 @@ type NavItem = {
     path: string;
     icon: React.ReactNode;
     children?: NavItem[];
+};
+
+const NavItem = ({ item, onNavigate, openMenu, setOpenMenu }: { 
+    item: NavItem; 
+    onNavigate: (path: string) => void;
+    openMenu: string | null;
+    setOpenMenu: (id: string | null) => void;
+}) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isOpen = openMenu === item.id;
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => {
+                    if (hasChildren) {
+                        setOpenMenu(isOpen ? null : item.id);
+                    } else {
+                        onNavigate(item.path);
+                    }
+                }}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/85 hover:bg-[#0A1B6F] hover:text-white rounded-lg transition-colors"
+            >
+                {item.icon}
+                <span>{item.label}</span>
+                {hasChildren && (
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                )}
+            </button>
+
+            {hasChildren && isOpen && (
+                <div className="absolute top-full left-0 mt-1 bg-[#0A1B6F] rounded-lg shadow-lg overflow-hidden z-50 min-w-[250px]">
+                    {item?.children?.map((child) => (
+                        <button
+                            key={child.id}
+                            onClick={() => onNavigate(child.path)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/85 hover:bg-[#1a2b7f] hover:text-white w-full transition-colors"
+                        >
+                            {child.icon}
+                            <span>{child.label}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 };
 
 export const Navigation = () => {
@@ -40,48 +86,8 @@ export const Navigation = () => {
         }
     };
 
-    const NavItem = ({ item }: { item: NavItem }) => {
-        const hasChildren = item.children && item.children.length > 0;
-        const isOpen = openMenu === item.id;
-
-        return (
-            <div className="relative">
-                <button
-                    onClick={() => {
-                        if (hasChildren) {
-                            setOpenMenu(isOpen ? null : item.id);
-                        } else {
-                            handleNavigation(item.path);
-                        }
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/85 hover:bg-[#0A1B6F] hover:text-white rounded-lg transition-colors"
-                >
-                    {item.icon}
-                    <span>{item.label}</span>
-                    {hasChildren && (
-                        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                    )}
-                </button>
-
-                {hasChildren && isOpen && (
-                    <div className="absolute top-full left-0 mt-1 bg-[#0A1B6F] rounded-lg shadow-lg overflow-hidden z-50 min-w-[250px]">
-                        {item?.children?.map((child) => (
-                            <button
-                                key={child.id}
-                                onClick={() => handleNavigation(child.path)}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/85 hover:bg-[#1a2b7f] hover:text-white w-full transition-colors"
-                            >
-                                {child.icon}
-                                <span>{child.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    const getNavigationItems = () => {
+    const navigationItems = useMemo(() => {
+        // console.log('Computing navigation items');
         const items: NavItem[] = [
             { 
                 id: 'home',
@@ -139,15 +145,21 @@ export const Navigation = () => {
         }
 
         return items;
-    };
+    }, [hasPermission]);
 
     return (
         <div ref={navRef}>
             {/* Desktop Navigation */}
             <div className="hidden lg:block bg-[#040F4B] rounded-lg px-4 py-2">
                 <div className="flex items-center gap-2">
-                    {getNavigationItems().map((item) => (
-                        <NavItem key={item.id} item={item} />
+                    {navigationItems.map((item) => (
+                        <NavItem 
+                            key={item.id} 
+                            item={item} 
+                            onNavigate={handleNavigation}
+                            openMenu={openMenu}
+                            setOpenMenu={setOpenMenu}
+                        />
                     ))}
                 </div>
             </div>
@@ -164,8 +176,14 @@ export const Navigation = () => {
 
                 {isMobileMenuOpen && (
                     <div className="mt-2 space-y-1">
-                        {getNavigationItems().map((item) => (
-                            <NavItem key={item.id} item={item} />
+                        {navigationItems.map((item) => (
+                            <NavItem 
+                                key={item.id} 
+                                item={item} 
+                                onNavigate={handleNavigation}
+                                openMenu={openMenu}
+                                setOpenMenu={setOpenMenu}
+                            />
                         ))}
                     </div>
                 )}
