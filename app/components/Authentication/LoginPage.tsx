@@ -2,13 +2,15 @@
 import React from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lock } from 'lucide-react';
+import { Lock, ArrowLeft } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import { supabaseBrowser } from '../../lib/supabase';
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
     const supabase = supabaseBrowser;
+    const router = useRouter();
     
     const handleOAuthSignIn = async (provider: 'google' | 'github') => {
         try {
@@ -29,6 +31,18 @@ const LoginPage = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#040F4B] to-blue-900">
+            <div className="fixed top-0 right-0 left-0 z-50 bg-gradient-to-b from-[#040F4B]/90 to-transparent backdrop-blur-sm">
+                <div className="container mx-auto px-4 py-4">
+                    <Button
+                        onClick={() => router.push('/')}
+                        className="bg-white text-[#040F4B] hover:bg-blue-50 px-6 py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 antialiased"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Home
+                    </Button>
+                </div>
+            </div>
+
             <div className="w-full max-w-md px-4">
                 <Card className="w-full shadow-2xl border-0">
                     <CardHeader className="space-y-6 flex flex-col items-center bg-gradient-to-b from-blue-50 to-white p-8 rounded-t-xl">

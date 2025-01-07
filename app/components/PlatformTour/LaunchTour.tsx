@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Info } from 'lucide-react';
+import { Binoculars, Info } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -32,11 +32,11 @@ export const LaunchTour = ({ variant = 'default' }: LaunchTourProps) => {
                     className={buttonStyles[variant]}
                     aria-label="Launch Platform Tour"
                 >
-                    <Play className={cn(
+                    <Binoculars className={cn(
                         "w-4 h-4",
                         variant === 'default' && "text-blue-700 dark:text-blue-400"
                     )} />
-                    <span className={variant === 'default' ? "hidden 2xl:inline" : ""}>
+                    <span className={variant === 'default' ? "hidden 2xl:inline" : "hidden sm:inline"}>
                        LM Envision Platform Tour
                     </span>
                 </Button>

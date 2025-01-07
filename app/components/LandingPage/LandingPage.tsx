@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bot, Layout, Save, Server, Network, Settings, FileText, Play, ArrowRight, Database, Cloud, ChartLine, Terminal, PlayCircle, Rocket } from 'lucide-react';
+import { Bot, Layout, Save, Server, Network, FileText, Play, ArrowRight, Terminal, Rocket, Binoculars } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
 import Image from 'next/image';
@@ -41,9 +41,9 @@ const features = [
         gradient: "from-cyan-50 to-blue-50"
     },
     {
-        title: "Product Tour",
-        description: "Guided walkthrough of platform features and capabilities to help you get started quickly.",
-        icon: <PlayCircle className="w-6 h-6 text-blue-600" />,
+        title: "LM Envision Platform Tour",
+        description: "Guided walkthrough of platform features and capabilities to help you get understanding of the platform.",
+        icon: <Binoculars className="w-6 h-6 text-blue-600" />,
         gradient: "from-emerald-50 to-blue-50"
     },
     {

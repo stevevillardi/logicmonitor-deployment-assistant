@@ -157,7 +157,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
                                 id="showDetails"
                                 checked={showDetails}
                                 onCheckedChange={handleShowDetailsChange}
-                                className="data-[state=checked]:bg-gray-200 dark:data-[state=checked]:bg-gray-600 border-2 border-gray-300 dark:border-gray-600 transition-colors duration-200"
+                                className="data-[state=checked]:bg-blue-700 dark:data-[state=checked]:bg-gray-600 border-2 border-gray-300 dark:border-gray-600 transition-colors duration-200"
                             />
                             <Label
                                 htmlFor="showDetails"
