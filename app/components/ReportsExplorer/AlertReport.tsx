@@ -702,51 +702,51 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
   }, [alerts]);
 
   return (
-    <Card>
+    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-700" />
-            <CardTitle>Alert History</CardTitle>
+            <FileText className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+            <CardTitle className="dark:text-gray-100">Alert History</CardTitle>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {/* Report Options */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
               <div className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-blue-700" />
-                <span className="font-medium text-gray-900">Report Options</span>
+                <Settings className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                <span className="font-medium text-gray-900 dark:text-gray-100">Report Options</span>
               </div>
             </div>
             <div className="p-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-gray-700">Time Range</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Time Range</label>
                     <div className="flex items-center gap-2">
                       <Input
                         type="datetime-local"
                         value={startTime ? toLocalISOString(startTime) : ''}
                         onChange={(e) => setStartTime(e.target.value ? fromLocalDateTime(e.target.value) : undefined)}
                         max={endTime ? toLocalISOString(endTime) : undefined}
-                        className="w-full bg-white border-gray-200"
+                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-100"
                       />
-                      <span className="text-gray-500">to</span>
+                      <span className="text-gray-500 dark:text-gray-400">to</span>
                       <Input
                         type="datetime-local"
                         value={endTime ? toLocalISOString(endTime) : ''}
                         onChange={(e) => setEndTime(e.target.value ? fromLocalDateTime(e.target.value) : undefined)}
                         min={startTime ? toLocalISOString(startTime) : undefined}
-                        className="w-full bg-white border-gray-200"
+                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-100"
                       />
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={setLast24Hours}
-                        className="whitespace-nowrap bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
+                        className="whitespace-nowrap bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         Last 24 Hours
                       </Button>
@@ -758,9 +758,9 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                       id="includeCleared"
                       checked={includeClearedAlerts}
                       onChange={(e) => setIncludeClearedAlerts(e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-gray-700"
                     />
-                    <label htmlFor="includeCleared" className="text-sm text-gray-700">
+                    <label htmlFor="includeCleared" className="text-sm text-gray-700 dark:text-gray-300">
                       Include Cleared Alerts
                     </label>
                   </div>
@@ -769,7 +769,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                   <Button 
                     onClick={fetchAlerts}
                     disabled={loading || !(portalName && bearerToken)}
-                    className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+                    className="bg-[#040F4B] hover:bg-[#0A1B6F] dark:bg-blue-600 dark:hover:bg-blue-700 text-white gap-2"
                   >
                     {loading ? (
                       <div className="flex items-center gap-2">
@@ -793,13 +793,13 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-200">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
 
           {!loading && alerts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-gray-500 space-y-4">
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400 space-y-4">
               <FileText className="w-12 h-12" />
               <div className="text-center">
                 <p className="font-medium">No Alerts Loaded</p>
@@ -810,33 +810,33 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
             <div className="space-y-4">
 
               {/* Property Selection Section */}
-              <div className="bg-white border border-gray-200 rounded-lg">
-                <div className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="w-full p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <Settings className="w-5 h-5 text-blue-700" />
-                      <span className="font-medium text-gray-900">Alert Fields</span>
+                      <Settings className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                      <span className="font-medium text-gray-900 dark:text-gray-100">Alert Fields</span>
                     </div>
                     <div className="relative w-[300px]" onClick={e => e.stopPropagation()}>
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <Input
                         placeholder="Search properties..."
                         value={propertySearch}
                         onChange={(e) => setPropertySearch(e.target.value)}
-                        className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                        className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-500 dark:text-gray-100 dark:placeholder:text-gray-400"
                       />
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg" onClick={e => e.stopPropagation()}>
+                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg" onClick={e => e.stopPropagation()}>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setPropertyView('grid')}
                         className={`${
                           propertyView === 'grid' 
-                            ? 'bg-white text-blue-700 shadow-sm' 
-                            : 'text-gray-600 hover:text-gray-900'
+                            ? 'bg-white dark:bg-gray-600 text-blue-700 dark:text-blue-400 shadow-sm' 
+                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                         } px-3 py-1.5 rounded`}
                       >
                         <TableIcon className="w-4 h-4" />
@@ -847,15 +847,15 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         onClick={() => setPropertyView('list')}
                         className={`${
                           propertyView === 'list' 
-                            ? 'bg-white text-blue-700 shadow-sm' 
-                            : 'text-gray-600 hover:text-gray-900'
+                            ? 'bg-white dark:bg-gray-600 text-blue-700 dark:text-blue-400 shadow-sm' 
+                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                         } px-3 py-1.5 rounded`}
                       >
                         <List className="w-4 h-4" />
                       </Button>
                     </div>
                     <ChevronDown
-                      className={`w-5 h-5 text-gray-500 transition-transform cursor-pointer ${
+                      className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform cursor-pointer ${
                         isPropertiesOpen ? 'transform rotate-180' : ''
                       }`}
                       onClick={(e) => {
@@ -874,11 +874,11 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         {selectedProperties.map(prop => (
                           <div 
                             key={prop}
-                            className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm"
+                            className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-1 rounded-full text-sm"
                           >
                             <span>{prop}</span>
                             <X
-                              className="w-3 h-3 cursor-pointer hover:text-blue-900"
+                              className="w-3 h-3 cursor-pointer hover:text-blue-900 dark:hover:text-blue-300"
                               onClick={() => setSelectedProperties(prev => prev.filter(p => p !== prop))}
                             />
                           </div>
@@ -892,10 +892,10 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         {getPaginatedProperties().properties.map(([prop, count]) => (
                           <div
                             key={prop}
-                            className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors hover:border-blue-200 ${
+                            className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors hover:border-blue-200 dark:hover:border-blue-700 ${
                               selectedProperties.includes(prop)
-                                ? 'bg-blue-50 border-blue-200'
-                                : 'bg-gray-50 border-gray-200'
+                                ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
+                                : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
                             }`}
                             onClick={() => {
                               setSelectedProperties(prev =>
@@ -910,11 +910,11 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                                 checked={selectedProperties.includes(prop)}
                                 className="pointer-events-none shrink-0"
                               />
-                              <span className="text-xs text-gray-700 truncate">{prop}</span>
+                              <span className="text-xs text-gray-700 dark:text-gray-300 truncate">{prop}</span>
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-1.5 py-0.5 rounded shrink-0 ml-2">
                               {count}
-                            </div>
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -925,8 +925,8 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                             key={prop}
                             className={`flex items-center justify-between p-2 rounded-lg transition-colors cursor-pointer
                               ${selectedProperties.includes(prop) 
-                                ? 'bg-blue-50 border border-blue-200' 
-                                : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'}`}
+                                ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700' 
+                                : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                             onClick={() => {
                               setSelectedProperties(prev => 
                                 prev.includes(prop) 
@@ -940,18 +940,18 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                                 checked={selectedProperties.includes(prop)}
                                 className="pointer-events-none"
                               />
-                              <span className="text-sm text-gray-700">{prop}</span>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{prop}</span>
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700 px-2 py-0.5 rounded-full">
                               {count}
-                            </div>
+                            </span>
                           </div>
                         ))}
                       </div>
                     )}
 
                     {/* Property Pagination Controls */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex items-center gap-4 order-2 sm:order-1">
                         <div className="flex items-center gap-2">
                           <Button
@@ -959,7 +959,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                             size="sm"
                             onClick={() => setPropertyPage(p => Math.max(1, p - 1))}
                             disabled={propertyPage === 1}
-                            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                            className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                           >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -969,14 +969,14 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                             size="sm"
                             onClick={() => setPropertyPage(p => Math.min(getPaginatedProperties().totalPages, p + 1))}
                             disabled={propertyPage === getPaginatedProperties().totalPages}
-                            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                            className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                           >
                             Next
                             <ChevronRight className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-600">Items per page:</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Items per page:</span>
                           <Select
                             value={propertyPageSize.toString()}
                             onValueChange={(value) => {
@@ -984,10 +984,10 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                               setPropertyPage(1);
                             }}
                           >
-                            <SelectTrigger className="w-[70px] h-8 bg-white border-gray-200">
+                            <SelectTrigger className="w-[70px] h-8 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white">
+                            <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                               {[20, 50, 100].map((size) => (
                                 <SelectItem key={size} value={size.toString()}>
                                   {size}
@@ -997,13 +997,13 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                           </Select>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-600 order-1 sm:order-2">
+                      <div className="text-sm text-gray-600 dark:text-gray-400 order-1 sm:order-2">
                         Showing {((propertyPage - 1) * propertyPageSize) + 1} to {Math.min(propertyPage * propertyPageSize, getPaginatedProperties().total)} of {getPaginatedProperties().total} properties
                       </div>
                     </div>
 
                     {availableProperties.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         No properties found matching your search
                       </div>
                     )}
@@ -1012,14 +1012,14 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
               </div>
 
               {/* Timeline Graph */}
-              <div className="bg-white rounded-lg border border-gray-200">
-                <div className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="w-full p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-blue-700" />
-                    <span className="font-medium text-gray-900">Alert Timeline</span>
+                    <FileText className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Alert Timeline</span>
                   </div>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-500 transition-transform cursor-pointer ${
+                    className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform cursor-pointer ${
                       showTimeline ? 'transform rotate-180' : ''
                     }`}
                     onClick={() => setShowTimeline(!showTimeline)}
@@ -1036,32 +1036,42 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                               <stop offset="95%" stopColor="#1D4ED8" stopOpacity={0}/>
                             </linearGradient>
                           </defs>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <CartesianGrid 
+                            strokeDasharray="3 3" 
+                            vertical={false} 
+                            stroke="#374151"
+                            className="dark:opacity-20"
+                          />
                           <XAxis
                             dataKey="timestamp"
                             tickFormatter={(value) => formatTimeLabel(value)}
                             interval="preserveStartEnd"
                             tick={{ fontSize: 11 }}
+                            stroke="#6B7280"
+                            className="dark:text-gray-400"
                           />
                           <YAxis 
                             allowDecimals={false} 
                             tick={{ fontSize: 11 }}
+                            stroke="#6B7280"
+                            className="dark:text-gray-400"
                             label={{ 
                               value: 'Alert Count', 
                               angle: -90, 
                               position: 'insideLeft',
-                              style: { fontSize: 12 }
+                              style: { fontSize: 12 },
+                              className: "dark:text-gray-400"
                             }}
                           />
                           <Tooltip
                             content={({ active, payload }) => {
                               if (active && payload && payload.length) {
                                 return (
-                                  <div className="bg-white p-2 border border-gray-200 shadow-sm rounded-lg">
-                                    <p className="text-sm text-gray-600">
+                                  <div className="bg-white dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 shadow-sm rounded-lg">
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
                                       {new Date(payload[0].payload.timestamp * 1000).toLocaleString()}
                                     </p>
-                                    <p className="text-sm font-medium text-gray-900">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                       {payload[0].value} alerts
                                     </p>
                                   </div>
@@ -1076,6 +1086,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                             stroke="#1D4ED8"
                             fillOpacity={1}
                             fill="url(#alertCount)"
+                            className="dark:stroke-blue-400"
                           />
                         </AreaChart>
                       </ResponsiveContainer>
@@ -1085,23 +1096,23 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
               </div>
 
               {/* Results Table */}
-              <div className={`bg-white rounded-lg border border-gray-200 ${
+              <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${
                 isFullScreen ? 'fixed inset-0 z-50 flex flex-col' : ''
               }`}>
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <TableIcon className="w-5 h-5 text-blue-700" />
+                      <TableIcon className="w-5 h-5 text-blue-700 dark:text-blue-400" />
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">Alerts</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">Alerts</span>
                       </div>
                       <div className="relative w-[300px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                         <Input
                           placeholder="Filter alerts..."
                           value={alertFilter}
                           onChange={(e) => setAlertFilter(e.target.value)}
-                          className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                          className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-500 dark:text-gray-100 dark:placeholder:text-gray-400"
                         />
                       </div>
                     </div>
@@ -1110,7 +1121,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={redistributeColumnWidths}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         Auto-fit Columns
                       </Button>
@@ -1118,7 +1129,11 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={() => setIsEditingMode(!isEditingMode)}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className={`bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 gap-1.5 ${
+                          isEditingMode 
+                            ? 'text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/30' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
                       >
                         {isEditingMode ? 'Done' : 'Edit Columns'}
                       </Button>
@@ -1126,7 +1141,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={exportToCSV}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         <Download className="w-4 h-4" />
                         Export CSV
@@ -1135,7 +1150,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={exportToPDF}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         <FileText className="w-4 h-4" />
                         Export PDF
@@ -1144,7 +1159,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={() => setIsFullScreen(!isFullScreen)}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
+                        className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         {isFullScreen ? (
                           <>
@@ -1158,7 +1173,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                           </>
                         )}
                       </Button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         {getFilteredAlerts().length} {getFilteredAlerts().length === 1 ? 'alert' : 'alerts'}
                       </span>
                     </div>
@@ -1176,8 +1191,8 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                       onDragEnd={handleDragEnd}
                     >
                       <Table>
-                        <TableHeader>
-                          <TableRow>
+                        <TableHeader className="dark:border-gray-700 dark:text-gray-300">
+                          <TableRow className="dark:border-gray-700">
                             <SortableContext 
                               items={columns} 
                               strategy={horizontalListSortingStrategy}
@@ -1210,58 +1225,58 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         <TableBody>
                           {getPaginatedAlerts().length > 0 ? (
                             getPaginatedAlerts().map((alert) => (
-                              <React.Fragment key={alert.id}>
-                                <TableRow 
-                                  className="cursor-pointer hover:bg-gray-50"
-                                  onClick={() => setSelectedAlert(alert)}
-                                >
-                                  {columns.map((column) => {
-                                    let content;
-                                    if (column.id === 'severity') {
-                                      const { text, color } = getSeverityDisplay(alert);
-                                      content = (
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}>
-                                          {text}
-                                        </span>
-                                      );
-                                    } else {
-                                      const value = alert[column.originalName];
-                                      content = formatTimestamp(value, column.originalName);
-                                    }
-
-                                    return (
-                                      <TableCell 
-                                        key={column.id} 
-                                        style={{ 
-                                          width: typeof column.width === 'number' ? `${column.width}px` : column.width,
-                                          minWidth: column.minWidth,
-                                          maxWidth: column.maxWidth,
-                                          whiteSpace: 'nowrap',
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis'
-                                        }}
-                                      >
-                                        {content}
-                                      </TableCell>
+                              <TableRow 
+                                key={alert.id}
+                                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 dark:border-gray-700"
+                                onClick={() => setSelectedAlert(alert)}
+                              >
+                                {columns.map((column) => {
+                                  let content;
+                                  if (column.id === 'severity') {
+                                    const { text, color } = getSeverityDisplay(alert);
+                                    content = (
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}>
+                                        {text}
+                                      </span>
                                     );
-                                  })}
-                                </TableRow>
-                              </React.Fragment>
+                                  } else {
+                                    const value = alert[column.originalName];
+                                    content = formatTimestamp(value, column.originalName);
+                                  }
+
+                                  return (
+                                    <TableCell 
+                                      key={column.id} 
+                                      style={{ 
+                                        width: typeof column.width === 'number' ? `${column.width}px` : column.width,
+                                        minWidth: column.minWidth,
+                                        maxWidth: column.maxWidth,
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                      }}
+                                      className="dark:text-gray-300"
+                                    >
+                                      {content}
+                                    </TableCell>
+                                  );
+                                })}
+                              </TableRow>
                             ))
                           ) : (
                             <TableRow>
                               <TableCell 
                                 colSpan={columns.length} 
-                                className="h-24 text-center text-gray-500"
+                                className="h-24 text-center text-gray-500 dark:text-gray-400"
                               >
                                 {alerts.length > 0 ? (
                                   <div className="flex flex-col items-center gap-2">
-                                    <Search className="w-5 h-5 text-gray-400" />
+                                    <Search className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                                     <span>No alerts match the current filter</span>
                                   </div>
                                 ) : (
                                   <div className="flex flex-col items-center gap-2">
-                                    <TableIcon className="w-5 h-5 text-gray-400" />
+                                    <TableIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                                     <span>Load alerts to view the report</span>
                                   </div>
                                 )}
@@ -1275,7 +1290,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                 </div>
 
                 {/* Table Pagination */}
-                <div className="border-t border-gray-200 p-4">
+                <div className="border-t border-gray-200 dark:border-gray-700 p-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 order-2 sm:order-1">
                       <div className="flex items-center gap-2">
@@ -1284,7 +1299,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                           size="sm"
                           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                           disabled={currentPage === 1}
-                          className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                         >
                           <ChevronLeft className="h-4 w-4" />
                           Previous
@@ -1294,14 +1309,14 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                           size="sm"
                           onClick={() => setCurrentPage(p => Math.min(Math.ceil(getFilteredAlerts().length / pageSize), p + 1))}
                           disabled={currentPage === Math.ceil(getFilteredAlerts().length / pageSize)}
-                          className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                         >
                           Next
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Items per page:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Items per page:</span>
                         <Select
                           value={pageSize.toString()}
                           onValueChange={(value) => {
@@ -1309,12 +1324,12 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                             setCurrentPage(1);
                           }}
                         >
-                          <SelectTrigger className="w-[70px] h-8 bg-white border-gray-200">
+                          <SelectTrigger className="w-[70px] h-8 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-white">
+                          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                             {PAGE_SIZE_OPTIONS.map((size) => (
-                              <SelectItem key={size} value={size.toString()}>
+                              <SelectItem key={size} value={size.toString()} className="dark:text-gray-100">
                                 {size}
                               </SelectItem>
                             ))}
@@ -1322,7 +1337,7 @@ const AlertReport = ({ portalName, bearerToken }: AlertReportProps) => {
                         </Select>
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600 order-1 sm:order-2">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 order-1 sm:order-2">
                       Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, getFilteredAlerts().length)} of {getFilteredAlerts().length} alerts
                     </div>
                   </div>

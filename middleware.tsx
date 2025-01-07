@@ -3,15 +3,16 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const PROTECTED_PATHS = [
     '/home',
+    '/sites',
     '/overview',
     '/system',
     '/collector-info',
     '/api-explorer',
     '/device-onboarding',
-    '/portal-reports',
     '/dashboard-explorer',
     '/video-library',
-    '/pov'
+    '/pov',
+    '/reports-explorer'
 ];
 
 export async function middleware(request: NextRequest) {

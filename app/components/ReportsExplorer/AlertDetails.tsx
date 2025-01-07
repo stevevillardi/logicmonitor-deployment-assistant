@@ -37,70 +37,70 @@ const AlertDetails = ({ alert, open, onClose }: AlertDetailsProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl bg-blue-50 max-h-[85vh] overflow-y-auto">
-        <DialogHeader className="border-b border-blue-100 pb-3">
-          <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] flex items-center gap-2">
-            <Info className="w-5 h-5 text-blue-700" />
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl bg-blue-50 dark:bg-gray-900 dark:border-gray-700 max-h-[85vh] overflow-y-auto">
+        <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-5">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100 flex items-center gap-2">
+            <Info className="w-5 h-5 text-blue-700 dark:text-blue-400" />
             Alert Details
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-3">
           {/* Alert Summary */}
-          <div className="bg-white p-4 rounded-lg border border-blue-200 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${severityColor}`}>
                 {severityText}
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {formatTimestamp(alert.startEpoch, 'startEpoch')}
               </span>
             </div>
             <div className="space-y-2">
-              <h3 className="font-medium">{alert.monitorObjectName}</h3>
-              <p className="text-sm text-gray-600">{alert.dataPointName}</p>
+              <h3 className="font-medium dark:text-gray-100">{alert.monitorObjectName}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{alert.dataPointName}</p>
             </div>
           </div>
 
           {/* Alert Details Grid */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-[#040F4B] flex items-center gap-2">
-                <Server className="w-4 h-4 text-blue-700" />
+              <h4 className="text-sm font-semibold text-[#040F4B] dark:text-gray-100 flex items-center gap-2">
+                <Server className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                 Resource Details
               </h4>
-              <dl className="space-y-2 bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
+              <dl className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Resource</dt>
-                  <dd className="mt-1">{alert.monitorObjectName}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Resource</dt>
+                  <dd className="mt-1 dark:text-gray-200">{alert.monitorObjectName}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">DataSource</dt>
-                  <dd className="mt-1">{alert.resourceTemplateName}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">DataSource</dt>
+                  <dd className="mt-1 dark:text-gray-200">{alert.resourceTemplateName}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Instance</dt>
-                  <dd className="mt-1">{alert.instanceName}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Instance</dt>
+                  <dd className="mt-1 dark:text-gray-200">{alert.instanceName}</dd>
                 </div>
               </dl>
             </div>
             
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-[#040F4B] flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-blue-700" />
+              <h4 className="text-sm font-semibold text-[#040F4B] dark:text-gray-100 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                 Alert Details
               </h4>
-              <dl className="space-y-2 bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
+              <dl className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">DataPoint</dt>
-                  <dd className="mt-1">{alert.dataPointName}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">DataPoint</dt>
+                  <dd className="mt-1 dark:text-gray-200">{alert.dataPointName}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Value</dt>
-                  <dd className="mt-1">{alert.alertValue}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Value</dt>
+                  <dd className="mt-1 dark:text-gray-200">{alert.alertValue}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Status</dt>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
                   <dd className="mt-1">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${severityColor}`}>
                       {severityText}
@@ -114,16 +114,16 @@ const AlertDetails = ({ alert, open, onClose }: AlertDetailsProps) => {
           {/* Member of Groups Section */}
           {alert.monitorObjectGroups && alert.monitorObjectGroups.length > 0 && (
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-[#040F4B] flex items-center gap-2">
-                <Users className="w-4 h-4 text-blue-700" />
+              <h4 className="text-sm font-semibold text-[#040F4B] dark:text-gray-100 flex items-center gap-2">
+                <Users className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                 Group Membership
               </h4>
-              <div className="bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm">
                 <div className="flex flex-wrap gap-2">
                   {alert.monitorObjectGroups.map((group: any, index: number) => (
                     <span
                       key={index}
-                      className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-sm"
+                      className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm"
                     >
                       {group.name || group.fullPath}
                     </span>
@@ -135,19 +135,19 @@ const AlertDetails = ({ alert, open, onClose }: AlertDetailsProps) => {
 
           {/* All Properties */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-[#040F4B] flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-700" />
+            <h4 className="text-sm font-semibold text-[#040F4B] dark:text-gray-100 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-700 dark:text-blue-400" />
               All Fields
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm">
               {Object.entries(alert)
                 .sort(([a], [b]) => a.localeCompare(b))
                 .filter(([key]) => !EXCLUDED_FIELDS.includes(key))
                 .filter(([key, value]) => isValidValue(value, key))
                 .map(([key, value]) => (
                   <div key={key} className="overflow-hidden">
-                    <dt className="text-sm font-medium text-gray-500 truncate">{key}</dt>
-                    <dd className="mt-1 text-sm text-gray-900 break-words">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{key}</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-200 break-words">
                       {formatTimestamp(value, key)}
                     </dd>
                   </div>
@@ -156,10 +156,10 @@ const AlertDetails = ({ alert, open, onClose }: AlertDetailsProps) => {
           </div>
         </div>
 
-        <DialogFooter className="border-t border-blue-100 pt-3">
+        <DialogFooter className="border-t border-blue-100 dark:border-gray-700 pt-3">
           <Button
             onClick={onClose}
-            className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+            className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors duration-200"
           >
             <X className="w-4 h-4 mr-2" />
             Close

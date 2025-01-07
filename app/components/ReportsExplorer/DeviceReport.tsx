@@ -595,17 +595,17 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
 
   // Return JSX
   return (
-    <Card>
+    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-700" />
-            <CardTitle>Device Inventory</CardTitle>
+            <FileText className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+            <CardTitle className="dark:text-gray-100">Device Inventory</CardTitle>
           </div>
           <Button 
             onClick={fetchAllDevices}
             disabled={loading || !(portalName && bearerToken)}
-            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white gap-2"
+            className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white dark:bg-blue-600 dark:hover:bg-blue-700 gap-2"
           >
             {loading ? (
               <div className="flex items-center gap-2">
@@ -628,13 +628,13 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
       <CardContent>
         <div className="space-y-4">
           {error && (
-            <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-200">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
 
           {!loading && devices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-gray-500 space-y-4">
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400 space-y-4">
               <TableIcon className="w-12 h-12" />
               <div className="text-center">
                 <p className="font-medium">No Devices Loaded</p>
@@ -644,20 +644,20 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
           ) : (
             <div className="space-y-4">
               {/* Property Selection Section */}
-              <div className="bg-white border border-gray-200 rounded-lg">
-                <div className="w-full p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="w-full p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-blue-700" />
-                      <span className="font-medium text-gray-900">Property Selection</span>
+                      <FileText className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                      <span className="font-medium text-gray-900 dark:text-gray-100">Property Selection</span>
                     </div>
                     <div className="relative w-[300px]" onClick={e => e.stopPropagation()}>
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <Input
                         placeholder="Search properties..."
                         value={propertySearch}
                         onChange={(e) => setPropertySearch(e.target.value)}
-                        className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                        className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-500 dark:text-gray-100 dark:placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -668,25 +668,25 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         setPropertyType(value);
                       }}
                     >
-                      <SelectTrigger className="w-[200px] bg-white border-gray-200">
+                      <SelectTrigger className="w-[200px] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-100">
                         <SelectValue placeholder="Select property type" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="all">All Properties</SelectItem>
-                        <SelectItem value="system">System Properties</SelectItem>
-                        <SelectItem value="custom">Custom Properties</SelectItem>
-                        <SelectItem value="inherited">Inherited Properties</SelectItem>
+                      <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                        <SelectItem value="all" className="dark:text-gray-100">All Properties</SelectItem>
+                        <SelectItem value="system" className="dark:text-gray-100">System Properties</SelectItem>
+                        <SelectItem value="custom" className="dark:text-gray-100">Custom Properties</SelectItem>
+                        <SelectItem value="inherited" className="dark:text-gray-100">Inherited Properties</SelectItem>
                       </SelectContent>
                     </Select>
-                    <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg" onClick={e => e.stopPropagation()}>
+                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setPropertyView('grid')}
                         className={`${
                           propertyView === 'grid' 
-                            ? 'bg-white text-blue-700 shadow-sm' 
-                            : 'text-gray-600 hover:text-gray-900'
+                            ? 'bg-white dark:bg-gray-600 text-blue-700 dark:text-blue-400 shadow-sm' 
+                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                         } px-3 py-1.5 rounded`}
                       >
                         <TableIcon className="w-4 h-4" />
@@ -697,8 +697,8 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         onClick={() => setPropertyView('list')}
                         className={`${
                           propertyView === 'list' 
-                            ? 'bg-white text-blue-700 shadow-sm' 
-                            : 'text-gray-600 hover:text-gray-900'
+                            ? 'bg-white dark:bg-gray-600 text-blue-700 dark:text-blue-400 shadow-sm' 
+                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                         } px-3 py-1.5 rounded`}
                       >
                         <List className="w-4 h-4" />
@@ -738,14 +738,14 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
 
                     {/* Property List */}
                     {propertyView === 'grid' ? (
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-4 gap-2 p-4">
                         {getPaginatedProperties().properties.map(([prop, count]) => (
                           <div
                             key={prop}
-                            className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors hover:border-blue-200 ${
+                            className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors hover:border-blue-200 dark:hover:border-blue-700 ${
                               selectedProperties.includes(prop)
-                                ? 'bg-blue-50 border-blue-200'
-                                : 'bg-gray-50 border-gray-200'
+                                ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
+                                : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
                             }`}
                             onClick={() => {
                               setSelectedProperties(prev =>
@@ -760,23 +760,23 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                                 checked={selectedProperties.includes(prop)}
                                 className="pointer-events-none shrink-0"
                               />
-                              <span className="text-xs text-gray-700 truncate">{prop}</span>
+                              <span className="text-xs text-gray-700 dark:text-gray-300 truncate">{prop}</span>
                             </div>
-                            <span className="text-[11px] text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded shrink-0 ml-2">
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-1.5 py-0.5 rounded shrink-0 ml-2">
                               {count}
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="space-y-1">
+                      <div className="space-y-1 p-4">
                         {getPaginatedProperties().properties.map(([prop, count]) => (
                           <div 
                             key={prop}
                             className={`flex items-center justify-between p-2 rounded-lg transition-colors cursor-pointer
                               ${selectedProperties.includes(prop) 
-                                ? 'bg-blue-50 border border-blue-200' 
-                                : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'}`}
+                                ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700' 
+                                : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                             onClick={() => {
                               setSelectedProperties(prev => 
                                 prev.includes(prop) 
@@ -791,9 +791,9 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                                 checked={selectedProperties.includes(prop)}
                                 className="pointer-events-none"
                               />
-                              <span className="text-sm text-gray-700">{prop}</span>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{prop}</span>
                             </div>
-                            <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded-full">
+                            <span className="text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700 px-2 py-0.5 rounded-full">
                               {count}
                             </span>
                           </div>
@@ -802,7 +802,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                     )}
 
                     {/* Property Pagination Controls */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex items-center gap-4 order-2 sm:order-1">
                         <div className="flex items-center gap-2">
                           <Button
@@ -810,7 +810,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                             size="sm"
                             onClick={() => setPropertyPage(p => Math.max(1, p - 1))}
                             disabled={propertyPage === 1}
-                            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                            className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                           >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -820,14 +820,14 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                             size="sm"
                             onClick={() => setPropertyPage(p => Math.min(getPaginatedProperties().totalPages, p + 1))}
                             disabled={propertyPage === getPaginatedProperties().totalPages}
-                            className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                            className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                           >
                             Next
                             <ChevronRight className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-600">Items per page:</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Items per page:</span>
                           <Select
                             value={propertyPageSize.toString()}
                             onValueChange={(value) => {
@@ -835,10 +835,10 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                               setPropertyPage(1);
                             }}
                           >
-                            <SelectTrigger className="w-[70px] h-8 bg-white border-gray-200">
+                            <SelectTrigger className="w-[70px] h-8 bg-white text-gray-700 dark:text-gray-300 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white">
+                            <SelectContent className="bg-white text-gray-700 dark:text-gray-300 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                               {[20, 50, 100].map((size) => (
                                 <SelectItem key={size} value={size.toString()}>
                                   {size}
@@ -848,7 +848,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           </Select>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-600 order-1 sm:order-2">
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
                         Showing {((propertyPage - 1) * propertyPageSize) + 1} to {Math.min(propertyPage * propertyPageSize, getPaginatedProperties().total)} of {getPaginatedProperties().total} properties
                       </div>
                     </div>
@@ -863,16 +863,16 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
               </div>
 
               {/* Display Options Section */}
-              <div className="bg-white border border-gray-200 rounded-lg">
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                   <div className="flex items-center gap-2">
-                    <Settings className="w-5 h-5 text-blue-700" />
-                    <span className="font-medium text-gray-900">Display Options</span>
+                    <Settings className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Display Options</span>
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Default Columns</h3>
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Default Columns</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       <div className="flex items-center space-x-2">
                         <Checkbox
@@ -880,7 +880,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           checked={defaultColumns.id}
                           onCheckedChange={() => handleDefaultColumnToggle('id')}
                         />
-                        <label htmlFor="show-id" className="text-sm text-gray-600">
+                        <label htmlFor="show-id" className="text-sm text-gray-600 dark:text-gray-300">
                           ID
                         </label>
                       </div>
@@ -890,7 +890,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           checked={defaultColumns.type}
                           onCheckedChange={() => handleDefaultColumnToggle('type')}
                         />
-                        <label htmlFor="show-type" className="text-sm text-gray-600">
+                        <label htmlFor="show-type" className="text-sm text-gray-600 dark:text-gray-300">
                           Type
                         </label>
                       </div>
@@ -900,7 +900,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           checked={defaultColumns.name}
                           onCheckedChange={() => handleDefaultColumnToggle('name')}
                         />
-                        <label htmlFor="show-name" className="text-sm text-gray-600">
+                        <label htmlFor="show-name" className="text-sm text-gray-600 dark:text-gray-300">
                           Name
                         </label>
                       </div>
@@ -910,7 +910,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           checked={defaultColumns.displayName}
                           onCheckedChange={() => handleDefaultColumnToggle('displayName')}
                         />
-                        <label htmlFor="show-displayName" className="text-sm text-gray-600">
+                        <label htmlFor="show-displayName" className="text-sm text-gray-600 dark:text-gray-300">
                           Display Name
                         </label>
                       </div>
@@ -920,23 +920,23 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
               </div>
 
               {/* Results Table */}
-              <div className={`bg-white rounded-lg border border-gray-200 ${
+              <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${
                 isFullScreen ? 'fixed inset-0 z-50 flex flex-col' : ''
               }`}>
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <TableIcon className="w-5 h-5 text-blue-700" />
-                        <span className="font-medium text-gray-900">Device Inventory</span>
+                        <TableIcon className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                        <span className="font-medium text-gray-900 dark:text-gray-100">Device Inventory</span>
                       </div>
                       <div className="relative w-[300px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                         <Input
                           placeholder="Filter by group name..."
                           value={groupNameFilter}
                           onChange={(e) => setGroupNameFilter(e.target.value)}
-                          className="pl-9 bg-white border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                          className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-500 dark:text-gray-100 dark:placeholder:text-gray-400"
                         />
                       </div>
                     </div>
@@ -945,10 +945,10 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={() => setIsEditingMode(!isEditingMode)}
-                        className={`bg-white border-gray-200 gap-1.5 ${
+                        className={`bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 gap-1.5 ${
                           isEditingMode 
-                            ? 'text-blue-700 border-blue-200 hover:bg-blue-50' 
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                            ? 'text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                       >
                         <Settings className="w-4 h-4" />
@@ -958,7 +958,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={redistributeColumnWidths}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         <TableIcon className="w-4 h-4" />
                         Auto-fit Columns
@@ -967,7 +967,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={exportToCSV}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         <Download className="w-4 h-4" />
                         Export CSV
@@ -976,7 +976,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={exportToPDF}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         <FileText className="w-4 h-4" />
                         Export PDF
@@ -985,7 +985,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         variant="outline"
                         size="sm"
                         onClick={toggleFullScreen}
-                        className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1.5"
+                        className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1.5"
                       >
                         {isFullScreen ? (
                           <>
@@ -999,7 +999,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           </>
                         )}
                       </Button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         {filteredDevices.length} {filteredDevices.length === 1 ? 'device' : 'devices'}
                       </span>
                     </div>
@@ -1018,7 +1018,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                     >
                       <Table>
                         <TableHeader>
-                          <TableRow>
+                          <TableRow className="dark:border-gray-700">
                             <SortableContext 
                               items={columns} 
                               strategy={horizontalListSortingStrategy}
@@ -1039,7 +1039,10 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         <TableBody>
                           {paginatedDevices.length > 0 ? (
                             paginatedDevices.map((device) => (
-                              <TableRow key={device.id}>
+                              <TableRow 
+                                key={device.id}
+                                className="dark:border-gray-700"
+                              >
                                 {columns.map((column) => {
                                   let content;
                                   if (column.id === 'id') {
@@ -1064,6 +1067,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                                         maxWidth: column.width,
                                         minWidth: column.width 
                                       }}
+                                      className="dark:text-gray-300"
                                     >
                                       {content}
                                     </TableCell>
@@ -1075,16 +1079,16 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                             <TableRow>
                               <TableCell 
                                 colSpan={columns.length} 
-                                className="h-24 text-center text-gray-500"
+                                className="h-24 text-center text-gray-500 dark:text-gray-400"
                               >
                                 {devices.length > 0 ? (
                                   <div className="flex flex-col items-center gap-2">
-                                    <Search className="w-5 h-5 text-gray-400" />
+                                    <Search className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                                     <span>No devices match the current filter</span>
                                   </div>
                                 ) : (
                                   <div className="flex flex-col items-center gap-2">
-                                    <TableIcon className="w-5 h-5 text-gray-400" />
+                                    <TableIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                                     <span>Load devices to view the report</span>
                                   </div>
                                 )}
@@ -1098,7 +1102,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                 </div>
 
                 {/* Table Pagination */}
-                <div className="border-t border-gray-200 p-4">
+                <div className="border-t border-gray-200 dark:border-gray-700 p-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 order-2 sm:order-1">
                       <div className="flex items-center gap-2">
@@ -1107,7 +1111,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           size="sm"
                           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                           disabled={currentPage === 1}
-                          className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                         >
                           <ChevronLeft className="h-4 w-4" />
                           Previous
@@ -1117,14 +1121,14 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                           size="sm"
                           onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                           disabled={currentPage === totalPages}
-                          className="bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 gap-1"
+                          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 gap-1"
                         >
                           Next
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Items per page:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Items per page:</span>
                         <Select
                           value={pageSize.toString()}
                           onValueChange={(value) => {
@@ -1132,10 +1136,10 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                             setCurrentPage(1);
                           }}
                         >
-                          <SelectTrigger className="w-[70px] h-8 bg-white border-gray-200">
+                          <SelectTrigger className="w-[70px] h-8 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-white">
+                          <SelectContent className="bg-white text-gray-700 dark:text-gray-300 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                             {PAGE_SIZE_OPTIONS.map((size) => (
                               <SelectItem key={size} value={size.toString()}>
                                 {size}
@@ -1145,7 +1149,7 @@ const DeviceReport = ({ portalName, bearerToken }: DeviceReportProps) => {
                         </Select>
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600 order-1 sm:order-2">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, devices.length)} of {devices.length} devices
                     </div>
                   </div>

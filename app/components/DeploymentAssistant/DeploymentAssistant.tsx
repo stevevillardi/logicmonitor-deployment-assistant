@@ -8,13 +8,12 @@ import SiteOverview from '../SiteOverview/SiteOverview';
 import CollectorInfo from '../CollectorInfo/CollectorInfo';
 import { Config, Site } from './types/types';
 import Image from 'next/image';
-import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine, Rocket } from 'lucide-react';
+import { Rocket } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
 import { useRouter, usePathname } from 'next/navigation';
 import VideoLibrary from '../VideoLibrary/VideoLibrary';
 import { devLog } from '../Shared/utils/debug';
-import { Button } from '@/components/ui/button';
 import { getInitialConfig, getInitialSites } from './utils/storage';
 import SwaggerUIComponent from '../APIExplorer/SwaggerUI';
 import { VersionInfo } from '../VersionInfo/VersionInfo';
@@ -23,137 +22,18 @@ import DashboardExplorer from '../DashboardExplorer/DashboardExplorer';
 import { CartProvider } from '@/app/contexts/CartContext';
 import { Profile } from '../Authentication/Profile';
 import POVReadiness from '../POV/POVReadiness';
-import { useAuth } from '@/app/hooks/useAuth';
-
-const Logo = () => {
-    return (
-        <div className="flex items-center">
-            <Image
-                src="lmlogo.webp"
-                alt="LogicMonitor"
-                width={250}
-                height={47}
-                className="w-[150px] h-auto sm:w-[200px] lg:w-[250px]"
-                priority
-            />
-        </div>
-    );
-};
-
-// Map URL paths to tab values
-const TAB_PATHS = {
-    sites: '/home',
-    overview: '/overview',
-    system: '/system',
-    'collector-info': '/collector-info',
-    'api-explorer': '/api-explorer',
-    'device-onboarding': '/device-onboarding',
-    'video-library': '/video-library',
-    'dashboard-explorer': '/dashboard-explorer', 
-    'pov': '/pov'
-} as const;
-
-const PATH_TO_TAB = Object.entries(TAB_PATHS).reduce((acc, [tab, path]) => {
-    acc[path] = tab;
-    return acc;
-}, {} as Record<string, string>);
-
-const Navigation = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (value: string) => void }) => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { hasPermission } = useAuth();
-
-    const navigationItems = [
-        { id: 'sites', label: 'Deployment Configuration', icon: <Bolt className="w-4 h-4" /> },
-        { id: 'overview', label: 'Deployment Overview', icon: <BookText className="w-4 h-4" /> },
-        { id: 'device-onboarding', label: 'Device Info', icon: <Server className="w-4 h-4" /> },
-        { id: 'collector-info', label: 'Collector Info', icon: <Bot className="w-4 h-4" /> },
-        { id: 'dashboard-explorer', label: 'Dashboard Explorer', icon: <ChartLine className="w-4 h-4" /> },
-        { id: 'api-explorer', label: 'API Explorer', icon: <Terminal className="w-4 h-4" /> },
-        { id: 'video-library', label: 'Video Library', icon: <PlayCircle className="w-4 h-4" /> },
-        ...(hasPermission({ action: 'read', resource: 'pov' }) 
-            ? [{ id: 'pov', label: 'POV Readiness', icon: <FileText className="w-4 h-4" /> }] 
-            : []
-        ),
-        { id: 'system', label: 'Deployment Settings', icon: <Settings className="w-4 h-4" /> },
-    ];
-
-    return (
-        <>
-            {/* Desktop Navigation */}
-            <div className="hidden lg:block rounded-lg w-full bg-[#040F4B] dark:bg-gray-800 px-4 py-2">
-                <div className="flex flex-wrap justify-center gap-2">
-                    {navigationItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => onTabChange(item.id)}
-                            className={`flex items-center text-sm gap-2 px-4 py-2 font-medium rounded-lg transition-colors whitespace-nowrap
-                                ${activeTab === item.id 
-                                    ? 'bg-[#1a2b7f] dark:bg-blue-600 text-white' 
-                                    : 'text-white/85 hover:bg-[#0A1B6F] dark:hover:bg-blue-700 hover:text-white'}`}
-                        >
-                            {item.icon}
-                            <span>{item.label}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Mobile Navigation */}
-            <div className="lg:hidden w-full bg-[#040F4B] dark:bg-gray-800 px-4 py-2">
-                <div className="relative">
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="w-full flex items-center justify-between text-white px-4 py-2 rounded-lg bg-[#0A1B6F] dark:bg-blue-600 hover:bg-[#1a2b7f] dark:hover:bg-blue-700"
-                    >
-                        <div className="flex items-center gap-2">
-                            {navigationItems.find(item => item.id === activeTab)?.icon}
-                            <span className="font-medium">
-                                {navigationItems.find(item => item.id === activeTab)?.label}
-                            </span>
-                        </div>
-                        <ChevronDown className={`w-5 h-5 transition-transform ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {isMobileMenuOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A1B6F] dark:bg-blue-600 rounded-lg shadow-lg overflow-hidden z-50">
-                            {navigationItems.map((item) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => {
-                                        onTabChange(item.id);
-                                        setIsMobileMenuOpen(false);
-                                    }}
-                                    className={`w-full flex items-center text-sm gap-2 px-4 py-3 font-medium transition-colors
-                                        ${activeTab === item.id 
-                                            ? 'bg-[#1a2b7f] dark:bg-blue-700 text-white' 
-                                            : 'text-white/85 hover:bg-[#1a2b7f] dark:hover:bg-blue-700 hover:text-white'}`}
-                                >
-                                    {item.icon}
-                                    <span>{item.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
-    );
-};
+import { Navigation } from './Navigation';
+import HomePage from '../Home/Home';
+import ReportsExplorer from '../ReportsExplorer/ReportsExplorer';
 
 const DeploymentAssistant = () => {
     const [config, setConfig] = useState<Config>(getInitialConfig);
     const [sites, setSites] = useState<Site[]>(getInitialSites);
+    const [expandedSites, setExpandedSites] = useState<Set<number>>(new Set());
+    const [helpDialogOpen, setHelpDialogOpen] = useState(false);
     
     const router = useRouter();
     const pathname = usePathname();
-
-    // Get the active tab based on the current pathname
-    const getActiveTab = (path: string) => {
-        return PATH_TO_TAB[path] || 'sites';
-    };
-
-    const [activeTab, setActiveTab] = useState(getActiveTab(pathname));
-    const [expandedSites, setExpandedSites] = useState < Set < number >> (new Set());
-    const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
     // Save state to localStorage whenever it changes
     useEffect(() => {
@@ -163,23 +43,6 @@ const DeploymentAssistant = () => {
     useEffect(() => {
         localStorage.setItem('collectorSites', JSON.stringify(sites));
     }, [sites]);
-
-    // Update the URL when tab changes
-    const handleTabChange = useCallback((value: string) => {
-        const path = TAB_PATHS[value as keyof typeof TAB_PATHS];
-        if (path && value !== activeTab) {
-            setActiveTab(value);
-            router.push(path, { scroll: false });
-        }
-    }, [activeTab, router]);
-
-    // Only update active tab from URL on initial load and direct navigation
-    useEffect(() => {
-        const newTab = getActiveTab(pathname);
-        if (newTab !== activeTab) {
-            setActiveTab(newTab);
-        }
-    }, [pathname, activeTab]);
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedDeploymentAssistant');
@@ -198,6 +61,55 @@ const DeploymentAssistant = () => {
         devLog('Sites update triggered:', newSites);
         setSites(newSites);
     }, []);
+
+    const renderContent = () => {
+        switch (pathname) {
+            case '/home':
+                return <HomePage />;
+            case '/sites':
+                return (
+                    <SiteConfiguration
+                        sites={sites}
+                        onUpdateSites={handleSitesUpdate}
+                        config={config}
+                        onUpdateConfig={handleConfigUpdate}
+                        onSiteExpand={setExpandedSites}
+                        expandedSites={expandedSites}
+                    />
+                );
+            case '/system':
+                return (
+                    <SystemConfiguration
+                        config={config}
+                        onUpdate={handleConfigUpdate}
+                        sites={sites}
+                        onUpdateSites={handleSitesUpdate}
+                    />
+                );
+            case '/overview':
+                return <SiteOverview sites={sites} config={config} />;
+            case '/collector-info':
+                return <CollectorInfo config={config} />;
+            case '/dashboard-explorer':
+                return (
+                    <CartProvider>
+                        <DashboardExplorer />
+                    </CartProvider>
+                );
+            case '/api-explorer':
+                return <SwaggerUIComponent />;
+            case '/reports-explorer':
+                return <ReportsExplorer />;
+            case '/device-onboarding':
+                return <DeviceOnboarding />;
+            case '/video-library':
+                return <VideoLibrary />;
+            case '/pov':
+                return <POVReadiness />;
+            default:
+                return null;
+        }
+    };
 
     return (    
         <div className="min-h-screen bg-[#040F4B] w-full flex items-center justify-center">
@@ -220,14 +132,6 @@ const DeploymentAssistant = () => {
                                 <Profile />
                             </div>
                             <div className="hidden md:flex items-center gap-2 lg:gap-4">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => window.location.href = '/portal-reports'}
-                                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-200 text-sm text-blue-700 dark:text-blue-400"
-                                >
-                                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-400" />
-                                    <span className="hidden 2xl:inline">Reports (Preview)</span>
-                                </Button>
                                 <LaunchTour />
                                 <VersionInfo />
                                 <Profile />
@@ -237,78 +141,10 @@ const DeploymentAssistant = () => {
                 </CardHeader>
                 <CardContent className="p-0 pl-3 pr-3 bg-gray-50 dark:bg-gray-900">
                     <div className="space-y-6">
-                        <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
-
-                        {activeTab === 'sites' && (
-                            <div className="mt-6">
-                                <SiteConfiguration
-                                    sites={sites}
-                                    onUpdateSites={handleSitesUpdate}
-                                    config={config}
-                                    onUpdateConfig={handleConfigUpdate}
-                                    onSiteExpand={setExpandedSites}
-                                    expandedSites={expandedSites}
-                                />
-                            </div>
-                        )}
-
-                        {activeTab === 'system' && (
-                            <div className="mt-6">
-                                <SystemConfiguration
-                                    config={config}
-                                    onUpdate={handleConfigUpdate}
-                                    sites={sites}
-                                    onUpdateSites={handleSitesUpdate}
-                                />
-                            </div>
-                        )}
-
-                        {activeTab === 'overview' && (
-                            <div className="mt-6">
-                                <SiteOverview
-                                    sites={sites}
-                                    config={config}
-                                />
-                            </div>
-                        )}
-
-                        {activeTab === 'collector-info' && (
-                            <div className="mt-6">
-                                <CollectorInfo config={config} />
-                            </div>
-                        )}
-
-                        {activeTab === 'dashboard-explorer' && (
-                            <div className="mt-6">
-                                <CartProvider>
-                                    <DashboardExplorer />
-                                </CartProvider>
-                            </div>
-                        )}
-
-                        {activeTab === 'api-explorer' && (
-                            <div className="mt-6">
-                                <SwaggerUIComponent />
-                            </div>
-                        )}
-
-                        {activeTab === 'device-onboarding' && (
-                            <div className="mt-6">
-                                <DeviceOnboarding />
-                            </div>
-                        )}
-
-                        {activeTab === 'video-library' && (
-                            <div className="mt-6">
-                                <VideoLibrary />
-                            </div>
-                        )}
-
-                        {activeTab === 'pov' && (
-                            <div className="mt-6">
-                                <POVReadiness />
-                            </div>
-                        )}
+                        <Navigation />
+                        <div className="mt-6">
+                            {renderContent()}
+                        </div>
                     </div>
                 </CardContent>
             </Card>
