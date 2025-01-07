@@ -61,7 +61,7 @@ const HomePage = () => {
     const { user } = useAuth();
 
     return (
-        <div className="space-y-6 overflow-y-auto">
+        <div className="space-y-6 mb-10 overflow-y-auto">
             <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
                 <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                     <div className="flex items-center gap-3">
