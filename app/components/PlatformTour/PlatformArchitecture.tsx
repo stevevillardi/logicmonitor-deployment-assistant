@@ -136,27 +136,27 @@ const PLATFORM_SECTIONS = {
             id: 'application',
             title: 'Application Visibility',
             icon: Search,
-            description: 'End-to-end visibility into application performance and dependencies.',
+            description: 'Intelligent observability for modern applications – contextually bring together traces, metrics, and synthetics.',
             category: 'core',
             details: {
                 keyPoints: [
-                    'Full-stack application monitoring',
-                    'Service dependency mapping',
-                    'Transaction tracing',
-                    'Application performance metrics'
+                    'End-to-end distributed tracing with OpenTelemetry',
+                    'Real-time application performance insights',
+                    'Proactive synthetic monitoring',
+                    'Automated service dependency mapping'
                 ],
                 features: [
-                    'Application topology mapping',
-                    'Code-level performance insights',
-                    'User experience monitoring',
-                    'Service level objective tracking',
-                    'Application dependency analysis'
+                    'Distributed tracing with span analysis',
+                    'Application topology visualization',
+                    'Multi-step synthetic transactions',
+                    'OpenTelemetry & OpenMetrics integration',
+                    'Cross-team collaboration tools'
                 ],
                 note: {
-                    text: 'Get complete visibility into your application stack with automated service discovery and performance monitoring.',
+                    text: 'Track user performance, detect application latency, and identify bottlenecks within your modern applications across hybrid and multi-cloud environments.',
                     link: {
-                        url: 'https://www.logicmonitor.com/application-monitoring',
-                        text: 'Learn about Application Monitoring'
+                        url: 'https://www.logicmonitor.com/application-performance-monitoring',
+                        text: 'Learn about Application Performance Monitoring'
                     }
                 }
             }
@@ -165,27 +165,27 @@ const PLATFORM_SECTIONS = {
             id: 'alerts',
             title: 'Alert & Event Intelligence',
             icon: Activity,
-            description: 'Smart alerting and event correlation powered by Edwin AI.',
+            description: 'Eliminate alert fatigue and resolve IT incidents faster with Edwin AI-powered intelligence.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'AI-powered alert correlation',
-                    'Automated incident routing',
-                    'Dynamic alert thresholds',
-                    'Root cause analysis'
+                    'Reduce alert noise by 90% with AI correlation',
+                    'Reduce MTTR by 60% with GenAI insights',
+                    'Seamless ITSM integration',
+                    'Cross-domain alert grouping'
                 ],
                 features: [
-                    'Alert noise reduction',
-                    'Intelligent alert grouping',
-                    'Automated escalation workflows',
-                    'Alert dependency mapping',
-                    'Historical trend analysis'
+                    'AI-driven alert correlation & deduplication',
+                    'GenAI-powered incident summaries',
+                    'Automated routing & escalation',
+                    'Predictive alerts & insights',
+                    'Root cause analysis with GenAI'
                 ],
                 note: {
-                    text: 'Reduce alert fatigue and respond faster to incidents with AI-powered alert intelligence and automation.',
+                    text: 'Edwin AI consolidates event intelligence, troubleshooting, and incident management into one single pane of glass, with support for 3000+ integrations.',
                     link: {
-                        url: 'https://www.logicmonitor.com/alert-intelligence',
-                        text: 'Explore Alert Intelligence'
+                        url: 'https://www.logicmonitor.com/edwin-ai',
+                        text: 'Learn about Edwin AI'
                     }
                 }
             }
@@ -196,27 +196,27 @@ const PLATFORM_SECTIONS = {
             id: 'service-insights',
             title: 'Service Insights',
             icon: Brain,
-            description: 'Understand service health, dependencies, and performance at a glance.',
+            description: 'Monitor and visualize service health by aggregating data across instances and resources.',
             category: 'core',
             details: {
                 keyPoints: [
-                    'Service-level health monitoring',
-                    'Automated dependency mapping',
-                    'Performance trend analysis',
-                    'Service impact assessment'
+                    'Service-level monitoring and alerting',
+                    'Cross-resource data aggregation',
+                    'Logical service grouping',
+                    'Service level indicators (SLI) tracking'
                 ],
                 features: [
-                    'Service topology visualization',
-                    'SLA/SLO tracking',
-                    'Cross-service correlation',
-                    'Business service mapping',
-                    'Dependency-aware alerting'
+                    'Instance aggregation across resources',
+                    'Service-level data visualization',
+                    'Custom aggregation methods',
+                    'Service health monitoring',
+                    'Container-aware service tracking'
                 ],
                 note: {
-                    text: 'Get a comprehensive view of your services with automated discovery and intelligent insights.',
+                    text: 'LM Service Insight enables monitoring of overall service health across distributed resources, perfect for containerized applications where individual instances may be ephemeral.',
                     link: {
-                        url: 'https://www.logicmonitor.com/service-monitoring',
-                        text: 'Learn about Service Insights'
+                        url: 'https://www.logicmonitor.com/support/lm-service-insight/about-lm-service-insight',
+                        text: 'Learn about Service Insight'
                     }
                 }
             }
@@ -225,27 +225,27 @@ const PLATFORM_SECTIONS = {
             id: 'resource-explorer',
             title: 'Resource Explorer',
             icon: Search,
-            description: 'Powerful search and exploration of all monitored resources.',
+            description: 'Display and analyze health summary for all monitored resources in your LogicMonitor portal.',
             category: 'core',
             details: {
                 keyPoints: [
-                    'Advanced resource search',
-                    'Dynamic filtering capabilities',
-                    'Resource relationship mapping',
-                    'Real-time resource metrics'
+                    'Advanced filtering by resource properties',
+                    'Flexible resource grouping options',
+                    'Alert severity tracking and analysis',
+                    'Real-time resource health monitoring'
                 ],
                 features: [
-                    'Resource inventory management',
-                    'Custom resource views',
-                    'Resource group management',
-                    'Resource health tracking',
-                    'Resource configuration analysis'
+                    'Custom saved views and sharing',
+                    'Alert severity filtering',
+                    'Property-based grouping',
+                    'Resource metrics visualization',
+                    'Drill-down resource analysis'
                 ],
                 note: {
-                    text: 'Quickly find and analyze any resource in your environment with powerful search and filtering capabilities.',
+                    text: 'Use filters and groups to focus on specific resources, quickly identify critical alerts, and drill down to investigate root causes across your infrastructure.',
                     link: {
-                        url: 'https://www.logicmonitor.com/resource-management',
-                        text: 'Explore Resource Management'
+                        url: 'https://www.logicmonitor.com/support/resource-explorer-overview',
+                        text: 'Learn about Resource Explorer'
                     }
                 }
             }
@@ -273,7 +273,7 @@ const PLATFORM_SECTIONS = {
                 note: {
                     text: 'Make data-driven decisions with comprehensive analytics and reporting capabilities.',
                     link: {
-                        url: 'https://www.logicmonitor.com/platform-analytics',
+                        url: 'https://www.logicmonitor.com/support/dashboards-and-widgets/overview/what-are-dashboards',
                         text: 'Learn about Platform Analytics'
                     }
                 }
@@ -283,27 +283,27 @@ const PLATFORM_SECTIONS = {
             id: 'ai-assist',
             title: 'AI Assist',
             icon: Zap,
-            description: 'AI-powered assistance for faster problem resolution.',
+            description: 'AI-powered intelligence that helps you see what\'s coming before it happens and quickly understand the source of problems.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'Automated root cause analysis',
-                    'Intelligent troubleshooting',
-                    'Predictive insights',
-                    'Automated remediation suggestions'
+                    'Reduce alert noise by up to 80%',
+                    'Early warning system for proactive prevention',
+                    'Automated metric correlation',
+                    'Dynamic threshold adaptation'
                 ],
                 features: [
-                    'AI-driven recommendations',
-                    'Automated problem detection',
-                    'Knowledge base integration',
-                    'Contextual insights',
-                    'Learning from past incidents'
+                    'AI-driven alert correlation',
+                    'Predictive anomaly detection',
+                    'Automated root cause analysis',
+                    'Capacity planning forecasting',
+                    'Dependent alert mapping'
                 ],
                 note: {
-                    text: 'Let Edwin AI help you resolve issues faster with intelligent insights and recommendations.',
+                    text: 'Edwin AI employs out-of-box ML models with no training needed, providing immediate value through alert correlation, predictive insights, and automated troubleshooting.',
                     link: {
-                        url: 'https://www.logicmonitor.com/ai-assist',
-                        text: 'Discover AI Assist'
+                        url: 'https://www.logicmonitor.com/aiops',
+                        text: 'Learn about AIOps'
                     }
                 }
             }
@@ -314,26 +314,26 @@ const PLATFORM_SECTIONS = {
             id: 'anomaly',
             title: 'Anomaly Detection',
             icon: Activity,
-            description: 'AI-powered anomaly detection and behavioral analysis.',
+            description: 'Identify data patterns that fall outside of expected behavior using machine learning algorithms.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'Machine learning-based detection',
-                    'Dynamic baseline creation',
-                    'Pattern recognition',
-                    'Contextual anomaly scoring'
+                    'Machine learning-based pattern detection',
+                    'Automatic expected range calculation',
+                    'Real-time anomaly visualization',
+                    'Log and metric anomaly detection'
                 ],
                 features: [
-                    'Automated baseline learning',
-                    'Multi-metric correlation',
-                    'Seasonal pattern detection',
-                    'False positive reduction',
-                    'Real-time anomaly alerts'
+                    'Dynamic baseline learning',
+                    'Expected range visualization',
+                    'Historical pattern analysis',
+                    'Log structure analysis',
+                    'Automated profile learning'
                 ],
                 note: {
-                    text: 'Detect and respond to anomalies faster with Edwin AI-powered behavioral analysis.',
+                    text: 'Detect anomalies across metrics and logs with no training needed - LogicMonitor automatically establishes baselines and identifies deviations to catch issues before they escalate.',
                     link: {
-                        url: 'https://www.logicmonitor.com/anomaly-detection',
+                        url: 'https://www.logicmonitor.com/support/forecasting/anomaly-detection/anomaly-detection-visualization',
                         text: 'Learn about Anomaly Detection'
                     }
                 }
@@ -343,27 +343,27 @@ const PLATFORM_SECTIONS = {
             id: 'dynamic',
             title: 'Dynamic Thresholds',
             icon: GitBranch,
-            description: 'Self-adjusting thresholds based on historical patterns.',
+            description: 'Automatically detect anomalies and reduce alert noise with AI-powered dynamic thresholds.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'Automatic threshold adjustment',
-                    'Historical trend analysis',
-                    'Seasonal awareness',
-                    'Resource-specific tuning'
+                    'Auto-generated expected data ranges',
+                    'Seasonal pattern recognition',
+                    'Rate of change detection',
+                    'No manual threshold tuning needed'
                 ],
                 features: [
-                    'Time-based thresholds',
-                    'Percentile-based alerts',
-                    'Trend-based forecasting',
-                    'Custom threshold rules',
-                    'Threshold optimization'
+                    'Automatic baseline learning',
+                    'Daily/weekly trend detection',
+                    'Alert noise reduction',
+                    'Multi-level threshold configuration',
+                    'Static threshold integration'
                 ],
                 note: {
-                    text: 'Eliminate alert noise with intelligent thresholds that automatically adapt to your environment.',
+                    text: 'Dynamic thresholds automatically adjust to your environment\'s patterns, reducing alert noise while ensuring you catch real issues that static thresholds might miss.',
                     link: {
-                        url: 'https://www.logicmonitor.com/dynamic-thresholds',
-                        text: 'Explore Dynamic Thresholds'
+                        url: 'https://www.logicmonitor.com/support/alerts/aiops-features-for-alerting/enabling-dynamic-thresholds-for-datapoints',
+                        text: 'Learn about Dynamic Thresholds'
                     }
                 }
             }
@@ -372,27 +372,27 @@ const PLATFORM_SECTIONS = {
             id: 'forecasting',
             title: 'Forecasting & Prediction',
             icon: BarChart,
-            description: 'Predictive analytics for proactive management.',
+            description: 'Predict future trends for your monitored infrastructure using past performance data and machine learning.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'Resource utilization forecasting',
-                    'Capacity planning insights',
-                    'Trend analysis',
-                    'Predictive alerting'
+                    'Anomaly-aware trend analysis',
+                    'Capacity trending algorithms',
+                    'Confidence-based predictions',
+                    'Multiple forecast methods'
                 ],
                 features: [
-                    'ML-based forecasting',
-                    'Resource optimization',
-                    'Predictive maintenance',
-                    'Capacity planning',
-                    'Budget forecasting'
+                    '95% confidence forecasting',
+                    'Line of best fit forecasting',
+                    'Customizable time ranges',
+                    'Alert threshold prediction',
+                    'Resource lifetime planning'
                 ],
                 note: {
-                    text: 'Make informed decisions with AI-powered forecasting and predictive analytics.',
+                    text: 'Forecast helps with issue diagnosis, budget planning, and resource management by analyzing past performance to predict when metrics will reach critical thresholds.',
                     link: {
-                        url: 'https://www.logicmonitor.com/forecasting',
-                        text: 'Discover Forecasting Capabilities'
+                        url: 'https://www.logicmonitor.com/support/forecasting/overview/data-forecasting',
+                        text: 'Learn about Forecasting'
                     }
                 }
             }
@@ -401,27 +401,27 @@ const PLATFORM_SECTIONS = {
             id: 'correlation',
             title: 'Event Correlation',
             icon: Network,
-            description: 'Intelligent event correlation and root cause analysis.',
+            description: 'Group related alerts into unified incidents and identify root causes through topology-aware correlation.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'Automated event grouping',
-                    'Root cause identification',
-                    'Impact analysis',
-                    'Topology-aware correlation'
+                    'Topology-based dependency mapping',
+                    'Cross-domain alert grouping',
+                    'Automated root cause identification',
+                    'Intelligent alert deduplication'
                 ],
                 features: [
-                    'AI-driven correlation',
-                    'Dependency mapping',
-                    'Alert noise reduction',
-                    'Impact visualization',
-                    'Automated remediation'
+                    'Alert noise reduction by 90%',
+                    'Dependent alert suppression',
+                    'Real-time correlation analysis',
+                    'Configurable routing delays',
+                    'Automated escalation control'
                 ],
                 note: {
-                    text: 'Reduce mean time to resolution with intelligent event correlation powered by Edwin AI.',
+                    text: 'Alert correlation automatically groups related alerts into unified incidents, identifies root causes through topology mapping, and reduces alert noise by suppressing dependent alerts.',
                     link: {
-                        url: 'https://www.logicmonitor.com/event-correlation',
-                        text: 'Learn about Event Correlation'
+                        url: 'https://www.logicmonitor.com/support/edwina/alert-correlation',
+                        text: 'Learn about Edwin AI Alert Correlation'
                     }
                 }
             }
@@ -432,27 +432,27 @@ const PLATFORM_SECTIONS = {
             id: 'metrics',
             title: 'Metrics',
             icon: BarChart,
-            description: 'Comprehensive collection and analysis of performance metrics.',
+            description: 'Collect and store high-resolution time-series data with flexible retention and aggregation.',
             category: 'collection',
             details: {
                 keyPoints: [
-                    'High-resolution metric collection',
-                    'Custom metric support',
-                    'Automated metric discovery',
-                    'Flexible aggregation options'
+                    'Long-term data retention (3 months to 2+ years)',
+                    'High-resolution data collection',
+                    'Granular storage engine',
+                    'Flexible data aggregation'
                 ],
                 features: [
-                    'Real-time metric streaming',
-                    'Custom metric calculations',
-                    'Metric data retention',
-                    'Statistical analysis',
-                    'Metric correlation'
+                    'Full-resolution data storage',
+                    'Historical data analysis',
+                    'Custom retention policies',
+                    'Trend-based aggregation',
+                    'Instance history preservation'
                 ],
                 note: {
-                    text: 'Collect and analyze metrics from any source with customizable retention and aggregation.',
+                    text: 'Store every sample of your time-series data at full resolution for forensic analysis, with intelligent aggregation for long-term trend visibility. Instance history is preserved for 30 days after deletion.',
                     link: {
-                        url: 'https://www.logicmonitor.com/metrics',
-                        text: 'Learn about Metrics'
+                        url: 'https://www.logicmonitor.com/support/about-logicmonitor/overview/data-retention',
+                        text: 'Learn about Data Retention'
                     }
                 }
             }
@@ -461,27 +461,27 @@ const PLATFORM_SECTIONS = {
             id: 'events',
             title: 'Events',
             icon: Activity,
-            description: 'Centralized event collection and intelligent processing.',
+            description: 'Collect and normalize events from multiple sources to identify changes in your IT infrastructure.',
             category: 'collection',
             details: {
                 keyPoints: [
-                    'Real-time event processing',
-                    'Event correlation',
-                    'Custom event rules',
-                    'Event enrichment'
+                    'Multi-source event collection',
+                    'Automated event normalization',
+                    'Event-based workflow triggers',
+                    'Intelligent event deduplication'
                 ],
                 features: [
-                    'Event filtering',
-                    'Event aggregation',
-                    'Custom event handlers',
-                    'Event forwarding',
-                    'Event retention policies'
+                    'SNMP trap monitoring',
+                    'Windows event logs',
+                    'Syslog monitoring',
+                    'IPMI event tracking',
+                    'Custom event filtering'
                 ],
                 note: {
-                    text: 'Collect and process events from all your systems with intelligent correlation and routing.',
+                    text: 'Events are normalized into a homogeneous format (DEF) and can trigger workflows that compress repeat identical events into deduplicated alerts for efficient incident management.',
                     link: {
-                        url: 'https://www.logicmonitor.com/events',
-                        text: 'Explore Event Management'
+                        url: 'https://www.logicmonitor.com/support/edwin/events',
+                        text: 'Learn about Events'
                     }
                 }
             }
@@ -490,27 +490,27 @@ const PLATFORM_SECTIONS = {
             id: 'logs',
             title: 'Logs',
             icon: Database,
-            description: 'Centralized log aggregation and analysis.',
+            description: 'Unified log analysis with algorithmic root-cause analysis and anomaly detection.',
             category: 'collection',
             details: {
                 keyPoints: [
-                    'Automated log collection',
-                    'Log parsing and structuring',
-                    'Pattern detection',
-                    'Log retention management'
+                    'AI-powered anomaly detection',
+                    'Early issue identification',
+                    'Automated pattern recognition',
+                    'Multi-source log ingestion'
                 ],
                 features: [
-                    'Log searching',
-                    'Log analytics',
-                    'Custom parsing rules',
-                    'Log forwarding',
-                    'Log archival'
+                    'Advanced log search & filtering',
+                    'Log pipeline processing',
+                    'Log anomaly visualization',
+                    'Cloud service integration',
+                    'Real-time log analysis'
                 ],
                 note: {
-                    text: 'Aggregate and analyze logs from all your sources with powerful search and analytics capabilities.',
+                    text: 'LM Logs analyzes log events to identify normal patterns and deviations, helping teams act on issues early before they become more complex and expensive to resolve.',
                     link: {
-                        url: 'https://www.logicmonitor.com/logs',
-                        text: 'Discover Log Analytics'
+                        url: 'https://www.logicmonitor.com/support/lm-logs/lm-logs-overview',
+                        text: 'Learn about LM Logs'
                     }
                 }
             }
@@ -519,27 +519,27 @@ const PLATFORM_SECTIONS = {
             id: 'traces',
             title: 'Traces',
             icon: GitBranch,
-            description: 'End-to-end distributed tracing and performance analysis.',
+            description: 'Monitor end-to-end communication as requests flow through distributed services in your environment.',
             category: 'collection',
             details: {
                 keyPoints: [
-                    'Distributed tracing',
-                    'Service dependency mapping',
-                    'Performance bottleneck detection',
-                    'Error tracking'
+                    'OpenTelemetry-based integration',
+                    'End-to-end request monitoring',
+                    'Automated service mapping',
+                    'Real-time performance analysis'
                 ],
                 features: [
-                    'Transaction tracing',
-                    'Service maps',
-                    'Latency analysis',
-                    'Error analysis',
-                    'Trace sampling'
+                    'Distributed trace collection',
+                    'Service dependency visualization',
+                    'Request latency analysis',
+                    'Cross-service correlation',
+                    'Span-level troubleshooting'
                 ],
                 note: {
-                    text: 'Track requests across your distributed systems with detailed performance analysis.',
+                    text: 'Identify where issues are occurring in your application\'s communication with detailed trace data that shows how requests flow through your distributed services.',
                     link: {
-                        url: 'https://www.logicmonitor.com/traces',
-                        text: 'Learn about Tracing'
+                        url: 'https://www.logicmonitor.com/support/tracing/distributed-tracing-overview',
+                        text: 'Learn about Distributed Tracing'
                     }
                 }
             }
@@ -548,27 +548,27 @@ const PLATFORM_SECTIONS = {
             id: 'topology',
             title: 'Topology',
             icon: Network,
-            description: 'Automated infrastructure and application topology mapping.',
+            description: 'Visual representation of relationships among elements within your communications network using layer 2 and layer 3 mappings.',
             category: 'collection',
             details: {
                 keyPoints: [
-                    'Automated topology discovery',
-                    'Relationship mapping',
-                    'Dynamic updates',
-                    'Impact analysis'
+                    'Layer 2 and 3 topology mapping',
+                    'Dynamic relationship discovery',
+                    'Root cause visualization',
+                    'Multi-protocol support'
                 ],
                 features: [
-                    'Network topology',
-                    'Application topology',
-                    'Service dependencies',
-                    'Change tracking',
-                    'Visual mapping'
+                    'LLDP/CDP discovery',
+                    'BGP/OSPF/EIGRP support',
+                    'Automated topology generation',
+                    'Resource relationship mapping',
+                    'Topology-aware alerting'
                 ],
                 note: {
-                    text: 'Automatically discover and visualize your entire infrastructure topology.',
+                    text: 'Automatically discover and visualize network topology to determine root causes of incidents, troubleshoot alerts, and understand resource dependencies across your infrastructure.',
                     link: {
-                        url: 'https://www.logicmonitor.com/topology',
-                        text: 'Explore Topology Mapping'
+                        url: 'https://www.logicmonitor.com/support/forecasting/topology-mapping/topology-mapping-overview',
+                        text: 'Learn about Topology Mapping'
                     }
                 }
             }
@@ -577,27 +577,27 @@ const PLATFORM_SECTIONS = {
             id: 'config',
             title: 'Config',
             icon: Settings,
-            description: 'Configuration management and change tracking.',
+            description: 'Monitor and track configuration changes across your infrastructure with version control and compliance validation.',
             category: 'collection',
             details: {
                 keyPoints: [
-                    'Configuration tracking',
-                    'Change detection',
-                    'Compliance monitoring',
-                    'Version control'
+                    'Multi-protocol config collection',
+                    'Version-controlled change tracking',
+                    'Automated config backup',
+                    'Real-time change detection'
                 ],
                 features: [
-                    'Config backup',
-                    'Change history',
-                    'Compliance reporting',
-                    'Config comparison',
-                    'Automated remediation'
+                    'Config file versioning',
+                    'Change visualization & diff',
+                    'Protocol auto-detection',
+                    'Config comparison tools',
+                    'Custom collection methods'
                 ],
                 note: {
-                    text: 'Track and manage configurations across your infrastructure with automated change detection.',
+                    text: 'Track configuration changes with support for multiple collection protocols (SFTP, SCP, SSH, Telnet) and automatically detect the most reliable method for each device.',
                     link: {
-                        url: 'https://www.logicmonitor.com/configuration',
-                        text: 'Learn about Config Management'
+                        url: 'https://www.logicmonitor.com/support/common-config-monitoring',
+                        text: 'Learn about Config Monitoring'
                     }
                 }
             }
@@ -608,27 +608,27 @@ const PLATFORM_SECTIONS = {
             id: 'on-prem',
             title: 'On Prem Infrastructure',
             icon: Server,
-            description: 'Comprehensive monitoring for on-premises infrastructure.',
+            description: 'Agentless monitoring solution for comprehensive visibility into your on-premises infrastructure.',
             category: 'core',
             details: {
                 keyPoints: [
-                    'Agentless monitoring capabilities',
-                    'Automated device discovery',
-                    'Network performance monitoring',
-                    'Hardware health monitoring'
+                    'Agentless architecture',
+                    'Standard monitoring protocols',
+                    'Automated resource discovery',
+                    'Centralized data collection'
                 ],
                 features: [
-                    'Server monitoring',
                     'Network device monitoring',
+                    'Server performance tracking',
                     'Storage system monitoring',
-                    'Virtual infrastructure monitoring',
-                    'Data center monitoring'
+                    'Virtual infrastructure visibility',
+                    'Comprehensive data collection'
                 ],
                 note: {
-                    text: 'Monitor your entire on-premises infrastructure with comprehensive visibility and automated discovery.',
+                    text: 'Monitor your entire on-premises infrastructure through a lightweight collector that uses standard protocols - no need to install agents on each monitored resource.',
                     link: {
-                        url: 'https://www.logicmonitor.com/on-prem-monitoring',
-                        text: 'Learn about On-Prem Monitoring'
+                        url: 'https://www.logicmonitor.com/support/getting-started/i-just-signed-up-for-logicmonitor-now-what/1-about-the-logicmonitor-solution',
+                        text: 'Learn about LogicMonitor Architecture'
                     }
                 }
             }
@@ -637,27 +637,27 @@ const PLATFORM_SECTIONS = {
             id: 'cloud-infra',
             title: 'Cloud Infrastructure',
             icon: Cloud,
-            description: 'Multi-cloud infrastructure monitoring and optimization.',
+            description: 'API-based monitoring of AWS, GCP, and Azure environments with seamless setup and automated discovery.',
             category: 'integration',
             details: {
                 keyPoints: [
-                    'Multi-cloud support',
-                    'Cloud resource discovery',
-                    'Cost optimization',
-                    'Performance monitoring'
+                    'Three-step setup wizard',
+                    'Multi-cloud resource discovery',
+                    'Comprehensive billing monitoring',
+                    'Service limit utilization tracking'
                 ],
                 features: [
-                    'AWS infrastructure monitoring',
-                    'Azure resource tracking',
-                    'Google Cloud monitoring',
-                    'Cloud cost analysis',
-                    'Resource utilization tracking'
+                    'Auto-generated cloud dashboards',
+                    'Cloud cost optimization',
+                    'Cloud provider availability checks',
+                    'Cloud service monitoring',
+                    'Resource performance tracking'
                 ],
                 note: {
-                    text: 'Get unified visibility across all your cloud providers with automated resource discovery and monitoring.',
+                    text: 'LM Cloud provides executive-level dashboards and deep-dive technical insights into AWS, GCP, and Azure together with other infrastructure on one unified platform.',
                     link: {
-                        url: 'https://www.logicmonitor.com/cloud-infrastructure',
-                        text: 'Explore Cloud Infrastructure'
+                        url: 'https://www.logicmonitor.com/support/lm-cloud/getting-started-lm-cloud/lm-cloud-monitoring-overview',
+                        text: 'Learn about LM Cloud'
                     }
                 }
             }
@@ -666,27 +666,27 @@ const PLATFORM_SECTIONS = {
             id: 'ai-infra',
             title: 'AI Infrastructure',
             icon: Brain,
-            description: 'Specialized monitoring for AI and ML infrastructure.',
+            description: 'Comprehensive visibility and optimization for AI/ML workloads and GenAI initiatives.',
             category: 'automation',
             details: {
                 keyPoints: [
-                    'GPU utilization monitoring',
-                    'ML pipeline tracking',
-                    'Resource optimization',
-                    'Performance analytics'
+                    'Unified hybrid cloud visibility',
+                    'Proactive issue resolution',
+                    'Resource optimization for AI',
+                    'Performance bottleneck detection'
                 ],
                 features: [
-                    'GPU metrics monitoring',
-                    'ML infrastructure tracking',
-                    'Resource scheduling',
-                    'Workload optimization',
-                    'Cost allocation'
+                    'GenAI model monitoring',
+                    'AI workload optimization',
+                    'Resource utilization tracking',
+                    'AI pipeline visibility',
+                    'Cross-environment correlation'
                 ],
                 note: {
-                    text: 'Monitor and optimize your AI infrastructure with specialized metrics and insights.',
+                    text: 'Monitor AI workloads across hybrid environments with comprehensive visibility that helps teams optimize resource utilization, maintain reliability, and quickly isolate the source of issues.',
                     link: {
-                        url: 'https://www.logicmonitor.com/ai-infrastructure',
-                        text: 'Discover AI Infrastructure Monitoring'
+                        url: 'https://www.logicmonitor.com/blog/how-logicmonitor-and-amazon-bedrock-accelerate-generative-ai-initiatives',
+                        text: 'Learn about AI Infrastructure Monitoring'
                     }
                 }
             }
@@ -695,27 +695,27 @@ const PLATFORM_SECTIONS = {
             id: 'applications',
             title: 'Applications',
             icon: Layers,
-            description: 'End-to-end application infrastructure monitoring.',
+            description: 'Scalable, dynamic monitoring for containerized applications and microservices across your hybrid infrastructure.',
             category: 'integration',
             details: {
                 keyPoints: [
-                    'Application stack monitoring',
-                    'Container monitoring',
-                    'Microservices visibility',
-                    'Database performance'
+                    'Automated container discovery',
+                    'Kubernetes & Docker monitoring',
+                    'Event-based resource tracking',
+                    'Service-level monitoring'
                 ],
                 features: [
-                    'Container orchestration',
-                    'Microservices monitoring',
-                    'Database monitoring',
-                    'Application dependencies',
-                    'Service mesh monitoring'
+                    'Container health monitoring',
+                    'Microservices visibility',
+                    'Dynamic service grouping',
+                    'Container resource optimization',
+                    'Long-term data retention'
                 ],
                 note: {
-                    text: 'Get complete visibility into your application infrastructure with comprehensive monitoring and dependency mapping.',
+                    text: 'Monitor containerized applications with automatic discovery and tracking of ephemeral resources, while maintaining data continuity for long-term performance analysis.',
                     link: {
-                        url: 'https://www.logicmonitor.com/application-infrastructure',
-                        text: 'Learn about Application Infrastructure'
+                        url: 'https://www.logicmonitor.com/container-monitoring',
+                        text: 'Learn about Container Monitoring'
                     }
                 }
             }

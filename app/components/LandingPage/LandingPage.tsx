@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
 import Image from 'next/image';
 import Link from 'next/link';
+import { LaunchTour } from '../../components/PlatformTour/LaunchTour';
 
 const features = [
     {
@@ -93,23 +94,26 @@ export default function LandingPage() {
                         </span>
                     </div>
 
-                    {/* Get Started Button */}
-                    <Button
-                        onClick={handleGetStarted}
-                        className="bg-white text-[#040F4B] hover:bg-blue-50 px-6 py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 antialiased"
-                    >
-                        {user ? (
-                            <>
-                                Back to Dashboard
-                                <ArrowRight className="w-4 h-4" />
-                            </>
-                        ) : (
-                            <>
-                                Get Started
-                                <ArrowRight className="w-4 h-4" />
-                            </>
-                        )}
-                    </Button>
+                    {/* Navigation Buttons */}
+                    <div className="flex items-center gap-4">
+                        <LaunchTour variant="landing" />
+                        <Button
+                            onClick={handleGetStarted}
+                            className="bg-white text-[#040F4B] hover:bg-blue-50 px-6 py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 antialiased"
+                        >
+                            {user ? (
+                                <>
+                                    Back to Dashboard
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            ) : (
+                                <>
+                                    Get Started
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -120,7 +124,7 @@ export default function LandingPage() {
                         LM Deployment Assistant
                     </h1>
                     <p className="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-                        Streamline your LogicMonitor deployment with our intelligent assistant platform
+                        Implementation made clear. Simplying the path from plan to reality.
                     </p>
                 </div>
 
@@ -187,7 +191,7 @@ export default function LandingPage() {
                         Platform Features
                     </h2>
                     <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-                        Everything you need to streamline your LogicMonitor deployment
+                        Everything you need to streamline your LogicMonitor deployment from start to finish.
                     </p>
                 </div>
 
