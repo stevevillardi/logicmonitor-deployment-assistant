@@ -1,6 +1,6 @@
 'use client';
 import { supabaseBrowser } from '../../lib/supabase'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import {
     DropdownMenu,
@@ -20,7 +20,7 @@ import { useTheme } from 'next-themes'
 import { UserRole } from '@/app/types/auth'
 
 export const Profile = memo(() => {
-    const { user, userRole, hasPermission } = useAuth()
+    const { user, userRole, hasPermission, signOut } = useAuth()
     const router = useRouter()
     const supabase = supabaseBrowser;
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -30,8 +30,7 @@ export const Profile = memo(() => {
     const [usersDialogOpen, setUsersDialogOpen] = useState(false);
 
     const handleSignOut = async () => {
-        await supabase.auth.signOut()
-        router.push('/login')
+        await signOut();
     }
 
     const handleManageDeployments = (e: React.MouseEvent) => {

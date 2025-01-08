@@ -10,11 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Edit2, Save, X } from 'lucide-react';
 import { supabaseBrowser } from '@/app/lib/supabase';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import { Label } from "@/components/ui/label";
 import { Layout } from 'lucide-react';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from 'lucide-react';
+import { devError } from '@/app/components/Shared/utils/debug';
 
 interface Dashboard {
     id: string;
@@ -68,29 +69,37 @@ const ManageDashboardsDialog = ({ open, onOpenChange }: ManageDashboardsDialogPr
     };
 
     const handleSave = async (dashboard: Dashboard) => {
-        const { error } = await supabaseBrowser
-            .from('dashboard-configs')
-            .update({
-                category: editCategory,
-                displayname: editName,
-                last_updated: new Date().toISOString()
-            })
-            .eq('id', dashboard.id);
+        try {
+            const { error } = await supabaseBrowser
+                .from('dashboard-configs')
+                .update({
+                    category: editCategory,
+                    displayname: editName,
+                    last_updated: new Date().toISOString()
+                })
+                .eq('id', dashboard.id);
 
-        if (!error) {
-            await fetchDashboards();
-            setEditingId(null);
+            if (!error) {
+                await fetchDashboards();
+                setEditingId(null);
+            }
+        } catch (error) {
+            devError('Error saving dashboard:', error);
         }
     };
 
     const handleDelete = async (id: string) => {
-        const { error } = await supabaseBrowser
-            .from('dashboard-configs')
-            .delete()
-            .eq('id', id);
+        try {
+            const { error } = await supabaseBrowser
+                .from('dashboard-configs')
+                .delete()
+                .eq('id', id);
 
-        if (!error) {
-            await fetchDashboards();
+            if (!error) {
+                await fetchDashboards();
+            }
+        } catch (error) {
+            devError('Error deleting dashboard:', error);
         }
     };
 

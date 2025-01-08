@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Loader2, Info, Check, X, AlertCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import supabase, { supabaseBrowser } from '../../lib/supabase';
+import { devError } from '../Shared/utils/debug';
 
 interface UploadDashboardProps {
     open: boolean;
@@ -142,7 +143,7 @@ const UploadDashboardComponent = ({ open, onOpenChange }: UploadDashboardProps) 
                     setDisplayname(formattedName);
                 }
             } catch (error) {
-                console.error('Error parsing dashboard file:', error);
+                devError('Error parsing dashboard file:', error);
             }
         }
     };

@@ -16,6 +16,8 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label"
+import { useAuth } from '@/app/contexts/AuthContext'
+import { devError } from '@/app/components/Shared/utils/debug';
 
 interface ManageDeploymentsDialogProps {
     open: boolean
@@ -23,6 +25,7 @@ interface ManageDeploymentsDialogProps {
 }
 
 export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeploymentsDialogProps) {
+    const { user } = useAuth();
     const { deployments, isLoading, fetchDeployments, updateDeployment, deleteDeployment } = useDeploymentsContext();
     const [editingId, setEditingId] = useState<string | null>(null)
     const [editName, setEditName] = useState('')
@@ -52,7 +55,7 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
             setEditingId(null)
             setEditName('')
         } catch (error) {
-            console.error('Failed to update deployment:', error)
+            devError('Error saving deployment:', error)
         }
     }
 
@@ -77,8 +80,12 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
     }
 
     const handleDelete = async (id: string) => {
-        await deleteDeployment(id);
-        setDeleteConfirmId(null);
+        try {
+            await deleteDeployment(id);
+            setDeleteConfirmId(null);
+        } catch (error) {
+            devError('Error deleting deployment:', error)
+        }
     };
 
     return (

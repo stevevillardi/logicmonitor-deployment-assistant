@@ -12,7 +12,8 @@ import { useCart } from '../../contexts/CartContext';
 import CartModal from './CartModal';
 import supabase, { supabaseBrowser } from '../../lib/supabase';
 import { UploadDashboard } from './UploadDashboard';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { devError, devLog } from '../Shared/utils/debug';
 
 // Define the dashboard type
 interface Dashboard {
@@ -51,9 +52,9 @@ const DashboardExplorer = () => {
     } = useCart();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
-    console.log('Upload dialog state:', isUploadOpen);
+    devLog('Upload dialog state:', isUploadOpen);
     const { user } = useAuth();
-    console.log('Current user:', user);
+    devLog('Current user:', user);
 
     // Reset page when category or search changes
     useEffect(() => {
@@ -106,7 +107,7 @@ const DashboardExplorer = () => {
                 setError(null);
             } catch (err) {
                 setError('Failed to load dashboards');
-                console.error('Error loading dashboards:', err);
+                devError('Error loading dashboards:', err);
             } finally {
                 setIsLoading(false);
             }
@@ -148,7 +149,7 @@ const DashboardExplorer = () => {
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            console.log('Current session:', !!session);
+            devLog('Current session:', !!session);
         };
         
         checkSession();
@@ -268,11 +269,6 @@ const DashboardExplorer = () => {
         setIsUploadOpen(true);
     };
 
-    const handleUploadClose = (open: boolean) => {
-        console.log('Setting upload dialog state:', open);
-        setIsUploadOpen(open);
-    };
-
     const handleRefresh = async () => {
         try {
             setIsLoading(true);
@@ -303,7 +299,7 @@ const DashboardExplorer = () => {
             setError(null);
         } catch (err) {
             setError('Failed to refresh dashboards');
-            console.error('Error refreshing dashboards:', err);
+            devError('Error refreshing dashboards:', err);
         } finally {
             setIsLoading(false);
         }

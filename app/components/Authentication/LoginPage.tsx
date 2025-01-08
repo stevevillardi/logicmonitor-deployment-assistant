@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lock, ArrowLeft } from 'lucide-react';
@@ -7,26 +7,34 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import { supabaseBrowser } from '../../lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
 
 const LoginPage = () => {
-    const supabase = supabaseBrowser;
+    const { isAuthenticated } = useAuth();
     const router = useRouter();
-    
-    const handleOAuthSignIn = async (provider: 'google' | 'github') => {
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo: `${window.location.origin}/auth/callback`
-                }
-            });
 
-            if (error) {
-                console.error('Authentication error:', error);
-            }
-        } catch (error) {
-            console.error('Sign in error:', error);
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push('/home');
         }
+    }, [isAuthenticated, router]);
+
+    const handleGoogleLogin = async () => {
+        await supabaseBrowser.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`
+            }
+        });
+    };
+
+    const handleGithubLogin = async () => {
+        await supabaseBrowser.auth.signInWithOAuth({
+            provider: 'github',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`
+            }
+        });
     };
 
     return (
@@ -56,14 +64,14 @@ const LoginPage = () => {
                     </CardHeader>
                     <CardContent className="p-8 space-y-4">
                         <Button
-                            onClick={() => handleOAuthSignIn('google')}
+                            onClick={handleGoogleLogin}
                             className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200 py-6 text-base font-medium"
                         >
                             <FcGoogle className="w-6 h-6" />
                             Continue with Google
                         </Button>
                         <Button
-                            onClick={() => handleOAuthSignIn('github')}
+                            onClick={handleGithubLogin}
                             className="w-full flex items-center justify-center gap-3 bg-[#24292e] hover:bg-[#2f363d] text-white border-0 shadow-sm transition-all duration-200 py-6 text-base font-medium"
                         >
                             <FaGithub className="w-6 h-6" />

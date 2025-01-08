@@ -4,11 +4,12 @@ import { Input } from '@/components/ui/input';
 import { Search, Filter, Plus, Edit2, Layout } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import { supabaseBrowser } from '@/app/lib/supabase';
 import ManagePOVContentDialog from '@/app/components/POV/ManagePOVContentDialog';
 import ManagePOVEntriesDialog from '@/app/components/POV/ManagePOVEntriesDialog';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { devError } from '../Shared/utils/debug';
 
 interface DecisionCriteria {
     id: string;
@@ -21,11 +22,16 @@ interface DecisionCriteria {
     decision_criteria_categories: Array<{ category: string }>;
 }
 
-const DecisionCriteriaExplorer = () => {
+interface DecisionCriteriaExplorerProps {
+    parentLoading: boolean;
+    onLoadingComplete: () => void;
+}
+
+const DecisionCriteriaExplorer = ({ parentLoading, onLoadingComplete }: DecisionCriteriaExplorerProps) => {
     const { user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [criteria, setCriteria] = useState<DecisionCriteria[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(parentLoading);
     const [error, setError] = useState<string | null>(null);
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -36,9 +42,8 @@ const DecisionCriteriaExplorer = () => {
 
     const fetchCriteria = useCallback(async () => {
         try {
-            setIsLoading(true);
             setError(null);
-            
+            setIsLoading(true);
             const query = supabaseBrowser
                 .from('decision_criteria')
                 .select(`
@@ -65,29 +70,19 @@ const DecisionCriteriaExplorer = () => {
             setCriteria(data || []);
         } catch (err) {
             setError('Failed to load decision criteria');
-            console.error(err);
+            devError(err);
         } finally {
             setIsLoading(false);
+            onLoadingComplete();
         }
-    }, []);
-
-    const debouncedFetch = useCallback(() => {
-        let timeout: NodeJS.Timeout;
-        
-        const doFetch = () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(fetchCriteria, 100);
-        };
-
-        doFetch();
-        
-        return () => clearTimeout(timeout);
-    }, [fetchCriteria]);
+    }, [onLoadingComplete]);
 
     useEffect(() => {
-        const cleanup = debouncedFetch();
-        return cleanup;
-    }, [debouncedFetch]);
+        if (parentLoading || !criteria.length) {
+            console.log('fetching criteria');
+            fetchCriteria();
+        }
+    }, [parentLoading, fetchCriteria, criteria.length]);
 
     const filteredCriteria = criteria.filter(item => {
         const matchesSearch = 

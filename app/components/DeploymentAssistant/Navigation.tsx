@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine, Rocket, Home, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 
 type NavItem = {
     id: string;
@@ -87,7 +87,7 @@ export const Navigation = () => {
     };
 
     const navigationItems = useMemo(() => {
-        // console.log('Computing navigation items');
+
         const items: NavItem[] = [
             { 
                 id: 'home',

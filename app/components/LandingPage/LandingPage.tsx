@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bot, Layout, Save, Server, Network, FileText, Play, ArrowRight, Terminal, Rocket, Binoculars } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import { LaunchTour } from '../../components/PlatformTour/LaunchTour';

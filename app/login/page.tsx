@@ -1,35 +1,39 @@
 'use client';
 
 import LoginPage from '../components/Authentication/LoginPage';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import LoadingPlaceholder from '../components/Shared/LoadingPlaceholder';
+import { devLog } from '../components/Shared/utils/debug';
 
 export default function Login() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
 
+  // Debug logging
   useEffect(() => {
-    console.log('Login page:', { 
-      isAuthenticated, 
-      isLoading, 
-      currentPath: window.location.pathname 
+    devLog('Login page state:', {
+      isAuthenticated,
+      isLoading,
+      userId: user?.id,
+      pathname: window.location.pathname,
+      timestamp: new Date().toISOString()
     });
-    
+  }, [isAuthenticated, isLoading, user]);
+
+  useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      console.log('Redirecting to home from login');
-      router.push('/');
+      devLog('Redirecting to home from login');
+      router.push('/home');
     }
   }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading) {
+  if (isLoading || isAuthenticated) {
+    devLog('Rendering LoadingPlaceholder');
     return <LoadingPlaceholder />;
   }
 
-  if (isAuthenticated) {
-    return null;
-  }
-
+  devLog('Rendering LoginPage');
   return <LoginPage />;
 } 

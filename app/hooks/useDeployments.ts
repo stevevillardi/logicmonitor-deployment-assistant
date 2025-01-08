@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabaseBrowser } from '../lib/supabase';
 import { Config, Site } from '../components/DeploymentAssistant/types/types';
-import { useAuth } from './useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { defaultDeviceTypes } from '../components/DeploymentAssistant/utils/constants';
 
 export interface Deployment {

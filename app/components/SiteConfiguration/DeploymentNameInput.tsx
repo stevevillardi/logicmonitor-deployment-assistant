@@ -20,13 +20,7 @@ import { RxReset } from "react-icons/rx";
 import { Switch } from "@/components/ui/switch"
 import { CollectorCalcMethodSelect } from './CollectorCalcMethodSelect';
 import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+import { devError, devLog } from '../Shared/utils/debug';
 import { SaveDeploymentDialog } from './SaveDeploymentDialog';
 import { LoadDeploymentDialog } from './LoadDeploymentDialog';
 
@@ -50,7 +44,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
     const { saveDeployment } = useDeploymentsContext();
 
     const handleReset = () => {
-        console.log('Reset initiated');
+        devLog('Reset initiated');
 
         const defaultConfig: Config = {
             deploymentName: '',
@@ -84,12 +78,12 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
 
     // Add a useEffect to monitor value changes
     React.useEffect(() => {
-        console.log('Deployment name value changed to:', value);
+        devLog('Deployment name value changed to:', value);
     }, [value]);
 
     // Add this effect to track prop changes
     useEffect(() => {
-        console.log('DeploymentNameInput props updated:', {
+        devLog('DeploymentNameInput props updated:', {
             value,
             config: config.deploymentName,
             showDetails,
@@ -113,7 +107,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
             setSaveDialogOpen(false);
             setSaveName('');
         } catch (error) {
-            console.error('Failed to save deployment:', error);
+            devError('Failed to save deployment:', error);
         } finally {
             setIsSaving(false);
         }

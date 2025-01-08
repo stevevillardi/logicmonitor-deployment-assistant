@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
+import { devError } from '../Shared/utils/debug';
 interface SaveDeploymentDialogProps {
   config: Config;
   sites: Site[];
@@ -83,7 +83,7 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
       setName('');
       onSaved?.();
     } catch (error) {
-      console.error('Failed to save deployment:', error);
+      devError('Failed to save deployment:', error);
     } finally {
       setIsSaving(false);
     }

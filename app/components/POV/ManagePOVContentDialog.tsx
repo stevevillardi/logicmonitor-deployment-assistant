@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Minus, Save } from 'lucide-react';
 import { supabaseBrowser } from '@/app/lib/supabase';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import { AITextarea } from "@/app/components/ui/ai-textarea";
+import { devError } from '@/app/components/Shared/utils/debug';
 
 interface ManagePOVContentDialogProps {
     open: boolean;
@@ -78,7 +79,7 @@ export function ManagePOVContentDialog({
     onSuccess
 }: ManagePOVContentDialogProps) {
     const { user } = useAuth();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     
     // Create a unique key for this dialog instance
     const storageKey = `pov-dialog-${type}-${initialData?.id || 'new'}`;
@@ -94,7 +95,7 @@ export function ManagePOVContentDialog({
                     activities: parsedData.activities || []
                 };
             } catch (e) {
-                console.error('Error parsing saved form data:', e);
+                devError('Error parsing saved form data:', e);
             }
         }
         
@@ -144,14 +145,36 @@ export function ManagePOVContentDialog({
             categories: [],
             outcomes: []
         });
-        setIsSubmitting(false);
+        setIsSaving(false);
         clearSavedData();
     };
 
-    const handleSubmit = async () => {
-        try {
-            setIsSubmitting(true);
+    const SaveButton = () => (
+        <Button
+            onClick={handleSubmit}
+            disabled={isSaving}
+            className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+        >
+            {isSaving ? (
+                <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Saving...
+                </>
+            ) : (
+                <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save
+                </>
+            )}
+        </Button>
+    );
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isSaving) return;
+        
+        setIsSaving(true);
+        try {
             if (type === 'decision-criteria') {
                 const { data: criteriaData, error: criteriaError } = await supabaseBrowser
                     .from('decision_criteria')
@@ -258,9 +281,9 @@ export function ManagePOVContentDialog({
             onOpenChange(false);
             resetForm();
         } catch (error) {
-            console.error('Error submitting content:', error);
+            devError('Error saving POV content:', error);
         } finally {
-            setIsSubmitting(false);
+            setIsSaving(false);
         }
     };
 
@@ -555,14 +578,7 @@ export function ManagePOVContentDialog({
                                 >
                                     Cancel
                                 </Button>
-                                <Button
-                                    onClick={handleSubmit}
-                                    disabled={isSubmitting}
-                                    className="w-full sm:w-auto bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
-                                >
-                                    <Save className="h-4 w-4 mr-2" />
-                                    {isSubmitting ? 'Saving...' : 'Save'}
-                                </Button>
+                                <SaveButton />
                             </div>
                         </DialogFooter>
                     </div>

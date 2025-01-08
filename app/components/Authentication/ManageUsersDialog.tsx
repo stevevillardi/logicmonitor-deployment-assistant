@@ -34,6 +34,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Users } from 'lucide-react';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { devError } from '@/app/components/Shared/utils/debug';
 
 interface AlertState {
     show: boolean;
@@ -54,7 +56,8 @@ interface ManageUsersDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-const ManageUsersDialog = memo(function ManageUsersDialog({ open, onOpenChange }: ManageUsersDialogProps) {
+const ManageUsersDialog = ({ open, onOpenChange }: ManageUsersDialogProps) => {
+    const { user, hasPermission } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [alert, setAlert] = useState<AlertState>({
@@ -80,7 +83,7 @@ const ManageUsersDialog = memo(function ManageUsersDialog({ open, onOpenChange }
             if (error) throw error;
             setUsers(data);
         } catch (error) {
-            console.error('Error fetching users:', error);
+            devError('Error fetching users:', error);
             showAlert('Error', 'Failed to fetch users', 'destructive');
         } finally {
             setLoading(false);
@@ -110,7 +113,7 @@ const ManageUsersDialog = memo(function ManageUsersDialog({ open, onOpenChange }
             ));
             showAlert('Success', 'User role updated successfully');
         } catch (error) {
-            console.error('Error updating user role:', error);
+            devError('Error updating user role:', error);
             showAlert('Error', 'Failed to update user role', 'destructive');
         }
     }, [showAlert]);
@@ -129,7 +132,7 @@ const ManageUsersDialog = memo(function ManageUsersDialog({ open, onOpenChange }
             ));
             showAlert('Success', `User ${currentStatus ? 'enabled' : 'disabled'} successfully`);
         } catch (error) {
-            console.error('Error toggling user access:', error);
+            devError('Error toggling user access:', error);
             showAlert('Error', 'Failed to update user access', 'destructive');
         }
     };
@@ -272,6 +275,6 @@ const ManageUsersDialog = memo(function ManageUsersDialog({ open, onOpenChange }
             </AlertDialog>
         </>
     );
-});
+};
 
 export default ManageUsersDialog; 

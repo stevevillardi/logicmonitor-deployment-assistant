@@ -7,7 +7,8 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { devLog, devError } from '@/app/components/Shared/utils/debug';
 
 type Source = {
   title: string;
@@ -82,7 +83,7 @@ export default function RAGChat() {
       try {
         setMessages(JSON.parse(savedMessages));
       } catch (error) {
-        console.error('Failed to load chat history:', error);
+        devError('Failed to load chat history:', error);
       }
     } else if (!welcomeShown) {
       setMessages([WELCOME_MESSAGE]);
@@ -134,7 +135,7 @@ export default function RAGChat() {
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
     } catch (error) {
-      console.error('Failed to copy text:', error);
+      devError('Failed to copy text:', error);
     }
   };
 
@@ -152,6 +153,7 @@ export default function RAGChat() {
     setIsLoading(true);
 
     try {
+      devLog('Submitting chat message:', userMessage);
       // Get the last few messages for context (e.g., last 5 messages)
       const recentHistory = messages.slice(-5).map(msg => ({
         type: msg.type,
@@ -180,6 +182,7 @@ export default function RAGChat() {
         timestamp: Date.now()
       }]);
     } catch (error) {
+      devError('Error in chat submission:', error);
       setMessages(prev => [...prev, {
         type: 'assistant',
         content: 'Sorry, I encountered an error while processing your request.',

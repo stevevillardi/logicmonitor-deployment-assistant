@@ -194,7 +194,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                         ...config,
                         deploymentName: name
                     };
-                    console.log('Updating config with new deployment name:', newConfig);
+                    devLog('Updating config with new deployment name:', newConfig);
                     onUpdateConfig(newConfig);
                 }}
                 onShowAdvancedSettingsChange={(show) => {

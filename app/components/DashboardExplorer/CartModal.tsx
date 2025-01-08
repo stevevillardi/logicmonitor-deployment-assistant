@@ -5,6 +5,7 @@ import { useCart } from "../../contexts/CartContext";
 import { Loader2, Check, X, AlertCircle, Layout, LayoutDashboard, Eye, EyeOff, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import supabase from '../../lib/supabase';
+import { devError, devLog } from "../Shared/utils/debug";
 
 interface CartModalProps {
   isOpen: boolean;
@@ -93,7 +94,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
             setBearerToken(parsedAuth.BearerToken.value);
           }
         } catch (err) {
-          console.error('Error parsing bearer token:', err);
+          devError('Error parsing bearer token:', err);
         }
       }
 
@@ -222,7 +223,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         value: value
       }
     };
-    console.log('authorizedData', authorizedData);
+    devLog('authorizedData', authorizedData);
     // Save to localStorage
     localStorage.setItem('authorized', JSON.stringify(authorizedData));
   };

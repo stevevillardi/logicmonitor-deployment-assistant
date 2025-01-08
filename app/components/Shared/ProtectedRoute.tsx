@@ -1,18 +1,16 @@
 'use client';
 
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import LoadingPlaceholder from './LoadingPlaceholder';
 import Unauthorized from './Unauthorized';
+import type { Permission } from '@/app/types/auth';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
     requireAuth?: boolean;
-    requiredPermission?: {
-        action: 'create' | 'read' | 'update' | 'delete';
-        resource: 'challenges' | 'pov' | 'criteria' | 'users';
-    };
+    requiredPermission?: Permission;
 }
 
 const ProtectedRoute = ({ 
@@ -29,12 +27,10 @@ const ProtectedRoute = ({
         }
     }, [isAuthenticated, isLoading, requireAuth, router]);
 
-    // Show loading state first
     if (isLoading) {
         return <LoadingPlaceholder />;
     }
 
-    // Then check permissions only after loading is complete
     if (requiredPermission && !hasPermission(requiredPermission)) {
         return <Unauthorized />;
     }

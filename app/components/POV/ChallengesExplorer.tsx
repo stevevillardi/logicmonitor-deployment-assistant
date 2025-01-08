@@ -5,10 +5,11 @@ import { Search, Filter, Plus, Edit2, Layout } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import { supabaseBrowser } from '@/app/lib/supabase';
 import ManagePOVContentDialog from '@/app/components/POV/ManagePOVContentDialog';
 import ManagePOVEntriesDialog from '@/app/components/POV/ManagePOVEntriesDialog';
+import { devError } from '../Shared/utils/debug';
 
 interface Challenge {
     id: string;
@@ -22,13 +23,18 @@ interface Challenge {
     challenge_categories: Array<{ category: string }>;
 }
 
-const ChallengesExplorer = () => {
+interface ChallengesExplorerProps {
+    parentLoading: boolean;
+    onLoadingComplete: () => void;
+}
+
+const ChallengesExplorer = ({ parentLoading, onLoadingComplete }: ChallengesExplorerProps) => {
     const { user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [challenges, setChallenges] = useState<Challenge[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(parentLoading);
     const [error, setError] = useState<string | null>(null);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isManageOpen, setIsManageOpen] = useState(false);
@@ -37,9 +43,8 @@ const ChallengesExplorer = () => {
 
     const fetchChallenges = useCallback(async () => {
         try {
-            setIsLoading(true);
             setError(null);
-            
+            setIsLoading(true);
             const query = supabaseBrowser
                 .from('challenges')
                 .select(`
@@ -66,29 +71,19 @@ const ChallengesExplorer = () => {
             setChallenges(data || []);
         } catch (err) {
             setError('Failed to load challenges');
-            console.error(err);
+            devError(err);
         } finally {
             setIsLoading(false);
+            onLoadingComplete();
         }
-    }, []);
+    }, [onLoadingComplete]);
 
-    const debouncedFetch = useCallback(() => {
-        let timeout: NodeJS.Timeout;
-        
-        const doFetch = () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(fetchChallenges, 100);
-        };
-
-        doFetch();
-        
-        return () => clearTimeout(timeout);
-    }, [fetchChallenges]);
-
+    // Single effect to handle both initial load and tab changes
     useEffect(() => {
-        const cleanup = debouncedFetch();
-        return cleanup;
-    }, [debouncedFetch]);
+        if (parentLoading || !challenges.length) {
+            fetchChallenges();
+        }
+    }, [parentLoading, fetchChallenges, challenges.length]);
 
     const filteredChallenges = challenges.filter(item => {
         const matchesSearch = 

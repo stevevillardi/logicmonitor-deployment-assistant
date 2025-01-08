@@ -3,7 +3,7 @@ import { Download, Upload, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/enhanced-components';
 import { Site, Config } from '../DeploymentAssistant/types/types';
 import { useState, useRef } from 'react';
-import { devLog } from '../Shared/utils/debug';
+import { devError, devLog } from '../Shared/utils/debug';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { defaultLogTypes, defaultTrapTypes } from '../DeploymentAssistant/utils/constants';
 import { defaultFlowTypes } from '../DeploymentAssistant/utils/constants';
@@ -347,7 +347,7 @@ const ConfigurationActions = ({ sites, config, onUpdateSites, onUpdateConfig }: 
             onUpdateConfig(updatedConfig);
 
         } catch (err) {
-            console.error('Import error:', err);
+            devError('Import error:', err);
             setError('Failed to import configuration. Please check the file format.');
             setErrorDialogOpen(true);
         }

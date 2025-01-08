@@ -9,6 +9,7 @@ import DeviceReport from './DeviceReport';
 import ResourceGroupReport from './ResourceGroupReport';
 import AlertReport from './AlertReport';
 import ProtectedRoute from '../Shared/ProtectedRoute';
+import { devError } from '../Shared/utils/debug';
 
 type ReportType = 'device-inventory' | 'alerts-report' | 'resource-groups' | null;
 
@@ -36,11 +37,11 @@ const ReportsExplorer = () => {
               typeof parsedAuth.BearerToken.value === 'string') {
             setBearerToken(parsedAuth.BearerToken.value);
           } else {
-            console.warn('Invalid bearer token structure in localStorage');
+            devError('Invalid bearer token structure in localStorage');
           }
         }
       } catch (err) {
-        console.error('Error parsing bearer token from localStorage:', err);
+        devError('Error parsing bearer token from localStorage:', err);
         // Optionally clear invalid data
         localStorage.removeItem('authorized');
       }

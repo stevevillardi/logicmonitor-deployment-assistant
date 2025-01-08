@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Edit2, Trash2, Save, X, Minus, Plus } from 'lucide-react';
 import { supabaseBrowser } from '@/app/lib/supabase';
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from '@/app/contexts/AuthContext';
 import { AITextarea } from "@/app/components/ui/ai-textarea";
 import {
     AlertDialog,
@@ -23,6 +23,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { devError } from '@/app/components/Shared/utils/debug';
+
 interface ManagePOVEntriesDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -110,12 +112,13 @@ const ManagePOVEntriesDialog = ({
     type,
     onSuccess 
 }: ManagePOVEntriesDialogProps) => {
-    const { user, hasPermission } = useAuth();
+    const { user } = useAuth();
     const [entries, setEntries] = useState<Entry[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Entry | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
     
     // Create a unique key for the edit data
     const storageKey = `pov-entries-${type}-${editingId || 'new'}`;
@@ -127,7 +130,7 @@ const ManagePOVEntriesDialog = ({
             try {
                 return JSON.parse(saved);
             } catch (e) {
-                console.error('Error parsing saved edit data:', e);
+                devError('Error parsing saved edit data:', e);
             }
         }
         
@@ -174,7 +177,7 @@ const ManagePOVEntriesDialog = ({
                     .order('created_at', { ascending: false });
 
                 if (criteriaError) {
-                    console.error('Error fetching decision criteria:', criteriaError);
+                    devError('Error fetching decision criteria:', criteriaError);
                     return;
                 }
 
@@ -199,7 +202,7 @@ const ManagePOVEntriesDialog = ({
                     .order('created_at', { ascending: false });
 
                 if (challengesError) {
-                    console.error('Error fetching challenges:', challengesError);
+                    devError('Error fetching challenges:', challengesError);
                     return;
                 }
 
@@ -213,65 +216,43 @@ const ManagePOVEntriesDialog = ({
                 }
             }
         } catch (error) {
-            console.error('Error in fetchEntries:', error);
+            devError('Error in fetchEntries:', error);
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (open && user?.id) {
+        if (open && user?.id && !editingId) {
             fetchEntries();
         }
-    }, [open, user?.id, type]);
+    }, [open, user?.id]);
 
-    const handleEdit = async (entry: Entry) => {
+    const handleEdit = (entry: Entry) => {
         clearSavedData();
         setEditingId(entry.id);
         
         if (type === 'decision-criteria') {
-            const { data: activities } = await supabaseBrowser
-                .from('decision_criteria_activities')
-                .select('activity')
-                .eq('decision_criteria_id', entry.id)
-                .order('order_index');
-
-            const { data: categories } = await supabaseBrowser
-                .from('decision_criteria_categories')
-                .select('category')
-                .eq('decision_criteria_id', entry.id);
-
             setEditData({
                 ...editData,
                 title: entry.title,
                 use_case: entry.use_case || '',
                 success_criteria: entry.success_criteria || '',
-                activities: (activities as ActivityData[] | null)?.map(a => a.activity) || [''],
-                categories: (categories as CategoryData[] | null)?.map(c => c.category) || [''],
+                activities: entry.activities || [''],
+                categories: entry.categories || [''],
                 challenge_description: '',
                 business_impact: '',
                 example: '',
             });
         } else {
-            const { data: categories } = await supabaseBrowser
-                .from('challenge_categories')
-                .select('category')
-                .eq('challenge_id', entry.id);
-
-            const { data: outcomes } = await supabaseBrowser
-                .from('challenge_outcomes')
-                .select('outcome')
-                .eq('challenge_id', entry.id)
-                .order('order_index');
-
             setEditData({
                 ...editData,
                 title: entry.title,
                 challenge_description: entry.challenge_description || '',
                 business_impact: entry.business_impact || '',
                 example: entry.example || '',
-                categories: (categories as CategoryData[] | null)?.map(c => c.category) || [''],
-                outcomes: (outcomes as OutcomeData[] | null)?.map(o => o.outcome) || [''],
+                categories: entry.categories || [''],
+                outcomes: entry.outcomes || [''],
                 description: '',
                 success_criteria: '',
                 use_cases: ['']
@@ -279,7 +260,10 @@ const ManagePOVEntriesDialog = ({
         }
     };
 
-    const handleSave = async (entry: Entry) => {
+    const handleSave = async () => {
+        if (isSaving) return;
+        
+        setIsSaving(true);
         try {
             if (type === 'decision-criteria') {
                 await supabaseBrowser
@@ -290,19 +274,19 @@ const ManagePOVEntriesDialog = ({
                         success_criteria: editData.success_criteria,
                         updated_at: new Date().toISOString()
                     })
-                    .eq('id', entry.id);
+                    .eq('id', editingId);
 
                 // Delete and re-insert activities
                 await supabaseBrowser
                     .from('decision_criteria_activities')
                     .delete()
-                    .eq('decision_criteria_id', entry.id);
+                    .eq('decision_criteria_id', editingId);
 
                 if (editData.activities.length > 0) {
                     const activities = editData.activities
                         .filter(Boolean)
                         .map((activity: string, index: number) => ({
-                            decision_criteria_id: entry.id,
+                            decision_criteria_id: editingId,
                             activity,
                             order_index: index,
                             created_by: user?.id
@@ -317,13 +301,13 @@ const ManagePOVEntriesDialog = ({
                 await supabaseBrowser
                     .from('decision_criteria_categories')
                     .delete()
-                    .eq('decision_criteria_id', entry.id);
+                    .eq('decision_criteria_id', editingId);
 
                 if (editData.categories.length > 0) {
                     const categories = editData.categories
                         .filter(Boolean)
                         .map((category: string) => ({
-                            decision_criteria_id: entry.id,
+                            decision_criteria_id: editingId,
                             category,
                             created_by: user?.id
                         }));
@@ -342,22 +326,22 @@ const ManagePOVEntriesDialog = ({
                         example: editData.example,
                         updated_at: new Date().toISOString()
                     })
-                    .eq('id', entry.id);
+                    .eq('id', editingId);
 
                 await supabaseBrowser
                     .from('challenge_categories')
                     .delete()
-                    .eq('challenge_id', entry.id);
+                    .eq('challenge_id', editingId);
 
                 await supabaseBrowser
                     .from('challenge_outcomes')
                     .delete()
-                    .eq('challenge_id', entry.id);
+                    .eq('challenge_id', editingId);
 
                 const categories = editData.categories
                     .filter(Boolean)
                     .map((category: string) => ({
-                        challenge_id: entry.id,
+                        challenge_id: editingId,
                         category,
                         created_by: user?.id
                     }));
@@ -371,7 +355,7 @@ const ManagePOVEntriesDialog = ({
                 const outcomes = editData.outcomes
                     .filter(Boolean)
                     .map((outcome: string, index: number) => ({
-                        challenge_id: entry.id,
+                        challenge_id: editingId,
                         outcome,
                         order_index: index,
                         created_by: user?.id
@@ -384,23 +368,29 @@ const ManagePOVEntriesDialog = ({
                 }
             }
 
-            await fetchEntries();
+            setEntries(prevEntries => 
+                prevEntries.map(entry => 
+                    entry.id === editingId 
+                        ? {
+                            ...entry,
+                            ...editData,
+                            updated_at: new Date().toISOString()
+                          }
+                        : entry
+                )
+            );
+
             clearSavedData();
             setEditingId(null);
             onSuccess();
         } catch (error) {
-            console.error('Error saving:', error);
+            devError('Error saving POV entry:', error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
-    const handleDelete = async (entry: Entry) => {
-        setItemToDelete(entry);
-        setShowDeleteConfirm(true);
-    };
-
-    const confirmDelete = async () => {
-        if (!itemToDelete) return;
-        
+    const handleDelete = async (id: string) => {
         try {
             const supabase = supabaseBrowser;
             
@@ -409,10 +399,10 @@ const ManagePOVEntriesDialog = ({
                 const { error: activitiesError } = await supabase
                     .from('decision_criteria_activities')
                     .delete()
-                    .eq('decision_criteria_id', itemToDelete.id);
+                    .eq('decision_criteria_id', id);
                     
                 if (activitiesError) {
-                    console.error('Error deleting activities:', activitiesError);
+                    devError('Error deleting activities:', activitiesError);
                     return;
                 }
 
@@ -420,10 +410,10 @@ const ManagePOVEntriesDialog = ({
                 const { error: criteriaError } = await supabase
                     .from('decision_criteria')
                     .delete()
-                    .eq('id', itemToDelete.id);
+                    .eq('id', id);
 
                 if (criteriaError) {
-                    console.error('Error deleting decision criteria:', criteriaError);
+                    devError('Error deleting decision criteria:', criteriaError);
                     return;
                 }
             } else {
@@ -431,10 +421,10 @@ const ManagePOVEntriesDialog = ({
                 const { error: outcomesError } = await supabase
                     .from('challenge_outcomes')
                     .delete()
-                    .eq('challenge_id', itemToDelete.id);
+                    .eq('challenge_id', id);
 
                 if (outcomesError) {
-                    console.error('Error deleting outcomes:', outcomesError);
+                    devError('Error deleting outcomes:', outcomesError);
                     return;
                 }
 
@@ -442,10 +432,10 @@ const ManagePOVEntriesDialog = ({
                 const { error: categoriesError } = await supabase
                     .from('challenge_categories')
                     .delete()
-                    .eq('challenge_id', itemToDelete.id);
+                    .eq('challenge_id', id);
 
                 if (categoriesError) {
-                    console.error('Error deleting categories:', categoriesError);
+                    devError('Error deleting categories:', categoriesError);
                     return;
                 }
 
@@ -453,22 +443,24 @@ const ManagePOVEntriesDialog = ({
                 const { error: challengeError } = await supabase
                     .from('challenges')
                     .delete()
-                    .eq('id', itemToDelete.id);
+                    .eq('id', id);
 
                 if (challengeError) {
-                    console.error('Error deleting challenge:', challengeError);
+                    devError('Error deleting challenge:', challengeError);
                     return;
                 }
             }
 
-            // If we get here, all deletes were successful
-            await fetchEntries();
+            setEntries(prevEntries => 
+                prevEntries.filter(entry => entry.id !== id)
+            );
+            
             setShowDeleteConfirm(false);
             setItemToDelete(null);
             onSuccess();
             
         } catch (error) {
-            console.error('Error in delete operation:', error);
+            devError('Error deleting POV entry:', error);
         }
     };
 
@@ -497,6 +489,34 @@ const ManagePOVEntriesDialog = ({
         }
         onOpenChange(open);
     };
+
+    const confirmDelete = async () => {
+        if (!itemToDelete) return;
+        await handleDelete(itemToDelete.id);
+        setShowDeleteConfirm(false);
+        setItemToDelete(null);
+    };
+
+    const SaveButton = () => (
+        <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
+        >
+            {isSaving ? (
+                <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Saving...
+                </>
+            ) : (
+                <>
+                    <Save className="h-4 w-4 mr-1" />
+                    Save
+                </>
+            )}
+        </Button>
+    );
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -790,15 +810,8 @@ const ManagePOVEntriesDialog = ({
                                                 </>
                                             )}
 
-                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => handleSave(entry)}
-                                                    className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 text-white transition-colors duration-200"
-                                                >
-                                                    <Save className="h-4 w-4 mr-1" />
-                                                    Save
-                                                </Button>
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 justify-end">
+                                                <SaveButton />
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
@@ -833,7 +846,7 @@ const ManagePOVEntriesDialog = ({
                                                         </Button>
                                                         <Button
                                                             size="sm"
-                                                            onClick={() => handleDelete(entry)}
+                                                            onClick={() => handleDelete(entry.id)}
                                                             className="flex-1 sm:flex-initial bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors duration-200 gap-2"
                                                         >
                                                             <Trash2 className="h-4 w-4" />

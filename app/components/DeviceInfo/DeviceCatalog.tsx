@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { transformCredentialData } from '../DeploymentAssistant/types/credentialData';
 import { CredentialType } from '../DeploymentAssistant/types/credentials';
+import { devError } from '../Shared/utils/debug';
 
 const DeviceCatalog = () => {
     const [search, setSearch] = useState('');
@@ -30,7 +31,7 @@ const DeviceCatalog = () => {
                 const data = await transformCredentialData();
                 setCredentialData(data);
             } catch (error) {
-                console.error('Error loading credential data:', error);
+                devError('Error loading credential data:', error);
             } finally {
                 setIsLoading(false);
             }

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { devError, devLog } from '../Shared/utils/debug';
 
 // Define the structure of the video categories
 interface VideoCategory {
@@ -66,19 +67,19 @@ const VideoLibrary = () => {
     useEffect(() => {
         const fetchVideos = async () => {
             try {
-                console.log('Attempting to fetch videos from:', VIDEOS_URL);
+                devLog('Attempting to fetch videos from:', VIDEOS_URL);
                 const response = await fetch(VIDEOS_URL);
-                console.log('Response status:', response.status);
+                devLog('Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch videos: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                console.log('Fetched data:', data);
+                devLog('Fetched data:', data);
 
                 if (!Array.isArray(data)) {
-                    console.error('Invalid data format received:', data);
+                    devError('Invalid data format received:', data);
                     throw new Error('Invalid data format: expected an array');
                 }
 
@@ -100,7 +101,7 @@ const VideoLibrary = () => {
                 setVideoCategories(data);
                 setError(null);
             } catch (err: any) {
-                console.error('Error fetching videos:', err);
+                devError('Error fetching videos:', err);
                 setVideoCategories(localVideoCategories);
                 setError(`Unable to load remote video content (${err.message}). Showing default videos.`);
             } finally {

@@ -7,6 +7,12 @@ import ChallengesExplorer from './ChallengesExplorer';
 
 const POVLibrary = () => {
     const [activeTab, setActiveTab] = useState('decision-criteria');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleTabChange = (value: string) => {
+        setIsLoading(true);
+        setActiveTab(value);
+    };
 
     return (
         <div className="space-y-6 mb-4">
@@ -56,7 +62,7 @@ const POVLibrary = () => {
                         </div>
                     </div>
                 </div>
-                <Tabs defaultValue="decision-criteria" className="w-full dark:bg-gray-800" onValueChange={setActiveTab}>
+                <Tabs defaultValue="decision-criteria" className="w-full dark:bg-gray-800" onValueChange={handleTabChange}>
                     <TabsList className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-lg mx-4 mt-4 overflow-hidden">
                         <TabsTrigger
                             value="decision-criteria"
@@ -71,11 +77,25 @@ const POVLibrary = () => {
                             Challenges
                         </TabsTrigger>
                     </TabsList>
-                    <TabsContent value="decision-criteria" className="px-4 pb-4 bg-white dark:bg-gray-800">
-                        <DecisionCriteriaExplorer />
+                    <TabsContent 
+                        value="decision-criteria" 
+                        className="px-4 pb-4 bg-white dark:bg-gray-800"
+                        key="decision-criteria"
+                    >
+                        <DecisionCriteriaExplorer 
+                            parentLoading={isLoading}
+                            onLoadingComplete={() => setIsLoading(false)}
+                        />
                     </TabsContent>
-                    <TabsContent value="challenges" className="px-4 pb-4 bg-white dark:bg-gray-800">
-                        <ChallengesExplorer />
+                    <TabsContent 
+                        value="challenges" 
+                        className="px-4 pb-4 bg-white dark:bg-gray-800"
+                        key="challenges"
+                    >
+                        <ChallengesExplorer 
+                            parentLoading={isLoading}
+                            onLoadingComplete={() => setIsLoading(false)}
+                        />
                     </TabsContent>
                 </Tabs>
             </Card>
