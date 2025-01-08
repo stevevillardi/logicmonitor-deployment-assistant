@@ -15,11 +15,11 @@ import { LogOut, User, Folder, Layout, Moon, Sun, Users } from 'lucide-react'
 import ManageDeploymentsDialog from './ManageDeploymentsDialog'
 import ManageDashboardsDialog from './ManageDashboardsDialog'
 import ManageUsersDialog from './ManageUsersDialog'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { useTheme } from 'next-themes'
 import { UserRole } from '@/app/types/auth'
 
-export const Profile = () => {
+export const Profile = memo(() => {
     const { user, userRole, hasPermission } = useAuth()
     const router = useRouter()
     const supabase = supabaseBrowser;
@@ -196,4 +196,4 @@ export const Profile = () => {
             />
         </>
     )
-} 
+}) 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -54,7 +54,7 @@ interface ManageUsersDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDialogProps) {
+const ManageUsersDialog = memo(function ManageUsersDialog({ open, onOpenChange }: ManageUsersDialogProps) {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [alert, setAlert] = useState<AlertState>({
@@ -64,14 +64,14 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
         variant: 'default'
     });
 
-    const showAlert = (title: string, message: string, variant: 'default' | 'destructive' = 'default') => {
+    const showAlert = useCallback((title: string, message: string, variant: 'default' | 'destructive' = 'default') => {
         setAlert({ show: true, title, message, variant });
         setTimeout(() => {
             setAlert(prev => ({ ...prev, show: false }));
         }, 3000);
-    };
+    }, []);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const { data, error } = await supabaseBrowser
                 .from('profiles')
@@ -85,15 +85,18 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
         } finally {
             setLoading(false);
         }
-    };
+    }, [showAlert]);
 
     useEffect(() => {
-        if (open) {
+        if (open && loading) {
             fetchUsers();
         }
-    }, [fetchUsers]);
+        if (!open) {
+            setLoading(true);
+        }
+    }, [open, loading, fetchUsers]);
 
-    const updateUserRole = async (userId: string, newRole: UserRole) => {
+    const updateUserRole = useCallback(async (userId: string, newRole: UserRole) => {
         try {
             const { error } = await supabaseBrowser
                 .from('profiles')
@@ -102,7 +105,7 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
 
             if (error) throw error;
 
-            setUsers(users.map(user => 
+            setUsers(users => users.map(user => 
                 user.id === userId ? { ...user, role: newRole } : user
             ));
             showAlert('Success', 'User role updated successfully');
@@ -110,7 +113,7 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
             console.error('Error updating user role:', error);
             showAlert('Error', 'Failed to update user role', 'destructive');
         }
-    };
+    }, [showAlert]);
 
     const toggleUserAccess = async (userId: string, currentStatus: boolean) => {
         try {
@@ -269,4 +272,6 @@ export default function ManageUsersDialog({ open, onOpenChange }: ManageUsersDia
             </AlertDialog>
         </>
     );
-} 
+});
+
+export default ManageUsersDialog; 

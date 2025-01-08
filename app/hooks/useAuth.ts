@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { supabaseBrowser } from '../lib/supabase';
-import { User } from '@supabase/supabase-js';
+import { Session, User } from '@supabase/supabase-js';
 import { Permission, UserRole, ROLE_PERMISSIONS } from '../types/auth';
 
 // Constants
@@ -51,6 +51,17 @@ class RoleCache {
     }
 
     private async fetchRole(userId: string): Promise<UserRole> {
+        if (!userId) {
+            console.warn('Attempted to fetch role with no userId');
+            return DEFAULT_ROLE;
+        }
+
+        // Add a cache check before fetching
+        const cached = this.cache.get(userId);
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+            return cached.role;
+        }
+
         try {
             const { data: profileData, error } = await supabaseBrowser
                 .from('profiles')
@@ -58,16 +69,26 @@ class RoleCache {
                 .eq('id', userId)
                 .single();
 
-            const role = (error || !profileData) ? DEFAULT_ROLE : (profileData.role as UserRole);
-            
+            if (error) {
+                console.error('Error fetching user role:', error);
+                return DEFAULT_ROLE;
+            }
+
+            const role = profileData?.role as UserRole;
+            if (!role) {
+                console.warn(`No role found for user ${userId}`);
+                return DEFAULT_ROLE;
+            }
+
+            // Update cache with new role
             this.cache.set(userId, {
                 role,
                 timestamp: Date.now()
             });
 
             return role;
-        } catch (error) {
-            console.error('Error fetching user role:', error);
+        } catch (err) {
+            console.error('Error in fetchRole:', err);
             return DEFAULT_ROLE;
         }
     }
@@ -81,10 +102,14 @@ class RoleCache {
     }
 }
 
+// Add type for the auth state change event
+type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED';
+
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [userRole, setUserRole] = useState<UserRole>(DEFAULT_ROLE);
+    const [error, setError] = useState<Error | null>(null);
 
     const roleCache = RoleCache.getInstance();
 
@@ -105,7 +130,9 @@ export function useAuth() {
     }, [user, updateUserRole]);
 
     const hasPermission = useCallback((permission: Permission): boolean => {
-        const rolePermissions = ROLE_PERMISSIONS[userRole];
+        if (!permission) return false;
+        
+        const rolePermissions = ROLE_PERMISSIONS[userRole] || [];
         return rolePermissions.some(
             p => p.action === permission.action && p.resource === permission.resource
         );
@@ -114,16 +141,22 @@ export function useAuth() {
     useEffect(() => {
         let mounted = true;
         
-        const handleAuthStateChange = async (session: any) => {
+        // Add proper typing for the session parameter
+        const handleAuthStateChange = async (session: Session | null) => {
             try {
                 const currentUser = session?.user ?? null;
                 
                 if (mounted) {
-                    setUser(currentUser);
+                    // Only update user if it's different
+                    setUser(prev => {
+                        if (prev?.id === currentUser?.id) return prev;
+                        return currentUser;
+                    });
                     
-                    if (currentUser) {
+                    // Only fetch role if we have a new user
+                    if (currentUser && (!user || user.id !== currentUser.id)) {
                         await updateUserRole(currentUser.id);
-                    } else {
+                    } else if (!currentUser) {
                         setUserRole(DEFAULT_ROLE);
                     }
                 }
@@ -165,7 +198,8 @@ export function useAuth() {
 
         return () => {
             mounted = false;
-            subscription.unsubscribe();
+            roleCache.clearCache();
+            subscription?.unsubscribe();
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, [updateUserRole, handleVisibilityChange]);
@@ -176,5 +210,6 @@ export function useAuth() {
         isLoading,
         userRole,
         hasPermission,
+        error,
     };
 } 
