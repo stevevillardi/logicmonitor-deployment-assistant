@@ -195,4 +195,6 @@ export const Profile = memo(() => {
             />
         </>
     )
-}) 
+})
+
+Profile.displayName = 'Profile'; 

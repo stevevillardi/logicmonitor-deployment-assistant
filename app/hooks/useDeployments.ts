@@ -26,7 +26,6 @@ export function useDeployments(autoFetch: boolean = false) {
   const fetchingRef = useRef(false);
   const dataFetchedRef = useRef(false);
   const { user } = useAuth();
-  const supabase = supabaseBrowser;
 
   const fetchDeployments = useCallback(async () => {
     if (fetchingRef.current || dataFetchedRef.current) return;
@@ -34,6 +33,7 @@ export function useDeployments(autoFetch: boolean = false) {
     try {
       fetchingRef.current = true;
       setIsLoading(true);
+      const supabase = supabaseBrowser;
       const { data, error } = await supabase
         .from('deployments')
         .select('*')
@@ -88,6 +88,7 @@ export function useDeployments(autoFetch: boolean = false) {
 
   const saveDeployment = async (name: string, config: Config, sites: Site[]) => {
     try {
+      const supabase = supabaseBrowser;
       const orderedSites = reorderDevices(sites, config.deviceDefaults);
 
       const { data, error } = await supabase
@@ -112,6 +113,7 @@ export function useDeployments(autoFetch: boolean = false) {
 
   const updateDeployment = async (id: string, name: string, config: Config, sites: Site[]) => {
     try {
+      const supabase = supabaseBrowser;
       const { error } = await supabase
         .from('deployments')
         .update({
@@ -138,6 +140,7 @@ export function useDeployments(autoFetch: boolean = false) {
 
   const deleteDeployment = async (id: string) => {
     try {
+      const supabase = supabaseBrowser;
       const { error } = await supabase
         .from('deployments')
         .delete()

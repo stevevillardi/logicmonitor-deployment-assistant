@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -160,7 +160,7 @@ const ManagePOVEntriesDialog = ({
         localStorage.removeItem(storageKey);
     };
 
-    const fetchEntries = async () => {
+    const fetchEntries = useCallback(async () => {
         setIsLoading(true);
         try {
             const supabase = supabaseBrowser;
@@ -220,13 +220,13 @@ const ManagePOVEntriesDialog = ({
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [type, user?.id]);
 
     useEffect(() => {
-        if (open && user?.id && !editingId) {
+        if (open) {
             fetchEntries();
         }
-    }, [open, user?.id]);
+    }, [open, fetchEntries]);
 
     const handleEdit = (entry: Entry) => {
         clearSavedData();

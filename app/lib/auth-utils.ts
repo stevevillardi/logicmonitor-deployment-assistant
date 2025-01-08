@@ -8,13 +8,6 @@ export async function checkPermission(permission: Permission): Promise<boolean> 
             return false;
         }
 
-        // Use the context's hasPermission if available, otherwise fall back to direct check
-        if (typeof window !== 'undefined') {
-            const { useAuth } = await import('@/app/contexts/AuthContext');
-            const { hasPermission } = useAuth();
-            return hasPermission(permission);
-        }
-
         // Server-side permission check
         const { data, error } = await supabaseBrowser
             .from('profiles')

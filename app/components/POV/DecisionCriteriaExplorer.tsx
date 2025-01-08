@@ -79,7 +79,6 @@ const DecisionCriteriaExplorer = ({ parentLoading, onLoadingComplete }: Decision
 
     useEffect(() => {
         if (parentLoading || !criteria.length) {
-            console.log('fetching criteria');
             fetchCriteria();
         }
     }, [parentLoading, fetchCriteria, criteria.length]);
