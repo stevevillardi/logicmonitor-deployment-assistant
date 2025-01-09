@@ -11,9 +11,8 @@ import DecisionCriteria from './DecisionCriteria/DecisionCriteria';
 import WorkingSessions from './WorkingSessions/WorkingSessions';
 import Team from './Team/Team';
 import DeviceScope from './DeviceScope/DeviceScope';
-import { usePOV } from '@/app/contexts/POVContext';
-import { supabaseBrowser } from '@/app/lib/supabase/client';
 import POVForm from './POVForm';
+import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 
 interface POVLayoutProps {
   children?: React.ReactNode;
@@ -23,42 +22,14 @@ export default function POVLayout({ children }: POVLayoutProps) {
   const pathname = usePathname();
   const params = useParams();
   const povId = params.id as string;
-  const { dispatch } = usePOV();
+  const { fetchPOV } = usePOVOperations();
   const isNewPOV = pathname === '/pov/new';
 
   useEffect(() => {
-    const fetchPOVData = async () => {
-      if (isNewPOV) return;
-
-      try {
-        const { data: pov, error } = await supabaseBrowser
-          .from('pov')
-          .select(`
-            *,
-            key_business_services:pov_key_business_services(*),
-            challenges:pov_challenges(*),
-            team_members:pov_team_members(*)
-          `)
-          .eq('id', povId)
-          .single();
-
-        if (error) throw error;
-
-        if (pov) {
-          dispatch({ type: 'SET_POV', payload: pov });
-          dispatch({ type: 'SET_BUSINESS_SERVICES', payload: pov.key_business_services || [] });
-          dispatch({ type: 'SET_CHALLENGES', payload: pov.challenges || [] });
-          dispatch({ type: 'SET_TEAM_MEMBERS', payload: pov.team_members || [] });
-        }
-      } catch (error) {
-        console.error('Error fetching POV:', error);
-      }
-    };
-
-    if (povId) {
-      fetchPOVData();
+    if (!isNewPOV && povId) {
+      fetchPOV(povId);
     }
-  }, [povId, dispatch, isNewPOV]);
+  }, [povId, isNewPOV]);
 
   const renderContent = () => {
     if (children) return children;

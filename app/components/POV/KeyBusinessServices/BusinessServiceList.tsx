@@ -1,7 +1,7 @@
 'use client'
 
 import { KeyBusinessService } from '@/app/types/pov';
-import { Building2, MoreVertical, Pencil, Trash, User, Target, ClipboardList } from 'lucide-react';
+import { MoreVertical, Pencil, Trash, Building2, User, Target, ClipboardList } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +9,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { usePOV } from '@/app/contexts/POVContext';
-import { supabaseBrowser } from '@/app/lib/supabase/client';
-import { Badge } from '@/components/ui/badge';
+import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface BusinessServiceListProps {
   services: KeyBusinessService[];
@@ -20,21 +19,11 @@ interface BusinessServiceListProps {
 }
 
 export default function BusinessServiceList({ services, onEdit }: BusinessServiceListProps) {
-  const { dispatch } = usePOV();
+  const { deleteBusinessService } = usePOVOperations();
 
   const handleDelete = async (serviceId: string) => {
     try {
-      const { error } = await supabaseBrowser
-        .from('pov_key_business_services')
-        .delete()
-        .eq('id', serviceId);
-
-      if (error) throw error;
-
-      dispatch({ 
-        type: 'DELETE_BUSINESS_SERVICE', 
-        payload: serviceId 
-      });
+      await deleteBusinessService(serviceId);
     } catch (error) {
       console.error('Error deleting business service:', error);
     }
@@ -112,26 +101,22 @@ export default function BusinessServiceList({ services, onEdit }: BusinessServic
             </div>
 
             {/* Actions Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800">
-                <DropdownMenuItem onClick={() => onEdit(service)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className="text-red-600 dark:text-red-400"
-                  onClick={() => handleDelete(service.id)}
-                >
-                  <Trash className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                onClick={() => onEdit(service)}
+                className="h-8 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+              >
+                <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                onClick={() => handleDelete(service.id)}
+                className="h-8 p-2 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors duration-200"
+              >
+                <Trash className="h-4 w-4 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300" />
+              </Button>
+            </div>
           </div>
         </Card>
       ))}

@@ -37,24 +37,34 @@ export default function AddBusinessServiceDialog({
   const [kpiInput, setKpiInput] = useState('');
   const initialFocusRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!open) {
-      setFormData({
-        name: '',
-        description: '',
-        tech_owner: '',
-        desired_kpis: [],
-      });
-      setKpiInput('');
-      setIsSubmitting(false);
-    }
-  }, [open]);
+  const resetState = () => {
+    setFormData({
+      name: '',
+      description: '',
+      tech_owner: '',
+      desired_kpis: [],
+    });
+    setKpiInput('');
+    setIsSubmitting(false);
+  };
 
   useEffect(() => {
     if (editingService && open) {
       setFormData(editingService);
     }
   }, [editingService, open]);
+
+  useEffect(() => {
+    if (!open) {
+      resetState();
+    }
+    return () => {
+      // Cleanup when component unmounts
+      if (open) {
+        resetState();
+      }
+    };
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +83,7 @@ export default function AddBusinessServiceDialog({
           pov_id: pov?.id
         });
       }
+      resetState();
       onClose?.();
       onOpenChange(false);
     } catch (error) {
@@ -99,21 +110,13 @@ export default function AddBusinessServiceDialog({
     });
   };
 
-  const resetState = () => {
-    setFormData({
-      name: '',
-      description: '',
-      tech_owner: '',
-      desired_kpis: [],
-    });
-    setKpiInput('');
-    setIsSubmitting(false);
-  };
-
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      resetState();
-      onClose?.();
+      // Use setTimeout to ensure state updates happen after the dialog closes
+      setTimeout(() => {
+        resetState();
+        onClose?.();
+      }, 0);
     }
     onOpenChange(open);
   };
@@ -232,10 +235,7 @@ export default function AddBusinessServiceDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  document.body.focus();
-                  onOpenChange(false);
-                }}
+                onClick={() => onOpenChange(false)}
                 className="w-full sm:w-auto bg-white dark:bg-gray-900 border-blue-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
               >
                 Cancel

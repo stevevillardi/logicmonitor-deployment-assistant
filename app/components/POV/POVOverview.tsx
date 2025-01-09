@@ -1,46 +1,11 @@
 'use client'
 
-import { useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import { usePOV } from '@/app/contexts/POVContext';
 import { Card } from '@/components/ui/card';
-import { supabaseBrowser } from '@/app/lib/supabase/client';
 
 export default function POVOverview() {
-  const { state, dispatch } = usePOV();
-  const params = useParams();
+  const { state } = usePOV();
   const { pov, challenges, keyBusinessServices, teamMembers } = state;
-
-  useEffect(() => {
-    const fetchPOVData = async () => {
-      if (!params.id) return;
-
-      const { data, error } = await supabaseBrowser
-        .from('pov')
-        .select(`
-          *,
-          challenges:pov_challenges(*),
-          key_business_services:pov_key_business_services(*),
-          team_members:pov_team_members(*)
-        `)
-        .eq('id', params.id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching POV:', error);
-        return;
-      }
-
-      if (data) {
-        dispatch({ type: 'SET_POV', payload: data });
-        dispatch({ type: 'SET_CHALLENGES', payload: data.challenges || [] });
-        dispatch({ type: 'SET_BUSINESS_SERVICES', payload: data.key_business_services || [] });
-        dispatch({ type: 'SET_TEAM_MEMBERS', payload: data.team_members || [] });
-      }
-    };
-
-    fetchPOVData();
-  }, [params.id, dispatch]);
 
   if (!pov) return null;
 

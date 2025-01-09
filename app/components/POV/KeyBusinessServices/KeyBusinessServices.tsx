@@ -21,10 +21,13 @@ export default function KeyBusinessServices() {
   };
 
   const handleDialogOpenChange = (open: boolean) => {
-    if (!open) {
-      setEditingService(null);
-    }
     setIsAddDialogOpen(open);
+    if (!open) {
+      // Use setTimeout to ensure state updates happen after the dialog closes
+      setTimeout(() => {
+        setEditingService(null);
+      }, 0);
+    }
   };
 
   const handleAddNewClick = () => {
@@ -65,7 +68,9 @@ export default function KeyBusinessServices() {
         open={isAddDialogOpen}
         onOpenChange={handleDialogOpenChange}
         editingService={editingService}
-        onClose={() => setEditingService(null)}
+        onClose={() => {
+          setEditingService(null);
+        }}
       />
     </div>
   );

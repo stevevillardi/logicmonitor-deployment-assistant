@@ -15,6 +15,8 @@ export interface POV {
     key_business_services?: KeyBusinessService[];
     challenges?: POVChallenge[];
     team_members?: TeamMember[];
+    device_scopes?: DeviceScope[];
+    working_sessions?: WorkingSession[];
 }
 
 // Key Business Services
@@ -111,7 +113,7 @@ export interface POVTeamMember {
 export interface DeviceScope {
     id: string;
     pov_id: string;
-    device_type: 'SERVER' | 'WORKSTATION' | 'NETWORK' | 'MOBILE' | 'IOT' | 'OTHER';
+    device_type: string;
     category: string;
     count: number;
     specifications: {
@@ -120,7 +122,7 @@ export interface DeviceScope {
         architecture?: string;
         additional_details?: string;
     };
-    priority: 'HIGH' | 'MEDIUM' | 'LOW';
+    priority: 'HIGH' | 'MEDIUM' | 'LOW' ;
     notes?: string;
     created_at: string;
     created_by: string;
