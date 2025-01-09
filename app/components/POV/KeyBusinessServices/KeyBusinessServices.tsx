@@ -11,7 +11,8 @@ import { KeyBusinessService } from '@/app/types/pov';
 
 export default function KeyBusinessServices() {
   const { state } = usePOV();
-  const keyBusinessServices = state.keyBusinessServices;
+  const pov = state.pov;
+  const keyBusinessServices = pov?.key_business_services || [];
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<KeyBusinessService | null>(null);
 

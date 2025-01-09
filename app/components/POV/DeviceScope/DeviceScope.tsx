@@ -12,7 +12,8 @@ import { devLog } from '../../Shared/utils/debug';
 
 export default function DeviceScope() {
   const { state } = usePOV();
-  const deviceScopes = state.deviceScopes;
+  const pov = state.pov;
+  const deviceScopes = pov?.device_scopes || [];
   devLog('Device Scopes in state:', deviceScopes);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingDevice, setEditingDevice] = useState<DeviceScopeType | null>(null);

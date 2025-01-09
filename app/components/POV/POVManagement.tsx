@@ -15,6 +15,7 @@ import { devLog } from '../Shared/utils/debug';
 export default function POVManagement() {
     const router = useRouter();
     const { state, dispatch } = usePOV();
+    const povs = state.povs;
     const { isAuthenticated, isLoading } = useAuth();
 
     useEffect(() => {
@@ -33,6 +34,7 @@ export default function POVManagement() {
                 }
                 
                 dispatch({ type: 'SET_POVS', payload: data });
+
             } catch (error) {
                 devLog('Error in fetchPOVs:', error);
             }
@@ -52,6 +54,7 @@ export default function POVManagement() {
     const getStatusBadgeColor = (status: POV['status']) => {
         const colors = {
             'DRAFT': 'bg-yellow-100 text-yellow-800',
+            'SUBMITTED': 'bg-yellow-100 text-yellow-800',
             'IN_PROGRESS': 'bg-blue-100 text-blue-800',
             'COMPLETE': 'bg-green-100 text-green-800',
             'BLOCKED': 'bg-red-100 text-red-800',
@@ -79,9 +82,9 @@ export default function POVManagement() {
                 </div>
             </CardHeader>
             <CardContent className="p-6 flex-1 bg-white dark:bg-gray-900">
-                {state.povs?.length > 0 ? (
+                {povs && povs.length > 0 ? (
                     <div className="grid gap-4">
-                        {state.povs.map((pov: POV) => (
+                        {povs.map((pov: POV) => (
                             <div
                                 key={pov.id}
                                 className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg 

@@ -12,7 +12,8 @@ import { devLog } from '../../Shared/utils/debug';
 
 export default function Team() {
   const { state } = usePOV();
-  const teamMembers = state.teamMembers;
+  const pov = state.pov;
+  const teamMembers = pov?.team_members || [];
   devLog('Team Members in state:', teamMembers);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
@@ -45,7 +46,7 @@ export default function Team() {
               Team Members
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Manage team members for {state.pov?.title}
+              Manage team members for {pov?.title}
             </p>
           </div>
           <Button
@@ -60,7 +61,7 @@ export default function Team() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <TeamMemberList 
-          members={state.teamMembers} 
+          members={pov?.team_members || []} 
           onEdit={handleEdit}
         />
       </div>

@@ -12,7 +12,8 @@ import { devLog } from '../../Shared/utils/debug';
 
 export default function WorkingSessions() {
   const { state } = usePOV();
-  const workingSessions = state.workingSessions;
+  const pov = state.pov;
+  const workingSessions = pov?.working_sessions || [];
   devLog('Working Sessions in state:', workingSessions);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState<WorkingSessionType | null>(null);

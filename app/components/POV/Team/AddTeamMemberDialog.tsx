@@ -8,10 +8,7 @@ import { Label } from '@/components/ui/label';
 import { TeamMember } from '@/app/types/pov';
 import { usePOV } from '@/app/contexts/POVContext';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
-import { Check, ChevronsUpDown, User, Plus, Briefcase, Mail, Building2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { User, Plus, Briefcase, Mail, Building2 } from "lucide-react";
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 
 interface AddTeamMemberDialogProps {
@@ -28,6 +25,7 @@ export default function AddTeamMemberDialog({
   onClose 
 }: AddTeamMemberDialogProps) {
   const { state } = usePOV();
+  const { pov } = state;
   const { addTeamMember } = usePOVOperations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingMembers, setExistingMembers] = useState<TeamMember[]>([]);
@@ -74,7 +72,7 @@ export default function AddTeamMemberDialog({
 
   // Filter out existing team members from the dropdown options
   const availableMembers = existingMembers.filter(member => 
-    !state.teamMembers.some(tm => tm.id === member.id)
+    !pov?.team_members?.some(tm => tm.id === member.id)
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,13 +80,13 @@ export default function AddTeamMemberDialog({
     if (isSubmitting) return;
 
     // Check if member is already in the team
-    if (selectedMember && state.teamMembers.some(tm => tm.id === selectedMember.id)) {
+    if (selectedMember && pov?.team_members?.some(tm => tm.id === selectedMember.id)) {
       alert('This team member is already part of the POV.');
       return;
     }
 
     // For new members, check if email already exists in current team
-    if (isCreatingNew && state.teamMembers.some(tm => tm.email === formData.email)) {
+    if (isCreatingNew && pov?.team_members?.some(tm => tm.email === formData.email)) {
       alert('A team member with this email is already part of the POV.');
       return;
     }
@@ -98,12 +96,12 @@ export default function AddTeamMemberDialog({
       if (selectedMember && !isCreatingNew) {
         await addTeamMember({
           ...selectedMember,
-          pov_id: state.pov?.id
+          pov_id: pov?.id
         });
       } else {
         await addTeamMember({
           ...formData,
-          pov_id: state.pov?.id
+          pov_id: pov?.id
         });
       }
       handleClose();

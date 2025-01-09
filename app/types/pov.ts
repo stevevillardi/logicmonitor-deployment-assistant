@@ -17,6 +17,7 @@ export interface POV {
     team_members?: TeamMember[];
     device_scopes?: DeviceScope[];
     working_sessions?: WorkingSession[];
+    decision_criteria?: POVDecisionCriteria[];
 }
 
 // Key Business Services
@@ -55,20 +56,29 @@ export interface DecisionCriteriaActivity {
 export interface POVChallenge {
     id: string;
     pov_id: string;
+    challenge_id?: string; // Reference to template challenge if using one
     title: string;
     challenge_description: string;
     business_impact: string;
-    status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
+    example?: string;
+    status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED';
     created_by: string;
     created_at: string;
+    updated_at?: string;
+    metadata?: Record<string, any>;
+}
+
+export interface ChallengeCategory {
+    id: string;
+    challenge_id: string;
+    category: string;
 }
 
 export interface ChallengeOutcome {
     id: string;
-    pov_challenge_id: string;
+    challenge_id: string;
     outcome: string;
-    status: 'PENDING' | 'ACHIEVED' | 'NOT_ACHIEVED';
-    created_at: string;
+    order_index: number;
 }
 
 // Working Sessions

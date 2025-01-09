@@ -16,13 +16,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
+import Link from 'next/link';
 
 interface ValidationSection {
   name: string;
   isValid: boolean;
   tabName: string;
+  href: string;
 }
 
 export default function POVHeader() {
@@ -32,6 +33,8 @@ export default function POVHeader() {
   const { deletePOV } = usePOVOperations();
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showValidationAlert, setShowValidationAlert] = useState(false);
+  const [invalidSections, setInvalidSections] = useState<ValidationSection[]>([]);
 
   const handleDelete = async () => {
     if (!pov?.id || isDeleting) return;
@@ -63,23 +66,39 @@ export default function POVHeader() {
     const validations: ValidationSection[] = [
       {
         name: "Team Members",
-        isValid: state.teamMembers.length > 0,
-        tabName: "team"
+        isValid: (pov?.team_members || []).length > 0,
+        tabName: "team",
+        href: `/pov/${pov?.id}/team`
       },
       {
         name: "Business Services",
-        isValid: state.keyBusinessServices.length > 0,
-        tabName: "business-services"
+        isValid: (pov?.key_business_services || []).length > 0,
+        tabName: "business-services",
+        href: `/pov/${pov?.id}/key-business-services`
+      },
+      {
+        name: "Challenges",
+        isValid: (pov?.challenges || []).length > 0,
+        tabName: "challenges",
+        href: `/pov/${pov?.id}/challenges`
+      },
+      {
+        name: "Decision Criteria",
+        isValid: (pov?.decision_criteria || []).length > 0,
+        tabName: "decision-criteria",
+        href: `/pov/${pov?.id}/decision-criteria`
       },
       {
         name: "Device Scope",
-        isValid: state.deviceScopes.length > 0,
-        tabName: "device-scope"
+        isValid: (pov?.device_scopes || []).length > 0,
+        tabName: "device-scope",
+        href: `/pov/${pov?.id}/device-scope`
       },
       {
         name: "Working Sessions",
-        isValid: state.workingSessions.length > 0,
-        tabName: "working-sessions"
+        isValid: (pov?.working_sessions || []).length > 0,
+        tabName: "working-sessions",
+        href: `/pov/${pov?.id}/working-sessions`
       }
     ];
 
@@ -87,8 +106,15 @@ export default function POVHeader() {
     console.log("Invalid sections:", invalidSections);
 
     if (invalidSections.length > 0) {
-      // Simple alert for debugging
-      alert(`Missing sections:\n${invalidSections.map(s => s.name).join('\n')}`);
+      // Dispatch event to update sidebar
+      const event = new CustomEvent('povValidationUpdate', {
+        detail: { invalidSections }
+      });
+      window.dispatchEvent(event);
+
+      // Show validation alert
+      setInvalidSections(invalidSections);
+      setShowValidationAlert(true);
       return;
     }
 
@@ -100,7 +126,7 @@ export default function POVHeader() {
           status: 'SUBMITTED',
           updated_at: new Date().toISOString()
         })
-        .eq('id', state.pov?.id);
+        .eq('id', pov?.id);
         
       alert('POV submitted successfully');
     } catch (error) {
@@ -204,6 +230,53 @@ export default function POVHeader() {
               className="bg-[#040F4B] hover:bg-[#0A1B6F]/80 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors duration-200 w-full sm:w-auto"
             >
               {isDeleting ? 'Deleting...' : 'Delete POV'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showValidationAlert} onOpenChange={setShowValidationAlert}>
+        <AlertDialogContent className="max-w-[95vw] mx-4 bg-white dark:bg-gray-900 sm:max-w-2xl border border-blue-100 dark:border-gray-800">
+          <AlertDialogHeader className="border-b border-blue-100 dark:border-gray-800 pb-4">
+            <div className="flex items-center gap-2 text-red-600 dark:text-red-500">
+              <AlertCircle className="h-5 w-5" />
+              <AlertDialogTitle className="text-lg font-semibold">
+                Incomplete Sections
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              The following sections need to be completed before submitting your POV:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="py-6">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
+              <ul className="divide-y divide-red-100 dark:divide-red-800">
+                {invalidSections.map(section => (
+                  <li key={section.tabName}>
+                    <Link 
+                      href={section.href}
+                      onClick={() => setShowValidationAlert(false)}
+                      className="flex items-center gap-3 p-4 hover:bg-red-100/50 dark:hover:bg-red-900/40 transition-colors"
+                    >
+                      <div className="h-2 w-2 rounded-full bg-red-500 dark:bg-red-400" />
+                      <span className="text-red-700 dark:text-red-300 font-medium">
+                        {section.name}
+                      </span>
+                      <ArrowLeft className="h-4 w-4 ml-auto text-red-500 dark:text-red-400 rotate-180" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <AlertDialogFooter className="border-t border-blue-100 dark:border-gray-800 pt-4">
+            <AlertDialogAction
+              onClick={() => setShowValidationAlert(false)}
+              className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors w-full sm:w-auto"
+            >
+              Got it
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

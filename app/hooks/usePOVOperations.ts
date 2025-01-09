@@ -3,6 +3,7 @@
 import { usePOV } from '@/app/contexts/POVContext';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession } from '@/app/types/pov';
+import { devLog } from '../components/Shared/utils/debug';
 
 interface TeamMemberWithPOV extends Partial<TeamMember> {
   pov_id?: string;
@@ -27,7 +28,7 @@ export function usePOVOperations() {
       .single();
 
     if (error) {
-      console.error('Supabase error:', error);
+      devLog('Supabase error:', error);
       throw new Error(error.message);
     }
     
@@ -40,8 +41,94 @@ export function usePOVOperations() {
     return newPov;
   };
 
-  const addChallenge = async (challengeData: Partial<POVChallenge>) => {
-    // Implementation
+  const createTemplateChallenge = async (challengeData: Partial<POVChallenge>) => {
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    // First create the challenge template
+    const { data: newChallenge, error: challengeError } = await supabaseBrowser
+      .from('challenges')
+      .insert({
+        title: challengeData.title,
+        challenge_description: challengeData.challenge_description,
+        business_impact: challengeData.business_impact,
+        example: challengeData.example || '',
+        status: 'APPROVED',
+        created_by: user.id,
+        created_at: new Date().toISOString(),
+        is_template: true,
+        metadata: {}
+      })
+      .select('*')
+      .single();
+
+    if (challengeError) throw challengeError;
+    if (!newChallenge) throw new Error('Failed to create challenge template');
+
+    // Then create the POV challenge instance
+    const { data: povChallenge, error: povChallengeError } = await supabaseBrowser
+      .from('pov_challenges')
+      .insert({
+        pov_id: challengeData.pov_id,
+        title: challengeData.title,
+        challenge_description: challengeData.challenge_description,
+        business_impact: challengeData.business_impact,
+        status: challengeData.status,
+        created_by: user.id,
+        created_at: new Date().toISOString()
+      })
+      .select('*')
+      .single();
+
+    if (povChallengeError) throw povChallengeError;
+    
+    dispatch({ type: 'ADD_CHALLENGE', payload: povChallenge });
+    return povChallenge;
+  };
+
+  const addChallenge = async (challengeData: Partial<POVChallenge> & { saveAsTemplate?: boolean }) => {
+    if (challengeData.saveAsTemplate) {
+      return createTemplateChallenge(challengeData);
+    }
+
+    // Regular POV challenge creation
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    const { data: newChallenge, error } = await supabaseBrowser
+      .from('pov_challenges')
+      .insert({
+        pov_id: challengeData.pov_id,
+        title: challengeData.title,
+        challenge_description: challengeData.challenge_description,
+        business_impact: challengeData.business_impact,
+        status: challengeData.status,
+        created_by: user.id,
+        created_at: new Date().toISOString()
+      })
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    if (!newChallenge) throw new Error('Failed to create challenge');
+
+    dispatch({ type: 'ADD_CHALLENGE', payload: newChallenge });
+    return newChallenge;
+  };
+
+  const updateChallenge = async (challengeId: string, challengeData: Partial<POVChallenge>) => {
+    const { data: updatedChallenge, error } = await supabaseBrowser
+      .from('pov_challenges')
+      .update(challengeData)
+      .eq('id', challengeId)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    if (!updatedChallenge) throw new Error('Failed to update challenge');
+
+    dispatch({ type: 'UPDATE_CHALLENGE', payload: updatedChallenge });
+    return updatedChallenge;
   };
 
   const addBusinessService = async (serviceData: Partial<KeyBusinessService>) => {
@@ -272,7 +359,12 @@ export function usePOVOperations() {
       .from('pov')
       .select(`
         *,
-        challenges:pov_challenges(*),
+        challenges:pov_challenges(
+          *,
+          template:challenge_id(*),
+          categories:pov_challenge_categories(*),
+          outcomes:pov_challenge_outcomes(*)
+        ),
         key_business_services:pov_key_business_services(*),
         team_members:pov_team_members(
           team_member:team_members(*)
@@ -293,27 +385,48 @@ export function usePOVOperations() {
     }
 
     if (pov) {
-      dispatch({ type: 'SET_POV', payload: pov });
-      dispatch({ type: 'SET_CHALLENGES', payload: pov.challenges || [] });
-      dispatch({ type: 'SET_BUSINESS_SERVICES', payload: pov.key_business_services || [] });
-      dispatch({ type: 'SET_DEVICE_SCOPES', payload: pov.device_scopes || [] });
-      dispatch({ type: 'SET_WORKING_SESSIONS', payload: pov.working_sessions || [] });
+      // Transform team members data structure
+      const transformedPov = {
+        ...pov,
+        team_members: (pov.team_members || [])
+          .map((tm: any) => tm.team_member)
+          .filter(Boolean)
+      };
       
-      // Handle team members with nested structure
-      const teamMembers = (pov.team_members || [])
-        .map((tm: any) => tm.team_member)
-        .filter(Boolean); // Filter out any null values
-      dispatch({ type: 'SET_TEAM_MEMBERS', payload: teamMembers });
+      dispatch({ type: 'SET_POV', payload: transformedPov });
     }
 
     return pov;
   };
 
-  // Add other operations...
+  const deleteChallenge = async (challengeId: string) => {
+    if (!challengeId) return;
+
+    try {
+      // Delete from supabase
+      const { error } = await supabaseBrowser
+        .from('pov_challenges')
+        .delete()
+        .eq('id', challengeId);
+
+      if (error) throw error;
+
+      // Update local state
+      dispatch({ 
+        type: 'DELETE_CHALLENGE', 
+        payload: challengeId 
+      });
+
+    } catch (error) {
+      console.error('Error deleting challenge:', error);
+      throw error;
+    }
+  };
 
   return {
     createPOV,
     addChallenge,
+    updateChallenge,
     addBusinessService,
     updateBusinessService,
     deleteBusinessService,
@@ -328,5 +441,6 @@ export function usePOVOperations() {
     deleteWorkingSession,
     deletePOV,
     fetchPOV,
+    deleteChallenge,
   };
 } 
