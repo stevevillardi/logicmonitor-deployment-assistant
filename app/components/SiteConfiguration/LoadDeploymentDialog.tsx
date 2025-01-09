@@ -21,6 +21,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatDate } from '@/lib/utils';
 
 interface LoadDeploymentDialogProps {
   onLoadConfig: (config: Config, sites: Site[]) => void;
@@ -39,16 +40,6 @@ export function LoadDeploymentDialog({ onLoadConfig, className }: LoadDeployment
       fetchDeployments();
     }
   }, [open, fetchDeployments]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const getSiteSummary = (sites: Site[]) => {
     const summary = sites.reduce((acc, site) => {

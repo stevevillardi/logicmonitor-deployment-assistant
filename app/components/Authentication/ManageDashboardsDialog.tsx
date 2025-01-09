@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Edit2, Save, X } from 'lucide-react';
-import { supabaseBrowser } from '@/app/lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { Label } from "@/components/ui/label";
 import { Layout } from 'lucide-react';

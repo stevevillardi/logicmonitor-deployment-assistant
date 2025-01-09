@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode, useCallback, useEffect, useState } from 'react';
-import { supabaseBrowser } from '../lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { UserRole, Permission, ROLE_PERMISSIONS } from '../types/auth';
 import { useRouter } from 'next/navigation';
 import { debug, devError } from '@/app/components/Shared/utils/debug';
@@ -21,7 +21,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
   const router = useRouter();
 
   const fetchUserRole = useCallback(async (userId: string) => {
@@ -42,20 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Handle initial session
   useEffect(() => {
     let mounted = true;
-    debug.auth('Initializing auth state');
+    debug.auth('Setting up auth state');
 
-    const initializeAuth = async () => {
+    const handleAuthStateChange = async (session: any) => {
       try {
-        setIsLoading(true);
-        const { data: { session } } = await supabaseBrowser.auth.getSession();
-        debug.auth('Initial session check', { 
-          hasSession: !!session,
-          userId: session?.user?.id 
-        });
-        
         if (!mounted) return;
 
         if (session?.user) {
@@ -65,13 +56,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUserRole(role);
           }
         } else {
-          if (mounted) {
-            setUser(null);
-            setUserRole('viewer');
+          setUser(null);
+          setUserRole('viewer');
+          // Only redirect on explicit sign out, not on session check
+          if (mounted && window.location.pathname !== '/login') {
+            router.push('/login');
           }
         }
       } catch (error) {
-        debug.error('Auth initialization failed', error);
+        debug.error('Auth state change handler failed', error);
         if (mounted) {
           setUser(null);
           setUserRole('viewer');
@@ -79,60 +72,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } finally {
         if (mounted) {
           setIsLoading(false);
-          setIsInitialized(true);
         }
       }
     };
 
-    initializeAuth();
-    return () => { mounted = false; };
-  }, [fetchUserRole]);
+    // Initial session check
+    supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
+      debug.auth('Initial session check', { 
+        hasSession: !!session,
+        userId: session?.user?.id 
+      });
+      handleAuthStateChange(session);
+    });
 
-  // Handle auth state changes
-  useEffect(() => {
-    if (!isInitialized) return;
-
+    // Subscribe to auth changes
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
-      async (event, session) => {
-        debug.auth('Auth state changed', { event, userId: session?.user?.id });
-
-        try {
-          if (session?.user) {
-            setUser(session.user);
-            const role = await fetchUserRole(session.user.id);
-            setUserRole(role);
-          } else {
-            setUser(null);
-            setUserRole('viewer');
-            if (event === 'SIGNED_OUT') {
-              debug.auth('User signed out, redirecting to login');
-              router.push('/login');
-            }
-          }
-        } catch (error) {
-          debug.error('Auth state change failed', error);
-          setUser(null);
-          setUserRole('viewer');
-        }
+      async (_event, session) => {
+        debug.auth('Auth state changed', { 
+          event: _event, 
+          userId: session?.user?.id,
+          hasSession: !!session
+        });
+        handleAuthStateChange(session);
       }
     );
 
     return () => {
       debug.auth('Cleaning up auth listener');
+      mounted = false;
       subscription.unsubscribe();
     };
-  }, [fetchUserRole, router, isInitialized]);
-
-  // Log state changes only in development
-  useEffect(() => {
-    debug.auth('Auth state updated', {
-      isLoading,
-      isInitialized,
-      isAuthenticated: !!user,
-      userRole,
-      userId: user?.id
-    });
-  }, [isLoading, isInitialized, user, userRole]);
+  }, [fetchUserRole, router]);
 
   const hasPermission = useCallback((permission: Permission): boolean => {
     return ROLE_PERMISSIONS[userRole].some(
@@ -157,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     userRole,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && user.id != null, // More strict check
     isLoading,
     hasPermission,
     signOut

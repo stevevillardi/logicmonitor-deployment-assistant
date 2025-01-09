@@ -5,7 +5,7 @@ import { Search, Filter, Plus, Edit2, Layout } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/app/contexts/AuthContext';
-import { supabaseBrowser } from '@/app/lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import ManagePOVContentDialog from '@/app/components/POV/ManagePOVContentDialog';
 import ManagePOVEntriesDialog from '@/app/components/POV/ManagePOVEntriesDialog';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';

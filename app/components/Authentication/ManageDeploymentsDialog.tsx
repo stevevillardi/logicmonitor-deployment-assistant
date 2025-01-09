@@ -18,7 +18,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { useAuth } from '@/app/contexts/AuthContext'
 import { devError } from '@/app/components/Shared/utils/debug';
-
+import { formatDate } from '@/lib/utils';
 interface ManageDeploymentsDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
@@ -57,16 +57,6 @@ export function ManageDeploymentsDialog({ open, onOpenChange }: ManageDeployment
         } catch (error) {
             devError('Error saving deployment:', error)
         }
-    }
-
-    const formatDate = (date: string) => {
-        return new Date(date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        })
     }
 
     const toggleDeployment = (id: string) => {

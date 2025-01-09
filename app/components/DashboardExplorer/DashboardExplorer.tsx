@@ -10,7 +10,7 @@ import DashboardMiniPreview from './DashboardMiniPreview';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCart } from '../../contexts/CartContext';
 import CartModal from './CartModal';
-import supabase, { supabaseBrowser } from '../../lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { UploadDashboard } from './UploadDashboard';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { devError, devLog } from '../Shared/utils/debug';
@@ -65,7 +65,7 @@ const DashboardExplorer = () => {
         const fetchDashboards = async () => {
             try {
                 setIsLoading(true);
-                const { data, error } = await supabase
+                const { data, error } = await supabaseBrowser
                     .from('dashboard-configs')
                     .select('*')
                     .order('category');
@@ -148,7 +148,7 @@ const DashboardExplorer = () => {
     // Add session check effect
     useEffect(() => {
         const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseBrowser.auth.getSession();
             devLog('Current session:', !!session);
         };
         
@@ -272,7 +272,7 @@ const DashboardExplorer = () => {
     const handleRefresh = async () => {
         try {
             setIsLoading(true);
-            const { data, error } = await supabase
+            const { data, error } = await supabaseBrowser
                 .from('dashboard-configs')
                 .select('*')
                 .order('category');

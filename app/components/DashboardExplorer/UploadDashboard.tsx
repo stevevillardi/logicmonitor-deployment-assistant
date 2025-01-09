@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Loader2, Info, Check, X, AlertCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import supabase, { supabaseBrowser } from '../../lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { devError } from '../Shared/utils/debug';
 
 interface UploadDashboardProps {

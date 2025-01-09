@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Lock, ArrowLeft } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
-import { supabaseBrowser } from '../../lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 
@@ -14,9 +14,24 @@ const LoginPage = () => {
     const router = useRouter();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            router.push('/home');
-        }
+        const checkAuth = async () => {
+            // Check both context and Supabase session
+            const { data: { session } } = await supabaseBrowser.auth.getSession();
+            
+            console.log('Auth State:', {
+                contextAuth: isAuthenticated,
+                hasSupabaseSession: !!session,
+                sessionUser: session?.user,
+                timestamp: new Date().toISOString()
+            });
+
+            // Only redirect if both are true
+            if (isAuthenticated && session) {
+                router.push('/home');
+            }
+        };
+
+        checkAuth();
     }, [isAuthenticated, router]);
 
     const handleGoogleLogin = async () => {

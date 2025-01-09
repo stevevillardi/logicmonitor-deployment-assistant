@@ -1,4 +1,4 @@
-import { supabaseBrowser } from './supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import type { Permission, UserRole } from '@/app/types/auth';
 
 export async function checkPermission(permission: Permission): Promise<boolean> {

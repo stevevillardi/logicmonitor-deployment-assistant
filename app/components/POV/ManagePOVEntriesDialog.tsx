@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Edit2, Trash2, Save, X, Minus, Plus } from 'lucide-react';
-import { supabaseBrowser } from '@/app/lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { AITextarea } from "@/app/components/ui/ai-textarea";
 import {

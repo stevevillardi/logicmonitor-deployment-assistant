@@ -1,4 +1,4 @@
-import supabase from '../../../lib/supabase';
+import { createClient } from '@/app/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { getDefaultBranch } from '../../../utils/github';
 
@@ -40,6 +40,7 @@ async function handleSync() {
       const content = await contentResponse.json();
 
       // Upsert into Supabase
+      const supabase = await createClient();
       const { error } = await supabase
         .from('dashboard-configs')
         .upsert({
