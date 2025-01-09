@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useReducer, ReactNode } from 'react';
-import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession } from '@/app/types/pov';
+import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession, POVDecisionCriteria } from '@/app/types/pov';
 import { devLog } from '../components/Shared/utils/debug';
 
 interface POVState {
@@ -17,30 +17,34 @@ type POVAction =
   | { type: 'SET_POVS'; payload: POV[] | null }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_CHALLENGES'; payload: POVChallenge[] }
-
+  
   | { type: 'SET_BUSINESS_SERVICES'; payload: KeyBusinessService[] }
   | { type: 'SET_TEAM_MEMBERS'; payload: TeamMember[] }
   | { type: 'SET_DEVICE_SCOPES'; payload: DeviceScope[] }
   | { type: 'SET_WORKING_SESSIONS'; payload: WorkingSession[] }
-  
-  | { type: 'ADD_CHALLENGE'; payload: POVChallenge }
+  | { type: 'SET_CHALLENGES'; payload: POVChallenge[] }
+  | { type: 'SET_DECISION_CRITERIA'; payload: POVDecisionCriteria[] }
   | { type: 'ADD_BUSINESS_SERVICE'; payload: KeyBusinessService }
   | { type: 'ADD_TEAM_MEMBER'; payload: TeamMember }
   | { type: 'ADD_DEVICE_SCOPE'; payload: DeviceScope }
   | { type: 'ADD_WORKING_SESSION'; payload: WorkingSession }
+  | { type: 'ADD_CHALLENGE'; payload: POVChallenge }
+  | { type: 'ADD_DECISION_CRITERIA'; payload: POVDecisionCriteria }
   
   | { type: 'UPDATE_BUSINESS_SERVICE'; payload: KeyBusinessService }
   | { type: 'UPDATE_TEAM_MEMBER'; payload: TeamMember }
   | { type: 'UPDATE_DEVICE_SCOPE'; payload: DeviceScope }
   | { type: 'UPDATE_WORKING_SESSION'; payload: WorkingSession }
+  | { type: 'UPDATE_CHALLENGE'; payload: POVChallenge }
+  | { type: 'UPDATE_DECISION_CRITERIA'; payload: POVDecisionCriteria }
   
   | { type: 'DELETE_BUSINESS_SERVICE'; payload: string }
   | { type: 'DELETE_TEAM_MEMBER'; payload: string }
   | { type: 'DELETE_DEVICE_SCOPE'; payload: string }
   | { type: 'DELETE_WORKING_SESSION'; payload: string }
   | { type: 'DELETE_CHALLENGE'; payload: string }
-  | { type: 'UPDATE_CHALLENGE'; payload: POVChallenge }
+  | { type: 'DELETE_DECISION_CRITERIA'; payload: string }
+
 
 const POVContext = createContext<{
   state: POVState;
@@ -118,7 +122,11 @@ function povReducer(state: POVState, action: POVAction): POVState {
         ...state,
         pov: state.pov ? {
           ...state.pov,
-          challenges: [...(state.pov.challenges || []), action.payload]
+          challenges: [...(state.pov.challenges || []), {
+            ...action.payload,
+            categories: action.payload.categories || [],
+            outcomes: action.payload.outcomes || []
+          }]
         } : null
       };
     case 'ADD_BUSINESS_SERVICE':
@@ -201,7 +209,11 @@ function povReducer(state: POVState, action: POVAction): POVState {
         pov: state.pov ? {
           ...state.pov,
           challenges: state.pov.challenges?.map((challenge) =>
-            challenge.id === action.payload.id ? action.payload : challenge
+            challenge.id === action.payload.id ? {
+              ...action.payload,
+              categories: action.payload.categories || challenge.categories || [],
+              outcomes: action.payload.outcomes || challenge.outcomes || []
+            } : challenge
           ) || []
         } : null
       };
@@ -257,6 +269,44 @@ function povReducer(state: POVState, action: POVAction): POVState {
             challenge => challenge.id !== action.payload
           ) || []
         }
+      };
+    case 'DELETE_DECISION_CRITERIA':
+      return {
+        ...state,
+        pov: state.pov ? {
+          ...state.pov,
+          decision_criteria: state.pov.decision_criteria?.filter(
+            criteria => criteria.id !== action.payload
+          ) || []
+        } : null
+      };
+
+    case 'ADD_DECISION_CRITERIA':
+      return {
+        ...state,
+        pov: state.pov ? {
+          ...state.pov,
+          decision_criteria: [...(state.pov.decision_criteria || []), {
+            ...action.payload,
+            categories: action.payload.categories || [],
+            activities: action.payload.activities || []
+          }]
+        } : null
+      };
+
+    case 'UPDATE_DECISION_CRITERIA':
+      return {
+        ...state,
+        pov: state.pov ? {
+          ...state.pov,
+          decision_criteria: state.pov.decision_criteria?.map((criteria) =>
+            criteria.id === action.payload.id ? {
+              ...action.payload,
+              categories: action.payload.categories || criteria.categories || [],
+              activities: action.payload.activities || criteria.activities || []
+            } : criteria
+          ) || []
+        } : null
       };
 
     default:

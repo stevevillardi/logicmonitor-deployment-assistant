@@ -38,10 +38,12 @@ export interface POVDecisionCriteria {
     pov_id: string;
     title: string;
     success_criteria: string;
-    use_case: string;
-    status: 'PENDING' | 'MET' | 'NOT_MET';
+    use_case?: string;
+    status: string;
     created_by: string;
     created_at: string;
+    categories?: Array<{ category: string }>;
+    activities?: Array<{ activity: string; order_index: number }>;
 }
 
 export interface DecisionCriteriaActivity {
@@ -52,20 +54,47 @@ export interface DecisionCriteriaActivity {
     created_at: string;
 }
 
-// Challenges and Outcomes
 export interface POVChallenge {
     id: string;
     pov_id: string;
-    challenge_id?: string; // Reference to template challenge if using one
+    challenge_id: string;
     title: string;
     challenge_description: string;
     business_impact: string;
-    example?: string;
+    example: string;
+    categories?: ChallengeCategory[];
+    outcomes?: ChallengeOutcome[];
     status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED';
-    created_by: string;
     created_at: string;
-    updated_at?: string;
-    metadata?: Record<string, any>;
+}
+
+export interface POVChallengeCategory {
+    id: string;
+    pov_challenge_id: string;
+    category: string;
+    created_at: string;
+}
+
+export interface POVChallengeOutcome {
+    id: string;
+    pov_challenge_id: string;
+    outcome: string;
+    order_index: number;
+    created_at: string;
+}
+
+// Challenges and Outcomes
+export interface Challenge {
+    id: string;
+    title: string;
+    challenge_description: string;
+    business_impact: string;
+    example: string;
+    categories?: ChallengeCategory[];
+    outcomes?: ChallengeOutcome[];
+    metadata: Record<string, any>;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface ChallengeCategory {

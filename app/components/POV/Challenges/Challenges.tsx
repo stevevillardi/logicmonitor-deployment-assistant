@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { PlusCircle, Library } from 'lucide-react';
 import { usePOV } from '@/app/contexts/POVContext';
 import ChallengeList from './ChallengeList';
-import AddChallengeDialog from './AddChallengeDialog';
+import CreateChallengeDialog from './CreateChallengeDialog';
+import AddFromLibraryDialog from './AddFromLibraryDialog';
 import { POVChallenge } from '@/app/types/pov';
 import { devLog } from '../../Shared/utils/debug';
 
@@ -15,26 +16,23 @@ export default function Challenges() {
   const pov = state.pov;
   const challenges = pov?.challenges || [];
   devLog('Challenges in state:', challenges);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isLibraryDialogOpen, setIsLibraryDialogOpen] = useState(false);
   const [editingChallenge, setEditingChallenge] = useState<POVChallenge | null>(null);
 
   const handleEdit = (challenge: POVChallenge) => {
     setEditingChallenge(challenge);
-    setIsAddDialogOpen(true);
+    setIsCreateDialogOpen(true);
   };
 
-  const handleDialogOpenChange = (open: boolean) => {
-    setIsAddDialogOpen(open);
+  const handleCreateDialogOpenChange = (open: boolean) => {
+    setIsCreateDialogOpen(open);
     if (!open) {
       setTimeout(() => {
         setEditingChallenge(null);
       }, 0);
     }
-  };
-
-  const handleAddNewClick = () => {
-    setEditingChallenge(null);
-    setIsAddDialogOpen(true);
   };
 
   return (
@@ -49,13 +47,23 @@ export default function Challenges() {
               Manage challenges for {pov?.title}
             </p>
           </div>
-          <Button
-            onClick={handleAddNewClick}
-            className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
-          >
-            <Plus className="h-4 w-4" />
-            Add Challenge
-          </Button>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
+            >
+              <PlusCircle className="h-4 w-4" />
+              Create New
+            </Button>
+            <Button
+              onClick={() => setIsLibraryDialogOpen(true)}
+              className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
+            >
+              <Library className="h-4 w-4" />
+              Add from Library
+            </Button>
+          </div>
         </div>
       </Card>
 
@@ -66,13 +74,19 @@ export default function Challenges() {
         />
       </div>
 
-      <AddChallengeDialog 
-        open={isAddDialogOpen}
-        onOpenChange={handleDialogOpenChange}
+      <CreateChallengeDialog 
+        open={isCreateDialogOpen}
+        onOpenChange={handleCreateDialogOpenChange}
         editingChallenge={editingChallenge}
         onClose={() => {
           setEditingChallenge(null);
         }}
+      />
+
+      <AddFromLibraryDialog
+        open={isLibraryDialogOpen}
+        onOpenChange={setIsLibraryDialogOpen}
+        onClose={() => setIsLibraryDialogOpen(false)}
       />
     </div>
   );

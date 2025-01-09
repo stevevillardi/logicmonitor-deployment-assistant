@@ -2,11 +2,21 @@
 
 import { usePOV } from '@/app/contexts/POVContext';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
-import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession } from '@/app/types/pov';
+import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession, POVDecisionCriteria } from '@/app/types/pov';
 import { devLog } from '../components/Shared/utils/debug';
 
 interface TeamMemberWithPOV extends Partial<TeamMember> {
   pov_id?: string;
+}
+
+interface ChallengeWithRelations extends Omit<Partial<POVChallenge>, 'categories' | 'outcomes'> {
+  categories?: string[];
+  outcomes?: Array<{ outcome: string; order_index: number }>;
+}
+
+interface DecisionCriteriaWithRelations extends Omit<Partial<POVDecisionCriteria>, 'categories' | 'activities'> {
+  categories?: string[];
+  activities?: Array<{ activity: string; order_index: number }>;
 }
 
 export function usePOVOperations() {
@@ -41,94 +51,241 @@ export function usePOVOperations() {
     return newPov;
   };
 
-  const createTemplateChallenge = async (challengeData: Partial<POVChallenge>) => {
+  const createTemplateChallenge = async (challengeData: ChallengeWithRelations) => {
     const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
     if (userError || !user) throw new Error('Unauthorized');
 
-    // First create the challenge template
+    // Create the challenge in the content library
     const { data: newChallenge, error: challengeError } = await supabaseBrowser
       .from('challenges')
       .insert({
         title: challengeData.title,
         challenge_description: challengeData.challenge_description,
         business_impact: challengeData.business_impact,
-        example: challengeData.example || '',
-        status: 'APPROVED',
+        example: challengeData.example,
+        metadata: {},
         created_by: user.id,
         created_at: new Date().toISOString(),
-        is_template: true,
-        metadata: {}
+        updated_at: new Date().toISOString()
       })
       .select('*')
       .single();
 
     if (challengeError) throw challengeError;
-    if (!newChallenge) throw new Error('Failed to create challenge template');
+    if (!newChallenge) throw new Error('Failed to create challenge in library');
 
-    // Then create the POV challenge instance
+    // Create the POV challenge instance with its relationships
     const { data: povChallenge, error: povChallengeError } = await supabaseBrowser
       .from('pov_challenges')
       .insert({
         pov_id: challengeData.pov_id,
+        challenge_id: newChallenge.id,
         title: challengeData.title,
         challenge_description: challengeData.challenge_description,
         business_impact: challengeData.business_impact,
-        status: challengeData.status,
+        example: challengeData.example,
         created_by: user.id,
+        status: challengeData.status || 'OPEN',
         created_at: new Date().toISOString()
       })
       .select('*')
       .single();
 
     if (povChallengeError) throw povChallengeError;
+
+    // Add categories if provided
+    if (challengeData.categories?.length) {
+      await supabaseBrowser
+        .from('pov_challenge_categories')
+        .insert(
+          challengeData.categories.map(category => ({
+            pov_challenge_id: povChallenge.id,
+            category
+          }))
+        );
+    }
+
+    // Add outcomes if provided
+    if (challengeData.outcomes?.length) {
+      await supabaseBrowser
+        .from('pov_challenge_outcomes')
+        .insert(
+          challengeData.outcomes.map(outcome => ({
+            pov_challenge_id: povChallenge.id,
+            outcome: outcome.outcome,
+            order_index: outcome.order_index
+          }))
+        );
+    }
     
     dispatch({ type: 'ADD_CHALLENGE', payload: povChallenge });
     return povChallenge;
   };
 
-  const addChallenge = async (challengeData: Partial<POVChallenge> & { saveAsTemplate?: boolean }) => {
-    if (challengeData.saveAsTemplate) {
-      return createTemplateChallenge(challengeData);
-    }
-
-    // Regular POV challenge creation
+  const addChallenge = async (challengeData: ChallengeWithRelations & { 
+    addToLibrary?: boolean;
+    selectedTemplateId?: string | null;
+  }) => {
     const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
     if (userError || !user) throw new Error('Unauthorized');
 
-    const { data: newChallenge, error } = await supabaseBrowser
-      .from('pov_challenges')
-      .insert({
-        pov_id: challengeData.pov_id,
-        title: challengeData.title,
-        challenge_description: challengeData.challenge_description,
-        business_impact: challengeData.business_impact,
-        status: challengeData.status,
-        created_by: user.id,
-        created_at: new Date().toISOString()
-      })
-      .select('*')
-      .single();
+    try {
+      if (challengeData.addToLibrary) {
+        return createTemplateChallenge(challengeData);
+      }
 
-    if (error) throw error;
-    if (!newChallenge) throw new Error('Failed to create challenge');
+      // Create POV challenge entry
+      const { data: newChallenge, error: challengeError } = await supabaseBrowser
+        .from('pov_challenges')
+        .insert({
+          pov_id: challengeData.pov_id,
+          challenge_id: challengeData.selectedTemplateId || null,
+          title: challengeData.title,
+          challenge_description: challengeData.challenge_description,
+          business_impact: challengeData.business_impact,
+          example: challengeData.example,
+          created_by: user.id,
+          status: challengeData.status || 'OPEN',
+          created_at: new Date().toISOString()
+        })
+        .select('*')
+        .single();
 
-    dispatch({ type: 'ADD_CHALLENGE', payload: newChallenge });
-    return newChallenge;
+      if (challengeError) throw challengeError;
+      if (!newChallenge) throw new Error('Failed to create POV challenge');
+
+      // Add categories and outcomes
+      await Promise.all([
+        // Add categories
+        challengeData.categories?.length ? 
+          supabaseBrowser
+            .from('pov_challenge_categories')
+            .insert(
+              challengeData.categories.map(category => ({
+                pov_challenge_id: newChallenge.id,
+                category
+              }))
+            ) : Promise.resolve(),
+        // Add outcomes
+        challengeData.outcomes?.length ?
+          supabaseBrowser
+            .from('pov_challenge_outcomes')
+            .insert(
+              challengeData.outcomes.map(outcome => ({
+                pov_challenge_id: newChallenge.id,
+                outcome: outcome.outcome,
+                order_index: outcome.order_index
+              }))
+            ) : Promise.resolve()
+      ]);
+
+      // Fetch complete challenge with relations
+      const { data: completeChallenge } = await supabaseBrowser
+        .from('pov_challenges')
+        .select(`
+          *,
+          categories:pov_challenge_categories(*),
+          outcomes:pov_challenge_outcomes(*)
+        `)
+        .eq('id', newChallenge.id)
+        .single();
+
+      if (completeChallenge) {
+        dispatch({ type: 'ADD_CHALLENGE', payload: completeChallenge });
+        return completeChallenge;
+      }
+
+      throw new Error('Failed to fetch complete challenge');
+    } catch (error) {
+      console.error('Error in addChallenge:', error);
+      throw error;
+    }
   };
 
-  const updateChallenge = async (challengeId: string, challengeData: Partial<POVChallenge>) => {
-    const { data: updatedChallenge, error } = await supabaseBrowser
-      .from('pov_challenges')
-      .update(challengeData)
-      .eq('id', challengeId)
-      .select('*')
-      .single();
+  const updateChallenge = async (challengeId: string, challengeData: ChallengeWithRelations) => {
+    try {
+      // Update main challenge data
+      const { data: updatedChallenge, error } = await supabaseBrowser
+        .from('pov_challenges')
+        .update({
+          title: challengeData.title,
+          challenge_description: challengeData.challenge_description,
+          business_impact: challengeData.business_impact,
+          example: challengeData.example,
+          status: challengeData.status
+        })
+        .eq('id', challengeId)
+        .single();
 
-    if (error) throw error;
-    if (!updatedChallenge) throw new Error('Failed to update challenge');
+      if (error) throw error;
+      if (!updatedChallenge) throw new Error('Failed to update challenge');
 
-    dispatch({ type: 'UPDATE_CHALLENGE', payload: updatedChallenge });
-    return updatedChallenge;
+      // Update categories and outcomes
+      await Promise.all([
+        // Update categories
+        (async () => {
+          if (challengeData.categories) {
+            await supabaseBrowser
+              .from('pov_challenge_categories')
+              .delete()
+              .eq('pov_challenge_id', challengeId);
+
+            if (challengeData.categories.length) {
+              await supabaseBrowser
+                .from('pov_challenge_categories')
+                .insert(
+                  challengeData.categories.map(category => ({
+                    pov_challenge_id: challengeId,
+                    category
+                  }))
+                );
+            }
+          }
+        })(),
+        // Update outcomes
+        (async () => {
+          if (challengeData.outcomes) {
+            await supabaseBrowser
+              .from('pov_challenge_outcomes')
+              .delete()
+              .eq('pov_challenge_id', challengeId);
+
+            if (challengeData.outcomes.length) {
+              await supabaseBrowser
+                .from('pov_challenge_outcomes')
+                .insert(
+                  challengeData.outcomes.map(outcome => ({
+                    pov_challenge_id: challengeId,
+                    outcome: outcome.outcome,
+                    order_index: outcome.order_index
+                  }))
+                );
+            }
+          }
+        })()
+      ]);
+
+      // Fetch the complete updated challenge with relations
+      const { data: completeChallenge } = await supabaseBrowser
+        .from('pov_challenges')
+        .select(`
+          *,
+          categories:pov_challenge_categories(*),
+          outcomes:pov_challenge_outcomes(*)
+        `)
+        .eq('id', challengeId)
+        .single();
+
+      if (completeChallenge) {
+        dispatch({ type: 'UPDATE_CHALLENGE', payload: completeChallenge });
+        return completeChallenge;
+      }
+
+      throw new Error('Failed to fetch updated challenge');
+    } catch (error) {
+      console.error('Error updating challenge:', error);
+      throw error;
+    }
   };
 
   const addBusinessService = async (serviceData: Partial<KeyBusinessService>) => {
@@ -361,7 +518,6 @@ export function usePOVOperations() {
         *,
         challenges:pov_challenges(
           *,
-          template:challenge_id(*),
           categories:pov_challenge_categories(*),
           outcomes:pov_challenge_outcomes(*)
         ),
@@ -423,6 +579,183 @@ export function usePOVOperations() {
     }
   };
 
+  const deleteDecisionCriteria = async (criteriaId: string) => {
+    if (!criteriaId) return;
+
+    try {
+      // Delete from supabase
+      const { error } = await supabaseBrowser
+        .from('pov_decision_criteria')
+        .delete()
+        .eq('id', criteriaId);
+
+      if (error) throw error;
+
+      // Update local state
+      dispatch({ 
+        type: 'DELETE_DECISION_CRITERIA', 
+        payload: criteriaId 
+      });
+
+    } catch (error) {
+      console.error('Error deleting decision criteria:', error);
+      throw error;
+    }
+  };
+
+  const addDecisionCriteria = async (criteriaData: DecisionCriteriaWithRelations & { 
+    addToLibrary?: boolean;
+  }) => {
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    try {
+      // Create POV decision criteria entry
+      const { data: newCriteria, error: criteriaError } = await supabaseBrowser
+        .from('pov_decision_criteria')
+        .insert({
+          pov_id: criteriaData.pov_id,
+          title: criteriaData.title,
+          success_criteria: criteriaData.success_criteria,
+          use_case: criteriaData.use_case,
+          status: criteriaData.status || 'PENDING',
+          created_by: user.id,
+          created_at: new Date().toISOString()
+        })
+        .select('*')
+        .single();
+
+      if (criteriaError) throw criteriaError;
+      if (!newCriteria) throw new Error('Failed to create decision criteria');
+
+      // Add categories and activities
+      await Promise.all([
+        // Add categories
+        criteriaData.categories?.length ? 
+          supabaseBrowser
+            .from('pov_decision_criteria_categories')
+            .insert(
+              criteriaData.categories.map(category => ({
+                pov_decision_criteria_id: newCriteria.id,
+                category
+              }))
+            ) : Promise.resolve(),
+        // Add activities
+        criteriaData.activities?.length ?
+          supabaseBrowser
+            .from('pov_decision_criteria_activities')
+            .insert(
+              criteriaData.activities.map(activity => ({
+                pov_decision_criteria_id: newCriteria.id,
+                activity: activity.activity,
+                order_index: activity.order_index
+              }))
+            ) : Promise.resolve()
+      ]);
+
+      // Fetch complete criteria with relations
+      const { data: completeCriteria } = await supabaseBrowser
+        .from('pov_decision_criteria')
+        .select(`
+          *,
+          categories:pov_decision_criteria_categories(*),
+          activities:pov_decision_criteria_activities(*)
+        `)
+        .eq('id', newCriteria.id)
+        .single();
+
+      if (completeCriteria) {
+        dispatch({ type: 'ADD_DECISION_CRITERIA', payload: completeCriteria });
+        return completeCriteria;
+      }
+
+      throw new Error('Failed to fetch complete criteria');
+    } catch (error) {
+      console.error('Error in addDecisionCriteria:', error);
+      throw error;
+    }
+  };
+
+  const updateDecisionCriteria = async (criteriaId: string, criteriaData: DecisionCriteriaWithRelations) => {
+    try {
+      const { data: updatedCriteria, error } = await supabaseBrowser
+        .from('pov_decision_criteria')
+        .update({
+          title: criteriaData.title,
+          success_criteria: criteriaData.success_criteria,
+          use_case: criteriaData.use_case,
+          status: criteriaData.status
+        })
+        .eq('id', criteriaId)
+        .single();
+
+      if (error) throw error;
+      if (!updatedCriteria) throw new Error('Failed to update criteria');
+
+      // Update categories and activities
+      await Promise.all([
+        // Update categories
+        (async () => {
+          await supabaseBrowser
+            .from('pov_decision_criteria_categories')
+            .delete()
+            .eq('pov_decision_criteria_id', criteriaId);
+
+          if (criteriaData.categories?.length) {
+            await supabaseBrowser
+              .from('pov_decision_criteria_categories')
+              .insert(
+                criteriaData.categories.map(category => ({
+                  pov_decision_criteria_id: criteriaId,
+                  category
+                }))
+              );
+          }
+        })(),
+        // Update activities
+        (async () => {
+          await supabaseBrowser
+            .from('pov_decision_criteria_activities')
+            .delete()
+            .eq('pov_decision_criteria_id', criteriaId);
+
+          if (criteriaData.activities?.length) {
+            await supabaseBrowser
+              .from('pov_decision_criteria_activities')
+              .insert(
+                criteriaData.activities.map(activity => ({
+                  pov_decision_criteria_id: criteriaId,
+                  activity: activity.activity,
+                  order_index: activity.order_index
+                }))
+              );
+          }
+        })()
+      ]);
+
+      // Fetch complete updated criteria
+      const { data: completeCriteria } = await supabaseBrowser
+        .from('pov_decision_criteria')
+        .select(`
+          *,
+          categories:pov_decision_criteria_categories(*),
+          activities:pov_decision_criteria_activities(*)
+        `)
+        .eq('id', criteriaId)
+        .single();
+
+      if (completeCriteria) {
+        dispatch({ type: 'UPDATE_DECISION_CRITERIA', payload: completeCriteria });
+        return completeCriteria;
+      }
+
+      throw new Error('Failed to fetch updated criteria');
+    } catch (error) {
+      console.error('Error updating decision criteria:', error);
+      throw error;
+    }
+  };
+
   return {
     createPOV,
     addChallenge,
@@ -442,5 +775,8 @@ export function usePOVOperations() {
     deletePOV,
     fetchPOV,
     deleteChallenge,
+    deleteDecisionCriteria,
+    addDecisionCriteria,
+    updateDecisionCriteria,
   };
 } 
