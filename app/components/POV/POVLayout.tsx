@@ -88,7 +88,7 @@ export default function POVLayout({ children }: POVLayoutProps) {
 
   return (
     <div className="flex h-screen">
-      <POVSidebar />
+      <POVSidebar isNewPOV={isNewPOV} />
       <div className="flex-1 overflow-auto">
         <POVHeader />
         <main className="p-6">

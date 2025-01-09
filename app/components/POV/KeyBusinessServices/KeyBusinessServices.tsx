@@ -7,11 +7,30 @@ import { Plus } from 'lucide-react';
 import { usePOV } from '@/app/contexts/POVContext';
 import BusinessServiceList from './BusinessServiceList';
 import AddBusinessServiceDialog from './AddBusinessServiceDialog';
+import { KeyBusinessService } from '@/app/types/pov';
 
 export default function KeyBusinessServices() {
   const { state } = usePOV();
-  const { pov, keyBusinessServices } = state;
+  const keyBusinessServices = state.keyBusinessServices;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingService, setEditingService] = useState<KeyBusinessService | null>(null);
+
+  const handleEdit = (service: KeyBusinessService) => {
+    setEditingService(service);
+    setIsAddDialogOpen(true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      setEditingService(null);
+    }
+    setIsAddDialogOpen(open);
+  };
+
+  const handleAddNewClick = () => {
+    setEditingService(null);
+    setIsAddDialogOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -22,11 +41,11 @@ export default function KeyBusinessServices() {
               Key Business Services
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Manage key business services for {pov?.title}
+              Manage key business services for {state.pov?.title}
             </p>
           </div>
           <Button
-            onClick={() => setIsAddDialogOpen(true)}
+            onClick={handleAddNewClick}
             className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
           >
             <Plus className="h-4 w-4" />
@@ -36,12 +55,17 @@ export default function KeyBusinessServices() {
       </Card>
 
       <Card className="p-6">
-        <BusinessServiceList services={keyBusinessServices} />
+        <BusinessServiceList 
+          services={keyBusinessServices} 
+          onEdit={handleEdit}
+        />
       </Card>
 
       <AddBusinessServiceDialog 
         open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
+        onOpenChange={handleDialogOpenChange}
+        editingService={editingService}
+        onClose={() => setEditingService(null)}
       />
     </div>
   );

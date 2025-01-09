@@ -10,10 +10,10 @@ import { POV } from '@/app/types/pov';
 import { formatDate } from '@/lib/utils';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { useAuth } from '@/app/contexts/AuthContext';
+import { devLog } from '../Shared/utils/debug';
 
 export default function POVManagement() {
     const router = useRouter();
-    const [isCreating, setIsCreating] = useState(false);
     const { state, dispatch } = usePOV();
     const { isAuthenticated, isLoading } = useAuth();
 
@@ -22,31 +22,19 @@ export default function POVManagement() {
             try {
                 if (isLoading) return; // Wait for auth to be checked
 
-                const { data: { session } } = await supabaseBrowser.auth.getSession();
-                
-                if (!isAuthenticated || !session) {
-                    console.log('Auth check failed:', { 
-                        contextAuth: isAuthenticated, 
-                        hasSession: !!session,
-                        isLoading
-                    });
-                    router.push('/login');
-                    return;
-                }
-
                 const { data, error } = await supabaseBrowser
                     .from('pov')
                     .select('*')
                     .order('created_at', { ascending: false });
 
                 if (error) {
-                    console.log('Supabase query error:', error);
+                    devLog('Supabase query error:', error);
                     throw error;
                 }
                 
                 dispatch({ type: 'SET_POVS', payload: data });
             } catch (error) {
-                console.error('Error in fetchPOVs:', error);
+                devLog('Error in fetchPOVs:', error);
             }
         };
 
@@ -69,8 +57,8 @@ export default function POVManagement() {
             'BLOCKED': 'bg-red-100 text-red-800',
             'TECHNICALLY_SELECTED': 'bg-purple-100 text-purple-800',
             'NOT_SELECTED': 'bg-gray-100 text-gray-800',
-        };
-        return colors[status] || colors.DRAFT;
+        } as const;
+        return colors[status as keyof typeof colors] || colors.DRAFT;
     };
 
     return (

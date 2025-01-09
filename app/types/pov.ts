@@ -2,16 +2,19 @@
 export interface POV {
     id: string;
     title: string;
-    status: 'DRAFT' | 'IN_PROGRESS' | 'COMPLETE' | 'BLOCKED' | 'TECHNICALLY_SELECTED' | 'NOT_SELECTED';
+    status: string;
     customer_name: string;
     customer_industry: string;
     customer_region: string;
-    business_unit?: string;
+    business_unit: string;
     start_date: string;
     end_date: string;
     created_by: string;
     created_at: string;
     updated_at: string;
+    key_business_services?: KeyBusinessService[];
+    challenges?: POVChallenge[];
+    team_members?: TeamMember[];
 }
 
 // Key Business Services

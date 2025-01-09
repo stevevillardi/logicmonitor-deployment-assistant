@@ -41,7 +41,50 @@ export function usePOVOperations() {
   };
 
   const addBusinessService = async (serviceData: Partial<KeyBusinessService>) => {
-    // Implementation
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    const { data: newService, error } = await supabaseBrowser
+      .from('pov_key_business_services')
+      .insert({
+        ...serviceData,
+        created_by: user.id,
+        created_at: new Date().toISOString(),
+      })
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    if (!newService) throw new Error('Failed to create business service');
+
+    dispatch({ type: 'ADD_BUSINESS_SERVICE', payload: newService });
+    return newService;
+  };
+
+  const updateBusinessService = async (serviceId: string, serviceData: Partial<KeyBusinessService>) => {
+    const { data: updatedService, error } = await supabaseBrowser
+      .from('pov_key_business_services')
+      .update(serviceData)
+      .eq('id', serviceId)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    if (!updatedService) throw new Error('Failed to update business service');
+
+    dispatch({ type: 'UPDATE_BUSINESS_SERVICE', payload: updatedService });
+    return updatedService;
+  };
+
+  const deleteBusinessService = async (serviceId: string) => {
+    const { error } = await supabaseBrowser
+      .from('pov_key_business_services')
+      .delete()
+      .eq('id', serviceId);
+
+    if (error) throw error;
+
+    dispatch({ type: 'DELETE_BUSINESS_SERVICE', payload: serviceId });
   };
 
   // Add other operations...
@@ -50,5 +93,7 @@ export function usePOVOperations() {
     createPOV,
     addChallenge,
     addBusinessService,
+    updateBusinessService,
+    deleteBusinessService,
   };
 } 

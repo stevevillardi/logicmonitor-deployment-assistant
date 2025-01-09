@@ -50,7 +50,11 @@ const initialState: POVState = {
 function povReducer(state: POVState, action: POVAction): POVState {
   switch (action.type) {
     case 'SET_POV':
-      return { ...state, pov: action.payload };
+      return { 
+        ...state, 
+        pov: action.payload,
+        keyBusinessServices: action.payload?.key_business_services || [] 
+      };
     case 'SET_CHALLENGES':
       return { ...state, challenges: action.payload };
     case 'ADD_CHALLENGE':
@@ -61,6 +65,10 @@ function povReducer(state: POVState, action: POVAction): POVState {
       return {
         ...state,
         keyBusinessServices: [...state.keyBusinessServices, action.payload],
+        pov: state.pov ? {
+          ...state.pov,
+          key_business_services: [...(state.pov.key_business_services || []), action.payload]
+        } : state.pov
       };
     case 'UPDATE_BUSINESS_SERVICE':
       return {
@@ -68,6 +76,12 @@ function povReducer(state: POVState, action: POVAction): POVState {
         keyBusinessServices: state.keyBusinessServices.map((service) =>
           service.id === action.payload.id ? action.payload : service
         ),
+        pov: state.pov ? {
+          ...state.pov,
+          key_business_services: state.pov.key_business_services?.map((service) =>
+            service.id === action.payload.id ? action.payload : service
+          ) || []
+        } : state.pov
       };
     case 'DELETE_BUSINESS_SERVICE':
       return {
@@ -75,6 +89,12 @@ function povReducer(state: POVState, action: POVAction): POVState {
         keyBusinessServices: state.keyBusinessServices.filter(
           (service) => service.id !== action.payload
         ),
+        pov: state.pov ? {
+          ...state.pov,
+          key_business_services: state.pov.key_business_services?.filter(
+            (service) => service.id !== action.payload
+          ) || []
+        } : state.pov
       };
     // Add other cases...
     default:
