@@ -102,6 +102,19 @@ export default function AddWorkingSessionDialog({
     onOpenChange(open);
   };
 
+  const formatDateForInput = (date: string) => {
+    return new Date(date).toLocaleDateString('en-CA'); // Returns YYYY-MM-DD format
+  };
+
+  const handleDateChange = (dateString: string) => {
+    // Create date at noon to avoid timezone issues
+    const date = new Date(dateString + 'T12:00:00');
+    setFormData({ 
+      ...formData, 
+      session_date: date.toISOString()
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
@@ -162,11 +175,8 @@ export default function AddWorkingSessionDialog({
                 <Input
                   id="session_date"
                   type="date"
-                  value={formData.session_date?.split('T')[0]}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    session_date: new Date(e.target.value).toISOString()
-                  })}
+                  value={formData.session_date ? formatDateForInput(formData.session_date) : ''}
+                  onChange={(e) => handleDateChange(e.target.value)}
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                   required
                 />

@@ -42,14 +42,22 @@ export interface POVDecisionCriteria {
     status: string;
     created_by: string;
     created_at: string;
-    categories?: Array<{ category: string }>;
-    activities?: Array<{ activity: string; order_index: number }>;
+    categories?: POVDecisionCriteriaCategory[];
+    activities?: POVDecisionCriteriaActivity[];
 }
 
-export interface DecisionCriteriaActivity {
+export interface POVDecisionCriteriaCategory {
+    id: string;
+    pov_decision_criteria_id: string;
+    category: string;
+    created_at: string;
+}
+
+export interface POVDecisionCriteriaActivity {
     id: string;
     pov_decision_criteria_id: string;
     activity: string;
+    order_index: number;
     status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETE';
     created_at: string;
 }
@@ -62,8 +70,8 @@ export interface POVChallenge {
     challenge_description: string;
     business_impact: string;
     example: string;
-    categories?: ChallengeCategory[];
-    outcomes?: ChallengeOutcome[];
+    categories?: POVChallengeCategory[];
+    outcomes?: POVChallengeOutcome[];
     status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED';
     created_at: string;
 }
@@ -138,7 +146,7 @@ export interface TeamMember {
     name: string;
     email: string;
     role: string;
-    organization: 'INTERNAL' | 'CUSTOMER' | 'PARTNER';
+    organization: 'LM' | 'CUSTOMER' | 'PARTNER';
     created_at: string;
 }
 

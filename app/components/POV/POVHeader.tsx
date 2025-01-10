@@ -2,7 +2,7 @@
 
 import { usePOV } from '@/app/contexts/POVContext';
 import { Button } from '@/components/ui/button';
-import { Send, ArrowLeft, Trash2, Info, AlertCircle } from 'lucide-react';
+import { Send, ArrowLeft, Trash2, Info, AlertCircle, Building2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import {
@@ -149,21 +149,25 @@ export default function POVHeader() {
               Back to POV List
             </Button>
             <div>
-              <h1 className="text-2xl font-semibold text-[#040F4B] dark:text-gray-100">
-                {pov ? pov.title : 'New POV'}
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-semibold text-[#040F4B] dark:text-gray-100">
+                  {pov ? pov.customer_name : 'New POV'}
+                </h1>
+                <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-sm font-medium
+                  ${getStatusColor(pov?.status)}`}>
+                  {pov?.status?.replace(/_/g, ' ') || 'DRAFT'}
+                </span>
+              </div>
               {pov && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {pov.customer_name} • {pov.customer_industry}
-                </p>
+                <div className="mt-1 space-y-1">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {pov.title}
+                  </p>
+                </div>
               )}
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-sm font-medium
-              ${getStatusColor(pov?.status)}`}>
-              {pov?.status?.replace(/_/g, ' ') || 'DRAFT'}
-            </span>
             {!pov ? (
               <Button
                 variant="outline"

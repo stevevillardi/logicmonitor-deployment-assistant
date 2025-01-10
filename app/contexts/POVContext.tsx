@@ -44,6 +44,7 @@ type POVAction =
   | { type: 'DELETE_WORKING_SESSION'; payload: string }
   | { type: 'DELETE_CHALLENGE'; payload: string }
   | { type: 'DELETE_DECISION_CRITERIA'; payload: string }
+  | { type: 'UPDATE_POV'; payload: POV }
 
 
 const POVContext = createContext<{
@@ -307,6 +308,12 @@ function povReducer(state: POVState, action: POVAction): POVState {
             } : criteria
           ) || []
         } : null
+      };
+
+    case 'UPDATE_POV':
+      return {
+        ...state,
+        pov: action.payload,
       };
 
     default:

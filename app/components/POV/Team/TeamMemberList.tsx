@@ -33,9 +33,9 @@ export default function TeamMemberList({ members, onEdit }: TeamMemberListProps)
 
   if (!members?.length) {
     return (
-      <Card className="col-span-1 md:col-span-2 p-6 bg-white dark:bg-gray-800 shadow-sm">
+      <Card className="col-span-1 md:col-span-2 p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
         <div className="text-center py-12">
-          <User className="mx-auto h-12 w-12 text-gray-400" />
+          <User className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" />
           <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No team members</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Get started by adding team members
@@ -50,7 +50,7 @@ export default function TeamMemberList({ members, onEdit }: TeamMemberListProps)
       {members.map((member) => (
         <Card
           key={member.id}
-          className="p-6 bg-white dark:bg-gray-800 shadow-sm"
+          className="p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
         >
           <div className="flex justify-between items-start">
             <div className="space-y-4 flex-1">
@@ -63,7 +63,7 @@ export default function TeamMemberList({ members, onEdit }: TeamMemberListProps)
                   </h4>
                   <Badge
                     variant="secondary"
-                    className="mt-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100"
+                    className="mt-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800"
                   >
                     {member.role}
                   </Badge>
@@ -72,7 +72,7 @@ export default function TeamMemberList({ members, onEdit }: TeamMemberListProps)
 
               {/* Organization */}
               <div className="flex items-center gap-3">
-                <Building2 className="h-5 w-5 text-gray-400" />
+                <Building2 className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 <span className="text-sm text-gray-600 dark:text-gray-300">
                   {member.organization}
                 </span>
@@ -80,7 +80,7 @@ export default function TeamMemberList({ members, onEdit }: TeamMemberListProps)
 
               {/* Email */}
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 <span className="text-sm text-gray-600 dark:text-gray-300">
                   {member.email}
                 </span>

@@ -529,6 +529,7 @@ export function usePOVOperations() {
         working_sessions:pov_working_sessions(*),
         decision_criteria:pov_decision_criteria(
           *,
+          categories:pov_decision_criteria_categories(*),
           activities:pov_decision_criteria_activities(*)
         )
       `)
@@ -648,7 +649,9 @@ export function usePOVOperations() {
               criteriaData.activities.map(activity => ({
                 pov_decision_criteria_id: newCriteria.id,
                 activity: activity.activity,
-                order_index: activity.order_index
+                order_index: activity.order_index,
+                status: 'NOT_STARTED',  // Add default status
+                created_at: new Date().toISOString()  // Add created_at timestamp
               }))
             ) : Promise.resolve()
       ]);
@@ -756,6 +759,18 @@ export function usePOVOperations() {
     }
   };
 
+  const updatePOV = async (povId: string, data: Partial<POV>) => {
+    const { data: updatedPOV, error } = await supabaseBrowser
+      .from('pov')
+      .update(data)
+      .eq('id', povId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return updatedPOV;
+  };
+
   return {
     createPOV,
     addChallenge,
@@ -778,5 +793,6 @@ export function usePOVOperations() {
     deleteDecisionCriteria,
     addDecisionCriteria,
     updateDecisionCriteria,
+    updatePOV,
   };
 } 

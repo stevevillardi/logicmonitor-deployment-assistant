@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePOV } from '@/app/contexts/POVContext';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { POV } from '@/app/types/pov';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Save, Building2, User, Briefcase, CalendarRange, Building, Globe } from 'lucide-react';
+import { Save, Check, Building2, User, Briefcase, CalendarRange, Building, Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 
@@ -17,9 +17,10 @@ const formatDateForInput = (dateString: string | undefined) => {
   return new Date(dateString).toISOString().split('T')[0];
 };
 
-export default function POVForm() {
-  const { state } = usePOV();
-  const { createPOV } = usePOVOperations();
+export default function POVDetailsForm() {
+  const { state, dispatch } = usePOV();
+  const { pov } = state;
+  const { updatePOV } = usePOVOperations();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<POV>>({
@@ -30,39 +31,59 @@ export default function POVForm() {
     business_unit: '',
     start_date: '',
     end_date: '',
-    status: 'DRAFT',
   });
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    if (pov) {
+      setFormData({
+        title: pov.title,
+        customer_name: pov.customer_name,
+        customer_industry: pov.customer_industry,
+        customer_region: pov.customer_region,
+        business_unit: pov.business_unit,
+        start_date: formatDateForInput(pov.start_date),
+        end_date: formatDateForInput(pov.end_date),
+      });
+    }
+  }, [pov]);
+
+  const updateFormData = (updates: Partial<POV>) => {
+    setFormData(prev => {
+      const newData = { ...prev, ...updates };
+      const hasChanges = Object.keys(newData).some(key => 
+        newData[key as keyof POV] !== pov?.[key as keyof POV]
+      );
+      setHasChanges(hasChanges);
+      if (hasChanges) setIsSaved(false);
+      return newData;
+    });
+  };
 
   const handleDateChange = (field: 'start_date' | 'end_date', value: string) => {
+    // Create date at noon to avoid timezone issues
     const date = new Date(value + 'T12:00:00');
-    setFormData(prev => ({ ...prev, [field]: date.toISOString() }));
+    updateFormData({ [field]: date.toISOString() });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || !pov?.id || !hasChanges) return;
 
     setIsSubmitting(true);
     try {
-      // Validate required fields
-      if (!formData.title || !formData.customer_name || !formData.customer_industry || !formData.customer_region) {
-        throw new Error('Please fill in all required fields');
-      }
-
-      const newPov = await createPOV({
+      const updatedPOV = await updatePOV(pov.id, {
         ...formData,
-        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
 
-      if (!newPov?.id) {
-        throw new Error('Failed to create POV');
-      }
-
-      router.push(`/pov/${newPov.id}`);
+      dispatch({ type: 'UPDATE_POV', payload: updatedPOV });
+      setHasChanges(false);
+      setIsSaved(true);
+      
     } catch (error) {
-      console.error('Error creating POV:', error);
-      // Here you might want to show an error message to the user
+      console.error('Error updating POV:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -74,10 +95,10 @@ export default function POVForm() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-              Create New POV
+              POV Details
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Enter the initial details for your Proof of Value
+              Edit the main attributes of your POV
             </p>
           </div>
         </div>
@@ -97,7 +118,7 @@ export default function POVForm() {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => updateFormData({ title: e.target.value })}
                 placeholder="Enter POV title"
                 className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
@@ -115,7 +136,7 @@ export default function POVForm() {
                 <Input
                   id="customer_name"
                   value={formData.customer_name}
-                  onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                  onChange={(e) => updateFormData({ customer_name: e.target.value })}
                   placeholder="Enter customer name"
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
@@ -131,7 +152,7 @@ export default function POVForm() {
                 </Label>
                 <Select
                   value={formData.customer_industry}
-                  onValueChange={(value) => setFormData({ ...formData, customer_industry: value })}
+                  onValueChange={(value) => updateFormData({ customer_industry: value })}
                 >
                   <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                     <SelectValue placeholder="Select industry" />
@@ -159,7 +180,7 @@ export default function POVForm() {
                 </Label>
                 <Select
                   value={formData.customer_region}
-                  onValueChange={(value) => setFormData({ ...formData, customer_region: value })}
+                  onValueChange={(value) => updateFormData({ customer_region: value })}
                 >
                   <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                     <SelectValue placeholder="Select region" />
@@ -169,7 +190,7 @@ export default function POVForm() {
                     <SelectItem value="SOUTH AMERICA">South America</SelectItem>
                     <SelectItem value="EUROPE">Europe</SelectItem>
                     <SelectItem value="ASIA PACIFIC">Asia Pacific</SelectItem>
-                    <SelectItem value="MIDDLE_EAST">Middle East</SelectItem>
+                    <SelectItem value="MIDDLE EAST">Middle East</SelectItem>
                     <SelectItem value="AFRICA">Africa</SelectItem>
                   </SelectContent>
                 </Select>
@@ -186,12 +207,14 @@ export default function POVForm() {
                 <Input
                   id="business_unit"
                   value={formData.business_unit}
-                  onChange={(e) => setFormData({ ...formData, business_unit: e.target.value })}
+                  onChange={(e) => updateFormData({ business_unit: e.target.value })}
                   placeholder="Enter business unit"
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label 
                   htmlFor="start_date" 
@@ -232,11 +255,24 @@ export default function POVForm() {
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting}
-            className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+            disabled={isSubmitting || !hasChanges}
+            className={`flex items-center gap-2 transition-colors ${
+              isSaved 
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-[#040F4B] hover:bg-[#0A1B6F]'
+            } text-white dark:bg-blue-600 dark:hover:bg-blue-700`}
           >
-            <Save className="h-4 w-4" />
-            {isSubmitting ? 'Creating...' : 'Create POV'}
+            {isSaved ? (
+              <>
+                <Check className="h-4 w-4" />
+                Saved
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </>
+            )}
           </Button>
         </div>
       </form>

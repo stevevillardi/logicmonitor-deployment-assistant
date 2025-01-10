@@ -12,6 +12,7 @@ import WorkingSessions from './WorkingSessions/WorkingSessions';
 import Team from './Team/Team';
 import DeviceScope from './DeviceScope/DeviceScope';
 import POVForm from './POVForm';
+import POVDetailsForm from './POVDetailsForm';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 
 interface POVLayoutProps {
@@ -40,6 +41,8 @@ export default function POVLayout({ children }: POVLayoutProps) {
     switch (path) {
       case povId:
         return <POVOverview />;
+      case 'details':
+        return <POVDetailsForm />;
       case 'key-business-services':
         return <KeyBusinessServices />;
       case 'challenges':

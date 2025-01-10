@@ -36,7 +36,7 @@ export default function AddTeamMemberDialog({
     name: '',
     email: '',
     role: '',
-    organization: 'INTERNAL',
+    organization: 'LM',
   });
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function AddTeamMemberDialog({
       name: '',
       email: '',
       role: '',
-      organization: 'INTERNAL',
+      organization: 'LM',
     });
     setSelectedMember(null);
     setIsCreatingNew(false);
@@ -238,12 +238,12 @@ export default function AddTeamMemberDialog({
                       value={formData.organization}
                       onChange={(e) => setFormData({ 
                         ...formData, 
-                        organization: e.target.value as 'INTERNAL' | 'CUSTOMER' | 'PARTNER' 
+                        organization: e.target.value as 'LM' | 'CUSTOMER' | 'PARTNER' 
                       })}
                       className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-700"
                       required
                     >
-                      <option value="INTERNAL">Internal</option>
+                      <option value="LM">LM</option>
                       <option value="CUSTOMER">Customer</option>
                       <option value="PARTNER">Partner</option>
                     </select>
