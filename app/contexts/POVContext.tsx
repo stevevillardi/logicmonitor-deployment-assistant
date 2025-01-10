@@ -45,6 +45,7 @@ type POVAction =
   | { type: 'DELETE_CHALLENGE'; payload: string }
   | { type: 'DELETE_DECISION_CRITERIA'; payload: string }
   | { type: 'UPDATE_POV'; payload: POV }
+  | { type: 'UPDATE_POV_IN_LIST'; payload: { id: string; updates: Partial<POV> } }
 
 
 const POVContext = createContext<{
@@ -314,6 +315,16 @@ function povReducer(state: POVState, action: POVAction): POVState {
       return {
         ...state,
         pov: action.payload,
+      };
+
+    case 'UPDATE_POV_IN_LIST':
+      return {
+        ...state,
+        povs: state.povs ? state.povs.map(p => 
+          p.id === action.payload.id 
+            ? { ...p, ...action.payload.updates }
+            : p
+        ) : null
       };
 
     default:

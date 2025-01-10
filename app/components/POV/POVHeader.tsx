@@ -18,6 +18,7 @@ import {
 import { useState } from 'react';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 import Link from 'next/link';
+import { POV } from '@/app/types/pov';
 
 interface ValidationSection {
   name: string;
@@ -27,7 +28,7 @@ interface ValidationSection {
 }
 
 export default function POVHeader() {
-  const { state } = usePOV();
+  const { state, dispatch } = usePOV();
   const { pov } = state;
   const router = useRouter();
   const { deletePOV } = usePOVOperations();
@@ -120,18 +121,43 @@ export default function POVHeader() {
 
     try {
       console.log("Attempting to update POV status");
-      await supabaseBrowser
+      const { data, error } = await supabaseBrowser
         .from('pov')
         .update({ 
           status: 'SUBMITTED',
           updated_at: new Date().toISOString()
         })
-        .eq('id', pov?.id);
+        .eq('id', pov?.id)
+        .select()
+        .single();
         
-      alert('POV submitted successfully');
+      if (error) throw error;
+
+      // Update the POV in context
+      if (data) {
+        dispatch({
+          type: 'UPDATE_POV',
+          payload: {
+            ...pov!,
+            status: 'SUBMITTED' as const,
+            updated_at: new Date().toISOString()
+          } as POV
+        });
+
+        // Also update the POV in the POVs list
+        dispatch({
+          type: 'UPDATE_POV_IN_LIST',
+          payload: {
+            id: pov!.id,
+            updates: {
+              status: 'SUBMITTED',
+              updated_at: new Date().toISOString()
+            }
+          }
+        });
+      }
     } catch (error) {
       console.error('Error submitting POV:', error);
-      alert('Failed to submit POV');
     }
   };
 
