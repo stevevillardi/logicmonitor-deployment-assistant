@@ -1,8 +1,9 @@
-import supabase from '../../../lib/supabase';
+import { createClient } from '@/app/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
     try {
+        const supabase = await createClient();
         // Get auth header from request
         const authHeader = request.headers.get('authorization');
         if (!authHeader?.startsWith('Bearer ')) {

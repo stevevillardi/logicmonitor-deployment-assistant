@@ -1,18 +1,14 @@
-import { supabaseBrowser } from './supabase';
+import { createClient } from '@/app/lib/supabase/server';
 import type { Permission, UserRole } from '@/app/types/auth';
 
-export async function checkPermission(permission: Permission): Promise<boolean> {
+// Only keep the server-side check
+export async function checkServerPermission(userId: string, permission: Permission): Promise<boolean> {
     try {
-        const { data: { session } } = await supabaseBrowser.auth.getSession();
-        if (!session?.user) {
-            return false;
-        }
-
-        // Server-side permission check
-        const { data, error } = await supabaseBrowser
+        const supabase = await createClient();
+        const { data, error } = await supabase
             .from('profiles')
             .select('role')
-            .eq('id', session.user.id)
+            .eq('id', userId)
             .single();
 
         if (error || !data) return false;
@@ -22,7 +18,7 @@ export async function checkPermission(permission: Permission): Promise<boolean> 
             (p: Permission) => p.action === permission.action && p.resource === permission.resource
         );
     } catch (error) {
-        console.error('Permission check error:', error);
+        console.error('Server permission check error:', error);
         return false;
     }
 } 

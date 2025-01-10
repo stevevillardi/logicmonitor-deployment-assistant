@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "../../contexts/CartContext";
 import { Loader2, Check, X, AlertCircle, Layout, LayoutDashboard, Eye, EyeOff, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import supabase from '../../lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { devError, devLog } from "../Shared/utils/debug";
 
 interface CartModalProps {
@@ -127,7 +127,8 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 
     try {
       // Fetch full dashboard details from Supabase
-      const { data: dashboardDetails, error: fetchError } = await supabase
+
+      const { data: dashboardDetails, error: fetchError } = await supabaseBrowser
         .from('dashboard-configs')
         .select('*')
         .in('path', selectedDashboards.map(d => d.path));

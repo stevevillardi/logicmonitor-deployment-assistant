@@ -15,7 +15,7 @@ import {
     AlertDialogTitle,
     AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
-import { supabaseBrowser } from '@/app/lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { UserRole } from '@/app/types/auth';
 import { Button } from '@/components/ui/button';
 import {

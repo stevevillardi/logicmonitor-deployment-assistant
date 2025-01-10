@@ -1,5 +1,5 @@
 'use client';
-import { supabaseBrowser } from '../../lib/supabase'
+import { supabaseBrowser } from '@/app/lib/supabase/client'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import {

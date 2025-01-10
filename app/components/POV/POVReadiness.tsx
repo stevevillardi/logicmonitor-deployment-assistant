@@ -2,7 +2,9 @@ import React from 'react';
 import { FileText, PlayCircle, LibraryBig } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { POVProvider } from '@/app/contexts/POVContext';
 import POVLibrary from './POVLibrary';
+import POVManagement from './POVManagement';
 
 // Placeholder components for other sections
 const PovManagement = () => (
@@ -39,89 +41,92 @@ const Playback = () => (
 
 const POVReadiness = () => {
     return (
-        <div className="space-y-6 overflow-y-auto min-h-[800px]">
-            <Tabs defaultValue="content-library" className="w-full">
-                <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden">
-                    <TabsTrigger
-                        value="content-library"
-                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
-                            data-[state=active]:bg-blue-50 
-                            data-[state=active]:text-blue-700 
-                            data-[state=active]:border-blue-200
-                            data-[state=active]:shadow-sm
-                            dark:data-[state=active]:bg-blue-900/50
-                            dark:data-[state=active]:text-blue-300
-                            dark:data-[state=active]:border-blue-800
-                            hover:bg-gray-50 
-                            dark:hover:bg-gray-700
-                            text-gray-600
-                            dark:text-gray-300
-                            font-medium
-                            transition-all
-                            border border-transparent
-                            mb-2 sm:mb-0 sm:mr-2"
-                    >
-                        <LibraryBig className="w-4 h-4" />
-                        Content Library
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="pov-management"
-                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
-                            data-[state=active]:bg-blue-50 
-                            data-[state=active]:text-blue-700 
-                            data-[state=active]:border-blue-200
-                            data-[state=active]:shadow-sm
-                            dark:data-[state=active]:bg-blue-900/50
-                            dark:data-[state=active]:text-blue-300
-                            dark:data-[state=active]:border-blue-800
-                            hover:bg-gray-50 
-                            dark:hover:bg-gray-700
-                            text-gray-600
-                            dark:text-gray-300
-                            font-medium
-                            transition-all
-                            border border-transparent
-                            mb-2 sm:mb-0 sm:mr-2"
-                    >
-                        <FileText className="w-4 h-4" />
-                        POV Management
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="playback"
-                        className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
-                            data-[state=active]:bg-blue-50 
-                            data-[state=active]:text-blue-700 
-                            data-[state=active]:border-blue-200
-                            data-[state=active]:shadow-sm
-                            dark:data-[state=active]:bg-blue-900/50
-                            dark:data-[state=active]:text-blue-300
-                            dark:data-[state=active]:border-blue-800
-                            hover:bg-gray-50 
-                            dark:hover:bg-gray-700
-                            text-gray-600
-                            dark:text-gray-300
-                            font-medium
-                            transition-all
-                            border border-transparent"
-                    >
-                        <PlayCircle className="w-4 h-4" />
-                        Playback
-                    </TabsTrigger>
-                </TabsList>
+        <POVProvider>
+            <div className="space-y-6 overflow-y-auto min-h-[800px]">
+                <Tabs defaultValue="pov-management" className="w-full">
+                    <TabsList className="grid grid-cols-1 sm:flex w-full h-full bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden">
+                        <TabsTrigger
+                            value="pov-management"
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                data-[state=active]:bg-blue-50 
+                                data-[state=active]:text-blue-700 
+                                data-[state=active]:border-blue-200
+                                data-[state=active]:shadow-sm
+                                dark:data-[state=active]:bg-blue-900/50
+                                dark:data-[state=active]:text-blue-300
+                                dark:data-[state=active]:border-blue-800
+                                hover:bg-gray-50 
+                                dark:hover:bg-gray-700
+                                text-gray-600
+                                dark:text-gray-300
+                                font-medium
+                                transition-all
+                                border border-transparent
+                                mb-2 sm:mb-0 sm:mr-2"
+                        >
+                            <FileText className="w-4 h-4" />
+                            POV Management
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="content-library"
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                data-[state=active]:bg-blue-50 
+                                data-[state=active]:text-blue-700 
+                                data-[state=active]:border-blue-200
+                                data-[state=active]:shadow-sm
+                                dark:data-[state=active]:bg-blue-900/50
+                                dark:data-[state=active]:text-blue-300
+                                dark:data-[state=active]:border-blue-800
+                                hover:bg-gray-50 
+                                dark:hover:bg-gray-700
+                                text-gray-600
+                                dark:text-gray-300
+                                font-medium
+                                transition-all
+                                border border-transparent
+                                mb-2 sm:mb-0 sm:mr-2"
+                        >
+                            <LibraryBig className="w-4 h-4" />
+                            Content Library
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="playback"
+                            className="w-full flex items-center gap-2 px-4 py-3 rounded-md 
+                                data-[state=active]:bg-blue-50 
+                                data-[state=active]:text-blue-700 
+                                data-[state=active]:border-blue-200
+                                data-[state=active]:shadow-sm
+                                dark:data-[state=active]:bg-blue-900/50
+                                dark:data-[state=active]:text-blue-300
+                                dark:data-[state=active]:border-blue-800
+                                hover:bg-gray-50 
+                                dark:hover:bg-gray-700
+                                text-gray-600
+                                dark:text-gray-300
+                                font-medium
+                                transition-all
+                                border border-transparent"
+                        >
+                            <PlayCircle className="w-4 h-4" />
+                            Playback
+                        </TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="content-library" className="rounded-lg overflow-hidden">
-                    <POVLibrary />
-                </TabsContent>
 
-                <TabsContent value="pov-management" className="rounded-lg overflow-hidden">
-                    <PovManagement />
-                </TabsContent>
+                    <TabsContent value="pov-management" className="rounded-lg overflow-hidden">
+                        <POVManagement />
+                    </TabsContent>
 
-                <TabsContent value="playback" className="rounded-lg overflow-hidden">
-                    <Playback />
-                </TabsContent>
-            </Tabs>
-        </div>
+                    <TabsContent value="content-library" className="rounded-lg overflow-hidden">
+                        <POVLibrary />
+                    </TabsContent>
+
+                    <TabsContent value="playback" className="rounded-lg overflow-hidden">
+                        <Playback />
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </POVProvider>
     );
 };
 

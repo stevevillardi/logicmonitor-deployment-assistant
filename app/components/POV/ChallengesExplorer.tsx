@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from '@/app/contexts/AuthContext';
-import { supabaseBrowser } from '@/app/lib/supabase';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
 import ManagePOVContentDialog from '@/app/components/POV/ManagePOVContentDialog';
 import ManagePOVEntriesDialog from '@/app/components/POV/ManagePOVEntriesDialog';
 import { devError } from '../Shared/utils/debug';

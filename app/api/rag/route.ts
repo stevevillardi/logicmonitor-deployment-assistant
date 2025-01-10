@@ -2,7 +2,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { VoyageAIClient } from 'voyageai';
 import { NextResponse } from 'next/server';
-import supabase from '../../lib/supabase';
+import { createClient } from '@/app/lib/supabase/server';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -23,6 +23,9 @@ type DocumentMatch = {
 };
 
 export async function POST(request: Request) {
+  
+  const supabase = await createClient();
+
   // Return 404 if chat is disabled
   if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') {
     return NextResponse.json(

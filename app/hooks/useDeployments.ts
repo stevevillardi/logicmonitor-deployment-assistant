@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabaseBrowser } from '../lib/supabase';
-import { Config, Site } from '../components/DeploymentAssistant/types/types';
-import { useAuth } from '../contexts/AuthContext';
-import { defaultDeviceTypes } from '../components/DeploymentAssistant/utils/constants';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
+import { Config, Site } from '@/app/components/DeploymentAssistant/types/types';
+import { useAuth } from '@/app/contexts/AuthContext';
+import { defaultDeviceTypes } from '@/app/components/DeploymentAssistant/utils/constants';
 
 export interface Deployment {
   id: string;

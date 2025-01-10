@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { checkPermission } from '@/app/lib/auth-utils';
+import { checkServerPermission } from '@/app/lib/auth-utils';
+import { createClient } from '@/app/lib/supabase/server';
 
 const anthropic = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -8,8 +9,19 @@ const anthropic = new Anthropic({
 
 export async function POST(request: Request) {
     try {
-        // Check permissions first
-        const hasAccess = await checkPermission({
+        // Get the user session server-side using your createClient
+        const supabase = await createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session?.user) {
+            return NextResponse.json(
+                { error: 'Unauthorized - Not logged in' },
+                { status: 401 }
+            );
+        }
+
+        // Check permissions using server-side utility
+        const hasAccess = await checkServerPermission(session.user.id, {
             action: 'create',
             resource: 'pov'
         });
