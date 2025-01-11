@@ -44,22 +44,35 @@ export default function ActivePOVWorkingSessionsOverview() {
     const [stats, setStats] = useState({
         total: 0,
         completed: 0,
-        inProgress: 0,
-        skipped: 0,
+        scheduled: 0,
+        cancelled: 0,
         percentage: 0
     });
 
-    // Early return after hooks
+    // Move useEffect before any returns
+    useEffect(() => {
+        if (pov?.working_sessions) {
+            const total = pov.working_sessions.length;
+            const completed = pov.working_sessions.filter(s => s.status === 'COMPLETED').length;
+            const scheduled = pov.working_sessions.filter(s => s.status === 'SCHEDULED').length;
+            const cancelled = pov.working_sessions.filter(s => s.status === 'CANCELLED').length;
+
+            setStats({
+                total,
+                completed,
+                scheduled,
+                cancelled,
+                percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+            });
+        }
+    }, [pov?.working_sessions]);
+
+    // Early return after useEffect
     if (!pov) return null;
 
     const allSessions = pov.working_sessions?.sort(
         (a, b) => new Date(b.session_date).getTime() - new Date(a.session_date).getTime()
     ) || [];
-
-    useEffect(() => {
-        const newStats = calculateSessionStats();
-        setStats(newStats);
-    }, [allSessions]);
 
     const formatActivityStatus = (status: string) => {
         return status.replace(/_/g, ' ');
@@ -97,26 +110,6 @@ export default function ActivePOVWorkingSessionsOverview() {
         }
     };
 
-    const calculateSessionStats = () => {
-        const allActivities = allSessions.flatMap(session => session.session_activities || []);
-        const totalActivities = allActivities.length;
-        const completedActivities = allActivities.filter(activity => activity.status === 'COMPLETED').length;
-        const inProgressActivities = allActivities.filter(activity => activity.status === 'IN_PROGRESS').length;
-        const skippedActivities = allActivities.filter(activity => activity.status === 'SKIPPED').length;
-        
-        const completionPercentage = totalActivities > 0 
-            ? Math.round((completedActivities / totalActivities) * 100)
-            : 0;
-
-        return {
-            total: totalActivities,
-            completed: completedActivities,
-            inProgress: inProgressActivities,
-            skipped: skippedActivities,
-            percentage: completionPercentage
-        };
-    };
-
     return (
         <div className="space-y-6">
             {/* Header Section */}
@@ -151,13 +144,13 @@ export default function ActivePOVWorkingSessionsOverview() {
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded-full bg-blue-500" />
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                                {stats.inProgress} In Progress
+                                {stats.scheduled} Scheduled
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded-full bg-red-500" />
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                                {stats.skipped} Skipped
+                                {stats.cancelled} Cancelled
                             </span>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useParams, usePathname } from 'next/navigation';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import ActivePOVHeader from './ActivePOVHeader';
@@ -17,11 +17,15 @@ export default function ActivePOVLayout({ children }: ActivePOVLayoutProps) {
     const povId = params.id as string;
     const { fetchPOV } = usePOVOperations();
 
-    useEffect(() => {
+    const initializePOV = useCallback(async () => {
         if (povId) {
-            fetchPOV(povId);
+            await fetchPOV(povId);
         }
-    }, [povId]);
+    }, [povId, fetchPOV]);
+
+    useEffect(() => {
+        initializePOV();
+    }, [initializePOV]);
 
     const renderContent = () => {
         // For the root active-pov route, render dashboard

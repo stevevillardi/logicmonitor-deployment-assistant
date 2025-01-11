@@ -33,7 +33,7 @@ import { formatDate, calculateProgress } from '@/app/lib/utils';
 import { devLog } from '../../Shared/utils/debug';
 import ActivePOVChallenges from '../Challenges/ActivePOVChallenges';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -44,6 +44,9 @@ const MAX_VISIBLE_SESSIONS = 3;
 export default function ActivePOVDashboard() {
     const { state } = usePOV();
     const { pov } = state;
+    const { updateDeviceStatus } = usePOVOperations();
+
+    // Move all useState declarations to the top
     const [stats, setStats] = useState({
         total: 0,
         completed: 0,
@@ -51,15 +54,42 @@ export default function ActivePOVDashboard() {
         skipped: 0,
         percentage: 0
     });
+    const [currentDevicePage, setCurrentDevicePage] = useState(0);
+    const [currentServicePage, setCurrentServicePage] = useState(0);
 
-    const { updateDeviceStatus } = usePOVOperations();
+    // Move calculateOverallProgress outside useEffect
+    const calculateOverallProgress = useCallback(() => {
+        if (!pov?.working_sessions) return {
+            total: 0,
+            completed: 0,
+            inProgress: 0,
+            skipped: 0,
+            percentage: 0
+        };
+
+        const allActivities = pov.working_sessions?.flatMap(session => session.session_activities || []) || [];
+        const totalActivities = allActivities.length;
+        const completedActivities = allActivities.filter(activity => activity.status === 'COMPLETED').length;
+        const inProgressActivities = allActivities.filter(activity => activity.status === 'IN_PROGRESS').length;
+        const skippedActivities = allActivities.filter(activity => activity.status === 'SKIPPED').length;
+        
+        const completionPercentage = totalActivities > 0 
+            ? Math.round((completedActivities / totalActivities) * 100)
+            : 0;
+
+        return {
+            total: totalActivities,
+            completed: completedActivities,
+            inProgress: inProgressActivities,
+            skipped: skippedActivities,
+            percentage: completionPercentage
+        };
+    }, [pov?.working_sessions]);
 
     useEffect(() => {
-        if (pov?.working_sessions) {
-            const newStats = calculateOverallProgress();
-            setStats(newStats);
-        }
-    }, [pov?.working_sessions]);
+        const newStats = calculateOverallProgress();
+        setStats(newStats);
+    }, [calculateOverallProgress]);
 
     if (!pov) return null;
 
@@ -116,27 +146,6 @@ export default function ActivePOVDashboard() {
     const visibleActivities = recentActivities.slice(0, MAX_VISIBLE_ACTIVITIES);
     const remainingCount = Math.max(0, recentActivities.length - MAX_VISIBLE_ACTIVITIES);
 
-    // Add this function to calculate overall progress
-    const calculateOverallProgress = () => {
-        const allActivities = pov.working_sessions?.flatMap(session => session.session_activities || []) || [];
-        const totalActivities = allActivities.length;
-        const completedActivities = allActivities.filter(activity => activity.status === 'COMPLETED').length;
-        const inProgressActivities = allActivities.filter(activity => activity.status === 'IN_PROGRESS').length;
-        const skippedActivities = allActivities.filter(activity => activity.status === 'SKIPPED').length;
-        
-        const completionPercentage = totalActivities > 0 
-            ? Math.round((completedActivities / totalActivities) * 100)
-            : 0;
-
-        return {
-            total: totalActivities,
-            completed: completedActivities,
-            inProgress: inProgressActivities,
-            skipped: skippedActivities,
-            percentage: completionPercentage
-        };
-    };
-
     const getDeviceIcon = (category: string) => {
         switch (category.toLowerCase()) {
             case 'servers':
@@ -177,7 +186,6 @@ export default function ActivePOVDashboard() {
     };
 
     // Add state for device scope pagination
-    const [currentDevicePage, setCurrentDevicePage] = useState(0);
     const DEVICES_PER_PAGE = 8;
 
     // Add these helper functions
@@ -191,7 +199,6 @@ export default function ActivePOVDashboard() {
     ) || [];
 
     // Add to state declarations
-    const [currentServicePage, setCurrentServicePage] = useState(0);
     const SERVICES_PER_PAGE = 4;
 
     // Add helper functions for services pagination
