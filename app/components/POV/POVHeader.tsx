@@ -43,7 +43,7 @@ export default function POVHeader() {
     setIsDeleting(true);
     try {
       await deletePOV(pov.id);
-      router.push('/pov');
+      router.push('/pov?tab=pov-management');
     } catch (error) {
       console.error('Error deleting POV:', error);
     } finally {
@@ -53,11 +53,11 @@ export default function POVHeader() {
   };
 
   const handleCancel = () => {
-    router.push('/pov');
+    router.push('/pov?tab=pov-management');
   };
 
   const handleBack = () => {
-    router.push('/pov');
+    router.push('/pov?tab=pov-management');
   };
 
   const handleSubmitPOV = async () => {

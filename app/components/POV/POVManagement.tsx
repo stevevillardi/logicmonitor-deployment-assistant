@@ -7,21 +7,11 @@ import { usePOV } from '@/app/contexts/POVContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { POV, POVDecisionCriteria, DeviceScope } from '@/app/types/pov';
-import { formatDate } from '@/lib/utils';
-import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { useAuth } from '@/app/contexts/AuthContext';
-import { devLog } from '../Shared/utils/debug';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-const formatDateOnly = (date: string) => {
-    if (!date) return 'Not set';
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-};
+import { getEffectiveMemberDetails, calculateProgress } from '@/app/lib/utils';
+import { formatDate } from '@/app/lib/utils';
 
 const EmptySearchResults = ({ searchTerm, selectedStatus, onReset }: { 
     searchTerm: string; 
@@ -59,7 +49,7 @@ const EmptySearchResults = ({ searchTerm, selectedStatus, onReset }: {
 
 export default function POVManagement() {
     const router = useRouter();
-    const { state, dispatch } = usePOV();
+    const { state } = usePOV();
     const povs = state.povs;
     const { isAuthenticated, isLoading } = useAuth();
     
@@ -89,57 +79,6 @@ export default function POVManagement() {
 
     const uniqueStatuses = Array.from(new Set(povs?.map(pov => pov.status) || []));
 
-    useEffect(() => {
-        const fetchPOVs = async () => {
-            try {
-                if (isLoading) return; // Wait for auth to be checked
-
-                const { data, error } = await supabaseBrowser
-                    .from('pov')
-                    .select(`
-                        *,
-                        challenges:pov_challenges(
-                            *,
-                            categories:pov_challenge_categories(*),
-                            outcomes:pov_challenge_outcomes(*)
-                        ),
-                        key_business_services:pov_key_business_services(*),
-                        team_members:pov_team_members(
-                            team_member:team_members(*)
-                        ),
-                        device_scopes:pov_device_scopes(*),
-                        working_sessions:pov_working_sessions(*),
-                        decision_criteria:pov_decision_criteria(
-                            *,
-                            categories:pov_decision_criteria_categories(*),
-                            activities:pov_decision_criteria_activities(*)
-                        )
-                    `)
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    devLog('Supabase query error:', error);
-                    throw error;
-                }
-
-                // Transform team members data structure
-                const transformedData = data?.map(pov => ({
-                    ...pov,
-                    team_members: (pov.team_members || [])
-                        .map((tm: any) => tm.team_member)
-                        .filter(Boolean)
-                }));
-                
-                dispatch({ type: 'SET_POVS', payload: transformedData });
-
-            } catch (error) {
-                devLog('Error in fetchPOVs:', error);
-            }
-        };
-
-        fetchPOVs();
-    }, [dispatch, router, isAuthenticated, isLoading]);
-
     const handleCreatePOV = () => {
         router.push('/pov/new');
     };
@@ -161,11 +100,6 @@ export default function POVManagement() {
         return colors[status as keyof typeof colors] || colors.DRAFT;
     };
 
-    const calculateProgress = (criteria: POVDecisionCriteria[] | undefined) => {
-        if (!criteria?.length) return 0;
-        const met = (criteria || []).filter(c => c.status === 'MET').length;
-        return Math.round((met / criteria.length) * 100);
-    };
 
     const getDeviceScopeSummary = (deviceScopes: DeviceScope[] | undefined) => {
         if (!deviceScopes?.length) return { total: 0, high: 0 };
@@ -267,27 +201,25 @@ export default function POVManagement() {
                                         hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors"
                                     onClick={() => handleViewPOV(pov.id)}
                                 >
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-start justify-between">
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                                    {pov.customer_name}
-                                                </h3>
-                                                <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusBadgeColor(pov.status)}`}>
-                                                    {pov.status.replace(/_/g, ' ')}
-                                                </span>
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                                {pov.customer_name}
+                                            </h3>
+                                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                {pov.title}
+                                            </p>
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                <Building2 className="h-3.5 w-3.5" />
+                                                <span>{pov.customer_industry}</span>
+                                                <span>•</span>
+                                                <span>{pov.customer_region}</span>
                                             </div>
-                                            <div className="mt-1 space-y-1">
-                                                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                                    {pov.title}
-                                                </p>
-                                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                                    <Building2 className="h-3.5 w-3.5" />
-                                                    <span>{pov.customer_industry}</span>
-                                                    <span>•</span>
-                                                    <span>{pov.customer_region}</span>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getStatusBadgeColor(pov.status)}`}>
+                                                {pov.status.replace(/_/g, ' ')}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -301,13 +233,13 @@ export default function POVManagement() {
                                                 <div className="flex items-center gap-2">
                                                     <Clock className="h-3.5 w-3.5 text-gray-400" />
                                                     <p className="text-gray-900 dark:text-gray-100 text-sm">
-                                                        Start: {formatDateOnly(pov.start_date)}
+                                                        Start: {formatDate(pov.start_date)}
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Target className="h-3.5 w-3.5 text-gray-400" />
                                                     <p className="text-gray-900 dark:text-gray-100 text-sm">
-                                                        End: {formatDateOnly(pov.end_date)}
+                                                        Target: {formatDate(pov.end_date)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -325,15 +257,15 @@ export default function POVManagement() {
                                                 <div className="flex gap-2 text-xs">
                                                     <span className="flex items-center gap-1 text-blue-600">
                                                         <Building2 className="h-3 w-3" />
-                                                        {pov.team_members?.filter(m => m.organization === 'LM').length || 0} LM
+                                                        {pov.team_members?.filter(m => getEffectiveMemberDetails(m).organization === 'LM').length || 0} LM
                                                     </span>
                                                     <span className="flex items-center gap-1 text-green-600">
                                                         <Users className="h-3 w-3" />
-                                                        {pov.team_members?.filter(m => m.organization === 'CUSTOMER').length || 0} Customer
+                                                        {pov.team_members?.filter(m => getEffectiveMemberDetails(m).organization === 'CUSTOMER').length || 0} Customer
                                                     </span>
                                                     <span className="flex items-center gap-1 text-purple-600">
                                                         <Users className="h-3 w-3" />
-                                                        {pov.team_members?.filter(m => m.organization === 'PARTNER').length || 0} Partner
+                                                        {pov.team_members?.filter(m => getEffectiveMemberDetails(m).organization === 'PARTNER').length || 0} Partner
                                                     </span>
                                                 </div>
                                             </div>
@@ -397,7 +329,7 @@ export default function POVManagement() {
 
                                     <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                                         <p className="text-xs text-gray-400 dark:text-gray-500">
-                                            Created on {formatDateOnly(pov.created_at)}
+                                            Created on {formatDate(pov.created_at)}
                                         </p>
                                         <div className="text-xs text-gray-400 dark:text-gray-500">
                                             {pov.working_sessions?.length || 0} Working Sessions • {pov.key_business_services?.length || 0} Business Services

@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useReducer, ReactNode } from 'react';
-import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession, POVDecisionCriteria } from '@/app/types/pov';
+import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession, POVDecisionCriteria, POVActivity, POVTeamMemberWithDetails, POVDocument, POVComment } from '@/app/types/pov';
 import { devLog } from '../components/Shared/utils/debug';
 
 interface POVState {
@@ -19,20 +19,23 @@ type POVAction =
   | { type: 'SET_ERROR'; payload: string | null }
   
   | { type: 'SET_BUSINESS_SERVICES'; payload: KeyBusinessService[] }
-  | { type: 'SET_TEAM_MEMBERS'; payload: TeamMember[] }
+  | { type: 'SET_TEAM_MEMBERS'; payload: POVTeamMemberWithDetails[] }
   | { type: 'SET_DEVICE_SCOPES'; payload: DeviceScope[] }
   | { type: 'SET_WORKING_SESSIONS'; payload: WorkingSession[] }
   | { type: 'SET_CHALLENGES'; payload: POVChallenge[] }
   | { type: 'SET_DECISION_CRITERIA'; payload: POVDecisionCriteria[] }
+  | { type: 'SET_ACTIVITIES'; payload: POVActivity[] }
+
   | { type: 'ADD_BUSINESS_SERVICE'; payload: KeyBusinessService }
-  | { type: 'ADD_TEAM_MEMBER'; payload: TeamMember }
+  | { type: 'ADD_TEAM_MEMBER'; payload: POVTeamMemberWithDetails }
   | { type: 'ADD_DEVICE_SCOPE'; payload: DeviceScope }
   | { type: 'ADD_WORKING_SESSION'; payload: WorkingSession }
   | { type: 'ADD_CHALLENGE'; payload: POVChallenge }
   | { type: 'ADD_DECISION_CRITERIA'; payload: POVDecisionCriteria }
+  | { type: 'ADD_ACTIVITY'; payload: POVActivity }
   
   | { type: 'UPDATE_BUSINESS_SERVICE'; payload: KeyBusinessService }
-  | { type: 'UPDATE_TEAM_MEMBER'; payload: TeamMember }
+  | { type: 'UPDATE_TEAM_MEMBER'; payload: POVTeamMemberWithDetails }
   | { type: 'UPDATE_DEVICE_SCOPE'; payload: DeviceScope }
   | { type: 'UPDATE_WORKING_SESSION'; payload: WorkingSession }
   | { type: 'UPDATE_CHALLENGE'; payload: POVChallenge }
@@ -46,6 +49,12 @@ type POVAction =
   | { type: 'DELETE_DECISION_CRITERIA'; payload: string }
   | { type: 'UPDATE_POV'; payload: POV }
   | { type: 'UPDATE_POV_IN_LIST'; payload: { id: string; updates: Partial<POV> } }
+  | { type: 'ADD_DOCUMENT'; payload: POVDocument }
+  | { type: 'DELETE_DOCUMENT'; payload: string }
+  | { type: 'ADD_COMMENT'; payload: POVComment }
+  | { type: 'UPDATE_COMMENT'; payload: POVComment }
+  | { type: 'DELETE_COMMENT'; payload: string }
+  | { type: 'UPDATE_DEVICE_STATUS'; payload: { deviceId: string; status: DeviceScope['status'] } }
 
 
 const POVContext = createContext<{
@@ -325,6 +334,91 @@ function povReducer(state: POVState, action: POVAction): POVState {
             ? { ...p, ...action.payload.updates }
             : p
         ) : null
+      };
+
+    case 'SET_ACTIVITIES':
+      return {
+        ...state,
+        pov: state.pov ? {
+          ...state.pov,
+          activities: action.payload
+        } : null
+      };
+
+    case 'ADD_ACTIVITY':
+      return {
+        ...state,
+        pov: state.pov ? {
+          ...state.pov,
+          activities: [action.payload, ...(state.pov.activities || [])]
+        } : null
+      };
+
+    case 'ADD_DOCUMENT':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          documents: [...(state.pov.documents || []), action.payload]
+        }
+      };
+
+    case 'DELETE_DOCUMENT':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          documents: state.pov.documents?.filter(d => d.id !== action.payload) || []
+        }
+      };
+
+    case 'ADD_COMMENT':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          comments: [...(state.pov.comments || []), action.payload]
+        }
+      };
+
+    case 'UPDATE_COMMENT':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          comments: state.pov.comments?.map(c => 
+            c.id === action.payload.id ? action.payload : c
+          ) || []
+        }
+      };
+
+    case 'DELETE_COMMENT':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          comments: state.pov.comments?.filter(c => c.id !== action.payload) || []
+        }
+      };
+
+    case 'UPDATE_DEVICE_STATUS':
+      if (!state.pov) return state;
+      
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          device_scopes: state.pov.device_scopes?.map(device => 
+            device.id === action.payload.deviceId
+              ? { ...device, status: action.payload.status }
+              : device
+          )
+        }
       };
 
     default:

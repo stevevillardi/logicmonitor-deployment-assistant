@@ -7,18 +7,16 @@ import { Plus } from 'lucide-react';
 import { usePOV } from '@/app/contexts/POVContext';
 import TeamMemberList from '@/app/components/POV/Team/TeamMemberList';
 import AddTeamMemberDialog from '@/app/components/POV/Team/AddTeamMemberDialog';
-import { TeamMember } from '@/app/types/pov';
+import { POVTeamMemberWithDetails } from '@/app/types/pov';
 import { devLog } from '../../Shared/utils/debug';
 
 export default function Team() {
   const { state } = usePOV();
-  const pov = state.pov;
-  const teamMembers = pov?.team_members || [];
-  devLog('Team Members in state:', teamMembers);
+  const { pov } = state;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+  const [editingMember, setEditingMember] = useState<POVTeamMemberWithDetails | null>(null);
 
-  const handleEdit = (member: TeamMember) => {
+  const handleEdit = (member: POVTeamMemberWithDetails) => {
     setEditingMember(member);
     setIsAddDialogOpen(true);
   };
@@ -68,11 +66,9 @@ export default function Team() {
 
       <AddTeamMemberDialog 
         open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
+        onOpenChange={handleDialogOpenChange}
         editingMember={editingMember}
-        onClose={() => {
-          setEditingMember(null);
-        }}
+        onClose={() => setEditingMember(null)}
       />
     </div>
   );

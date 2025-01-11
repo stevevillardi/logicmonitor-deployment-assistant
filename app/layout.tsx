@@ -8,6 +8,8 @@ import RAGChat from './components/AIChat/AIChat';
 import { DeploymentsProvider } from './components/Providers/DeploymentsProvider';
 import { AuthProvider } from './contexts/AuthContext';
 import AuthErrorBoundary from './components/Shared/AuthErrorBoundary';
+import { usePathname } from 'next/navigation';
+import RAGChatWrapper from './components/AIChat/RAGChatWrapper';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -56,9 +58,9 @@ export default function RootLayout({
                 {children}
               </DeploymentsProvider>
             </ThemeProvider>
-        <PWAInstallPrompt />
-        <Analytics/>
-        <RAGChat />
+            <PWAInstallPrompt />
+            <Analytics/>
+            <RAGChatWrapper />
           {/* </AuthErrorBoundary> */}
         </AuthProvider>
       </body>

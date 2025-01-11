@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TeamMember } from '@/app/types/pov';
+import { POVTeamMember, POVTeamMemberWithDetails, TeamMember } from '@/app/types/pov';
 import { usePOV } from '@/app/contexts/POVContext';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { User, Plus, Briefcase, Mail, Building2 } from "lucide-react";
@@ -14,7 +14,7 @@ import { supabaseBrowser } from '@/app/lib/supabase/client';
 interface AddTeamMemberDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editingMember?: TeamMember | null;
+  editingMember?: POVTeamMemberWithDetails | null;
   onClose?: () => void;
 }
 
@@ -26,13 +26,13 @@ export default function AddTeamMemberDialog({
 }: AddTeamMemberDialogProps) {
   const { state } = usePOV();
   const { pov } = state;
-  const { addTeamMember } = usePOVOperations();
+  const { addTeamMember, updateTeamMember } = usePOVOperations();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingMembers, setExistingMembers] = useState<TeamMember[]>([]);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [openCombobox, setOpenCombobox] = useState(false);
-  const [formData, setFormData] = useState<Partial<TeamMember>>({
+  const [formData, setFormData] = useState<Partial<POVTeamMember>>({
     name: '',
     email: '',
     role: '',
@@ -66,7 +66,10 @@ export default function AddTeamMemberDialog({
 
   useEffect(() => {
     if (editingMember && open) {
-      setFormData(editingMember);
+        setFormData({
+            ...editingMember.team_member,
+            ...editingMember  // POV-specific overrides take precedence
+        });
     }
   }, [editingMember, open]);
 
@@ -79,36 +82,32 @@ export default function AddTeamMemberDialog({
     e.preventDefault();
     if (isSubmitting) return;
 
-    // Check if member is already in the team
-    if (selectedMember && pov?.team_members?.some(tm => tm.id === selectedMember.id)) {
-      alert('This team member is already part of the POV.');
-      return;
-    }
-
-    // For new members, check if email already exists in current team
-    if (isCreatingNew && pov?.team_members?.some(tm => tm.email === formData.email)) {
-      alert('A team member with this email is already part of the POV.');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      if (selectedMember && !isCreatingNew) {
-        await addTeamMember({
-          ...selectedMember,
-          pov_id: pov?.id
-        });
-      } else {
-        await addTeamMember({
-          ...formData,
-          pov_id: pov?.id
-        });
-      }
-      handleClose();
+        if (editingMember) {
+            // Update existing member
+            await updateTeamMember(editingMember.id, {
+                ...formData,
+                pov_id: pov?.id
+            });
+        } else if (selectedMember && !isCreatingNew) {
+            // Add existing member to POV
+            await addTeamMember({
+                ...selectedMember,
+                pov_id: pov?.id
+            });
+        } else {
+            // Create new member
+            await addTeamMember({
+                ...formData,
+                pov_id: pov?.id
+            });
+        }
+        handleClose();
     } catch (error) {
-      console.error('Error saving team member:', error);
+        console.error('Error saving team member:', error);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   };
 

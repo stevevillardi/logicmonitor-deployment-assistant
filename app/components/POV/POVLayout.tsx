@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useParams, usePathname } from 'next/navigation';
+import { Toaster } from 'react-hot-toast';
 import POVHeader from './POVHeader';
 import POVSidebar from './POVSidebar';
 import POVOverview from './POVOverview';
@@ -62,6 +63,46 @@ export default function POVLayout({ children }: POVLayoutProps) {
 
   return (
     <div className="flex h-screen">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#040F4B',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            maxWidth: '500px',
+            width: '90%',
+            padding: '16px',
+          },
+          success: {
+            style: {
+              background: '#042f2e',
+              border: '1px solid #0f766e',
+              maxWidth: '500px',
+              width: '90%',
+              padding: '16px',
+            },
+            iconTheme: {
+              primary: '#2dd4bf',
+              secondary: '#042f2e',
+            },
+          },
+          error: {
+            style: {
+              background: '#78350f',
+              border: '1px solid #92400e',
+              maxWidth: '500px',
+              width: '90%',
+              padding: '16px',
+            },
+            iconTheme: {
+              primary: '#fbbf24',
+              secondary: '#78350f',
+            },
+          },
+        }}
+      />
       <POVSidebar isNewPOV={isNewPOV} />
       <div className="flex-1 overflow-auto">
         <POVHeader />

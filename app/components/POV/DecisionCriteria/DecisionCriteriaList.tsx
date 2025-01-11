@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { toast } from "react-hot-toast";
 
 interface DecisionCriteriaListProps {
   decisionCriteria: POVDecisionCriteria[];
@@ -22,7 +23,10 @@ export default function DecisionCriteriaList({
     try {
       await deleteDecisionCriteria(criteriaId);
     } catch (error) {
-      console.error('Error deleting decision criteria:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete criteria', {
+        duration: 4000,
+        position: 'top-center',
+      });
     }
   };
 

@@ -2,8 +2,9 @@
 
 import { usePOV } from '@/app/contexts/POVContext';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
-import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession, POVDecisionCriteria } from '@/app/types/pov';
+import { POV, POVChallenge, KeyBusinessService, TeamMember, DeviceScope, WorkingSession, POVDecisionCriteria, POVActivity, POVComment } from '@/app/types/pov';
 import { devLog } from '../components/Shared/utils/debug';
+import { v4 as uuidv4 } from 'uuid';
 
 interface TeamMemberWithPOV extends Partial<TeamMember> {
   pov_id?: string;
@@ -16,7 +17,7 @@ interface ChallengeWithRelations extends Omit<Partial<POVChallenge>, 'categories
 
 interface DecisionCriteriaWithRelations extends Omit<Partial<POVDecisionCriteria>, 'categories' | 'activities'> {
   categories?: string[];
-  activities?: Array<{ activity: string; order_index: number }>;
+  activities?: Array<{ id?: string; activity: string; order_index: number }>;
 }
 
 export function usePOVOperations() {
@@ -41,13 +42,22 @@ export function usePOVOperations() {
       devLog('Supabase error:', error);
       throw new Error(error.message);
     }
-    
+
     if (!newPov) {
       throw new Error('Failed to create POV: No data returned');
     }
 
     dispatch({ type: 'SET_POV', payload: newPov });
-    
+
+    // Add activity for new POV
+    await addActivity(
+      newPov.id,
+      'STATUS',
+      'POV Created',
+      `POV "${newPov.title}" created for ${newPov.customer_name}`,
+      newPov.id
+    );
+
     return newPov;
   };
 
@@ -117,12 +127,12 @@ export function usePOVOperations() {
           }))
         );
     }
-    
+
     dispatch({ type: 'ADD_CHALLENGE', payload: povChallenge });
     return povChallenge;
   };
 
-  const addChallenge = async (challengeData: ChallengeWithRelations & { 
+  const addChallenge = async (challengeData: ChallengeWithRelations & {
     addToLibrary?: boolean;
     selectedTemplateId?: string | null;
   }) => {
@@ -157,7 +167,7 @@ export function usePOVOperations() {
       // Add categories and outcomes
       await Promise.all([
         // Add categories
-        challengeData.categories?.length ? 
+        challengeData.categories?.length ?
           supabaseBrowser
             .from('pov_challenge_categories')
             .insert(
@@ -192,6 +202,17 @@ export function usePOVOperations() {
 
       if (completeChallenge) {
         dispatch({ type: 'ADD_CHALLENGE', payload: completeChallenge });
+
+        // Add activity for new challenge
+        if (!challengeData.pov_id) throw new Error('POV ID is required');
+        await addActivity(
+          challengeData.pov_id,
+          'CHALLENGE',
+          'Challenge Added',
+          `"${challengeData.title}" challenge created`,
+          completeChallenge.id
+        );
+
         return completeChallenge;
       }
 
@@ -215,11 +236,11 @@ export function usePOVOperations() {
           status: challengeData.status
         })
         .eq('id', challengeId)
+        .select()
         .single();
 
       if (error) throw error;
       if (!updatedChallenge) throw new Error('Failed to update challenge');
-
       // Update categories and outcomes
       await Promise.all([
         // Update categories
@@ -275,9 +296,19 @@ export function usePOVOperations() {
         `)
         .eq('id', challengeId)
         .single();
-
+      devLog('completeChallenge', completeChallenge);
       if (completeChallenge) {
         dispatch({ type: 'UPDATE_CHALLENGE', payload: completeChallenge });
+
+        if (!challengeData.pov_id) throw new Error('POV ID is required');
+        await addActivity(
+          challengeData.pov_id,
+          'CHALLENGE',
+          'Challenge Updated',
+          `"${challengeData.title}" challenge ${getStatusMessage(challengeData.status)}`,
+          challengeId
+        );
+
         return completeChallenge;
       }
 
@@ -306,6 +337,17 @@ export function usePOVOperations() {
     if (!newService) throw new Error('Failed to create business service');
 
     dispatch({ type: 'ADD_BUSINESS_SERVICE', payload: newService });
+
+    // Add activity for new business service
+    if (!serviceData.pov_id) throw new Error('POV ID is required');
+    await addActivity(
+      serviceData.pov_id,
+      'STATUS',
+      'Business Service Added',
+      `Added "${serviceData.name}" business service`,
+      newService.id
+    );
+
     return newService;
   };
 
@@ -365,7 +407,13 @@ export function usePOVOperations() {
       .upsert({
         pov_id: memberData.pov_id,
         team_member_id: newMember.id,
-        created_at: new Date().toISOString(),
+        name: memberData.name,
+        email: memberData.email,
+        role: memberData.role,
+        organization: memberData.organization,
+        updated_by: user.id,
+        updated_at: new Date().toISOString(),
+        created_by: user.id,
       }, {
         onConflict: 'pov_id,team_member_id',
         ignoreDuplicates: true, // Skip if relationship already exists
@@ -374,35 +422,71 @@ export function usePOVOperations() {
     if (povMemberError) throw povMemberError;
 
     dispatch({ type: 'ADD_TEAM_MEMBER', payload: newMember });
+
+    // Add activity for new team member
+    if (!memberData.pov_id) throw new Error('POV ID is required');
+    await addActivity(
+      memberData.pov_id,
+      'TEAM',
+      'Team Member Added',
+      `"${memberData.name}" added to team`,
+      newMember.id
+    );
+
     return newMember;
   };
 
   const updateTeamMember = async (memberId: string, memberData: TeamMemberWithPOV) => {
-    const { data: updatedMember, error } = await supabaseBrowser
-      .from('pov_team_members')
-      .update(memberData)
-      .eq('id', memberId)
-      .select('*')
-      .single();
+    try {
+        const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+        if (userError || !user) throw new Error('Unauthorized');
+        devLog('Updating member with ID:', memberId);
+        devLog('Update data:', memberData);
+        // Update only the pov_team_members record
+        const { data: updatedMember, error } = await supabaseBrowser
+            .from('pov_team_members')
+            .update({
+                name: memberData.name,
+                email: memberData.email,
+                role: memberData.role,
+                organization: memberData.organization,
+                updated_by: user.id,
+                updated_at: new Date().toISOString()
+            })
+            .eq('team_member_id', memberId)
+            .select('*')  // Just select the updated record
+            .maybeSingle();
 
-    if (error) throw error;
-    if (!updatedMember) throw new Error('Failed to update team member');
+        if (error) throw error;
+        if (!updatedMember) throw new Error('Failed to update team member');
 
-    dispatch({ type: 'UPDATE_TEAM_MEMBER', payload: updatedMember });
-    return updatedMember;
+        dispatch({ type: 'UPDATE_TEAM_MEMBER', payload: updatedMember });
+
+        if (!memberData.pov_id) throw new Error('POV ID is required');
+        await addActivity(
+            memberData.pov_id,
+            'TEAM',
+            'Team Member Updated',
+            `"${memberData.name}" team member details updated`,
+            memberId
+        );
+
+        return updatedMember;
+    } catch (error) {
+        console.error('Error updating team member:', error);
+        throw error;
+    }
   };
 
   const deleteTeamMember = async (memberId: string) => {
-    // Only delete the junction table entry for this specific POV
+    // Delete the junction table entry using its id
     const { error: junctionError } = await supabaseBrowser
       .from('pov_team_members')
       .delete()
-      .eq('team_member_id', memberId)
-      .eq('pov_id', state.pov?.id); // Add POV ID constraint
+      .eq('id', memberId)  // Use id instead of team_member_id
+      .eq('pov_id', state.pov?.id);
 
     if (junctionError) throw junctionError;
-
-    // Remove from state but don't delete the actual team member record
     dispatch({ type: 'DELETE_TEAM_MEMBER', payload: memberId });
   };
 
@@ -424,6 +508,17 @@ export function usePOVOperations() {
     if (!newDevice) throw new Error('Failed to create device scope');
 
     dispatch({ type: 'ADD_DEVICE_SCOPE', payload: newDevice });
+
+    // Add activity for new device scope
+    if (!deviceData.pov_id) throw new Error('POV ID is required');
+    await addActivity(
+      deviceData.pov_id,
+      'STATUS',
+      'Device Scope Added',
+      `Added ${deviceData.device_type} device scope with ${deviceData.count} devices`,
+      newDevice.id
+    );
+
     return newDevice;
   };
 
@@ -454,39 +549,192 @@ export function usePOVOperations() {
   };
 
   const addWorkingSession = async (sessionData: Partial<WorkingSession>) => {
-    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
-    if (userError || !user) throw new Error('Unauthorized');
+    try {
+      const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+      if (userError || !user) throw new Error('Unauthorized');
 
-    const { data: newSession, error } = await supabaseBrowser
-      .from('pov_working_sessions')
-      .insert({
-        ...sessionData,
-        created_by: user.id,
-        created_at: new Date().toISOString(),
-      })
-      .select('*')
-      .single();
+      // First create the working session
+      const { data: newSession, error } = await supabaseBrowser
+        .from('pov_working_sessions')
+        .insert({
+          title: sessionData.title,
+          status: sessionData.status,
+          session_date: sessionData.session_date,
+          duration: sessionData.duration,
+          notes: sessionData.notes,
+          pov_id: sessionData.pov_id,
+          created_by: user.id,
+          created_at: new Date().toISOString(),
+        })
+        .select('*')
+        .single();
 
-    if (error) throw error;
-    if (!newSession) throw new Error('Failed to create working session');
+      if (error) throw error;
+      if (!newSession) throw new Error('Failed to create working session');
 
-    dispatch({ type: 'ADD_WORKING_SESSION', payload: newSession });
-    return newSession;
+      // Then add the activities if any
+      if (sessionData.session_activities?.length) {
+        const { error: activitiesError } = await supabaseBrowser
+          .from('pov_session_activities')
+          .insert(
+            sessionData.session_activities.map((activity, index) => ({
+              session_id: newSession.id,
+              decision_criteria_activity_id: activity.decision_criteria_activity_id,
+              activity: activity.activity,
+              status: activity.status,
+              notes: activity.notes,
+              display_order: index
+            }))
+          );
+
+        if (activitiesError) throw activitiesError;
+      }
+
+      // Fetch the complete session with activities
+      const { data: completeSession } = await supabaseBrowser
+        .from('pov_working_sessions')
+        .select(`
+          *,
+          session_activities:pov_session_activities(
+            id,
+            decision_criteria_activity_id,
+            activity,
+            status,
+            notes,
+            display_order
+          )
+        `)
+        .eq('id', newSession.id)
+        .single();
+
+      if (completeSession) {
+        dispatch({ type: 'ADD_WORKING_SESSION', payload: completeSession });
+      }
+
+      // Add activity for new session
+      if (!sessionData.pov_id) throw new Error('POV ID is required');
+      await addActivity(
+        sessionData.pov_id,
+        'SESSION',
+        'Working Session Created',
+        `"${sessionData.title}" session scheduled`,
+        newSession.id
+      );
+
+      return completeSession;
+    } catch (error) {
+      console.error('Error creating working session:', error);
+      throw error;
+    }
   };
 
   const updateWorkingSession = async (sessionId: string, sessionData: Partial<WorkingSession>) => {
-    const { data: updatedSession, error } = await supabaseBrowser
-      .from('pov_working_sessions')
-      .update(sessionData)
-      .eq('id', sessionId)
-      .select('*')
-      .single();
+    try {
+        // First update the working session
+        const { data: updatedSession, error } = await supabaseBrowser
+            .from('pov_working_sessions')
+            .update({
+                ...(sessionData.title && { title: sessionData.title }),
+                ...(sessionData.status && { status: sessionData.status }),
+                ...(sessionData.session_date && { session_date: sessionData.session_date }),
+                ...(sessionData.duration && { duration: sessionData.duration }),
+                ...(sessionData.notes && { notes: sessionData.notes }),
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', sessionId)
+            .select('*')
+            .single();
 
-    if (error) throw error;
-    if (!updatedSession) throw new Error('Failed to update working session');
+        if (error) throw error;
+        if (!updatedSession) throw new Error('Failed to update working session');
 
-    dispatch({ type: 'UPDATE_WORKING_SESSION', payload: updatedSession });
-    return updatedSession;
+        // Then handle the activities
+        if (sessionData.session_activities) {
+            // Find the activity that changed (compare with current activities)
+            const currentSession = state.pov?.working_sessions?.find(s => s.id === sessionId);
+            const changedActivity = sessionData.session_activities.find((newActivity, index) => {
+                const oldActivity = currentSession?.session_activities?.[index];
+                return oldActivity && oldActivity.status !== newActivity.status;
+            });
+
+            // Delete existing activities for this session
+            await supabaseBrowser
+                .from('pov_session_activities')
+                .delete()
+                .eq('session_id', sessionId);
+
+            // Insert new activities with their order
+            if (sessionData.session_activities.length > 0) {
+                const { error: activitiesError } = await supabaseBrowser
+                    .from('pov_session_activities')
+                    .insert(
+                        sessionData.session_activities.map((activity, index) => ({
+                            session_id: sessionId,
+                            decision_criteria_activity_id: activity.decision_criteria_activity_id,
+                            activity: activity.activity,
+                            status: activity.status,
+                            notes: activity.notes,
+                            display_order: index
+                        }))
+                    );
+
+                if (activitiesError) throw activitiesError;
+            }
+
+            // Add activity log for status change if we found a changed activity
+            if (changedActivity && state.pov?.id) {
+                const activityName = changedActivity.activity || 
+                    state.pov.decision_criteria?.find(dc => 
+                        dc.activities?.some(a => a.id === changedActivity.decision_criteria_activity_id)
+                    )?.activities?.find(a => a.id === changedActivity.decision_criteria_activity_id)?.activity || 
+                    'Activity';
+
+                await addActivity(
+                    state.pov.id,
+                    'SESSION',
+                    'Activity Status Updated',
+                    `"${activityName}" marked as ${changedActivity.status.toLowerCase().replace('_', ' ')}`,
+                    sessionId
+                );
+            }
+        }
+
+        // Fetch the complete updated session with activities
+        const { data: completeSession } = await supabaseBrowser
+            .from('pov_working_sessions')
+            .select(`
+                *,
+                session_activities:pov_session_activities(
+                    id,
+                    decision_criteria_activity_id,
+                    activity,
+                    status,
+                    notes,
+                    display_order
+                )
+            `)
+            .eq('id', sessionId)
+            .single();
+
+        if (completeSession) {
+            dispatch({ type: 'UPDATE_WORKING_SESSION', payload: completeSession });
+        }
+
+        if (sessionData.pov_id) {
+            await addActivity(
+                sessionData.pov_id,
+                'SESSION',
+                'Working Session Updated',
+                `"${sessionData.title || completeSession.title}" session ${sessionData.status === 'COMPLETED' ? 'completed' : 'updated'}`,
+                sessionId
+            );
+        }
+
+        return completeSession;
+    } catch (error) {
+        console.error('Error updating working session:', error);
+        throw error;
+    }
   };
 
   const deleteWorkingSession = async (sessionId: string) => {
@@ -512,6 +760,7 @@ export function usePOVOperations() {
   };
 
   const fetchPOV = async (povId: string) => {
+    // First fetch the POV with all relations except activities
     const { data: pov, error } = await supabaseBrowser
       .from('pov')
       .select(`
@@ -522,11 +771,21 @@ export function usePOVOperations() {
           outcomes:pov_challenge_outcomes(*)
         ),
         key_business_services:pov_key_business_services(*),
-        team_members:pov_team_members(
+        team_members:pov_team_members(*,
           team_member:team_members(*)
         ),
         device_scopes:pov_device_scopes(*),
-        working_sessions:pov_working_sessions(*),
+        working_sessions:pov_working_sessions(
+          *,
+          session_activities:pov_session_activities(
+            id,
+            decision_criteria_activity_id,
+            activity,
+            status,
+            notes,
+            display_order
+          )
+        ),
         decision_criteria:pov_decision_criteria(
           *,
           categories:pov_decision_criteria_categories(*),
@@ -541,19 +800,24 @@ export function usePOVOperations() {
       return null;
     }
 
-    if (pov) {
-      // Transform team members data structure
-      const transformedPov = {
-        ...pov,
-        team_members: (pov.team_members || [])
-          .map((tm: any) => tm.team_member)
-          .filter(Boolean)
-      };
-      
-      dispatch({ type: 'SET_POV', payload: transformedPov });
+    // Then fetch activities separately
+    const { data: activities } = await supabaseBrowser
+      .from('pov_activities')
+      .select('*')
+      .eq('pov_id', povId)
+      .order('created_at', { ascending: false });
+
+    // Combine the data
+    const povWithActivities = {
+      ...pov,
+      activities: activities || []
+    };
+
+    if (povWithActivities) {
+      dispatch({ type: 'SET_POV', payload: povWithActivities });
     }
 
-    return pov;
+    return povWithActivities;
   };
 
   const deleteChallenge = async (challengeId: string) => {
@@ -569,9 +833,9 @@ export function usePOVOperations() {
       if (error) throw error;
 
       // Update local state
-      dispatch({ 
-        type: 'DELETE_CHALLENGE', 
-        payload: challengeId 
+      dispatch({
+        type: 'DELETE_CHALLENGE',
+        payload: challengeId
       });
 
     } catch (error) {
@@ -581,10 +845,28 @@ export function usePOVOperations() {
   };
 
   const deleteDecisionCriteria = async (criteriaId: string) => {
-    if (!criteriaId) return;
-
     try {
-      // Delete from supabase
+      // First check if any activities are used in sessions
+      const { data: activities } = await supabaseBrowser
+        .from('pov_decision_criteria_activities')
+        .select('id')
+        .eq('pov_decision_criteria_id', criteriaId);
+
+      if (activities?.length) {
+        const { data: usedActivities } = await supabaseBrowser
+          .from('pov_session_activities')
+          .select('decision_criteria_activity_id')
+          .in('decision_criteria_activity_id', activities.map(a => a.id));
+
+        if (usedActivities?.length) {
+          throw new Error(
+            'This decision criteria contains activities that are being used in working sessions. ' +
+            'Please remove these activities from your working sessions before deleting.'
+          );
+        }
+      }
+
+      // If no activities are used, proceed with deletion
       const { error } = await supabaseBrowser
         .from('pov_decision_criteria')
         .delete()
@@ -592,19 +874,14 @@ export function usePOVOperations() {
 
       if (error) throw error;
 
-      // Update local state
-      dispatch({ 
-        type: 'DELETE_DECISION_CRITERIA', 
-        payload: criteriaId 
-      });
-
+      dispatch({ type: 'DELETE_DECISION_CRITERIA', payload: criteriaId });
     } catch (error) {
       console.error('Error deleting decision criteria:', error);
-      throw error;
+      throw error; // Re-throw to handle in the UI
     }
   };
 
-  const addDecisionCriteria = async (criteriaData: DecisionCriteriaWithRelations & { 
+  const addDecisionCriteria = async (criteriaData: DecisionCriteriaWithRelations & {
     addToLibrary?: boolean;
   }) => {
     const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
@@ -632,7 +909,7 @@ export function usePOVOperations() {
       // Add categories and activities
       await Promise.all([
         // Add categories
-        criteriaData.categories?.length ? 
+        criteriaData.categories?.length ?
           supabaseBrowser
             .from('pov_decision_criteria_categories')
             .insert(
@@ -669,6 +946,17 @@ export function usePOVOperations() {
 
       if (completeCriteria) {
         dispatch({ type: 'ADD_DECISION_CRITERIA', payload: completeCriteria });
+
+        // Add activity for new decision criteria
+        if (!criteriaData.pov_id) throw new Error('POV ID is required');
+        await addActivity(
+          criteriaData.pov_id,
+          'CRITERIA',
+          'Decision Criteria Added',
+          `"${criteriaData.title}" criteria created`,
+          completeCriteria.id
+        );
+
         return completeCriteria;
       }
 
@@ -681,6 +969,10 @@ export function usePOVOperations() {
 
   const updateDecisionCriteria = async (criteriaId: string, criteriaData: DecisionCriteriaWithRelations) => {
     try {
+      const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+      if (userError || !user) throw new Error('Unauthorized');
+
+      // First update the main criteria
       const { data: updatedCriteria, error } = await supabaseBrowser
         .from('pov_decision_criteria')
         .update({
@@ -690,53 +982,76 @@ export function usePOVOperations() {
           status: criteriaData.status
         })
         .eq('id', criteriaId)
+        .select('*')
         .single();
 
       if (error) throw error;
       if (!updatedCriteria) throw new Error('Failed to update criteria');
 
-      // Update categories and activities
-      await Promise.all([
-        // Update categories
-        (async () => {
-          await supabaseBrowser
-            .from('pov_decision_criteria_categories')
-            .delete()
-            .eq('pov_decision_criteria_id', criteriaId);
+      // Update categories
+      await supabaseBrowser
+        .from('pov_decision_criteria_categories')
+        .delete()
+        .eq('pov_decision_criteria_id', criteriaId);
 
-          if (criteriaData.categories?.length) {
-            await supabaseBrowser
-              .from('pov_decision_criteria_categories')
-              .insert(
-                criteriaData.categories.map(category => ({
-                  pov_decision_criteria_id: criteriaId,
-                  category
-                }))
-              );
-          }
-        })(),
-        // Update activities
-        (async () => {
-          await supabaseBrowser
-            .from('pov_decision_criteria_activities')
-            .delete()
-            .eq('pov_decision_criteria_id', criteriaId);
+      if (criteriaData.categories?.length) {
+        await supabaseBrowser
+          .from('pov_decision_criteria_categories')
+          .insert(
+            criteriaData.categories.map(category => ({
+              pov_decision_criteria_id: criteriaId,
+              category
+            }))
+          );
+      }
 
-          if (criteriaData.activities?.length) {
+      // Handle activities update carefully
+      if (criteriaData.activities?.length) {
+        // Get existing activities
+        const { data: existingActivities } = await supabaseBrowser
+          .from('pov_decision_criteria_activities')
+          .select('id, activity')
+          .eq('pov_decision_criteria_id', criteriaId);
+
+        // Get activities used in sessions
+        const { data: usedActivities } = await supabaseBrowser
+          .from('pov_session_activities')
+          .select('decision_criteria_activity_id')
+          .in('decision_criteria_activity_id', existingActivities?.map(a => a.id) || []);
+
+        const usedActivityIds = new Set(usedActivities?.map(a => a.decision_criteria_activity_id));
+
+        // Delete only activities that aren't used in any sessions
+        if (existingActivities) {
+          const unusedActivities = existingActivities.filter(a => !usedActivityIds.has(a.id));
+          if (unusedActivities.length > 0) {
             await supabaseBrowser
               .from('pov_decision_criteria_activities')
-              .insert(
-                criteriaData.activities.map(activity => ({
-                  pov_decision_criteria_id: criteriaId,
-                  activity: activity.activity,
-                  order_index: activity.order_index
-                }))
-              );
+              .delete()
+              .eq('pov_decision_criteria_id', criteriaId)
+              .in('id', unusedActivities.map(a => a.id));
           }
-        })()
-      ]);
+        }
 
-      // Fetch complete updated criteria
+        // Insert new activities
+        await supabaseBrowser
+          .from('pov_decision_criteria_activities')
+          .upsert(
+            criteriaData.activities.map(activity => ({
+              ...(activity.id ? { id: activity.id } : {}), // Only include id if it exists
+              pov_decision_criteria_id: criteriaId,
+              activity: activity.activity,
+              order_index: activity.order_index,
+              status: 'NOT_STARTED'
+            })),
+            {
+              onConflict: 'id',
+              ignoreDuplicates: false
+            }
+          );
+      }
+
+      // Fetch and return updated criteria
       const { data: completeCriteria } = await supabaseBrowser
         .from('pov_decision_criteria')
         .select(`
@@ -749,6 +1064,18 @@ export function usePOVOperations() {
 
       if (completeCriteria) {
         dispatch({ type: 'UPDATE_DECISION_CRITERIA', payload: completeCriteria });
+
+        // Add activity after successful update
+        if (!criteriaData.pov_id) throw new Error('POV ID is required');
+
+        await addActivity(
+          criteriaData.pov_id,
+          'CRITERIA',
+          'Decision Criteria Updated',
+          `"${criteriaData.title}" criteria ${criteriaData.status === 'MET' ? 'marked as complete' : 'updated'}`,
+          criteriaId
+        );
+
         return completeCriteria;
       }
 
@@ -760,15 +1087,319 @@ export function usePOVOperations() {
   };
 
   const updatePOV = async (povId: string, data: Partial<POV>) => {
-    const { data: updatedPOV, error } = await supabaseBrowser
-      .from('pov')
-      .update(data)
-      .eq('id', povId)
-      .select()
+    try {
+      const { data: updatedPOV, error } = await supabaseBrowser
+        .from('pov')
+        .update(data)
+        .eq('id', povId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await addActivity(
+        povId,
+        'STATUS',
+        'POV Status Updated',
+        `POV status updated to ${data.status || 'new status'}`,
+        povId
+      );
+
+      return updatedPOV;
+    } catch (error) {
+      console.error('Error updating POV:', error);
+      throw error;
+    }
+  };
+
+  const fetchActivities = async (povId: string) => {
+    const { data, error } = await supabaseBrowser
+      .from('pov_activities')
+      .select('*')
+      .eq('pov_id', povId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    dispatch({ type: 'SET_ACTIVITIES', payload: data });
+  };
+
+  const addActivity = async (
+    povId: string,
+    type: POVActivity['type'],
+    title: string,
+    description: string,
+    referenceId: string | null = null
+  ) => {
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    // Insert the new activity
+    const { data: newActivity, error } = await supabaseBrowser
+      .from('pov_activities')
+      .insert({
+        pov_id: povId,
+        type,
+        title,
+        description,
+        reference_id: referenceId,
+        created_by: user.id,
+        created_by_email: user.email || 'Unknown User'
+      })
+      .select('*')  // Get the created activity
       .single();
 
     if (error) throw error;
-    return updatedPOV;
+    if (!newActivity) throw new Error('Failed to create activity');
+
+    // Add email to activity before dispatching
+    dispatch({ 
+      type: 'ADD_ACTIVITY', 
+      payload: { ...newActivity } 
+    });
+
+    return newActivity;
+  };
+
+  const getStatusMessage = (status: string | undefined) => {
+    if (!status) return 'updated';
+
+    switch (status) {
+      case 'COMPLETED':
+        return 'marked as complete';
+      case 'IN_PROGRESS':
+        return 'marked as in progress';
+      case 'UNABLE_TO_COMPLETE':
+        return 'marked as unable to complete';
+      case 'WAIVED':
+        return 'marked as waived';
+      case 'OPEN':
+        return 'reset to open';
+      default:
+        return 'updated';
+    }
+  };
+
+  const uploadDocument = async (file: File, description: string) => {
+    if (!state.pov?.id) throw new Error('No active POV');
+
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `${state.pov.id}/${fileName}`;
+
+    // Upload file to storage
+    const { error: uploadError } = await supabaseBrowser
+        .storage
+        .from('pov-documents')
+        .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // Create document record
+    const { data: document, error: dbError } = await supabaseBrowser
+        .from('pov_documents')
+        .insert({
+            pov_id: state.pov.id,
+            name: file.name,
+            description,
+            storage_path: filePath,
+            file_type: file.type,
+            file_size: file.size,
+            bucket_id: 'pov-documents',
+            created_by: user.id,
+            created_by_email: user.email
+        })
+        .select()
+        .single();
+
+    if (dbError) throw dbError;
+
+    if (document) {
+        // Create activity for document upload
+        await addActivity(
+            state.pov.id,
+            'DOCUMENT',
+            'Document Uploaded',
+            `Uploaded document: ${document.name}`,
+            document.id
+        );
+
+        dispatch({ type: 'ADD_DOCUMENT', payload: document });
+    }
+
+    return document;
+  };
+
+  const deleteDocument = async (documentId: string) => {
+    if (!state.pov) throw new Error('No active POV');
+    const doc = state.pov.documents?.find(d => d.id === documentId);
+    if (!doc) throw new Error('Document not found');
+
+    // Delete from storage
+    const { error: storageError } = await supabaseBrowser
+        .storage
+        .from(doc.bucket_id)
+        .remove([doc.storage_path]);
+
+    if (storageError) throw storageError;
+
+    // Delete from database
+    const { error: dbError } = await supabaseBrowser
+        .from('pov_documents')
+        .delete()
+        .eq('id', doc.id);
+
+    if (dbError) throw dbError;
+
+    // Create activity for document deletion
+    await addActivity(
+        state.pov.id,
+        'DOCUMENT',
+        'Document Deleted',
+        `Deleted document: ${doc.name}`,
+        doc.id
+    );
+
+    dispatch({ type: 'DELETE_DOCUMENT', payload: documentId });
+  };
+
+  const downloadDocument = async (documentId: string) => {
+    if (!state.pov) throw new Error('No active POV');
+    const doc = state.pov.documents?.find(d => d.id === documentId);
+    if (!doc) throw new Error('Document not found');
+
+    const { data, error } = await supabaseBrowser
+        .storage
+        .from(doc.bucket_id)
+        .download(doc.storage_path);
+
+    if (error) throw error;
+
+    return { data, document: doc };
+  };
+
+  const addComment = async (content: string) => {
+    if (!state.pov?.id) throw new Error('No active POV');
+
+    const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
+    if (userError || !user) throw new Error('Unauthorized');
+
+    const { data: comment, error } = await supabaseBrowser
+        .from('pov_comments')
+        .insert({
+            pov_id: state.pov.id,
+            content,
+            created_by: user.id,
+            created_by_email: user.email
+        })
+        .select()
+        .single();
+
+    if (error) throw error;
+    if (comment) {
+        dispatch({ type: 'ADD_COMMENT', payload: comment });
+        
+        // Create activity for new comment
+        await addActivity(
+            state.pov.id,
+            'COMMENT',
+            'Comment Added',
+            `Added a new comment`,
+            comment.id
+        );
+    }
+    return comment;
+  };
+
+  const updateComment = async (commentId: string, content: string) => {
+    if (!state.pov?.id) throw new Error('No active POV');
+
+    const { data: comment, error } = await supabaseBrowser
+        .from('pov_comments')
+        .update({ content, updated_at: new Date().toISOString() })
+        .eq('id', commentId)
+        .select()
+        .single();
+
+    if (error) throw error;
+    if (comment) {
+        dispatch({ type: 'UPDATE_COMMENT', payload: comment });
+        
+        // Create activity for comment update
+        await addActivity(
+            state.pov.id,
+            'COMMENT',
+            'Comment Updated',
+            `Updated a comment`,
+            comment.id
+        );
+    }
+    return comment;
+  };
+
+  const deleteComment = async (commentId: string) => {
+    if (!state.pov?.id) throw new Error('No active POV');
+    
+    // Get comment before deletion for activity log
+    const comment = state.pov.comments?.find(c => c.id === commentId);
+    
+    const { error } = await supabaseBrowser
+        .from('pov_comments')
+        .delete()
+        .eq('id', commentId);
+
+    if (error) throw error;
+    
+    dispatch({ type: 'DELETE_COMMENT', payload: commentId });
+    
+    // Create activity for comment deletion
+    if (comment) {
+        await addActivity(
+            state.pov.id,
+            'COMMENT',
+            'Comment Deleted',
+            `Deleted a comment`,
+            commentId
+        );
+    }
+  };
+
+  const updateDeviceStatus = async (deviceId: string, status: DeviceScope['status']) => {
+    try {
+        if (!state.pov?.id) throw new Error('No active POV');
+
+        const { data, error } = await supabaseBrowser
+            .from('pov_device_scopes')
+            .update({ status })
+            .eq('id', deviceId)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // Update local state
+        dispatch({
+            type: 'UPDATE_DEVICE_STATUS',
+            payload: { deviceId, status }
+        });
+
+        // Add activity with proper parameters
+        await addActivity(
+            state.pov.id,
+            'STATUS',
+            'Device Status Updated',
+            `Device status updated to ${status.replace(/_/g, ' ')}`,
+            deviceId
+        );
+
+        return data;
+    } catch (error) {
+        console.error('Error updating device status:', error);
+        throw error;
+    }
   };
 
   return {
@@ -794,5 +1425,14 @@ export function usePOVOperations() {
     addDecisionCriteria,
     updateDecisionCriteria,
     updatePOV,
+    fetchActivities,
+    addActivity,
+    uploadDocument,
+    deleteDocument,
+    downloadDocument,
+    addComment,
+    updateComment,
+    deleteComment,
+    updateDeviceStatus,
   };
 } 

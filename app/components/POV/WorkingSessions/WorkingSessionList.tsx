@@ -1,11 +1,18 @@
 'use client'
 
 import { WorkingSession } from '@/app/types/pov';
-import { Pencil, Trash, Calendar, Clock, FileText } from 'lucide-react';
+import { Pencil, Trash, Calendar, Clock, FileText, CheckCircle2, Circle, ArrowUpRight, StickyNote, Link2, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
 import { devLog } from '../../Shared/utils/debug';
+import { usePOV } from '@/app/contexts/POVContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface WorkingSessionListProps {
   sessions: WorkingSession[];
@@ -21,6 +28,7 @@ const formatDateOnly = (date: string) => {
 };
 
 export default function WorkingSessionList({ sessions, onEdit }: WorkingSessionListProps) {
+  const { state } = usePOV();
   devLog('Sessions passed to list:', sessions);
   const { deleteWorkingSession } = usePOVOperations();
 
@@ -124,9 +132,82 @@ export default function WorkingSessionList({ sessions, onEdit }: WorkingSessionL
 
                 {/* Notes */}
                 {session.notes && (
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line">
-                    {session.notes}
-                  </p>
+                  <div className="mt-4">
+                    <div className="rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <StickyNote className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          Session Notes
+                        </h4>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line pl-6">
+                        {session.notes}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {session.session_activities && session.session_activities.length > 0 && (
+                  <div className="mt-4">
+                    <div className="rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          Activities
+                        </h4>
+                      </div>
+                      <div className="space-y-2 pl-6">
+                        {session.session_activities
+                          .sort((a, b) => a.display_order - b.display_order)
+                          .map((activity) => {
+                            const activityText = activity.decision_criteria_activity_id 
+                              ? state.pov?.decision_criteria?.find(dc => 
+                                  dc.activities?.some(a => a.id === activity.decision_criteria_activity_id)
+                                )?.activities?.find(a => a.id === activity.decision_criteria_activity_id)?.activity
+                              : activity.activity;
+
+                            return (
+                              <div 
+                                key={activity.decision_criteria_activity_id || activity.id}
+                                className="flex items-center gap-2 text-sm"
+                              >
+                                {activity.status === 'COMPLETED' ? (
+                                  <CheckCircle2 className="h-4 w-4 text-green-500 dark:text-green-400" />
+                                ) : activity.status === 'IN_PROGRESS' ? (
+                                  <ArrowUpRight className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                                ) : (
+                                  <Circle className="h-4 w-4 text-gray-400 dark:text-gray-600" />
+                                )}
+                                <span className="text-gray-700 dark:text-gray-300">
+                                  {activityText}
+                                </span>
+                                {activity.decision_criteria_activity_id && (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger>
+                                        <Link className="h-4 w-4 text-gray-400" />
+                                      </TooltipTrigger>
+                                      <TooltipContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                                        <p className="text-xs text-gray-700 dark:text-gray-300">This activity is linked to a decision criteria</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                )}
+                                <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${
+                                  activity.status === 'COMPLETED'
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
+                                    : activity.status === 'IN_PROGRESS'
+                                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400'
+                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
+                                }`}>
+                                  {activity.status}
+                                </span>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

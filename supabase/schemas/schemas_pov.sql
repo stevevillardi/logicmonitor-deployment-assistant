@@ -94,6 +94,10 @@ CREATE TABLE pov_session_activities (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Add order column to pov_session_activities
+ALTER TABLE pov_session_activities 
+ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0;
+
 -- Create Team Members table
 CREATE TABLE team_members (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

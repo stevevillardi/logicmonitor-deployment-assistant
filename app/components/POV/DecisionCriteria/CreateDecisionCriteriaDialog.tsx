@@ -60,6 +60,7 @@ export default function CreateDecisionCriteriaDialog({
         use_case: editingCriteria.use_case || '',
         categories: editingCriteria.categories?.map(c => c.category) || [],
         activities: editingCriteria.activities?.map(a => ({
+          id: a.id,
           activity: a.activity,
           order_index: a.order_index
         })) || [],

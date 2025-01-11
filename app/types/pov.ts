@@ -14,10 +14,13 @@ export interface POV {
     updated_at: string;
     key_business_services?: KeyBusinessService[];
     challenges?: POVChallenge[];
-    team_members?: TeamMember[];
+    team_members?: POVTeamMemberWithDetails[];
     device_scopes?: DeviceScope[];
     working_sessions?: WorkingSession[];
     decision_criteria?: POVDecisionCriteria[];
+    activities?: POVActivity[];
+    documents?: POVDocument[];
+    comments?: POVComment[];
 }
 
 // Key Business Services
@@ -62,6 +65,15 @@ export interface POVDecisionCriteriaActivity {
     created_at: string;
 }
 
+export interface DecisionCriteriaWithRelations extends Omit<Partial<POVDecisionCriteria>, 'categories' | 'activities'> {
+    categories?: string[];
+    activities?: Array<{
+        id?: string;
+        activity: string;
+        order_index: number;
+    }>;
+}
+
 export interface POVChallenge {
     id: string;
     pov_id: string;
@@ -72,7 +84,7 @@ export interface POVChallenge {
     example: string;
     categories?: POVChallengeCategory[];
     outcomes?: POVChallengeOutcome[];
-    status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED';
+    status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'UNABLE_TO_COMPLETE' | 'WAIVED';
     created_at: string;
 }
 
@@ -97,6 +109,7 @@ export interface Challenge {
     title: string;
     challenge_description: string;
     business_impact: string;
+    status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'UNABLE_TO_COMPLETE' | 'WAIVED';
     example: string;
     categories?: ChallengeCategory[];
     outcomes?: ChallengeOutcome[];
@@ -129,18 +142,19 @@ export interface WorkingSession {
     notes?: string;
     created_by: string;
     created_at: string;
+    session_activities?: SessionActivity[];
 }
 
 export interface SessionActivity {
-    id: string;
-    session_id: string;
-    decision_criteria_activity_id: string; // Links to specific DC activity
-    status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETE';
-    notes?: string;
-    created_at: string;
+    id?: string;
+    decision_criteria_activity_id?: string;
+    activity?: string;
+    status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED';
+    display_order: number;
+    notes: string;
 }
 
-// Team Members
+// Base team member interface (from team_members table)
 export interface TeamMember {
     id: string;
     name: string;
@@ -150,10 +164,25 @@ export interface TeamMember {
     created_at: string;
 }
 
+// Junction table fields (from pov_team_members table)
 export interface POVTeamMember {
+    id: string;
     pov_id: string;
     team_member_id: string;
+    name?: string;  // Optional override
+    email?: string;  // Optional override
+    role?: string;  // Optional override
+    organization?: 'LM' | 'CUSTOMER' | 'PARTNER';  // Optional override
+    status: 'ACTIVE' | 'INACTIVE';
     created_at: string;
+    updated_at: string;
+    created_by: string;
+    updated_by: string;
+}
+
+// Combined interface for team member with POV-specific data
+export interface POVTeamMemberWithDetails extends POVTeamMember {
+    team_member: TeamMember;  // Fall back to these values if no override
 }
 
 // Device Scope
@@ -171,6 +200,48 @@ export interface DeviceScope {
     };
     priority: 'HIGH' | 'MEDIUM' | 'LOW' ;
     notes?: string;
+    status: 'NOT_ONBOARDED' | 'IN_PROGRESS' | 'ONBOARDED' | 'SKIPPED' | 'WAIVED';
     created_at: string;
     created_by: string;
+}
+
+export type ActivityType = 'CRITERIA' | 'SESSION' | 'CHALLENGE' | 'TEAM' | 'STATUS' | 'DOCUMENT' | 'COMMENT';
+
+export interface POVActivity {
+    id: string;
+    pov_id: string;
+    type: ActivityType;
+    title: string;
+    description: string;
+    created_at: string;
+    reference_id?: string;  // ID of the related item (criteria, session, etc)
+    created_by: string;
+    created_by_email: string;
+}
+
+export interface POVDocument {
+    id: string;
+    pov_id: string;
+    name: string;
+    description?: string;
+    storage_path: string;  // Path in storage bucket
+    file_type: string;
+    file_size: number;
+    bucket_id: string;
+    created_at: string;
+    created_by: string;
+    created_by_email: string;
+    updated_at: string;
+}
+
+export interface POVComment {
+    id: string;
+    pov_id: string;
+    content: string;
+    created_at: string;
+    created_by: string;
+    created_by_email: string;
+    parent_id?: string;
+    updated_at: string;
+    replies?: POVComment[];
 }

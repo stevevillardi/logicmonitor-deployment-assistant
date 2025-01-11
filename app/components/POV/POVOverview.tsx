@@ -2,12 +2,16 @@
 
 import { usePOV } from '@/app/contexts/POVContext';
 import { Card } from '@/components/ui/card';
-import { CalendarDays, Users, Building2, Laptop2, Clock, AlertCircle, Calendar, CheckSquare, Monitor, Target } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { CalendarDays, Users, Building2, Laptop2, Clock, AlertCircle, Calendar, CheckSquare, Monitor, Target, FileText, ListTodo } from 'lucide-react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { getEffectiveMemberDetails } from '@/app/lib/utils';
+import { parseISO } from 'date-fns';
+import { differenceInDays } from 'date-fns';
+import { differenceInMonths } from 'date-fns';
+import { calculateDuration, formatDate, getStatusBadgeColor, getInitials } from '@/app/lib/utils';
 
 interface TimelineEvent {
   date: Date;
@@ -15,15 +19,8 @@ interface TimelineEvent {
   description?: string;
   status: string;
   type: 'session';
+  activityCount?: number;
 }
-
-const formatDateOnly = (date: string) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
 
 function Timeline({ events }: { events: TimelineEvent[] }) {
   return (
@@ -45,20 +42,37 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                   <Calendar className="h-4 w-4" />
-                  <time>{formatDateOnly(event.date.toISOString())}</time>
+                  <time>{formatDate(event.date.toISOString())}</time>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium
-                  ${getStatusColor(event.status)}`}>
-                  {event.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  {(event.activityCount ?? 0) > 0 && (
+                    <div className="flex items-center gap-2 text-gray-500">
+                      <ListTodo className="h-4 w-4" />
+                      <span className="text-xs">
+                        {event.activityCount} {event.activityCount === 1 ? 'Activity' : 'Activities'}
+                      </span>
+                    </div>
+                  )}
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium
+                    ${getStatusBadgeColor(event.status)}`}>
+                    {event.status}
+                  </span>
+                </div>
               </div>
-              <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                {event.title}
-              </h3>
+
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                  {event.title}
+                </h3>
+              </div>
+
               {event.description && (
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                  {event.description}
-                </p>
+                <div className="mt-2 flex items-start gap-2">
+                  <FileText className="h-4 w-4 mt-0.5 text-gray-400" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {event.description}
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -68,50 +82,12 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
   );
 }
 
-function getStatusColor(status: string) {
-  switch (status.toUpperCase()) {
-    case 'COMPLETED':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400';
-    case 'SCHEDULED':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
-    case 'CANCELLED':
-      return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400';
-    default:
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400';
-  }
-}
-
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase();
-}
-
 export default function POVOverview() {
   const { state } = usePOV();
   const { pov } = state;
   const router = useRouter();
 
   if (!pov) return null;
-
-  const calculateDuration = () => {
-    if (!pov.start_date || !pov.end_date) return 'Dates not set';
-    
-    const start = new Date(pov.start_date);
-    const end = new Date(pov.end_date);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
-    
-    const weeks = Math.ceil(diffDays/7);
-    if (diffDays < 30) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'}`;
-    
-    const months = Math.ceil(diffDays/30);
-    return `${months} ${months === 1 ? 'month' : 'months'}`;
-  };
 
   const stats = [
     {
@@ -160,7 +136,8 @@ export default function POVOverview() {
         title: session.title,
         description: session.notes,
         status: session.status,
-        type: 'session' as const
+        type: 'session' as const,
+        activityCount: session.session_activities?.length || 0
       }))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   };
@@ -253,13 +230,13 @@ export default function POVOverview() {
                 <div className="flex items-center gap-2">
                   <CalendarDays className="h-4 w-4" />
                   <span>
-                    {pov.start_date ? formatDateOnly(pov.start_date) : 'Start: TBD'} 
+                    {pov.start_date ? formatDate(pov.start_date) : 'Start: TBD'} 
                     {' → '} 
-                    {pov.end_date ? formatDateOnly(pov.end_date) : 'End: TBD'}
+                    {pov.end_date ? formatDate(pov.end_date) : 'End: TBD'}
                   </span>
                 </div>
                 <div className="font-medium">
-                  Duration: {calculateDuration()}
+                  Duration: {calculateDuration(pov.start_date, pov.end_date)}
                 </div>
               </div>
             </div>
@@ -274,28 +251,28 @@ export default function POVOverview() {
                       <Avatar className="h-8 w-8 border-2 border-white dark:border-gray-800 shadow-sm hover:scale-105 transition-transform cursor-pointer">
                         <AvatarFallback 
                           className={`${
-                            member.organization === 'LM' 
+                            getEffectiveMemberDetails(member).organization === 'LM' 
                               ? 'bg-blue-100 text-blue-700' :
-                            member.organization === 'CUSTOMER' 
+                            getEffectiveMemberDetails(member).organization === 'CUSTOMER' 
                               ? 'bg-green-100 text-green-700' :
-                            member.organization === 'PARTNER'
+                            getEffectiveMemberDetails(member).organization === 'PARTNER'
                               ? 'bg-purple-100 text-purple-700' :
                             'bg-gray-100 text-gray-700'
                           } text-xs`}
                         >
-                          {getInitials(member.name)}
+                          {getInitials(getEffectiveMemberDetails(member).name)}
                         </AvatarFallback>
                       </Avatar>
                     </TooltipTrigger>
                     <TooltipContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg">
                       <div className="text-sm">
-                        <p className="font-medium">{member.name}</p>
-                        <p className="text-xs text-gray-500">{member.role}</p>
+                        <p className="font-medium">{getEffectiveMemberDetails(member).name}</p>
+                        <p className="text-xs text-gray-500">{getEffectiveMemberDetails(member).role}</p>
                         <p className="text-xs text-gray-500">
-                          {member.organization === 'LM' ? 'Lockheed Martin' :
-                           member.organization === 'CUSTOMER' ? 'Customer' :
-                           member.organization === 'PARTNER' ? 'Partner' :
-                           member.organization}
+                          {getEffectiveMemberDetails(member).organization === 'LM' ? 'LogicMonitor' :
+                           getEffectiveMemberDetails(member).organization === 'CUSTOMER' ? 'Customer' :
+                           getEffectiveMemberDetails(member).organization === 'PARTNER' ? 'Partner' :
+                           getEffectiveMemberDetails(member).organization}
                         </p>
                       </div>
                     </TooltipContent>
@@ -393,7 +370,7 @@ export default function POVOverview() {
 
         <Card 
           className="p-6 cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-          onClick={() => navigateToTab('business-services')}
+          onClick={() => navigateToTab('key-business-services')}
         >
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
             Key Business Services
