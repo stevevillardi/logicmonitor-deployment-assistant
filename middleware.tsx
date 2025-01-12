@@ -88,7 +88,7 @@ export async function middleware(request: NextRequest) {
             .from('pov_team_members')
             .select('id')
             .eq('pov_id', povId)
-            .eq('team_member_id', user.id)
+            .eq('email', user.email)
             .single();
 
         if (error || !teamMember) {
