@@ -1,3 +1,4 @@
+import { devLog } from '@/app/components/Shared/utils/debug';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -44,7 +45,7 @@ async function handleRequest(request: NextRequest, pathSegments: string[]) {
     const queryString = searchParams.toString();
     const url = `https://${company}.logicmonitor.com/santaba/rest/${path}${queryString ? `?${queryString}` : ''}`;
 
-    console.log('Proxying request to:', url);
+    devLog('Proxying request to:', url);
 
     const response = await fetch(url, {
       method: request.method,

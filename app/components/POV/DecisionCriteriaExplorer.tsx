@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Plus, Edit2, Layout } from 'lucide-react';
+import { Search, Filter, Plus, Edit2, Layout, Target, CheckCircle2, ListChecks, Tags, Lightbulb } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -205,12 +205,13 @@ const DecisionCriteriaExplorer = ({ parentLoading, onLoadingComplete }: Decision
                                 className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
                             >
                                 <div className="flex flex-col gap-3">
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            {item.title}
-                                        </h3>
-                                        <div className="flex gap-2">
-                                            <div className="flex flex-wrap gap-2">
+                                    <div className="flex items-center gap-3">
+                                        <Target className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                        <div>
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                {item.title}
+                                            </h3>
+                                            <div className="flex flex-wrap gap-2 mt-1">
                                                 {item.decision_criteria_categories?.map((cc: { category: string }, idx) => (
                                                     <span 
                                                         key={idx}
@@ -222,35 +223,50 @@ const DecisionCriteriaExplorer = ({ parentLoading, onLoadingComplete }: Decision
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div className="space-y-2">
-                                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            Use Case
-                                        </h4>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            {item.use_case}
-                                        </p>
+
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-5 flex-shrink-0">
+                                            <CheckCircle2 className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                        </div>
+                                        <div>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Success Criteria
+                                            </span>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                {item.success_criteria}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            Success Criteria
-                                        </h4>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            {item.success_criteria}
-                                        </p>
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-5 flex-shrink-0">
+                                            <Lightbulb className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                        </div>
+                                        <div>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Use Case
+                                            </span>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                {item.use_case}
+                                            </p>
+                                        </div>
                                     </div>
 
                                     {item.decision_criteria_activities?.length > 0 && (
-                                        <div className="space-y-2">
-                                            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                Portal Activities
-                                            </h4>
-                                            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
-                                                {item.decision_criteria_activities.map((activityItem) => (
-                                                    <li key={activityItem.id}>{activityItem.activity}</li>
-                                                ))}
-                                            </ul>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-5 flex-shrink-0">
+                                                <ListChecks className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Activities
+                                                </span>
+                                                <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    {item.decision_criteria_activities.map((activity) => (
+                                                        <li key={activity.id}>{activity.activity}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

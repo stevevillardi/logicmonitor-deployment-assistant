@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { VoyageAIClient } from 'voyageai';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/app/lib/supabase/server';
+import { devLog } from '@/app/components/Shared/utils/debug';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -36,8 +37,8 @@ export async function POST(request: Request) {
 
   try {
     const { query, history } = await request.json();
-    console.log('📝 Received query:', query);
-    console.log('📜 Conversation history:', history);
+    devLog('📝 Received query:', query);
+    devLog('📜 Conversation history:', history);
 
     if (!query) {
       return NextResponse.json(
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     // Get embedding using Voyage AI
-    console.log('🚀 Getting embedding from Voyage AI...');
+    devLog('🚀 Getting embedding from Voyage AI...');
     let queryEmbedding: number[] = [];
 
     try {
@@ -62,8 +63,8 @@ export async function POST(request: Request) {
       const embedding = embeddingResponse.data?.[0]?.embedding;
       if (!embedding) throw new Error('Failed to generate embedding');
       queryEmbedding = embedding;
-      console.log('✅ Embedding received:', embeddingResponse);
-      console.log('📊 Embedding formatted, length:', queryEmbedding?.length);
+      devLog('✅ Embedding received:', embeddingResponse);
+      devLog('📊 Embedding formatted, length:', queryEmbedding?.length);
     } catch (error) {
       console.error('❌ Voyage API call failed:', error);
       return NextResponse.json(
@@ -73,8 +74,8 @@ export async function POST(request: Request) {
     }
 
     // Query Supabase for similar documents
-    console.log('🔍 Querying Supabase for similar documents...');
-    console.log('🔍 Query params:', {
+    devLog('🔍 Querying Supabase for similar documents...');
+    devLog('🔍 Query params:', {
       embeddingLength: queryEmbedding.length,
       threshold: 0.3,
       count: 5
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
     }
 
     // Debug logging
-    console.log('📊 Query results:', {
+    devLog('📊 Query results:', {
       totalFound: documents?.length || 0,
       topSimilarities: documents?.slice(0, 3).map((d: DocumentMatch) => ({
         similarity: d.similarity,
@@ -128,7 +129,7 @@ Content: ${doc.content}
       .join('\n\n');
 
     // Generate response using Claude
-    console.log('🤖 Generating response with Claude...');
+    devLog('🤖 Generating response with Claude...');
     const response = await anthropic.messages.create({
       model: "claude-3-sonnet-20240229",
       max_tokens: 1024,
@@ -215,14 +216,14 @@ Please provide a clear and well-formatted answer based on the documentation cont
       }],
       temperature: 0.7,
     });
-    console.log('✨ Claude response received');
+    devLog('✨ Claude response received');
 
     // Add a raw count query
     const { data: rowCount } = await supabase
       .from('lm-pages')
       .select('id', { count: 'exact', head: true });
 
-    console.log('📚 Total rows in database:', rowCount);
+    devLog('📚 Total rows in database:', rowCount);
 
     return NextResponse.json({
       answer: response.content[0].type === 'text' ? response.content[0].text : '',

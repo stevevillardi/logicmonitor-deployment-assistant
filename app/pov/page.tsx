@@ -7,7 +7,7 @@ export default function POVPage() {
   return (
     <ProtectedRoute
       requireAuth={true}
-      requiredPermission={{ action: 'read', resource: 'pov' }}
+      requiredPermission={{ action: 'view', resource: 'pov' }}
     >
       <div className="min-h-screen bg-[#040F4B] flex flex-col">
         <main className="flex-grow py-4 sm:p-8">

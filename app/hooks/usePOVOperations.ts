@@ -657,6 +657,16 @@ export function usePOVOperations() {
                 return oldActivity && oldActivity.status !== newActivity.status;
             });
 
+            // If there's a changed activity, update the pov_decision_criteria_activities table
+            if (changedActivity?.decision_criteria_activity_id) {
+                const { error: dcActivityError } = await supabaseBrowser
+                    .from('pov_decision_criteria_activities')
+                    .update({ status: changedActivity.status })
+                    .eq('id', changedActivity.decision_criteria_activity_id);
+
+                if (dcActivityError) throw dcActivityError;
+            }
+
             // Delete existing activities for this session
             await supabaseBrowser
                 .from('pov_session_activities')
@@ -760,64 +770,67 @@ export function usePOVOperations() {
   };
 
   const fetchPOV = async (povId: string) => {
-    // First fetch the POV with all relations except activities
-    const { data: pov, error } = await supabaseBrowser
-      .from('pov')
-      .select(`
-        *,
-        challenges:pov_challenges(
-          *,
-          categories:pov_challenge_categories(*),
-          outcomes:pov_challenge_outcomes(*)
-        ),
-        key_business_services:pov_key_business_services(*),
-        team_members:pov_team_members(*,
-          team_member:team_members(*)
-        ),
-        device_scopes:pov_device_scopes(*),
-        working_sessions:pov_working_sessions(
-          *,
-          session_activities:pov_session_activities(
-            id,
-            decision_criteria_activity_id,
-            activity,
-            status,
-            notes,
-            display_order
-          )
-        ),
-        decision_criteria:pov_decision_criteria(
-          *,
-          categories:pov_decision_criteria_categories(*),
-          activities:pov_decision_criteria_activities(*)
-        )
-      `)
-      .eq('id', povId)
-      .single();
+    try {
+      if (state.pov?.id === povId) {
+        return state.pov;
+      }
 
-    if (error) {
-      console.error('Error fetching POV:', error);
+      const { data: pov, error } = await supabaseBrowser
+        .from('pov')
+        .select(`
+          *,
+          challenges:pov_challenges(
+            *,
+            categories:pov_challenge_categories(*),
+            outcomes:pov_challenge_outcomes(*)
+          ),
+          key_business_services:pov_key_business_services(*),
+          team_members:pov_team_members(*,
+            team_member:team_members(*)
+          ),
+          device_scopes:pov_device_scopes(*),
+          working_sessions:pov_working_sessions(
+            *,
+            session_activities:pov_session_activities(*)
+          ),
+          decision_criteria:pov_decision_criteria(
+            *,
+            categories:pov_decision_criteria_categories(*),
+            activities:pov_decision_criteria_activities(*)
+          ),
+          comments:pov_comments(*),
+          documents:pov_documents(*)
+        `)
+        .eq('id', povId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching POV:', error);
+        return null;
+      }
+
+      // Then fetch activities separately
+      const { data: activities } = await supabaseBrowser
+        .from('pov_activities')
+        .select('*')
+        .eq('pov_id', povId)
+        .order('created_at', { ascending: false });
+
+      // Combine the data
+      const povWithActivities = {
+        ...pov,
+        activities: activities || []
+      };
+
+      if (povWithActivities) {
+        dispatch({ type: 'SET_POV', payload: povWithActivities });
+      }
+
+      return povWithActivities;
+    } catch (error) {
+      console.error('Error in fetchPOV:', error);
       return null;
     }
-
-    // Then fetch activities separately
-    const { data: activities } = await supabaseBrowser
-      .from('pov_activities')
-      .select('*')
-      .eq('pov_id', povId)
-      .order('created_at', { ascending: false });
-
-    // Combine the data
-    const povWithActivities = {
-      ...pov,
-      activities: activities || []
-    };
-
-    if (povWithActivities) {
-      dispatch({ type: 'SET_POV', payload: povWithActivities });
-    }
-
-    return povWithActivities;
   };
 
   const deleteChallenge = async (challengeId: string) => {
@@ -1185,39 +1198,61 @@ export function usePOVOperations() {
     const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
     if (userError || !user) throw new Error('Unauthorized');
 
-    // Generate unique filename
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `${state.pov.id}/${fileName}`;
+    try {
+        devLog('Uploading document:', { fileName: file.name, description });
 
-    // Upload file to storage
-    const { error: uploadError } = await supabaseBrowser
-        .storage
-        .from('pov-documents')
-        .upload(filePath, file);
+        // Generate unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${uuidv4()}.${fileExt}`;
+        const filePath = `${state.pov.id}/${fileName}`;
 
-    if (uploadError) throw uploadError;
+        // Upload file to storage
+        const { error: uploadError } = await supabaseBrowser
+            .storage
+            .from('pov-documents')
+            .upload(filePath, file);
 
-    // Create document record
-    const { data: document, error: dbError } = await supabaseBrowser
-        .from('pov_documents')
-        .insert({
-            pov_id: state.pov.id,
-            name: file.name,
-            description,
-            storage_path: filePath,
-            file_type: file.type,
-            file_size: file.size,
-            bucket_id: 'pov-documents',
-            created_by: user.id,
-            created_by_email: user.email
-        })
-        .select()
-        .single();
+        if (uploadError) {
+            devLog('Error uploading to storage:', uploadError);
+            throw uploadError;
+        }
 
-    if (dbError) throw dbError;
+        // Create document record
+        const { data: document, error: dbError } = await supabaseBrowser
+            .from('pov_documents')
+            .insert({
+                pov_id: state.pov.id,
+                name: file.name,
+                description,
+                storage_path: filePath,
+                file_type: file.type,
+                file_size: file.size,
+                bucket_id: 'pov-documents',
+                created_by: user.id,
+                created_by_email: user.email
+            })
+            .select('*')  // Make sure we get all fields
+            .single();
 
-    if (document) {
+        if (dbError) {
+            devLog('Error creating document record:', dbError);
+            throw dbError;
+        }
+
+        if (!document) {
+            throw new Error('Failed to create document record');
+        }
+
+        devLog('Document created:', document);
+
+        // Update local state
+        dispatch({ 
+            type: 'ADD_DOCUMENT', 
+            payload: document 
+        });
+
+        devLog('State after document addition:', state);
+
         // Create activity for document upload
         await addActivity(
             state.pov.id,
@@ -1227,58 +1262,90 @@ export function usePOVOperations() {
             document.id
         );
 
-        dispatch({ type: 'ADD_DOCUMENT', payload: document });
+        return document;
+    } catch (error) {
+        console.error('Error uploading document:', error);
+        throw error;
     }
-
-    return document;
   };
 
   const deleteDocument = async (documentId: string) => {
-    if (!state.pov) throw new Error('No active POV');
-    const doc = state.pov.documents?.find(d => d.id === documentId);
-    if (!doc) throw new Error('Document not found');
+    if (!state.pov?.id) throw new Error('No active POV');
 
-    // Delete from storage
-    const { error: storageError } = await supabaseBrowser
-        .storage
-        .from(doc.bucket_id)
-        .remove([doc.storage_path]);
+    try {
+        devLog('Deleting document:', { documentId });
 
-    if (storageError) throw storageError;
+        const doc = state.pov.documents?.find(d => d.id === documentId);
+        if (!doc) throw new Error('Document not found');
 
-    // Delete from database
-    const { error: dbError } = await supabaseBrowser
-        .from('pov_documents')
-        .delete()
-        .eq('id', doc.id);
+        // Delete from storage
+        const { error: storageError } = await supabaseBrowser
+            .storage
+            .from(doc.bucket_id)
+            .remove([doc.storage_path]);
 
-    if (dbError) throw dbError;
+        if (storageError) {
+            devLog('Error deleting from storage:', storageError);
+            throw storageError;
+        }
 
-    // Create activity for document deletion
-    await addActivity(
-        state.pov.id,
-        'DOCUMENT',
-        'Document Deleted',
-        `Deleted document: ${doc.name}`,
-        doc.id
-    );
+        // Delete from database
+        const { error: dbError } = await supabaseBrowser
+            .from('pov_documents')
+            .delete()
+            .eq('id', doc.id);
 
-    dispatch({ type: 'DELETE_DOCUMENT', payload: documentId });
+        if (dbError) {
+            devLog('Error deleting document record:', dbError);
+            throw dbError;
+        }
+
+        // Update local state
+        dispatch({ 
+            type: 'DELETE_DOCUMENT', 
+            payload: documentId 
+        });
+
+        devLog('State after document deletion:', state);
+
+        // Create activity for document deletion
+        await addActivity(
+            state.pov.id,
+            'DOCUMENT',
+            'Document Deleted',
+            `Deleted document: ${doc.name}`,
+            doc.id
+        );
+    } catch (error) {
+        console.error('Error deleting document:', error);
+        throw error;
+    }
   };
 
   const downloadDocument = async (documentId: string) => {
-    if (!state.pov) throw new Error('No active POV');
-    const doc = state.pov.documents?.find(d => d.id === documentId);
-    if (!doc) throw new Error('Document not found');
+    if (!state.pov?.id) throw new Error('No active POV');
 
-    const { data, error } = await supabaseBrowser
-        .storage
-        .from(doc.bucket_id)
-        .download(doc.storage_path);
+    try {
+        devLog('Downloading document:', { documentId });
 
-    if (error) throw error;
+        const doc = state.pov.documents?.find(d => d.id === documentId);
+        if (!doc) throw new Error('Document not found');
 
-    return { data, document: doc };
+        const { data, error } = await supabaseBrowser
+            .storage
+            .from(doc.bucket_id)
+            .download(doc.storage_path);
+
+        if (error) {
+            devLog('Error downloading document:', error);
+            throw error;
+        }
+
+        return { data, document: doc };
+    } catch (error) {
+        console.error('Error downloading document:', error);
+        throw error;
+    }
   };
 
   const addComment = async (content: string) => {
@@ -1287,83 +1354,148 @@ export function usePOVOperations() {
     const { data: { user }, error: userError } = await supabaseBrowser.auth.getUser();
     if (userError || !user) throw new Error('Unauthorized');
 
-    const { data: comment, error } = await supabaseBrowser
+    try {
+      devLog('Adding comment:', { content, povId: state.pov.id, user });
+
+      const { data: comment, error } = await supabaseBrowser
         .from('pov_comments')
         .insert({
-            pov_id: state.pov.id,
-            content,
-            created_by: user.id,
-            created_by_email: user.email
+          pov_id: state.pov.id,
+          content,
+          created_by: user.id,
+          created_by_email: user.email
         })
-        .select()
+        .select('*')  // Make sure we're selecting all fields
         .single();
 
-    if (error) throw error;
-    if (comment) {
-        dispatch({ type: 'ADD_COMMENT', payload: comment });
-        
-        // Create activity for new comment
-        await addActivity(
-            state.pov.id,
-            'COMMENT',
-            'Comment Added',
-            `Added a new comment`,
-            comment.id
-        );
+      if (error) {
+        devLog('Error adding comment:', error);
+        throw error;
+      }
+      
+      if (!comment) {
+        devLog('No comment returned from insert');
+        throw new Error('Failed to create comment');
+      }
+
+      devLog('Comment created:', comment);
+
+      // Update local state
+      dispatch({ 
+        type: 'ADD_COMMENT', 
+        payload: comment 
+      });
+
+      devLog('State after dispatch:', state);
+
+      // Add activity
+      await addActivity(
+        state.pov.id,
+        'COMMENT',
+        'Comment Added',
+        `Added a new comment`,
+        comment.id
+      );
+
+      return comment;
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw error;
     }
-    return comment;
   };
 
   const updateComment = async (commentId: string, content: string) => {
     if (!state.pov?.id) throw new Error('No active POV');
 
-    const { data: comment, error } = await supabaseBrowser
+    try {
+      devLog('Updating comment:', { commentId, content });
+
+      const { data: comment, error } = await supabaseBrowser
         .from('pov_comments')
-        .update({ content, updated_at: new Date().toISOString() })
+        .update({ 
+          content, 
+          updated_at: new Date().toISOString() 
+        })
         .eq('id', commentId)
-        .select()
+        .select('*')  // Make sure we get all fields back
         .single();
 
-    if (error) throw error;
-    if (comment) {
-        dispatch({ type: 'UPDATE_COMMENT', payload: comment });
-        
-        // Create activity for comment update
-        await addActivity(
-            state.pov.id,
-            'COMMENT',
-            'Comment Updated',
-            `Updated a comment`,
-            comment.id
-        );
+      if (error) {
+        devLog('Error updating comment:', error);
+        throw error;
+      }
+
+      if (!comment) {
+        devLog('No comment returned from update');
+        throw new Error('Failed to update comment');
+      }
+
+      devLog('Comment updated:', comment);
+
+      // Update local state
+      dispatch({ 
+        type: 'UPDATE_COMMENT', 
+        payload: comment 
+      });
+
+      devLog('State after update:', state);
+
+      // Add activity for comment update
+      await addActivity(
+        state.pov.id,
+        'COMMENT',
+        'Comment Updated',
+        `Updated a comment`,
+        comment.id
+      );
+
+      return comment;
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      throw error;
     }
-    return comment;
   };
 
   const deleteComment = async (commentId: string) => {
     if (!state.pov?.id) throw new Error('No active POV');
-    
-    // Get comment before deletion for activity log
-    const comment = state.pov.comments?.find(c => c.id === commentId);
-    
-    const { error } = await supabaseBrowser
+
+    try {
+      devLog('Deleting comment:', { commentId });
+      
+      // Get comment before deletion for activity log
+      const comment = state.pov.comments?.find(c => c.id === commentId);
+      
+      const { error } = await supabaseBrowser
         .from('pov_comments')
         .delete()
         .eq('id', commentId);
 
-    if (error) throw error;
-    
-    dispatch({ type: 'DELETE_COMMENT', payload: commentId });
-    
-    // Create activity for comment deletion
-    if (comment) {
+      if (error) {
+        devLog('Error deleting comment:', error);
+        throw error;
+      }
+
+      // Update local state
+      dispatch({ 
+        type: 'DELETE_COMMENT', 
+        payload: commentId 
+      });
+
+      devLog('State after delete:', state);
+      
+      // Create activity for comment deletion
+      if (comment) {
         await addActivity(
-            state.pov.id,
-            'COMMENT',
-            'Comment Deleted',
-            `Deleted a comment`,
-            commentId
+          state.pov.id,
+          'COMMENT',
+          'Comment Deleted',
+          `Deleted a comment`,
+          commentId
         );
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      throw error;
     }
   };
 

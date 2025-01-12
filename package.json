@@ -39,7 +39,7 @@
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.0",
+    "cmdk": "^1.0.4",
     "date-fns": "^4.1.0",
     "google-auth-library": "^9.15.0",
     "lucide-react": "^0.460.0",

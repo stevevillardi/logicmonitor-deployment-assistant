@@ -79,7 +79,7 @@ export default function POVSidebar({ isNewPOV }: POVSidebarProps) {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-64">
       <nav className="flex flex-col flex-1 px-2 py-4">
         <div className="p-4">
           <ul className="space-y-2">
@@ -131,7 +131,9 @@ export default function POVSidebar({ isNewPOV }: POVSidebarProps) {
             })}
           </ul>
         </div>
-        <SidebarProfile />
+        <div className="mt-auto">
+          <SidebarProfile />
+        </div>
       </nav>
     </div>
   );

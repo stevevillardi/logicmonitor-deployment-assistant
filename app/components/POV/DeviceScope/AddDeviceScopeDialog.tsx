@@ -8,14 +8,30 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { usePOV } from '@/app/contexts/POVContext';
 import { DeviceScope } from '@/app/types/pov';
-import { Monitor, Tag, Hash, FileText } from 'lucide-react';
+import { Monitor, Tag, Hash, FileText, Server } from 'lucide-react';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+import { Check, ChevronsUpDown } from "lucide-react";
+import { fetchSystemCredentials } from '@/app/lib/device-utils';
+import { cn } from '@/lib/utils';
 
 interface AddDeviceScopeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   editingDevice?: DeviceScope | null;
   onClose?: () => void;
+}
+
+interface SystemCredential {
+    name: string;
+    description: string;
+    category: string;
 }
 
 export default function AddDeviceScopeDialog({ 
@@ -37,6 +53,9 @@ export default function AddDeviceScopeDialog({
     specifications: {},
   });
   const initialFocusRef = useRef<HTMLInputElement>(null);
+  const [systemCredentials, setSystemCredentials] = useState<SystemCredential[]>([]);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const resetState = () => {
     setFormData({
@@ -66,6 +85,24 @@ export default function AddDeviceScopeDialog({
       }
     };
   }, [open]);
+
+  useEffect(() => {
+    async function loadCredentials() {
+        try {
+            setIsLoading(true);
+            const credentials = await fetchSystemCredentials();
+            if (Array.isArray(credentials)) {
+                setSystemCredentials(credentials);
+            }
+        } catch (error) {
+            console.error('Error loading credentials:', error);
+            setSystemCredentials([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    loadCredentials();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +141,89 @@ export default function AddDeviceScopeDialog({
     onOpenChange(open);
   };
 
+  const quickAddSection = (
+    <div className="mb-4">
+        <div className="flex items-center gap-2 mb-2">
+            <Tag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <Label className="text-gray-900 dark:text-gray-100">Quick Add from Template</Label>
+        </div>
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <PopoverTrigger asChild>
+                <Button 
+                    variant="outline" 
+                    role="combobox"
+                    aria-expanded={popoverOpen}
+                    className="w-full justify-between bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-left font-normal"
+                >
+                    {formData.device_type || "Select device type..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent 
+                className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" 
+                align="start"
+                sideOffset={5}
+            >
+                <Command className="border-none h-full">
+                    <CommandInput 
+                        placeholder="Search device types..." 
+                        className="border-none focus:ring-0 dark:bg-gray-900"
+                    />
+                    <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                        No device type found.
+                    </CommandEmpty>
+                    <CommandGroup className="overflow-y-auto max-h-[200px] scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+                        {isLoading ? (
+                            <CommandItem disabled className="text-sm text-gray-500 dark:text-gray-400">
+                                Loading...
+                            </CommandItem>
+                        ) : systemCredentials.length === 0 ? (
+                            <CommandItem disabled className="text-sm text-gray-500 dark:text-gray-400">
+                                No device types found
+                            </CommandItem>
+                        ) : (
+                            systemCredentials.map((cred) => (
+                                <CommandItem
+                                    key={cred.name}
+                                    value={cred.name}
+                                    onSelect={() => {
+                                        setFormData({
+                                            ...formData,
+                                            device_type: cred.name,
+                                            category: cred.category
+                                        });
+                                        setPopoverOpen(false);
+                                    }}
+                                    className="cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                                >
+                                    <div className="flex flex-col gap-1 w-full">
+                                        <div className="flex items-center gap-2">
+                                            <Check
+                                                className={cn(
+                                                    "h-4 w-4",
+                                                    formData.device_type === cred.name 
+                                                        ? "opacity-100 text-blue-600 dark:text-blue-400" 
+                                                        : "opacity-0"
+                                                )}
+                                            />
+                                            <Monitor className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                            <span className="font-medium">{cred.name}</span>
+                                        </div>
+                                        <div className="pl-10 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                                            <Server className="h-3 w-3 shrink-0" />
+                                            <span>{cred.category}</span>
+                                        </div>
+                                    </div>
+                                </CommandItem>
+                            ))
+                        )}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    </div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
@@ -115,6 +235,8 @@ export default function AddDeviceScopeDialog({
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
+            {quickAddSection}
+
             <div className="grid gap-4">
               {/* Device Type */}
               <div>

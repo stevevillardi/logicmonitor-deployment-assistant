@@ -148,7 +148,7 @@ export const Profile = memo(() => {
                         <Layout className="mr-2 h-4 w-4" />
                         <span>Manage Dashboards</span>
                     </DropdownMenuItem>
-                    {hasPermission({ action: 'read', resource: 'users' }) && (
+                    {hasPermission({ action: 'manage', resource: 'users' }) && (
                         <DropdownMenuItem 
                             onSelect={(e) => {
                                 e.preventDefault();

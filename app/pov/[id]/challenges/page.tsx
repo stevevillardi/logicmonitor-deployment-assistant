@@ -6,7 +6,7 @@ export default function ChallengesPage() {
   return (
     <ProtectedRoute
       requireAuth
-      requiredPermission={{ action: 'read', resource: 'pov' }}
+      requiredPermission={{ action: 'view', resource: 'pov' }}
     >
       <POVProvider>
         <POVLayout />

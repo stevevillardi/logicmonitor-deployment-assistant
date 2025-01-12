@@ -2,8 +2,10 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const Unauthorized = () => {
+    const router = useRouter();
     return (
         <div className="min-h-screen bg-[#040F4B] w-full flex items-center justify-center py-4 sm:p-8 antialiased">
             <Card className="w-full max-w-[600px] bg-white dark:bg-gray-900 shadow-lg rounded-2xl border border-blue-200 dark:border-blue-800 antialiased overflow-hidden">
@@ -23,7 +25,7 @@ const Unauthorized = () => {
                         <div className="flex items-center gap-4">
                             <Button
                                 onClick={() => {
-                                    window.location.href = '/home';
+                                    router.push('/home')
                                 }}
                                 className="bg-[#040F4B] hover:bg-[#0A1B6F] dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors"
                             >

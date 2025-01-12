@@ -8,8 +8,17 @@ import { Label } from '@/components/ui/label';
 import { POVTeamMember, POVTeamMemberWithDetails, TeamMember } from '@/app/types/pov';
 import { usePOV } from '@/app/contexts/POVContext';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
-import { User, Plus, Briefcase, Mail, Building2 } from "lucide-react";
+import { User, Plus, Briefcase, Mail, Building2, AlertCircle } from "lucide-react";
 import { supabaseBrowser } from '@/app/lib/supabase/client';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface AddTeamMemberDialogProps {
   open: boolean;
@@ -73,10 +82,16 @@ export default function AddTeamMemberDialog({
     }
   }, [editingMember, open]);
 
-  // Filter out existing team members from the dropdown options
-  const availableMembers = existingMembers.filter(member => 
-    !pov?.team_members?.some(tm => tm.id === member.id)
-  );
+  const memberStatuses = existingMembers.map(member => {
+    const isInTeam = pov?.team_members?.some(tm => {
+      return (tm.team_member?.id || tm.id) === member.id;
+    });
+
+    return {
+      ...member,
+      isInTeam
+    };
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,22 +156,92 @@ export default function AddTeamMemberDialog({
                   <div>
                     <Label className="text-gray-900 dark:text-gray-100">Select existing member or create new</Label>
                     <div className="flex gap-2 mt-2">
-                      <select
-                        value={selectedMember?.id || ''}
-                        onChange={(e) => {
-                          const member = availableMembers.find(m => m.id === e.target.value);
-                          setSelectedMember(member || null);
-                          setIsCreatingNew(!member);
-                        }}
-                        className="flex-1 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-700"
-                      >
-                        <option value="">Select a team member...</option>
-                        {availableMembers.map((member) => (
-                          <option key={member.id} value={member.id}>
-                            {member.name} - {member.role}
-                          </option>
-                        ))}
-                      </select>
+                      <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openCombobox}
+                            className="w-full justify-between bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-left font-normal"
+                          >
+                            {selectedMember 
+                              ? `${selectedMember.name} - ${selectedMember.role}`
+                              : "Select a team member..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent 
+                          className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" 
+                          align="start"
+                          sideOffset={5}
+                        >
+                          <Command className="border-none">
+                            <CommandInput 
+                              placeholder="Search members..." 
+                              className="border-none focus:ring-0 dark:bg-gray-900"
+                            />
+                            <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                              No team members found.
+                            </CommandEmpty>
+                            <CommandGroup className="overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+                              {memberStatuses.map((member) => (
+                                <CommandItem
+                                  key={member.id}
+                                  value={member.id}
+                                  onSelect={() => {
+                                    if (!member.isInTeam) {
+                                      setSelectedMember(member);
+                                      setIsCreatingNew(false);
+                                      setOpenCombobox(false);
+                                    }
+                                  }}
+                                  disabled={member.isInTeam}
+                                  className={cn(
+                                    "cursor-pointer",
+                                    "text-gray-700 dark:text-gray-200",
+                                    !member.isInTeam && "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+                                    "data-[selected=true]:bg-gray-50 dark:data-[selected=true]:bg-gray-800/50",
+                                    "data-[selected=true]:text-gray-900 dark:data-[selected=true]:text-gray-100",
+                                    member.isInTeam && "opacity-50 cursor-not-allowed",
+                                    "transition-colors"
+                                  )}
+                                >
+                                  <div className="flex flex-col gap-1 w-full">
+                                    <div className="flex items-center gap-2">
+                                      {member.isInTeam ? (
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger>
+                                              <AlertCircle className="h-4 w-4 text-amber-500" />
+                                            </TooltipTrigger>
+                                            <TooltipContent 
+                                              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                              side="right"
+                                            >
+                                              <p className="text-xs text-gray-700 dark:text-gray-300">
+                                                Already a team member
+                                              </p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      ) : selectedMember?.id === member.id ? (
+                                        <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                      ) : (
+                                        <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                      )}
+                                      <span className="font-medium">{member.name}</span>
+                                    </div>
+                                    <div className="pl-10 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                                      <Briefcase className="h-3 w-3 shrink-0" />
+                                      <span>{member.role}</span>
+                                    </div>
+                                  </div>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <Button
                         type="button"
                         variant="outline"

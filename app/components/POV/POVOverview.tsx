@@ -325,6 +325,7 @@ export default function POVOverview() {
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Categories</h4>
                 <div className="space-y-2">
                   {Array.from(new Set((pov.device_scopes || []).map(device => device.category)))
+                    .slice(0, 6)  // Show only first 6 categories
                     .map(category => {
                       const devicesInCategory = pov.device_scopes?.filter(d => d.category === category) || [];
                       const totalCount = devicesInCategory.reduce((sum, d) => sum + d.count, 0);
@@ -336,6 +337,12 @@ export default function POVOverview() {
                         </div>
                       );
                     })}
+                  {/* Add the "more" indicator if there are more than 6 categories */}
+                  {new Set(pov.device_scopes?.map(device => device.category)).size > 6 && (
+                    <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                      +{new Set(pov.device_scopes?.map(device => device.category)).size - 6} more categories
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -387,6 +394,11 @@ export default function POVOverview() {
                   </div>
                 </div>
               ))}
+              {pov.key_business_services.length > 3 && (
+                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                  +{pov.key_business_services.length - 3} more services
+                </div>
+              )}
             </div>
           ) : (
             <EmptyBusinessServicesSection />
@@ -420,6 +432,11 @@ export default function POVOverview() {
                   </span>
                 </div>
               ))}
+              {pov.challenges.length > 3 && (
+                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                  +{pov.challenges.length - 3} more challenges
+                </div>
+              )}
             </div>
           ) : (
             <EmptyChallengesSection />
@@ -455,6 +472,11 @@ export default function POVOverview() {
                   </span>
                 </div>
               ))}
+              {pov.decision_criteria.length > 3 && (
+                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                  +{pov.decision_criteria.length - 3} more criteria
+                </div>
+              )}
             </div>
           ) : (
             <EmptyCriteriaSection />

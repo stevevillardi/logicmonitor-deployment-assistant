@@ -10,6 +10,14 @@ import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Save } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabaseBrowser } from '@/app/lib/supabase/client';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Check, ChevronsUpDown, AlertCircle, Target } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const inputBaseStyles = "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400";
 const buttonBaseStyles = "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300";
@@ -36,6 +44,7 @@ export default function AddFromLibraryDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [libraryTemplates, setLibraryTemplates] = useState<LibraryTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
     const fetchLibraryTemplates = async () => {
@@ -110,25 +119,68 @@ export default function AddFromLibraryDialog({
           <div className="space-y-4">
             <div>
               <Label>Select Challenge</Label>
-              <Select
-                value={selectedTemplateId || ''}
-                onValueChange={setSelectedTemplateId}
-              >
-                <SelectTrigger className={inputBaseStyles}>
-                  <SelectValue placeholder="Select from library..." />
-                </SelectTrigger>
-                <SelectContent className={`${inputBaseStyles} border-0`}>
-                  {libraryTemplates.map((challenge) => (
-                    <SelectItem 
-                      key={challenge.id} 
-                      value={challenge.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                    >
-                      {challenge.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={popoverOpen}
+                    className="w-full justify-between bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-left font-normal"
+                  >
+                    {selectedTemplateId 
+                      ? libraryTemplates.find(t => t.id === selectedTemplateId)?.title 
+                      : "Select from library..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" 
+                  align="start"
+                  sideOffset={5}
+                >
+                  <Command className="border-none">
+                    <CommandInput 
+                      placeholder="Search challenges..." 
+                      className="border-none focus:ring-0 dark:bg-gray-900"
+                    />
+                    <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                      No challenges found.
+                    </CommandEmpty>
+                    <CommandGroup className="overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+                      {libraryTemplates.map((challenge) => (
+                        <CommandItem
+                          key={challenge.id}
+                          value={challenge.id}
+                          onSelect={() => {
+                            setSelectedTemplateId(challenge.id);
+                            setPopoverOpen(false);
+                          }}
+                          className="cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                        >
+                          <div className="flex flex-col gap-1 w-full">
+                            <div className="flex items-center gap-2">
+                              <Check
+                                className={cn(
+                                  "h-4 w-4",
+                                  selectedTemplateId === challenge.id 
+                                    ? "opacity-100 text-blue-600 dark:text-blue-400" 
+                                    : "opacity-0"
+                                )}
+                              />
+                              <AlertCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                              <span className="font-medium">{challenge.title}</span>
+                            </div>
+                            <div className="pl-10 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                              <Target className="h-3 w-3 shrink-0" />
+                              <span>{challenge.challenge_description}</span>
+                            </div>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {selectedTemplateId && (

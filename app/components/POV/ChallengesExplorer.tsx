@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Plus, Edit2, Layout } from 'lucide-react';
+import { Search, Filter, Plus, Edit2, Layout, AlertCircle, MessageSquare, Target, LineChart, Tags } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -209,12 +209,13 @@ const ChallengesExplorer = ({ parentLoading, onLoadingComplete }: ChallengesExpl
                                 className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
                             >
                                 <div className="flex flex-col gap-3">
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            {item.title}
-                                        </h3>
-                                        <div className="flex gap-2">
-                                            <div className="flex flex-wrap gap-2">
+                                    <div className="flex items-center gap-3">
+                                        <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                        <div>
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                {item.title}
+                                            </h3>
+                                            <div className="flex flex-wrap gap-2 mt-1">
                                                 {item.challenge_categories?.map((cc: { category: string }, idx) => (
                                                     <span 
                                                         key={idx}
@@ -226,50 +227,55 @@ const ChallengesExplorer = ({ parentLoading, onLoadingComplete }: ChallengesExpl
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div className="space-y-4">
+
+                                    {/* Challenge Description */}
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-5 flex-shrink-0">
+                                            <MessageSquare className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                        </div>
                                         <div>
-                                            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 Challenge
-                                            </h4>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            </span>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                                 {item.challenge_description}
                                             </p>
                                         </div>
+                                    </div>
 
+                                    {/* Business Impact */}
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-5 flex-shrink-0">
+                                            <LineChart className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                        </div>
                                         <div>
-                                            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 Business Impact
-                                            </h4>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            </span>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                                 {item.business_impact}
                                             </p>
                                         </div>
+                                    </div>
 
-                                        {item.example && (
-                                            <div>
-                                                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                                                    Example
-                                                </h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                    {item.example}
-                                                </p>
+                                    {/* Outcomes */}
+                                    {item.challenge_outcomes?.length > 0 && (
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-5 flex-shrink-0">
+                                                <Target className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                             </div>
-                                        )}
-
-                                        {item.challenge_outcomes && item.challenge_outcomes.length > 0 && (
                                             <div>
-                                                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                                                    Desired Outcomes
-                                                </h4>
-                                                <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Outcomes
+                                                </span>
+                                                <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mt-1">
                                                     {item.challenge_outcomes.map((outcome) => (
                                                         <li key={outcome.id}>{outcome.outcome}</li>
                                                     ))}
                                                 </ul>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}

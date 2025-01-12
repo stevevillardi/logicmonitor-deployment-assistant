@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database, Users, Shield, Paintbrush, LibraryBig } from 'lucide-react';
+import { Info, GitBranch, History, Server, Network, Cloud, Box, Layout, Code, Play, ArrowRight, Bot, ChevronDown, ChevronUp, LogIn, Save, Database, Users, Shield, Paintbrush, LibraryBig, Target } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,72 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Version information
 const VERSIONS = [
+    {
+        version: "1.1.0",
+        date: "2024-01-12",
+        sections: [
+            {
+                title: "POV Management Suite (Beta)",
+                icon: <Target className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "New POV management interface for tracking customer proof of value engagements",
+                    "Decision criteria management with activity tracking",
+                    "Customer challenges tracking and resolution workflow",
+                    "Working sessions scheduling and activity management",
+                    "Team collaboration features with role-based access",
+                    "Device scope tracking with status management",
+                    "Timeline view of all POV activities",
+                    "Document management system for POV artifacts",
+                    "Comments and discussion threads for team collaboration"
+                ]
+            },
+            {
+                title: "Content Library Enhancements",
+                icon: <LibraryBig className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Expanded decision criteria library with categorization",
+                    "Enhanced challenges library with business impact tracking",
+                    "Improved content search and filtering capabilities",
+                    "Category-based organization for better content discovery",
+                    "Template system for quick POV setup"
+                ]
+            },
+            {
+                title: "Platform Architecture Updates",
+                icon: <Layout className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Redesigned platform architecture with POV management integration",
+                    "Enhanced data models for POV tracking",
+                    "Improved state management for complex workflows",
+                    "Real-time updates for collaborative features",
+                    "Optimized database queries for better performance"
+                ]
+            },
+            {
+                title: "Security & Access Control",
+                icon: <Shield className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "Enhanced RBAC system with POV-specific permissions",
+                    "Team-based access controls for POV content",
+                    "Secure document storage and sharing",
+                    "Audit logging for POV activities",
+                    "Improved authentication workflows"
+                ]
+            },
+            {
+                title: "UI/UX Improvements",
+                icon: <Paintbrush className="w-4 h-4 text-blue-600" />,
+                items: [
+                    "New dashboard for POV overview and progress tracking",
+                    "Interactive timeline visualization",
+                    "Enhanced mobile responsiveness across all features",
+                    "Improved dark mode support",
+                    "Consistent styling and component design",
+                    "Better navigation between POV sections"
+                ]
+            }
+        ]
+    },
     {
         version: "1.0.6",
         date: "2024-01-06",
@@ -349,7 +415,7 @@ const VERSIONS = [
 ];
 
 export const VersionInfo = () => {
-    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.0.6"]);
+    const [expandedVersions, setExpandedVersions] = useState<string[]>(["1.1.0"]);
 
     const toggleVersion = (version: string) => {
         setExpandedVersions(prev => 

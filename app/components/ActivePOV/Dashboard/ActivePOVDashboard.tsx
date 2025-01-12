@@ -38,6 +38,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
+import DashboardDecisionCriteriaList from '@/app/components/POV/DecisionCriteria/DashboardDecisionCriteriaList';
 
 const MAX_VISIBLE_SESSIONS = 3;
 
@@ -440,7 +441,7 @@ export default function ActivePOVDashboard() {
                                                 variant="ghost" 
                                                 size="sm"
                                                 className={cn(
-                                                    "text-xs font-medium",
+                                                    "text-xs font-medium dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-700 hover:bg-gray-100",
                                                     getStatusColor(device.status)
                                                 )}
                                             >
@@ -692,6 +693,29 @@ export default function ActivePOVDashboard() {
 
             {/* Challenges Section */}
             <ActivePOVChallenges />
+
+            {/* Decision Criteria Section */}
+            <Card className="p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                            Decision Criteria
+                        </h3>
+                    </div>
+                    <Link 
+                        href={`/active-pov/${pov.id}/criteria`}
+                        className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                    >
+                        View All
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
+                </div>
+
+                <DashboardDecisionCriteriaList 
+                    decisionCriteria={pov.decision_criteria || []}
+                />
+            </Card>
 
         </div>
     );

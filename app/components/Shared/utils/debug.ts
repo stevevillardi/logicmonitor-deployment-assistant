@@ -5,15 +5,15 @@ export const debug = {
   auth: (message: string, data?: any) => {
     if (DEBUG) {
       if (data) {
-        console.log(`[Auth] ${message}`, data);
+        devLog(`[Auth] ${message}`, data);
       } else {
-        console.log(`[Auth] ${message}`);
+        devLog(`[Auth] ${message}`);
       }
     }
   },
   error: (message: string, error: any) => {
     if (DEBUG) {
-      console.error(`[Error] ${message}:`, error);
+      devError(`[Error] ${message}:`, error);
     }
   }
 };

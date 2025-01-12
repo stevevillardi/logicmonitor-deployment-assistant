@@ -51,7 +51,6 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    // IMPORTANT: Get user immediately after creating the client
     const {
         data: { user },
     } = await supabase.auth.getUser()
@@ -69,16 +68,42 @@ export async function middleware(request: NextRequest) {
         redirectUrl.pathname = '/login'
         redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname)
         
-        // Create a new response for the redirect
         const redirectResponse = NextResponse.redirect(redirectUrl)
         
-        // Copy cookies individually since setAll isn't available
         supabaseResponse.cookies.getAll().forEach((cookie) => {
             const { name, value, ...options } = cookie
             redirectResponse.cookies.set({ name, value, ...options })
         })
         
         return redirectResponse
+    }
+
+    // Check POV access
+    const povIdMatch = request.nextUrl.pathname.match(/\/(active-pov|pov)\/([^\/]+)/);
+    if (povIdMatch && user) {
+        const povId = povIdMatch[2];
+
+        // Check if user is assigned to this POV
+        const { data: teamMember, error } = await supabase
+            .from('pov_team_members')
+            .select('id')
+            .eq('pov_id', povId)
+            .eq('team_member_id', user.id)
+            .single();
+
+        if (error || !teamMember) {
+            const redirectUrl = request.nextUrl.clone()
+            redirectUrl.pathname = '/unauthorized'
+            
+            const redirectResponse = NextResponse.redirect(redirectUrl)
+            
+            supabaseResponse.cookies.getAll().forEach((cookie) => {
+                const { name, value, ...options } = cookie
+                redirectResponse.cookies.set({ name, value, ...options })
+            })
+            
+            return redirectResponse
+        }
     }
 
     return supabaseResponse

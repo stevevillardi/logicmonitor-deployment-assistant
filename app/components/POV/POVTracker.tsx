@@ -24,7 +24,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { getEffectiveMemberDetails, getInitials, formatDate } from '@/app/lib/utils';
 
 const calculateSessionProgress = (pov: POV) => {
-    console.log('POV:', pov);
     const allActivities = pov.working_sessions?.flatMap(session => 
         session.session_activities || []
     ).filter(activity => activity.status) || [];

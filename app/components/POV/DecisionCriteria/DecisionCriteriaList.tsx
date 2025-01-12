@@ -7,6 +7,7 @@ import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from "react-hot-toast";
+import { getStatusBadgeColor } from '@/app/lib/utils';
 
 interface DecisionCriteriaListProps {
   decisionCriteria: POVDecisionCriteria[];
@@ -63,13 +64,7 @@ export default function DecisionCriteriaList({
                   </h4>
                   <Badge
                     variant="secondary"
-                    className={`mt-1 ${
-                      criteria.status === 'MET' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800'
-                        : criteria.status === 'NOT_MET'
-                        ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-800'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-                    }`}
+                    className={`mt-1 ${getStatusBadgeColor(criteria.status)}`}
                   >
                     {criteria.status}
                   </Badge>
@@ -136,15 +131,9 @@ export default function DecisionCriteriaList({
                           >
                             <Badge 
                               variant="secondary"
-                              className={`${
-                                activity.status === 'COMPLETE' 
-                                  ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800'
-                                  : activity.status === 'IN_PROGRESS'
-                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
-                              }`}
+                              className={getStatusBadgeColor(activity.status)}
                             >
-                              {activity.status}
+                              {activity.status.replace('_', ' ')}
                             </Badge>
                             <span className="text-sm text-gray-600 dark:text-gray-300">
                               {activity.activity}

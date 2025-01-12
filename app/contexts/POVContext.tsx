@@ -73,7 +73,15 @@ function povReducer(state: POVState, action: POVAction): POVState {
   switch (action.type) {
     // POV management
     case 'SET_POV':
-      return { ...state, pov: action.payload };
+      return {
+        ...state,
+        pov: action.payload ? {
+          ...action.payload,
+          comments: action.payload.comments || [],
+          documents: action.payload.documents || [],
+          activities: action.payload.activities || [],
+        } : null
+      };
     case 'SET_POVS':
       return { ...state, povs: action.payload };
     case 'DELETE_POV':
@@ -375,35 +383,37 @@ function povReducer(state: POVState, action: POVAction): POVState {
       };
 
     case 'ADD_COMMENT':
-      if (!state.pov) return state;
       return {
         ...state,
-        pov: {
+        pov: state.pov ? {
           ...state.pov,
-          comments: [...(state.pov.comments || []), action.payload]
-        }
+          comments: [
+            action.payload,
+            ...(state.pov.comments || [])
+          ]
+        } : null
       };
 
     case 'UPDATE_COMMENT':
-      if (!state.pov) return state;
       return {
         ...state,
-        pov: {
+        pov: state.pov ? {
           ...state.pov,
-          comments: state.pov.comments?.map(c => 
-            c.id === action.payload.id ? action.payload : c
+          comments: state.pov.comments?.map(comment => 
+            comment.id === action.payload.id ? action.payload : comment
           ) || []
-        }
+        } : null
       };
 
     case 'DELETE_COMMENT':
-      if (!state.pov) return state;
       return {
         ...state,
-        pov: {
+        pov: state.pov ? {
           ...state.pov,
-          comments: state.pov.comments?.filter(c => c.id !== action.payload) || []
-        }
+          comments: state.pov.comments?.filter(comment => 
+            comment.id !== action.payload
+          ) || []
+        } : null
       };
 
     case 'UPDATE_DEVICE_STATUS':

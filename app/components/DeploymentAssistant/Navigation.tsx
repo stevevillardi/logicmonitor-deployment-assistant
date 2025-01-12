@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine, Rocket, Home, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { usePermissions } from '@/app/hooks/usePermissions';
 
 type NavItem = {
     id: string;
@@ -64,7 +64,7 @@ export const Navigation = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const router = useRouter();
     const navRef = useRef<HTMLDivElement>(null);
-    const { hasPermission } = useAuth();
+    const { hasPermission } = usePermissions();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -135,7 +135,7 @@ export const Navigation = () => {
             },
         ];
 
-        if (hasPermission({ action: 'read', resource: 'pov' })) {
+        if (hasPermission({ action: 'view', resource: 'pov' })) {
             items.push({ 
                 id: 'pov', 
                 label: 'POV Management', 

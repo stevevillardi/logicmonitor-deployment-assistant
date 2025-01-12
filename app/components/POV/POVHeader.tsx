@@ -61,9 +61,6 @@ export default function POVHeader() {
   };
 
   const handleSubmitPOV = async () => {
-    console.log("Submit POV clicked");
-    console.log("Current state:", state);
-
     const validations: ValidationSection[] = [
       {
         name: "Team Members",
@@ -104,7 +101,6 @@ export default function POVHeader() {
     ];
 
     const invalidSections = validations.filter(v => !v.isValid);
-    console.log("Invalid sections:", invalidSections);
 
     if (invalidSections.length > 0) {
       // Dispatch event to update sidebar
@@ -120,7 +116,6 @@ export default function POVHeader() {
     }
 
     try {
-      console.log("Attempting to update POV status");
       const { data, error } = await supabaseBrowser
         .from('pov')
         .update({ 

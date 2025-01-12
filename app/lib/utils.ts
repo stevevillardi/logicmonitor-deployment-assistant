@@ -45,6 +45,8 @@ export const getStatusBadgeColor = (status?: string) => {
             return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
         case 'NOT_SELECTED':
             return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400';
+        case 'NOT_STARTED':
+            return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400';
         case 'SCHEDULED':
             return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
         case 'CANCELLED':

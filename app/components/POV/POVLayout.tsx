@@ -15,6 +15,7 @@ import DeviceScope from './DeviceScope/DeviceScope';
 import POVForm from './POVForm';
 import POVDetailsForm from './POVDetailsForm';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
+import { usePermissions } from '@/app/hooks/usePermissions';
 
 interface POVLayoutProps {
   children?: React.ReactNode;
@@ -26,12 +27,18 @@ export default function POVLayout({ children }: POVLayoutProps) {
   const povId = params.id as string;
   const { fetchPOV } = usePOVOperations();
   const isNewPOV = pathname === '/pov/new';
+  const { hasPermission, hasAnyPermission } = usePermissions();
 
   useEffect(() => {
     if (!isNewPOV && povId) {
       fetchPOV(povId);
     }
   }, [povId, isNewPOV]);
+
+  const canAccessAdvancedFeatures = hasAnyPermission([
+    { action: 'manage', resource: 'working_sessions' },
+    { action: 'manage', resource: 'device_scope' }
+  ]);
 
   const renderContent = () => {
     if (children) return children;

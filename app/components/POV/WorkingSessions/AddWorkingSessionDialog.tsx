@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { usePOV } from '@/app/contexts/POVContext';
 import { WorkingSession, SessionActivity } from '@/app/types/pov';
-import { Calendar, Clock, FileText, Tag, GripVertical, ChevronDown, Plus, Lock } from 'lucide-react';
+import { Calendar, Clock, FileText, Tag, GripVertical, ChevronDown, Plus, Lock, ChevronsUpDown, ListChecks, ClipboardList, AlertCircle, Check } from 'lucide-react';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { useDragAndDrop } from '@formkit/drag-and-drop/react';
 import {
@@ -17,6 +17,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { devLog } from '../../Shared/utils/debug';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
 
 interface AddWorkingSessionDialogProps {
   open: boolean;
@@ -128,29 +136,19 @@ export default function AddWorkingSessionDialog({
   const getUsedActivities = () => {
     const usedActivities = new Set<string>();
     
-    // Debug log to check what sessions we're looking at
-    console.log('Current POV sessions:', state.pov?.working_sessions);
-    
     state.pov?.working_sessions?.forEach(session => {
       // Skip activities from the current session if editing
       if (editingSession && session.id === editingSession.id) {
-        console.log('Skipping current session:', session.id);
+        devLog('Skipping current session:', session.id);
         return;
       }
       
-      // Debug log to check activities in each session
-      console.log('Session activities:', session.session_activities);
-      
       session.session_activities?.forEach(activity => {
         if (activity.decision_criteria_activity_id) {
-          console.log('Adding activity to used set:', activity.decision_criteria_activity_id);
           usedActivities.add(activity.decision_criteria_activity_id);
         }
       });
     });
-    
-    // Debug log to check final set of used activities
-    console.log('Used activities:', Array.from(usedActivities));
     
     return usedActivities;
   };
@@ -284,22 +282,28 @@ export default function AddWorkingSessionDialog({
                 </div>
 
                 {/* Activities Section */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-gray-900 dark:text-gray-100">Activities</Label>
-                    <div className="relative w-96">
-                      <Button
-                        type="button"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="w-full justify-between bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                        variant="outline"
+                <div className="space-y-2">
+                  <Label className="text-gray-900 dark:text-gray-100">Activities</Label>
+                  <div className="w-full">
+                    <Popover open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={isDropdownOpen}
+                          className="w-full justify-between bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-left font-normal"
+                        >
+                          <span className="truncate">Add activities...</span>
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent 
+                        className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" 
+                        align="start"
+                        sideOffset={5}
                       >
-                        <span className="truncate">Add activities...</span>
-                        <ChevronDown className="h-4 w-4 opacity-50 ml-2 shrink-0" />
-                      </Button>
-                      
-                      {isDropdownOpen && (
-                        <div className="absolute z-50 w-full mt-2 rounded-md border border-gray-200 bg-white shadow-lg dark:bg-gray-900 dark:border-gray-700 max-h-[300px] overflow-y-auto">
+                        <Command className="border-none">
                           <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
                             <Button
                               type="button"
@@ -320,74 +324,135 @@ export default function AddWorkingSessionDialog({
                               Create Custom Activity
                             </Button>
                           </div>
-                          {state.pov?.decision_criteria?.map(dc => {
-                            const usedActivities = getUsedActivities();
-                            
-                            return (
-                              <div key={dc.id} className="border-b last:border-0 border-gray-100 dark:border-gray-800">
-                                <div 
-                                  className="flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                                  onClick={() => addActivitiesFromGroup(dc.id)}
-                                >
-                                  <span className="font-medium text-gray-900 dark:text-gray-100 truncate mr-2">
-                                    {dc.title}
-                                  </span>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7 px-2.5 text-xs shrink-0 hover:bg-gray-200 dark:hover:bg-gray-700"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      addActivitiesFromGroup(dc.id);
-                                    }}
-                                  >
-                                    Add All
-                                  </Button>
-                                </div>
-                                {dc.activities?.map(activity => {
-                                  const isAdded = activities.some(
-                                    a => a.decision_criteria_activity_id === activity.id
-                                  );
-                                  const isUsedInOtherSession = usedActivities.has(activity.id);
-                                  const isDisabled = isAdded || isUsedInOtherSession;
-                                  
-                                  return (
-                                    <div
-                                      key={activity.id}
-                                      className={`px-4 py-2.5 text-sm cursor-pointer ${
-                                        isDisabled 
-                                          ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed bg-gray-50/50 dark:bg-gray-800/30' 
-                                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                      }`}
-                                      onClick={() => {
-                                        if (!isDisabled) {
-                                          const newActivity = {
-                                            decision_criteria_activity_id: activity.id,
-                                            status: 'PENDING' as const,
-                                            display_order: 0,
-                                            notes: '',
-                                          };
-                                          setActivities([...activities, newActivity]);
-                                          setIsDropdownOpen(false);
-                                        }
-                                      }}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <span className="w-4 shrink-0">
-                                          {isAdded ? '✓' : isUsedInOtherSession ? '⚡' : ''}
-                                        </span>
-                                        <span className="truncate">{activity.activity}</span>
-                                      </div>
+
+                          <CommandInput 
+                            placeholder="Search activities..." 
+                            className="border-none focus:ring-0 dark:bg-gray-900"
+                          />
+                          <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                            No activities found.
+                          </CommandEmpty>
+
+                          <div className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+                            {state.pov?.decision_criteria?.map(dc => {
+                              const usedActivities = getUsedActivities();
+                              
+                              return (
+                                <div key={dc.id} className="border-b last:border-0 border-gray-100 dark:border-gray-800">
+                                  <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80">
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                      <ListChecks className="h-4 w-4 text-gray-500 dark:text-gray-400 shrink-0" />
+                                      <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                                        {dc.title}
+                                      </span>
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-7 px-2.5 text-xs shrink-0 hover:bg-gray-200 dark:hover:bg-gray-700 ml-2"
+                                      onClick={() => addActivitiesFromGroup(dc.id)}
+                                    >
+                                      Add All
+                                    </Button>
+                                  </div>
+
+                                  <CommandGroup>
+                                    {dc.activities?.map(activity => {
+                                      const isAdded = activities.some(
+                                        a => a.decision_criteria_activity_id === activity.id
+                                      );
+                                      const isUsedInOtherSession = usedActivities.has(activity.id);
+                                      const isDisabled = isAdded || isUsedInOtherSession;
+                                      
+                                      return (
+                                        <CommandItem
+                                          key={activity.id}
+                                          value={activity.activity}
+                                          onSelect={() => {
+                                            if (!isDisabled) {
+                                              const newActivity = {
+                                                decision_criteria_activity_id: activity.id,
+                                                status: 'PENDING' as const,
+                                                display_order: 0,
+                                                notes: '',
+                                              };
+                                              setActivities([...activities, newActivity]);
+                                              setIsDropdownOpen(false);
+                                            }
+                                          }}
+                                          disabled={isDisabled}
+                                          className={cn(
+                                            "cursor-pointer text-gray-700 dark:text-gray-200",
+                                            !isDisabled && "hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100",
+                                            isDisabled && "opacity-50 cursor-not-allowed"
+                                          )}
+                                        >
+                                          <div className="flex flex-col gap-1 w-full min-w-0">
+                                            <div className="flex items-center gap-2">
+                                              {isAdded ? (
+                                                <TooltipProvider>
+                                                  <Tooltip>
+                                                    <TooltipTrigger>
+                                                      <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent 
+                                                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                                      side="right"
+                                                    >
+                                                      <p className="text-xs text-gray-700 dark:text-gray-300">
+                                                        Already added to this session
+                                                      </p>
+                                                    </TooltipContent>
+                                                  </Tooltip>
+                                                </TooltipProvider>
+                                              ) : isUsedInOtherSession ? (
+                                                <TooltipProvider>
+                                                  <Tooltip>
+                                                    <TooltipTrigger>
+                                                      <AlertCircle className="h-4 w-4 text-amber-500" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent 
+                                                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                                      side="right"
+                                                    >
+                                                      <p className="text-xs text-gray-700 dark:text-gray-300">
+                                                        Used in another working session
+                                                      </p>
+                                                    </TooltipContent>
+                                                  </Tooltip>
+                                                </TooltipProvider>
+                                              ) : (
+                                                <TooltipProvider>
+                                                  <Tooltip>
+                                                    <TooltipTrigger>
+                                                      <ClipboardList className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent 
+                                                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                                      side="right"
+                                                    >
+                                                      <p className="text-xs text-gray-700 dark:text-gray-300">
+                                                        Available activity
+                                                      </p>
+                                                    </TooltipContent>
+                                                  </Tooltip>
+                                                </TooltipProvider>
+                                              )}
+                                              <span className="truncate">{activity.activity}</span>
+                                            </div>
+                                          </div>
+                                        </CommandItem>
+                                      );
+                                    })}
+                                  </CommandGroup>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div ref={activitiesRef} className="space-y-2">
