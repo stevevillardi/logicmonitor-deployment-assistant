@@ -48,7 +48,7 @@ const EmptyState = () => (
                 No Active POVs
             </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                There are currently no active POVs to track
+                There are currently no active POVs to track, create one to get started! Use the button below to create a new POV, or view the POV Manager to see all POVs.
             </p>
         </div>
     </div>
