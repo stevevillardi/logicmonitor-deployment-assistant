@@ -80,7 +80,7 @@ export async function middleware(request: NextRequest) {
 
     // Check POV access
     const povIdMatch = request.nextUrl.pathname.match(/\/(active-pov|pov)\/([^\/]+)/);
-    if (povIdMatch && user) {
+    if (povIdMatch && user && !request.nextUrl.pathname.startsWith('/pov/new')) {
         const povId = povIdMatch[2];
 
         // Check if user is assigned to this POV
