@@ -355,7 +355,7 @@ export default function POVManagement() {
                                 No Published Proof of Values (POVs)
                             </h3>
                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                Your published POVs will appear here
+                                Your published POVs will appear here, create one to get started!
                             </p>
                             <div className="mt-6">
                                 <Button
