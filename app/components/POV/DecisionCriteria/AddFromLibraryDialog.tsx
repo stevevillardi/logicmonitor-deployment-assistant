@@ -50,6 +50,7 @@ export default function AddFromLibraryDialog({
   const [libraryTemplates, setLibraryTemplates] = useState<LibraryTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [filteredTemplates, setFilteredTemplates] = useState<LibraryTemplate[]>([]);
 
   useEffect(() => {
     const fetchLibraryTemplates = async () => {
@@ -67,26 +68,33 @@ export default function AddFromLibraryDialog({
       
       if (!error && data) {
         setLibraryTemplates(data as LibraryTemplate[]);
+        setFilteredTemplates(data as LibraryTemplate[]);
       }
     };
 
     fetchLibraryTemplates();
   }, []);
 
-  const filterTemplates = (value: string, templates: LibraryTemplate[]) => {
+  const filterTemplates = (value: string) => {
+    if (!value) {
+      setFilteredTemplates(libraryTemplates);
+      return;
+    }
+
     const search = value.toLowerCase();
-    return templates.filter((template) => {
-        const title = template.title.toLowerCase();
-        const criteria = template.success_criteria?.toLowerCase() || '';
-        
-        // Exact match should be prioritized
-        if (title === search) return true;
-        
-        // Then check for includes
-        return title.includes(search) || 
-               criteria.includes(search) ||
-               template.categories.some(c => c.category.toLowerCase().includes(search));
+    const filtered = libraryTemplates.filter((template) => {
+      const title = template.title.toLowerCase();
+      const criteria = template.success_criteria?.toLowerCase() || '';
+      const useCase = template.use_case?.toLowerCase() || '';
+      const categories = template.categories?.map(c => c.category.toLowerCase()) || [];
+      
+      return title.includes(search) || 
+             criteria.includes(search) ||
+             useCase.includes(search) ||
+             categories.some(c => c.includes(search));
     });
+
+    setFilteredTemplates(filtered);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,7 +133,7 @@ export default function AddFromLibraryDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog modal={false} open={open} onOpenChange={handleClose}>
         <DialogContent className="max-w-[95vw] w-full sm:max-w-3xl lg:max-w-4xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
           <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
             <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
@@ -160,19 +168,17 @@ export default function AddFromLibraryDialog({
                       <CommandInput 
                         placeholder="Search templates..." 
                         className="border-none focus:ring-0 dark:bg-gray-900"
-                        onValueChange={(search) => {
-                          const filtered = filterTemplates(search, libraryTemplates);
-                        }}
+                        onValueChange={filterTemplates}
                       />
                       <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
                         No templates found.
                       </CommandEmpty>
                       <ScrollArea className="max-h-[300px] overflow-auto">
                         <CommandGroup className="scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
-                          {libraryTemplates.map((template) => (
+                          {filteredTemplates.map((template) => (
                             <CommandItem
                               key={template.id}
-                              value={template.title}
+                              value={`${template.title} ${template.success_criteria} ${template.use_case || ''}`}
                               onSelect={() => {
                                 setSelectedTemplateId(template.id);
                                 setPopoverOpen(false);
@@ -207,7 +213,7 @@ export default function AddFromLibraryDialog({
               </div>
 
               {selectedTemplateId && (
-                <div className="space-y-4 p-4 rounded-md border bg-white dark:bg-gray-900 overflow-x-auto">
+                <div className="space-y-4 p-4 rounded-md border bg-white dark:bg-gray-900">
                   <h3 className="font-medium text-[#040F4B] dark:text-gray-100">Preview:</h3>
                   {(() => {
                     const template = libraryTemplates.find(c => c.id === selectedTemplateId);
@@ -234,12 +240,12 @@ export default function AddFromLibraryDialog({
                             <p className="font-medium text-gray-700 dark:text-gray-300">Categories</p>
                             <div className="flex flex-wrap gap-2">
                               {template.categories.map((c, i) => (
-                                <Badge 
+                                <span 
                                   key={i}
-                                  className="bg-[#040F4B]/10 dark:bg-[#040F4B]/20 text-[#040F4B] dark:text-blue-300"
+                                  className="px-2 py-1 rounded-md text-xs bg-[#040F4B]/10 dark:bg-[#040F4B]/20 text-[#040F4B] dark:text-blue-300"
                                 >
                                   {c.category}
-                                </Badge>
+                                </span>
                               ))}
                             </div>
                           </div>

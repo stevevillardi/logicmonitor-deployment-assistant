@@ -33,6 +33,18 @@ interface AddWorkingSessionDialogProps {
   onClose?: () => void;
 }
 
+// Update the type for filteredActivities
+type FilteredDC = {
+  id: string;
+  title: string;
+  activities?: {
+    id: string;
+    activity: string;
+    order_index: number;
+    status?: string;
+  }[];
+}[];
+
 export default function AddWorkingSessionDialog({ 
   open, 
   onOpenChange,
@@ -177,8 +189,46 @@ export default function AddWorkingSessionDialog({
     }
   };
 
+  // Add state for filtered activities
+  const [filteredActivities, setFilteredActivities] = useState<FilteredDC | null>(null);
+
+  // Update the filter function
+  const filterActivities = (value: string) => {
+    if (!state.pov?.decision_criteria) return;
+    
+    if (!value) {
+      setFilteredActivities(null); // Show all activities
+      return;
+    }
+
+    const search = value.toLowerCase();
+    const filtered = state.pov.decision_criteria.reduce<FilteredDC>((acc, dc) => {
+      // Check if decision criteria title matches
+      const titleMatches = dc.title.toLowerCase().includes(search);
+      
+      // Filter activities that match the search
+      const matchingActivities = dc.activities?.filter(activity => {
+        const activityText = activity.activity.toLowerCase();
+        return activityText.includes(search);
+      });
+
+      // Include the decision criteria if either title matches or has matching activities
+      if (titleMatches || matchingActivities?.length) {
+        acc.push({
+          id: dc.id,
+          title: dc.title,
+          // If title matches, include all activities, otherwise only matching ones
+          activities: titleMatches ? dc.activities : matchingActivities
+        });
+      }
+      return acc;
+    }, []);
+
+    setFilteredActivities(filtered);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog modal={false} open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700 h-[85vh] p-0 flex flex-col">
         <DialogHeader className="shrink-0 px-6 py-4 border-b border-blue-100 dark:border-gray-700">
           <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
@@ -299,16 +349,16 @@ export default function AddWorkingSessionDialog({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent 
-                        className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" 
+                        className="w-[--radix-popover-trigger-width] p-0 bg-white dark:bg-gray-900 border-2 border-blue-100 dark:border-blue-900/50 shadow-lg dark:shadow-blue-900/20 rounded-lg overflow-hidden" 
                         align="start"
                         sideOffset={5}
                       >
                         <Command className="border-none">
-                          <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
+                          <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 bg-blue-50/50 dark:bg-blue-900/20">
                             <Button
                               type="button"
-                              variant="ghost"
-                              className="w-full justify-start text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                              variant="outline"
+                              className="w-full justify-start text-sm bg-white dark:bg-gray-900 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-800 dark:hover:text-blue-200"
                               onClick={() => {
                                 const newActivity: SessionActivity = {
                                   status: 'PENDING',
@@ -328,13 +378,14 @@ export default function AddWorkingSessionDialog({
                           <CommandInput 
                             placeholder="Search activities..." 
                             className="border-none focus:ring-0 dark:bg-gray-900"
+                            onValueChange={filterActivities}
                           />
                           <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
                             No activities found.
                           </CommandEmpty>
 
                           <div className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
-                            {state.pov?.decision_criteria?.map(dc => {
+                            {(filteredActivities || state.pov?.decision_criteria)?.map(dc => {
                               const usedActivities = getUsedActivities();
                               
                               return (
@@ -368,7 +419,7 @@ export default function AddWorkingSessionDialog({
                                       return (
                                         <CommandItem
                                           key={activity.id}
-                                          value={activity.activity}
+                                          value={`${activity.activity} ${dc.title}`}
                                           onSelect={() => {
                                             if (!isDisabled) {
                                               const newActivity = {
@@ -383,9 +434,13 @@ export default function AddWorkingSessionDialog({
                                           }}
                                           disabled={isDisabled}
                                           className={cn(
-                                            "cursor-pointer text-gray-700 dark:text-gray-200",
+                                            "cursor-pointer",
+                                            "text-gray-700 dark:text-gray-200",
                                             !isDisabled && "hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100",
-                                            isDisabled && "opacity-50 cursor-not-allowed"
+                                            "data-[selected=true]:bg-gray-50 dark:data-[selected=true]:bg-gray-800/50",
+                                            "data-[selected=true]:text-gray-900 dark:data-[selected=true]:text-gray-100",
+                                            isDisabled && "opacity-50 cursor-not-allowed",
+                                            "transition-colors"
                                           )}
                                         >
                                           <div className="flex flex-col gap-1 w-full min-w-0">

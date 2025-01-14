@@ -79,6 +79,7 @@ export function usePOVOperations() {
                     .single();
 
                 if (memberError) throw memberError;
+                return newMember;
             })();
 
             if (!teamMember) throw new Error('Failed to get or create team member');

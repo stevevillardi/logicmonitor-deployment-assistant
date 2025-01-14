@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Check, ChevronsUpDown, AlertCircle, Target } from "lucide-react";
+import { Check, ChevronsUpDown, AlertCircle, Target, MessageSquare, LineChart, Tags } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -45,6 +45,7 @@ export default function AddFromLibraryDialog({
   const [libraryTemplates, setLibraryTemplates] = useState<LibraryTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [filteredChallenges, setFilteredChallenges] = useState<LibraryTemplate[]>([]);
 
   useEffect(() => {
     const fetchLibraryTemplates = async () => {
@@ -59,26 +60,35 @@ export default function AddFromLibraryDialog({
       
       if (!error && data) {
         setLibraryTemplates(data);
+        setFilteredChallenges(data);
       }
     };
 
     fetchLibraryTemplates();
   }, []);
 
-  const filterChallenges = (value: string, challenges: LibraryTemplate[]) => {
+  const filterChallenges = (value: string) => {
+    if (!value) {
+      setFilteredChallenges(libraryTemplates);
+      return;
+    }
+
     const search = value.toLowerCase();
-    return challenges.filter((challenge) => {
+    const filtered = libraryTemplates.filter((challenge) => {
       const title = challenge.title.toLowerCase();
       const description = challenge.challenge_description?.toLowerCase() || '';
+      const categories = challenge.categories.map(c => c.category.toLowerCase());
       
-      // Exact match should be prioritized
+      // Exact matches should be prioritized (you could sort here if needed)
       if (title === search) return true;
       
       // Then check for includes
       return title.includes(search) || 
              description.includes(search) ||
-             challenge.categories.some(c => c.category.toLowerCase().includes(search));
+             categories.some(c => c.includes(search));
     });
+
+    setFilteredChallenges(filtered);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,8 +130,8 @@ export default function AddFromLibraryDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
+    <Dialog modal={false} open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-[95vw] w-full sm:max-w-3xl lg:max-w-4xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
         <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
           <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
             Add Challenge from Library
@@ -158,19 +168,17 @@ export default function AddFromLibraryDialog({
                     <CommandInput 
                       placeholder="Search challenges..." 
                       className="border-none focus:ring-0 dark:bg-gray-900"
-                      onValueChange={(search) => {
-                        const filtered = filterChallenges(search, libraryTemplates);
-                      }}
+                      onValueChange={filterChallenges}
                     />
                     <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
                       No challenges found.
                     </CommandEmpty>
                     <ScrollArea className="max-h-[300px] overflow-auto">
                       <CommandGroup className="scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
-                        {libraryTemplates.map((challenge) => (
+                        {filteredChallenges.map((challenge) => (
                           <CommandItem
                             key={challenge.id}
-                            value={challenge.title}
+                            value={`${challenge.title} ${challenge.challenge_description}`}
                             onSelect={() => {
                               setSelectedTemplateId(challenge.id);
                               setPopoverOpen(false);
@@ -212,22 +220,43 @@ export default function AddFromLibraryDialog({
                   return template ? (
                     <div className="space-y-4 text-sm">
                       <div className="space-y-2">
-                        <p className="font-medium text-gray-700 dark:text-gray-300">Description</p>
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                          <p className="font-medium text-gray-700 dark:text-gray-300">Description</p>
+                        </div>
                         <p className="text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-gray-800/50 p-2 rounded-md">
                           {template.challenge_description}
                         </p>
                       </div>
 
                       <div className="space-y-2">
-                        <p className="font-medium text-gray-700 dark:text-gray-300">Business Impact</p>
+                        <div className="flex items-center gap-2">
+                          <LineChart className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                          <p className="font-medium text-gray-700 dark:text-gray-300">Business Impact</p>
+                        </div>
                         <p className="text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-gray-800/50 p-2 rounded-md">
                           {template.business_impact}
                         </p>
                       </div>
 
-                      {template.categories.length > 0 && (
+                      {template.example && (
                         <div className="space-y-2">
-                          <p className="font-medium text-gray-700 dark:text-gray-300">Categories</p>
+                          <div className="flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <p className="font-medium text-gray-700 dark:text-gray-300">Example</p>
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-gray-800/50 p-2 rounded-md">
+                            {template.example}
+                          </p>
+                        </div>
+                      )}
+
+                      {template.categories?.length > 0 && (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Tags className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <p className="font-medium text-gray-700 dark:text-gray-300">Categories</p>
+                          </div>
                           <div className="flex flex-wrap gap-2">
                             {template.categories.map((c, i) => (
                               <span 
@@ -241,9 +270,12 @@ export default function AddFromLibraryDialog({
                         </div>
                       )}
 
-                      {template.outcomes.length > 0 && (
+                      {template.outcomes?.length > 0 && (
                         <div className="space-y-2">
-                          <p className="font-medium text-gray-700 dark:text-gray-300">Desired Outcomes</p>
+                          <div className="flex items-center gap-2">
+                            <Target className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <p className="font-medium text-gray-700 dark:text-gray-300">Desired Outcomes</p>
+                          </div>
                           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
                             {template.outcomes
                               .sort((a, b) => a.order_index - b.order_index)

@@ -147,7 +147,7 @@ export default function AddDeviceScopeDialog({
             <Tag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <Label className="text-gray-900 dark:text-gray-100">Quick Add from Template</Label>
         </div>
-        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <Popover modal={true} open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
                 <Button 
                     variant="outline" 
@@ -226,7 +226,7 @@ export default function AddDeviceScopeDialog({
   );
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog modal={false} open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
         <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
           <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">

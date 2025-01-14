@@ -30,8 +30,12 @@ export const Profile = memo(() => {
     const [usersDialogOpen, setUsersDialogOpen] = useState(false);
 
     const handleSignOut = async () => {
-        await signOut();
-    }
+        // Navigate first, then sign out
+        router.push('/login');
+        setTimeout(async () => {
+            await signOut();
+        }, 300);
+    }; 
 
     const handleManageDeployments = (e: React.MouseEvent) => {
         e.preventDefault();

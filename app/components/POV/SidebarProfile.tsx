@@ -12,14 +12,19 @@ import {
 } from "@/components/ui/collapsible"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SidebarProfile() {
+    const router = useRouter();
     const { user, userRole, signOut } = useAuth();
     const { theme, setTheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
 
     const handleSignOut = async () => {
-        await signOut();
+        router.push('/login');
+        setTimeout(async () => {
+            await signOut();
+        }, 300);
     };
 
     const handleThemeToggle = () => {

@@ -50,6 +50,15 @@ export default function POVForm() {
         return;
     }
 
+    // Validate dates
+    const startDate = new Date(formData.start_date);
+    const endDate = new Date(formData.end_date);
+    
+    if (startDate > endDate) {
+        toast.error('Start date must be before end date');
+        return;
+    }
+
     setIsSubmitting(true);
     try {
         const newPov = await createPOV({
@@ -204,7 +213,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <CalendarRange className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Est. Start Date
+                  Est. Start Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="start_date"
@@ -221,7 +230,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <CalendarRange className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Est. End Date
+                  Est. End Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="end_date"

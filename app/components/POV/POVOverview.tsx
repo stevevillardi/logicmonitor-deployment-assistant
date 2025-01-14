@@ -320,7 +320,7 @@ export default function POVOverview() {
                     Device Scope Summary
                 </h3>
                 <Link 
-                    href={`/active-pov/${pov.id}/device-scope`}
+                    href={`/pov/${pov.id}/device-scope`}
                     className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                 >
                     View All
@@ -402,7 +402,7 @@ export default function POVOverview() {
                     Key Business Services
                 </h3>
                 <Link 
-                    href={`/active-pov/${pov.id}/key-business-services`}
+                    href={`/pov/${pov.id}/key-business-services`}
                     className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                 >
                     View All
@@ -440,7 +440,7 @@ export default function POVOverview() {
                     Identified Challenges
                 </h3>
                 <Link 
-                    href={`/active-pov/${pov.id}/challenges`}
+                    href={`/pov/${pov.id}/challenges`}
                     className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                 >
                     View All
@@ -480,7 +480,7 @@ export default function POVOverview() {
                     Decision Criteria
                 </h3>
                 <Link 
-                    href={`/active-pov/${pov.id}/decision-criteria`}
+                    href={`/pov/${pov.id}/decision-criteria`}
                     className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                 >
                     View All
@@ -531,7 +531,7 @@ export default function POVOverview() {
                       {pov.working_sessions?.length || 0} Working Sessions
                   </span>
                   <Link 
-                      href={`/active-pov/${pov.id}/working-sessions`}
+                      href={`/pov/${pov.id}/working-sessions`}
                       className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                   >
                       View All

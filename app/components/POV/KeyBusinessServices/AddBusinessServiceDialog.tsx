@@ -129,7 +129,7 @@ export default function AddBusinessServiceDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog modal={false} open={open} onOpenChange={handleOpenChange}>
       <DialogContent 
         className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mx-0 my-0 max-h-[90vh] overflow-y-auto will-change-transform"
       >

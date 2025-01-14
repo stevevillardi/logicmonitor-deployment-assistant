@@ -150,7 +150,7 @@ export default function CreateChallengeDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog modal={false} open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700 max-h-[85vh] flex flex-col p-0">
         <DialogHeader className="border-b border-blue-100 dark:border-gray-700 px-6 py-4">
           <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">

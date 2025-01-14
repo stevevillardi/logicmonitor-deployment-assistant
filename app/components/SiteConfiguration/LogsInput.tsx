@@ -55,7 +55,7 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
         iis: 0,
         accesspoints: 0,
         snmptraps: 0,
-        netflowevices: 0
+        netflowdevices: 0
     };
 
     const getIcon = (type: string) => {
@@ -84,7 +84,7 @@ export const LogsInput = ({ logs, onUpdate, showDetails = false }: LogsInputProp
                     : Object.entries(defaultLogTypes).reduce((total, [key, value]) => {
                         const deviceCount = type === key.toLowerCase() 
                             ? count 
-                            : (logs.devices[key.toLowerCase() as keyof typeof safeDevices] || 0);
+                            : (safeDevices[key.toLowerCase() as keyof typeof safeDevices] || 0);
                         return total + (deviceCount * value.eps);
                     }, 0)
             },

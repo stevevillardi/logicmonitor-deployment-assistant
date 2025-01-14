@@ -47,6 +47,7 @@ export default function AddTeamMemberDialog({
     role: '',
     organization: 'LM',
   });
+  const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
     const fetchExistingMembers = async () => {
@@ -56,15 +57,14 @@ export default function AddTeamMemberDialog({
           .select('*')
           .order('name');
         
-        if (error) {
-          console.error('Error fetching team members:', error);
-          return;
-        }
+        if (error) throw error;
         
         setExistingMembers(data || []);
+        setFilteredMembers(data || []);
       } catch (error) {
         console.error('Error fetching team members:', error);
         setExistingMembers([]);
+        setFilteredMembers([]);
       }
     };
 
@@ -82,7 +82,7 @@ export default function AddTeamMemberDialog({
     }
   }, [editingMember, open]);
 
-  const memberStatuses = existingMembers.map(member => {
+  const memberStatuses = filteredMembers.map(member => {
     const isInTeam = pov?.team_members?.some(tm => {
       return (tm.team_member?.id || tm.id) === member.id;
     });
@@ -139,8 +139,30 @@ export default function AddTeamMemberDialog({
     onOpenChange(false);
   };
 
+  const filterMembers = (value: string) => {
+    if (!value) {
+      setFilteredMembers(existingMembers);
+      return;
+    }
+
+    const search = value.toLowerCase();
+    const filtered = existingMembers.filter((member) => {
+      const name = member.name.toLowerCase();
+      const email = member.email.toLowerCase();
+      const role = member.role.toLowerCase();
+      const org = member.organization.toLowerCase();
+      
+      return name.includes(search) || 
+             email.includes(search) || 
+             role.includes(search) ||
+             org.includes(search);
+    });
+
+    setFilteredMembers(filtered);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog modal={false} open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-[90vw] sm:max-w-lg lg:max-w-2xl bg-blue-50 dark:bg-gray-800 border-blue-200 dark:border-gray-700">
         <DialogHeader className="border-b border-blue-100 dark:border-gray-700 pb-3">
           <DialogTitle className="text-lg sm:text-xl font-bold text-[#040F4B] dark:text-gray-100">
@@ -179,6 +201,7 @@ export default function AddTeamMemberDialog({
                             <CommandInput 
                               placeholder="Search members..." 
                               className="border-none focus:ring-0 dark:bg-gray-900"
+                              onValueChange={filterMembers}
                             />
                             <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
                               No team members found.
@@ -187,7 +210,7 @@ export default function AddTeamMemberDialog({
                               {memberStatuses.map((member) => (
                                 <CommandItem
                                   key={member.id}
-                                  value={member.id}
+                                  value={`${member.name} ${member.email} ${member.role}`}
                                   onSelect={() => {
                                     if (!member.isInTeam) {
                                       setSelectedMember(member);
