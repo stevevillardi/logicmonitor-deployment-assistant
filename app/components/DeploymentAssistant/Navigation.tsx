@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { ChevronDown, PlayCircle, Server, Settings, BookText, Terminal, Bolt, Bot, FileText, ChartLine, Rocket, Home, Info } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { usePermissions } from '@/app/hooks/usePermissions';
 
 type NavItem = {
@@ -13,11 +13,12 @@ type NavItem = {
     children?: NavItem[];
 };
 
-const NavItem = ({ item, onNavigate, openMenu, setOpenMenu }: { 
+const NavItem = ({ item, onNavigate, openMenu, setOpenMenu, isActive }: { 
     item: NavItem; 
     onNavigate: (path: string) => void;
     openMenu: string | null;
     setOpenMenu: (id: string | null) => void;
+    isActive: boolean;
 }) => {
     const hasChildren = item.children && item.children.length > 0;
     const isOpen = openMenu === item.id;
@@ -32,7 +33,9 @@ const NavItem = ({ item, onNavigate, openMenu, setOpenMenu }: {
                         onNavigate(item.path);
                     }
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/85 hover:bg-[#0A1B6F] hover:text-white rounded-lg transition-colors"
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    isActive ? 'bg-[#0A1B6F] text-white' : 'text-white/85 hover:bg-[#0A1B6F] hover:text-white'
+                }`}
             >
                 {item.icon}
                 <span>{item.label}</span>
@@ -63,6 +66,7 @@ export const Navigation = () => {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
     const navRef = useRef<HTMLDivElement>(null);
     const { hasPermission } = usePermissions();
 
@@ -87,7 +91,6 @@ export const Navigation = () => {
     };
 
     const navigationItems = useMemo(() => {
-
         const items: NavItem[] = [
             { 
                 id: 'home',
@@ -147,6 +150,16 @@ export const Navigation = () => {
         return items;
     }, [hasPermission]);
 
+    const isActive = (item: NavItem): boolean => {
+        if (item.path === pathname) {
+            return true;
+        }
+        if (item.children) {
+            return item.children.some(child => child.path === pathname);
+        }
+        return false;
+    };
+
     return (
         <div ref={navRef}>
             {/* Desktop Navigation */}
@@ -159,6 +172,7 @@ export const Navigation = () => {
                             onNavigate={handleNavigation}
                             openMenu={openMenu}
                             setOpenMenu={setOpenMenu}
+                            isActive={isActive(item)}
                         />
                     ))}
                 </div>
@@ -183,6 +197,7 @@ export const Navigation = () => {
                                 onNavigate={handleNavigation}
                                 openMenu={openMenu}
                                 setOpenMenu={setOpenMenu}
+                                isActive={isActive(item)}
                             />
                         ))}
                     </div>
