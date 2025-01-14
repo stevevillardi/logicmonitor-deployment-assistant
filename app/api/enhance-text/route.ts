@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { checkServerPermission } from '@/app/lib/auth-utils';
+import { hasServerPermission } from '@/app/lib/auth-utils';
 import { createClient } from '@/app/lib/supabase/server';
 
 const anthropic = new Anthropic({
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
         }
 
         // Check permissions using server-side utility
-        const hasAccess = await checkServerPermission(session.user.id, {
-            action: 'create',
+        const hasAccess = await hasServerPermission(session.user.id, {
+            action: 'view',
             resource: 'pov'
         });
 
