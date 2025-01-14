@@ -123,6 +123,7 @@ export default function POVHeader() {
     try {
         if (!pov?.id) throw new Error('POV ID not found');
         await updatePOVStatus(pov.id, 'SUBMITTED');
+        router.push(`/active-pov/${pov.id}`);
     } catch (error) {
         console.error('Error submitting POV:', error);
     }
