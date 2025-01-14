@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogOverlay } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Challenge } from '@/app/types/pov';
 import { usePOV } from '@/app/contexts/POVContext';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Save } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import {
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/popover"
 import { Check, ChevronsUpDown, AlertCircle, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const inputBaseStyles = "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400";
 const buttonBaseStyles = "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300";
@@ -64,6 +64,22 @@ export default function AddFromLibraryDialog({
 
     fetchLibraryTemplates();
   }, []);
+
+  const filterChallenges = (value: string, challenges: LibraryTemplate[]) => {
+    const search = value.toLowerCase();
+    return challenges.filter((challenge) => {
+      const title = challenge.title.toLowerCase();
+      const description = challenge.challenge_description?.toLowerCase() || '';
+      
+      // Exact match should be prioritized
+      if (title === search) return true;
+      
+      // Then check for includes
+      return title.includes(search) || 
+             description.includes(search) ||
+             challenge.categories.some(c => c.category.toLowerCase().includes(search));
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +135,7 @@ export default function AddFromLibraryDialog({
           <div className="space-y-4">
             <div>
               <Label>Select Challenge</Label>
-              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+              <Popover modal={true} open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -142,42 +158,47 @@ export default function AddFromLibraryDialog({
                     <CommandInput 
                       placeholder="Search challenges..." 
                       className="border-none focus:ring-0 dark:bg-gray-900"
+                      onValueChange={(search) => {
+                        const filtered = filterChallenges(search, libraryTemplates);
+                      }}
                     />
                     <CommandEmpty className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
                       No challenges found.
                     </CommandEmpty>
-                    <CommandGroup className="overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
-                      {libraryTemplates.map((challenge) => (
-                        <CommandItem
-                          key={challenge.id}
-                          value={challenge.id}
-                          onSelect={() => {
-                            setSelectedTemplateId(challenge.id);
-                            setPopoverOpen(false);
-                          }}
-                          className="cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                        >
-                          <div className="flex flex-col gap-1 w-full">
-                            <div className="flex items-center gap-2">
-                              <Check
-                                className={cn(
-                                  "h-4 w-4",
-                                  selectedTemplateId === challenge.id 
-                                    ? "opacity-100 text-blue-600 dark:text-blue-400" 
-                                    : "opacity-0"
-                                )}
-                              />
-                              <AlertCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                              <span className="font-medium">{challenge.title}</span>
+                    <ScrollArea className="max-h-[300px] overflow-auto">
+                      <CommandGroup className="scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+                        {libraryTemplates.map((challenge) => (
+                          <CommandItem
+                            key={challenge.id}
+                            value={challenge.title}
+                            onSelect={() => {
+                              setSelectedTemplateId(challenge.id);
+                              setPopoverOpen(false);
+                            }}
+                            className="cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 data-[highlighted]:bg-gray-50 dark:data-[highlighted]:bg-gray-800 data-[highlighted]:text-gray-900 dark:data-[highlighted]:text-gray-100 transition-colors"
+                          >
+                            <div className="flex flex-col gap-1 w-full">
+                              <div className="flex items-center gap-2">
+                                <Check
+                                  className={cn(
+                                    "h-4 w-4",
+                                    selectedTemplateId === challenge.id 
+                                      ? "opacity-100 text-blue-600 dark:text-blue-400" 
+                                      : "opacity-0"
+                                  )}
+                                />
+                                <AlertCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                <span className="font-medium">{challenge.title}</span>
+                              </div>
+                              <div className="pl-10 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                                <Target className="h-3 w-3 shrink-0" />
+                                <span>{challenge.challenge_description}</span>
+                              </div>
                             </div>
-                            <div className="pl-10 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
-                              <Target className="h-3 w-3 shrink-0" />
-                              <span>{challenge.challenge_description}</span>
-                            </div>
-                          </div>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </ScrollArea>
                   </Command>
                 </PopoverContent>
               </Popover>

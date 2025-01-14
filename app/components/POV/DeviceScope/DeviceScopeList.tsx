@@ -1,7 +1,7 @@
 'use client'
 
 import { DeviceScope } from '@/app/types/pov';
-import { MoreVertical, Pencil, Trash, Monitor, Tag, Hash, FileText } from 'lucide-react';
+import { MoreVertical, Pencil, Trash, Monitor, Tag, Hash, FileText, Link2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +13,20 @@ import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { devLog } from '../../Shared/utils/debug';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface DeviceScopeListProps {
   devices: DeviceScope[];
   onEdit: (device: DeviceScope) => void;
 }
+
+const badgeClassName = "pointer-events-none select-none";
 
 export default function DeviceScopeList({ devices, onEdit }: DeviceScopeListProps) {
   devLog('Devices passed to list:', devices);
@@ -61,12 +70,29 @@ export default function DeviceScopeList({ devices, onEdit }: DeviceScopeListProp
                   <Monitor className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    {device.device_type}
-                  </h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                      {device.device_type}
+                    </h4>
+                    {device.onboarding_template_device && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Link2 className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800">
+                            <p>Added from onboarding template, eligible for onboarding pre-requisites.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                   <Badge
                     variant="secondary"
-                    className="mt-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800"
+                    className={cn(
+                        "mt-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800",
+                        badgeClassName
+                    )}
                   >
                     {device.category}
                   </Badge>
@@ -110,13 +136,16 @@ export default function DeviceScopeList({ devices, onEdit }: DeviceScopeListProp
                   </div>
                   <Badge 
                     variant="secondary"
-                    className={`${
-                      device.priority === 'HIGH' 
-                        ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-800'
-                        : device.priority === 'MEDIUM'
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-                        : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800'
-                    }`}
+                    className={cn(
+                        `${
+                            device.priority === 'HIGH' 
+                                ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-800'
+                                : device.priority === 'MEDIUM'
+                                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
+                                : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800'
+                        }`,
+                        badgeClassName
+                    )}
                   >
                     {device.priority} Priority
                   </Badge>

@@ -2,7 +2,7 @@
 
 import { usePOV } from '@/app/contexts/POVContext';
 import { Card } from '@/components/ui/card';
-import { CalendarDays, Users, Building2, Laptop2, Clock, AlertCircle, Calendar, CheckSquare, Monitor, Target, FileText, ListTodo } from 'lucide-react';
+import { CalendarDays, Users, Building2, Laptop2, Clock, AlertCircle, Calendar, CheckSquare, Monitor, Target, FileText, ListTodo, ArrowRight } from 'lucide-react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,8 @@ import { parseISO } from 'date-fns';
 import { differenceInDays } from 'date-fns';
 import { differenceInMonths } from 'date-fns';
 import { calculateDuration, formatDate, getStatusBadgeColor, getInitials } from '@/app/lib/utils';
+import Link from 'next/link';
+import { cn } from "@/lib/utils";
 
 interface TimelineEvent {
   date: Date;
@@ -98,14 +100,14 @@ export default function POVOverview() {
       bgColor: 'bg-orange-50',
     },
     {
-      name: 'Business Services',
+      name: 'Key Business Services',
       value: (pov.key_business_services || []).length,
       icon: Building2,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
     },
     {
-      name: 'Team Members',
+      name: 'Team',
       value: (pov.team_members || []).length,
       icon: Users,
       color: 'text-green-600',
@@ -207,6 +209,8 @@ export default function POVOverview() {
     </div>
   );
 
+  const badgeClassName = "pointer-events-none select-none";
+
   return (
     <div className="space-y-6 p-6">
       {/* POV Header Info */}
@@ -230,9 +234,9 @@ export default function POVOverview() {
                 <div className="flex items-center gap-2">
                   <CalendarDays className="h-4 w-4" />
                   <span>
-                    {pov.start_date ? formatDate(pov.start_date) : 'Start: TBD'} 
+                    {pov.start_date ? formatDate(pov.start_date) : 'Est. Start: TBD'} 
                     {' → '} 
-                    {pov.end_date ? formatDate(pov.end_date) : 'End: TBD'}
+                    {pov.end_date ? formatDate(pov.end_date) : 'Est. End: TBD'}
                   </span>
                 </div>
                 <div className="font-medium">
@@ -310,200 +314,237 @@ export default function POVOverview() {
 
       {/* Device Scope and Business Services Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <Card 
-          className="p-6 lg:col-span-3 cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-          onClick={() => navigateToTab('device-scope')}
-        >
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-            Device Scope Summary
-            <span className="ml-2 text-sm text-blue-600 dark:text-blue-400">(Click to view all)</span>
-          </h3>
-          {pov.device_scopes?.length ? (
-            <div className="grid grid-cols-2 gap-4">
-              {/* Categories Summary */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Categories</h4>
-                <div className="space-y-2">
-                  {Array.from(new Set((pov.device_scopes || []).map(device => device.category)))
-                    .slice(0, 6)  // Show only first 6 categories
-                    .map(category => {
-                      const devicesInCategory = pov.device_scopes?.filter(d => d.category === category) || [];
-                      const totalCount = devicesInCategory.reduce((sum, d) => sum + d.count, 0);
-                      
-                      return (
-                        <div key={category} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700">
-                          <span className="text-sm text-gray-600 dark:text-gray-300">{category}</span>
-                          <Badge variant="secondary" className="bg-gray-100 text-gray-800 dark:bg-gray-800/50 dark:text-gray-400">{totalCount} devices</Badge>
-                        </div>
-                      );
-                    })}
-                  {/* Add the "more" indicator if there are more than 6 categories */}
-                  {new Set(pov.device_scopes?.map(device => device.category)).size > 6 && (
-                    <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
-                      +{new Set(pov.device_scopes?.map(device => device.category)).size - 6} more categories
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Priority Summary */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Priority Distribution</h4>
-                <div className="space-y-2">
-                  {['HIGH', 'MEDIUM', 'LOW'].map(priority => {
-                    const devicesWithPriority = pov.device_scopes?.filter(d => d.priority === priority) || [];
-                    const totalCount = devicesWithPriority.reduce((sum, d) => sum + d.count, 0);
-                    
-                    return (
-                      <div key={priority} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">{priority}</span>
-                        <Badge variant="secondary" className={
-                          priority === 'HIGH' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' :
-                          priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400' :
-                          'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
-                        }>
-                          {totalCount} devices
-                        </Badge>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+        <Card className="p-6 lg:col-span-3 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Device Scope Summary
+                </h3>
+                <Link 
+                    href={`/active-pov/${pov.id}/device-scope`}
+                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                >
+                    View All
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
             </div>
-          ) : (
-            <EmptyDevicesSection />
-          )}
+            {pov.device_scopes?.length ? (
+                <div className="grid grid-cols-2 gap-4">
+                    {/* Categories Summary */}
+                    <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Categories</h4>
+                        <div className="space-y-2">
+                            {Array.from(new Set((pov.device_scopes || []).map(device => device.category)))
+                                .slice(0, 6)  // Show only first 6 categories
+                                .map(category => {
+                                    const devicesInCategory = pov.device_scopes?.filter(d => d.category === category) || [];
+                                    const totalCount = devicesInCategory.reduce((sum, d) => sum + d.count, 0);
+                                    
+                                    return (
+                                        <div key={category} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700">
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">{category}</span>
+                                            <Badge 
+                                                variant="secondary" 
+                                                className={cn(
+                                                    "bg-gray-100 text-gray-800 dark:bg-gray-800/50 dark:text-gray-400",
+                                                    badgeClassName
+                                                )}
+                                            >
+                                                {totalCount} devices
+                                            </Badge>
+                                        </div>
+                                    );
+                                })}
+                            {/* Add the "more" indicator if there are more than 6 categories */}
+                            {new Set(pov.device_scopes?.map(device => device.category)).size > 6 && (
+                                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                                    +{new Set(pov.device_scopes?.map(device => device.category)).size - 6} more categories
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Priority Summary */}
+                    <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Priority Distribution</h4>
+                        <div className="space-y-2">
+                            {['HIGH', 'MEDIUM', 'LOW'].map(priority => {
+                                const devicesWithPriority = pov.device_scopes?.filter(d => d.priority === priority) || [];
+                                const totalCount = devicesWithPriority.reduce((sum, d) => sum + d.count, 0);
+                                
+                                return (
+                                    <div key={priority} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700">
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">{priority}</span>
+                                        <Badge 
+                                            variant="secondary" 
+                                            className={cn(
+                                                priority === 'HIGH' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' :
+                                                priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400' :
+                                                'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400',
+                                                badgeClassName
+                                            )}
+                                        >
+                                            {totalCount} devices
+                                        </Badge>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <EmptyDevicesSection />
+            )}
         </Card>
 
-        <Card 
-          className="p-6 cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-          onClick={() => navigateToTab('key-business-services')}
-        >
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-            Key Business Services
-            <span className="ml-2 text-sm text-blue-600 dark:text-blue-400">(Click to view all)</span>
-          </h3>
-          {pov.key_business_services?.length ? (
-            <div className="space-y-3">
-              {(pov.key_business_services || []).slice(0, 3).map((service) => (
-                <div key={service.id} className="flex items-center space-x-3 p-2 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                  <Building2 className="h-5 w-5 text-blue-500 flex-shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{service.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{service.tech_owner}</p>
-                  </div>
-                </div>
-              ))}
-              {pov.key_business_services.length > 3 && (
-                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
-                  +{pov.key_business_services.length - 3} more services
-                </div>
-              )}
+        <Card className="p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Key Business Services
+                </h3>
+                <Link 
+                    href={`/active-pov/${pov.id}/key-business-services`}
+                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                >
+                    View All
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
             </div>
-          ) : (
-            <EmptyBusinessServicesSection />
-          )}
+            {pov.key_business_services?.length ? (
+                <div className="space-y-3">
+                    {(pov.key_business_services || []).slice(0, 3).map((service) => (
+                        <div key={service.id} className="flex items-center space-x-3 p-2 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                            <Building2 className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{service.name}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{service.tech_owner}</p>
+                            </div>
+                        </div>
+                    ))}
+                    {pov.key_business_services.length > 3 && (
+                        <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                            +{pov.key_business_services.length - 3} more services
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <EmptyBusinessServicesSection />
+            )}
         </Card>
       </div>
 
       {/* Recent Activity Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card 
-          className="p-6 cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-          onClick={() => navigateToTab('challenges')}
-        >
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-            Identified Challenges
-            <span className="ml-2 text-sm text-blue-600 dark:text-blue-400">(Click to view all)</span>
-          </h3>
-          {pov.challenges?.length ? (
-            <div className="space-y-4">
-              {(pov.challenges || []).slice(0, 3).map((challenge) => (
-                <div key={challenge.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center space-x-3">
-                    <AlertCircle className="h-5 w-5 text-orange-500" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{challenge.title}</span>
-                  </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium
-                    ${challenge.status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400' : 
-                     challenge.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400' :
-                     'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400'}`}>
-                    {challenge.status}
-                  </span>
-                </div>
-              ))}
-              {pov.challenges.length > 3 && (
-                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
-                  +{pov.challenges.length - 3} more challenges
-                </div>
-              )}
+        <Card className="p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Identified Challenges
+                </h3>
+                <Link 
+                    href={`/active-pov/${pov.id}/challenges`}
+                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                >
+                    View All
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
             </div>
-          ) : (
-            <EmptyChallengesSection />
-          )}
+            {pov.challenges?.length ? (
+                <div className="space-y-4">
+                    {(pov.challenges || []).slice(0, 3).map((challenge) => (
+                        <div key={challenge.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center space-x-3">
+                                <AlertCircle className="h-5 w-5 text-orange-500" />
+                                <span className="text-sm text-gray-700 dark:text-gray-300">{challenge.title}</span>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium
+                                ${challenge.status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400' : 
+                                 challenge.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400' :
+                                 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400'}`}>
+                                {challenge.status}
+                            </span>
+                        </div>
+                    ))}
+                    {pov.challenges.length > 3 && (
+                        <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                            +{pov.challenges.length - 3} more challenges
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <EmptyChallengesSection />
+            )}
         </Card>
 
-        <Card 
-          className="p-6 cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-          onClick={() => navigateToTab('decision-criteria')}
-        >
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-            Decision Criteria
-            <span className="ml-2 text-sm text-blue-600 dark:text-blue-400">(Click to view all)</span>
-          </h3>
-          {pov.decision_criteria?.length ? (
-            <div className="space-y-4">
-              {(pov.decision_criteria || []).slice(0, 3).map((criteria) => (
-                <div key={criteria.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center space-x-3">
-                    <CheckSquare className="h-5 w-5 text-blue-500" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{criteria.title}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Success Criteria: {criteria.success_criteria}</p>
-                    </div>
-                  </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    criteria.status === 'MET' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400' : 
-                    criteria.status === 'NOT_MET' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' :
-                    criteria.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400' :
-                    'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-400'
-                  }`}>
-                    {criteria.status?.replace('_', ' ')}
-                  </span>
-                </div>
-              ))}
-              {pov.decision_criteria.length > 3 && (
-                <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
-                  +{pov.decision_criteria.length - 3} more criteria
-                </div>
-              )}
+        <Card className="p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Decision Criteria
+                </h3>
+                <Link 
+                    href={`/active-pov/${pov.id}/decision-criteria`}
+                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                >
+                    View All
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
             </div>
-          ) : (
-            <EmptyCriteriaSection />
-          )}
+            {pov.decision_criteria?.length ? (
+                <div className="space-y-4">
+                    {(pov.decision_criteria || []).slice(0, 3).map((criteria) => (
+                        <div key={criteria.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center space-x-3">
+                                <CheckSquare className="h-5 w-5 text-blue-500" />
+                                <div>
+                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{criteria.title}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Success Criteria: {criteria.success_criteria}</p>
+                                </div>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                criteria.status === 'MET' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400' : 
+                                criteria.status === 'NOT_MET' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400' :
+                                criteria.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400' :
+                                'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-400'
+                            }`}>
+                                {criteria.status?.replace('_', ' ')}
+                            </span>
+                        </div>
+                    ))}
+                    {pov.decision_criteria.length > 3 && (
+                        <div className="text-sm text-blue-600 dark:text-blue-400 text-center pt-2">
+                            +{pov.decision_criteria.length - 3} more criteria
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <EmptyCriteriaSection />
+            )}
         </Card>
       </div>
 
       {/* Timeline Section */}
-      <Card 
-        className="p-6 cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
-        onClick={() => navigateToTab('working-sessions')}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            POV Timeline
-            <span className="ml-2 text-sm text-blue-600 dark:text-blue-400">(Click to view all)</span>
-          </h3>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {pov.working_sessions?.length || 0} Working Sessions
-          </span>
-        </div>
-        
-        {pov.working_sessions?.length ? (
-          <Timeline events={prepareTimelineEvents()} />
-        ) : (
-          <EmptySessionsSection />
-        )}
+      <Card className="p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                  POV Timeline
+              </h3>
+              <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {pov.working_sessions?.length || 0} Working Sessions
+                  </span>
+                  <Link 
+                      href={`/active-pov/${pov.id}/working-sessions`}
+                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                  >
+                      View All
+                      <ArrowRight className="h-4 w-4" />
+                  </Link>
+              </div>
+          </div>
+          
+          {pov.working_sessions?.length ? (
+              <Timeline events={prepareTimelineEvents()} />
+          ) : (
+              <EmptySessionsSection />
+          )}
       </Card>
     </div>
   );

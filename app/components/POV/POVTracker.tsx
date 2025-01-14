@@ -21,22 +21,26 @@ import { POV } from '@/app/types/pov';
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { getEffectiveMemberDetails, getInitials, formatDate } from '@/app/lib/utils';
+import { getEffectiveMemberDetails, getInitials, formatDate, getPOVStatusBadgeColor, calculateProgress } from '@/app/lib/utils';
 
-const calculateSessionProgress = (pov: POV) => {
-    const allActivities = pov.working_sessions?.flatMap(session => 
-        session.session_activities || []
-    ).filter(activity => activity.status) || [];
-    
-    const totalActivities = allActivities.length;
-    if (totalActivities === 0) return 0;
-    
-    const completedActivities = allActivities.filter(activity => 
-        activity.status === 'COMPLETED'
-    ).length;
-    
-    return Math.round((completedActivities / totalActivities) * 100);
-};
+const ProgressBar = ({ progress, label, color = "bg-blue-600" }: { 
+    progress: number; 
+    label: string;
+    color?: string;
+}) => (
+    <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+            <span className="font-medium text-gray-700 dark:text-gray-300">{label}</span>
+            <span className="text-gray-500 dark:text-gray-400">{Math.round(progress)}%</span>
+        </div>
+        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div 
+                className={`h-full ${color} transition-all duration-300`} 
+                style={{ width: `${progress}%` }}
+            />
+        </div>
+    </div>
+);
 
 const EmptyState = () => (
     <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-6">
@@ -54,6 +58,30 @@ const EmptyState = () => (
     </div>
 );
 
+const calculateSessionProgress = (pov: POV) => {
+    const allActivities = pov.working_sessions?.flatMap(session => 
+        session.session_activities || []
+    ).filter(activity => activity.status) || [];
+    
+    const totalActivities = allActivities.length;
+    if (totalActivities === 0) return 0;
+    
+    const completedActivities = allActivities.filter(activity => 
+        activity.status === 'COMPLETED'
+    ).length;
+    
+    return Math.round((completedActivities / totalActivities) * 100);
+};
+
+const calculateOverallProgress = (pov: POV) => {
+    const workingSessionsProgress = calculateProgress(pov?.working_sessions || []) * 0.25;
+    const deviceScopesProgress = calculateProgress(pov?.device_scopes || []) * 0.25;
+    const challengesProgress = calculateProgress(pov?.challenges || []) * 0.25;
+    const decisionCriteriaProgress = calculateProgress(pov?.decision_criteria || []) * 0.25;
+    
+    return workingSessionsProgress + deviceScopesProgress + challengesProgress + decisionCriteriaProgress;
+};
+
 const POVTracker = () => {
     const router = useRouter();
     const { state } = usePOV();
@@ -66,22 +94,8 @@ const POVTracker = () => {
          pov.customer_name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-
     const handleViewPOV = (povId: string) => {
         router.push(`/active-pov/${povId}`);
-    };
-
-    const getStatusBadgeColor = (status: POV['status']) => {
-        const colors = {
-            'DRAFT': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 font-bold',
-            'SUBMITTED': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 font-bold',
-            'IN_PROGRESS': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 font-bold',
-            'COMPLETE': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 font-bold',
-            'BLOCKED': 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300 font-bold',
-            'TECHNICALLY_SELECTED': 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 font-bold',
-            'NOT_SELECTED': 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300 font-bold',
-        } as const;
-        return colors[status as keyof typeof colors] || colors.DRAFT;
     };
 
     return (
@@ -136,7 +150,7 @@ const POVTracker = () => {
                                             <span>{pov.customer_region}</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center justify-end gap-4">
                                         <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
@@ -148,7 +162,7 @@ const POVTracker = () => {
                                                 {calculateSessionProgress(pov)}% Activities Complete
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex flex-col items-end gap-1">
                                             <div className="flex -space-x-2">
                                                 {(pov.team_members || []).map((member) => (
@@ -170,27 +184,27 @@ const POVTracker = () => {
                                                                         {getInitials(getEffectiveMemberDetails(member).name)}
                                                                     </AvatarFallback>
                                                                 </Avatar>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent 
-                                                            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
-                                                            sideOffset={5}
-                                                        >
-                                                            <div className="text-sm">
-                                                                <p className="font-medium text-gray-900 dark:text-gray-100">
-                                                                    {getEffectiveMemberDetails(member).name}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                    {getEffectiveMemberDetails(member).role}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                    {getEffectiveMemberDetails(member).organization === 'LM' ? 'LogicMonitor' :
-                                                                     getEffectiveMemberDetails(member).organization === 'CUSTOMER' ? 'Customer' :
-                                                                     getEffectiveMemberDetails(member).organization === 'PARTNER' ? 'Partner' :
-                                                                     getEffectiveMemberDetails(member).organization}
-                                                                </p>
-                                                            </div>
-                                                        </TooltipContent>
-                                                    </Tooltip>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent 
+                                                                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
+                                                                sideOffset={5}
+                                                            >
+                                                                <div className="text-sm">
+                                                                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                                                                        {getEffectiveMemberDetails(member).name}
+                                                                    </p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        {getEffectiveMemberDetails(member).role}
+                                                                    </p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        {getEffectiveMemberDetails(member).organization === 'LM' ? 'LogicMonitor' :
+                                                                         getEffectiveMemberDetails(member).organization === 'CUSTOMER' ? 'Customer' :
+                                                                         getEffectiveMemberDetails(member).organization === 'PARTNER' ? 'Partner' :
+                                                                         getEffectiveMemberDetails(member).organization}
+                                                                    </p>
+                                                                </div>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     </TooltipProvider>
                                                 ))}
                                             </div>
@@ -199,7 +213,7 @@ const POVTracker = () => {
                                             </span>
                                         </div>
 
-                                        <Badge className={`${getStatusBadgeColor(pov.status)}`}>
+                                        <Badge className={`${getPOVStatusBadgeColor(pov.status)}`}>
                                             {pov.status.replace(/_/g, ' ')}
                                         </Badge>
                                     </div>
@@ -231,13 +245,13 @@ const POVTracker = () => {
                                                     </span>
                                                 </div>
                                                 <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {calculateSessionProgress(pov)}%
+                                                    {calculateOverallProgress(pov).toFixed(0)}%
                                                 </span>
                                             </div>
                                             <div className="relative h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                                                 <div 
                                                     className="absolute left-0 top-0 h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-in-out"
-                                                    style={{ width: `${calculateSessionProgress(pov)}%` }}
+                                                    style={{ width: `${calculateOverallProgress(pov)}%` }}
                                                 />
                                             </div>
                                         </div>

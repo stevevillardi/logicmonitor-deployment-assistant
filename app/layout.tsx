@@ -10,17 +10,46 @@ import { AuthProvider } from './contexts/AuthContext';
 import AuthErrorBoundary from './components/Shared/AuthErrorBoundary';
 import { usePathname } from 'next/navigation';
 import RAGChatWrapper from './components/AIChat/RAGChatWrapper';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+const toastOptions = {
+  duration: 5000,
+  style: {
+    background: '#fff',
+    color: '#363636',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  },
+  success: {
+    iconTheme: {
+      primary: '#059669', // green-600
+      secondary: '#fff',
+    },
+    style: {
+      borderLeft: '4px solid #059669',
+    },
+  },
+  error: {
+    iconTheme: {
+      primary: '#DC2626', // red-600
+      secondary: '#fff',
+    },
+    style: {
+      borderLeft: '4px solid #DC2626',
+    },
+  },
+};
 
 export const metadata: Metadata = {
   title: "LM Deployment Assistant",
@@ -61,6 +90,10 @@ export default function RootLayout({
             <PWAInstallPrompt />
             <Analytics/>
             <RAGChatWrapper />
+            <Toaster
+              position="top-center"
+              toastOptions={toastOptions}
+            />
           {/* </AuthErrorBoundary> */}
         </AuthProvider>
       </body>

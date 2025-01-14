@@ -426,14 +426,26 @@ CREATE POLICY "Users can view team members of POVs they have access to" ON publi
     FOR SELECT TO authenticated
     USING (has_pov_access(pov_id));
 
--- Insert policy - only POV owners can add team members
-CREATE POLICY "Users can insert team members for POVs they own" ON public.pov_team_members
+-- Insert policy - POV owners can add team members OR users can add themselves during POV creation
+CREATE POLICY "Users can insert team members for POVs they own or during creation" ON public.pov_team_members
     FOR INSERT TO authenticated
-    WITH CHECK (EXISTS (
-        SELECT 1 FROM pov
-        WHERE pov.id = pov_id
-        AND pov.created_by = auth.uid()
-    ));
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM pov
+            WHERE pov.id = pov_id
+            AND pov.created_by = auth.uid()
+        )
+        OR 
+        (
+            -- Allow users to add themselves during POV creation
+            EXISTS (
+                SELECT 1 FROM pov
+                WHERE pov.id = pov_id
+                AND pov.created_by = auth.uid()
+                AND created_by = auth.uid()
+            )
+        )
+    );
 
 -- Update policy - only POV owners can update team members
 CREATE POLICY "Users can update team members for POVs they own" ON public.pov_team_members
@@ -573,28 +585,23 @@ DROP POLICY IF EXISTS "Users can view POVs they created or are team members of" 
 
 -- View policy - allows both owners and team members to view
 CREATE POLICY "Users can view POVs they created or are team members of" ON public.pov
-    FOR SELECT TO {authenticated}
-    USING (has_pov_access(id))
-    WITH CHECK (NULL);
+    FOR SELECT TO authenticated
+    USING (has_pov_access(id));
 
 -- Create policy - any authenticated user can create a POV
 CREATE POLICY "Users can create POVs" ON public.pov
-    FOR INSERT TO {authenticated}
-    USING (NULL)
-    WITH CHECK ((SELECT auth.uid() AS uid) = created_by);
+    FOR INSERT TO authenticated
+    WITH CHECK (auth.uid() = created_by);
 
 -- Update policy - only POV owner can update
--- Note: We keep this restricted to owner only for safety
 CREATE POLICY "Users can update their own POVs" ON public.pov
-    FOR UPDATE TO {authenticated}
-    USING ((SELECT auth.uid() AS uid) = created_by);
+    FOR UPDATE TO authenticated
+    USING (auth.uid() = created_by);
 
 -- Delete policy - only POV owner can delete
--- Note: We keep this restricted to owner only for safety
 CREATE POLICY "Users can delete their own POVs" ON public.pov
-    FOR DELETE TO {authenticated}
-    USING ((SELECT auth.uid() AS uid) = created_by)
-    WITH CHECK (NULL);
+    FOR DELETE TO authenticated
+    USING (auth.uid() = created_by);
 
 -- ================================================
 -- Profiles Table (public.profiles)

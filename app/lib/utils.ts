@@ -1,7 +1,10 @@
 import { format, parseISO } from "date-fns";
 import { differenceInMonths } from "date-fns";
 import { differenceInDays } from "date-fns";
-import { POVDecisionCriteria, POVTeamMemberWithDetails } from "../types/pov";
+import { POV, POVDecisionCriteria, POVTeamMemberWithDetails } from "../types/pov";
+import { CheckCircle } from "lucide-react";
+import { Ban, CheckCircle2, CircleSlash, Star } from "lucide-react";
+import { Clock } from "lucide-react";
 
 export const getEffectiveMemberDetails = (member: POVTeamMemberWithDetails) => ({
     name: member.name ?? member.team_member.name,
@@ -37,6 +40,10 @@ export const getStatusBadgeColor = (status?: string) => {
     switch (status) {
         case 'COMPLETE':
             return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400';
+        case 'PENDING':
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400';
+        case 'SKIPPED':
+            return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400';
         case 'IN_PROGRESS':
             return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
         case 'BLOCKED':
@@ -60,6 +67,30 @@ export const getStatusBadgeColor = (status?: string) => {
     }
 };
 
+export const STATUS_CONFIG = {
+    'SUBMITTED': { icon: Clock, color: 'text-yellow-500 dark:text-yellow-400' },
+    'APPROVED': { icon: CheckCircle, color: 'text-blue-500 dark:text-blue-400' },
+    'IN_PROGRESS': { icon: Clock, color: 'text-blue-500 dark:text-blue-400' },
+    'COMPLETE': { icon: CheckCircle2, color: 'text-green-500 dark:text-green-400' },
+    'BLOCKED': { icon: Ban, color: 'text-red-500 dark:text-red-400' },
+    'TECHNICALLY_SELECTED': { icon: Star, color: 'text-purple-500 dark:text-purple-400' },
+    'NOT_SELECTED': { icon: CircleSlash, color: 'text-gray-500 dark:text-gray-400' }
+  } as const;
+
+export const getPOVStatusBadgeColor = (status: POV['status'] | undefined) => {
+    const colors = {
+        'DRAFT': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
+        'SUBMITTED': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
+        'APPROVED': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400',
+        'IN_PROGRESS': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400',
+        'COMPLETE': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400',
+        'BLOCKED': 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400',
+        'TECHNICALLY_SELECTED': 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400',
+        'NOT_SELECTED': 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-400',
+    } as const;
+    return colors[status as keyof typeof colors] || colors.DRAFT;
+};
+
 export function getInitials(name: string) {
     return name
         .split(' ')
@@ -68,10 +99,11 @@ export function getInitials(name: string) {
         .toUpperCase();
 }
 
-export const calculateProgress = (criteria: POVDecisionCriteria[] | undefined) => {
-    if (!criteria?.length) return 0;
-    const met = (criteria || []).filter(c => c.status === 'MET').length;
-    return Math.round((met / criteria.length) * 100);
+// Helper function to calculate completion percentage
+export const calculateProgress = (items: Array<{ status: string }>, excludedStatuses: string[] = ['NOT_ONBOARDED','NOT_STARTED', 'PENDING', 'OPEN', 'IN_PROGRESS', 'UNABLE_TO_COMPLETE', 'SCHEDULED']): number => {
+    if (!items?.length) return 0;
+    const completedItems = items.filter(item => !excludedStatuses.includes(item.status));
+    return (completedItems.length / items.length) * 100;
 };
 
 export function formatBytes(bytes: number, decimals = 2) {

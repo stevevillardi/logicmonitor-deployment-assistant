@@ -9,6 +9,7 @@ interface AITextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaEleme
     label?: string;
     error?: string;
     reason?: string;
+    labelSuffix?: React.ReactNode;
 }
 
 export function AITextarea({ 
@@ -18,6 +19,7 @@ export function AITextarea({
     error,
     reason,
     className,
+    labelSuffix,
     ...props 
 }: AITextareaProps) {
     const [isEnhancing, setIsEnhancing] = useState(false);
@@ -70,7 +72,7 @@ export function AITextarea({
             {label && (
                 <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {label}
+                        {label} {labelSuffix}
                     </span>
                     <div className="flex gap-2">
                         {previousValue !== null && (

@@ -10,7 +10,7 @@ import { POV, POVDecisionCriteria, DeviceScope } from '@/app/types/pov';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getEffectiveMemberDetails, calculateProgress } from '@/app/lib/utils';
+import { getEffectiveMemberDetails, calculateProgress, getPOVStatusBadgeColor } from '@/app/lib/utils';
 import { formatDate } from '@/app/lib/utils';
 
 const EmptySearchResults = ({ searchTerm, selectedStatus, onReset }: { 
@@ -86,20 +86,6 @@ export default function POVManagement() {
     const handleViewPOV = (povId: string) => {
         router.push(`/pov/${povId}`);
     };
-
-    const getStatusBadgeColor = (status: POV['status']) => {
-        const colors = {
-            'DRAFT': 'bg-yellow-100 text-yellow-800',
-            'SUBMITTED': 'bg-yellow-100 text-yellow-800',
-            'IN_PROGRESS': 'bg-blue-100 text-blue-800',
-            'COMPLETE': 'bg-green-100 text-green-800',
-            'BLOCKED': 'bg-red-100 text-red-800',
-            'TECHNICALLY_SELECTED': 'bg-purple-100 text-purple-800',
-            'NOT_SELECTED': 'bg-gray-100 text-gray-800',
-        } as const;
-        return colors[status as keyof typeof colors] || colors.DRAFT;
-    };
-
 
     const getDeviceScopeSummary = (deviceScopes: DeviceScope[] | undefined) => {
         if (!deviceScopes?.length) return { total: 0, high: 0 };
@@ -217,7 +203,7 @@ export default function POVManagement() {
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getStatusBadgeColor(pov.status)}`}>
+                                            <span className={`px-3 py-1 text-xs font-bold rounded-full ${getPOVStatusBadgeColor(pov.status)}`}>
                                                 {pov.status.replace(/_/g, ' ')}
                                             </span>
                                         </div>

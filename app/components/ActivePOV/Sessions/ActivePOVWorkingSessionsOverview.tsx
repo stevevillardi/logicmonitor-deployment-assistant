@@ -9,33 +9,24 @@ import {
     Circle, 
     ArrowUpRight,
     CalendarDays,
-    Lock,
     FileText,
     Link,
-    MoreHorizontal,
     MinusCircle,
-    Flag,
     BarChart2,
+    CircleDot,
 } from 'lucide-react';
 import { formatDate } from '@/app/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { getStatusBadgeColor } from '@/app/lib/utils';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { SessionActivity } from '@/app/types/pov';
-import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from 'react';
+import { StatusDropdown } from "@/app/components/Shared/StatusDropdown";
+import { cn } from "@/lib/utils";
 
 export default function ActivePOVWorkingSessionsOverview() {
     const { state } = usePOV();
@@ -48,6 +39,75 @@ export default function ActivePOVWorkingSessionsOverview() {
         cancelled: 0,
         percentage: 0
     });
+
+    const sessionStatuses = [
+        { value: 'SCHEDULED', icon: Calendar, label: 'Scheduled' },
+        { value: 'COMPLETED', icon: CheckCircle2, label: 'Completed' },
+        { value: 'CANCELLED', icon: MinusCircle, label: 'Cancelled' }
+    ];
+
+    const activityStatuses = [
+        { value: 'PENDING', icon: CircleDot, label: 'Pending' },
+        { value: 'IN_PROGRESS', icon: ArrowUpRight, label: 'In Progress' },
+        { value: 'COMPLETED', icon: CheckCircle2, label: 'Completed' },
+        { value: 'SKIPPED', icon: MinusCircle, label: 'Skipped' }
+    ];
+
+    const dropdownClassName = "scale-90 origin-top-right";
+
+    const getSessionStatusColor = (status: string) => {
+        switch (status) {
+            case 'COMPLETED':
+                return 'bg-green-500 text-white hover:bg-green-600';
+            case 'SCHEDULED':
+                return 'bg-blue-500 text-white hover:bg-blue-600';
+            case 'CANCELLED':
+                return 'bg-red-500 text-white hover:bg-red-600';
+            default:
+                return 'bg-gray-500 text-white hover:bg-gray-600';
+        }
+    };
+
+    const getSessionMenuItemColor = (status: string) => {
+        switch (status) {
+            case 'COMPLETED':
+                return 'text-green-600';
+            case 'SCHEDULED':
+                return 'text-blue-600';
+            case 'CANCELLED':
+                return 'text-red-600';
+            default:
+                return 'text-gray-600';
+        }
+    };
+
+    const getActivityStatusColor = (status: string) => {
+        switch (status) {
+            case 'COMPLETED':
+                return 'bg-green-500 text-white hover:bg-green-600';
+            case 'IN_PROGRESS':
+                return 'bg-blue-500 text-white hover:bg-blue-600';
+            case 'SKIPPED':
+                return 'bg-red-500 text-white hover:bg-red-600';
+            case 'PENDING':
+            default:
+                return 'bg-gray-500 text-white hover:bg-gray-600';
+        }
+    };
+
+    const getActivityMenuItemColor = (status: string) => {
+        switch (status) {
+            case 'COMPLETED':
+                return 'text-green-600';
+            case 'IN_PROGRESS':
+                return 'text-blue-600';
+            case 'SKIPPED':
+                return 'text-red-600';
+            case 'PENDING':
+            default:
+                return 'text-gray-600';
+        }
+    };
 
     // Move useEffect before any returns
     useEffect(() => {
@@ -188,39 +248,16 @@ export default function ActivePOVWorkingSessionsOverview() {
                                 {/* Session Header */}
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Badge 
-                                                    className={`
-                                                        ${getStatusBadgeColor(session.status)} 
-                                                        cursor-pointer hover:bg-gray-300 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100
-                                                        !bg-opacity-100 border-0
-                                                    `}
-                                                >
-                                                    {session.status}
-                                                </Badge>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="start" className="min-w-[120px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                                                <DropdownMenuItem 
-                                                    className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                    onClick={() => handleSessionStatusChange(session.id, 'SCHEDULED')}
-                                                >
-                                                    Scheduled
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem 
-                                                    className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                    onClick={() => handleSessionStatusChange(session.id, 'COMPLETED')}
-                                                >
-                                                    Completed
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem 
-                                                    className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                    onClick={() => handleSessionStatusChange(session.id, 'CANCELLED')}
-                                                >
-                                                    Cancelled
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <StatusDropdown
+                                            currentStatus={session.status}
+                                            statuses={sessionStatuses}
+                                            onStatusChange={(status) => handleSessionStatusChange(session.id, status as 'SCHEDULED' | 'COMPLETED' | 'CANCELLED')}
+                                            getStatusColor={getSessionStatusColor}
+                                            getMenuItemColor={getSessionMenuItemColor}
+                                            showIcon={true}
+                                            buttonSize="sm"
+                                            className={cn("rounded-full", dropdownClassName)}
+                                        />
                                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                             <CalendarDays className="h-4 w-4" />
                                             <time>{formatDate(session.session_date)}</time>
@@ -288,47 +325,21 @@ export default function ActivePOVWorkingSessionsOverview() {
                                                             </Tooltip>
                                                         </TooltipProvider>
                                                     )}
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Badge 
-                                                                className={`
-                                                                    cursor-pointer hover:bg-gray-300 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100
-                                                                    ${activity.status === 'COMPLETED' ? 'bg-green-500 text-white' :
-                                                                      activity.status === 'IN_PROGRESS' ? 'bg-blue-500 text-white' :
-                                                                      activity.status === 'SKIPPED' ? 'bg-red-500 text-white' :
-                                                                      'bg-gray-500 text-white'}
-                                                                `}
-                                                            >
-                                                                {formatActivityStatus(activity.status)}
-                                                            </Badge>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="min-w-[120px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                                                            <DropdownMenuItem 
-                                                                className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                                onClick={() => handleActivityStatusChange(session.id, activity.id, session.session_activities || [], 'PENDING')}
-                                                            >
-                                                                Pending
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem 
-                                                                className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                                onClick={() => handleActivityStatusChange(session.id, activity.id, session.session_activities || [], 'IN_PROGRESS')}
-                                                            >
-                                                                In Progress
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem 
-                                                                className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                                onClick={() => handleActivityStatusChange(session.id, activity.id, session.session_activities || [], 'COMPLETED')}
-                                                            >
-                                                                Completed
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem 
-                                                                className="cursor-pointer focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-800 dark:focus:text-gray-100 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-800"
-                                                                onClick={() => handleActivityStatusChange(session.id, activity.id, session.session_activities || [], 'SKIPPED')}
-                                                            >
-                                                                Skipped
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                    <StatusDropdown
+                                                        currentStatus={activity.status}
+                                                        statuses={activityStatuses}
+                                                        onStatusChange={(status) => handleActivityStatusChange(
+                                                            session.id, 
+                                                            activity.id, 
+                                                            session.session_activities || [], 
+                                                            status as 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED'
+                                                        )}
+                                                        getStatusColor={getActivityStatusColor}
+                                                        getMenuItemColor={getActivityMenuItemColor}
+                                                        showIcon={true}
+                                                        buttonSize="sm"
+                                                        className={cn("rounded-full", dropdownClassName)}
+                                                    />
                                                 </div>
                                             ))}
                                         </div>

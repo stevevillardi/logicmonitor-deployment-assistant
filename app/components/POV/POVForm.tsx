@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Save, Building2, User, Briefcase, CalendarRange, Building, Globe } from 'lucide-react';
+import { Save, Building2, User, Briefcase, CalendarRange, Building, Globe, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
+import { toast } from 'react-hot-toast';
 
 const formatDateForInput = (dateString: string | undefined) => {
   if (!dateString) return '';
@@ -42,29 +43,30 @@ export default function POVForm() {
     e.preventDefault();
     if (isSubmitting) return;
 
+    // Validate required fields
+    if (!formData.title || !formData.customer_name || !formData.customer_industry || 
+        !formData.customer_region || !formData.start_date || !formData.end_date) {
+        toast.error('Please fill in all required fields');
+        return;
+    }
+
     setIsSubmitting(true);
     try {
-      // Validate required fields
-      if (!formData.title || !formData.customer_name || !formData.customer_industry || !formData.customer_region) {
-        throw new Error('Please fill in all required fields');
-      }
+        const newPov = await createPOV({
+            ...formData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        });
 
-      const newPov = await createPOV({
-        ...formData,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
+        if (!newPov?.id) {
+            throw new Error('Failed to create POV');
+        }
 
-      if (!newPov?.id) {
-        throw new Error('Failed to create POV');
-      }
-
-      router.push(`/pov/${newPov.id}`);
+        router.push(`/pov/${newPov.id}`);
     } catch (error) {
-      console.error('Error creating POV:', error);
-      // Here you might want to show an error message to the user
+        console.error('Error creating POV:', error);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   };
 
@@ -81,6 +83,10 @@ export default function POVForm() {
             </p>
           </div>
         </div>
+        <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4">
+          <Info className="h-4 w-4" />
+          <span>Fields marked with <span className="text-red-500">*</span> are required</span>
+        </div>
       </Card>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -92,7 +98,7 @@ export default function POVForm() {
                 className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
               >
                 <Building2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                POV Title
+                POV Title <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="title"
@@ -110,7 +116,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Customer Name
+                  Customer Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="customer_name"
@@ -127,7 +133,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <Building className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Industry
+                  Industry <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.customer_industry}
@@ -155,7 +161,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Region
+                  Region <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.customer_region}
@@ -187,7 +193,7 @@ export default function POVForm() {
                   id="business_unit"
                   value={formData.business_unit}
                   onChange={(e) => setFormData({ ...formData, business_unit: e.target.value })}
-                  placeholder="Enter business unit"
+                  placeholder="Enter business unit (team responsible for POV)"
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -198,7 +204,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <CalendarRange className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  Start Date
+                  Est. Start Date
                 </Label>
                 <Input
                   id="start_date"
@@ -215,7 +221,7 @@ export default function POVForm() {
                   className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
                 >
                   <CalendarRange className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  End Date
+                  Est. End Date
                 </Label>
                 <Input
                   id="end_date"

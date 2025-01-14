@@ -11,6 +11,7 @@ import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Plus, Minus, Save } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { AITextarea } from "@/app/components/ui/ai-textarea";
+import { toast } from 'react-hot-toast';
 
 const DEFAULT_CHALLENGE_CATEGORIES = [
   "Agentless Monitoring",
@@ -97,6 +98,12 @@ export default function CreateChallengeDialog({
     e.preventDefault();
     if (isSubmitting) return;
 
+    if (!formData.title || !formData.challenge_description || !formData.business_impact || 
+        !formData.categories.length || !formData.outcomes.length) {
+        toast.error('Please fill in all required fields: Title, Description, Business Impact, Categories, and at least one Outcome');
+        return;
+    }
+
     setIsSubmitting(true);
     try {
       if (editingChallenge) {
@@ -165,7 +172,7 @@ export default function CreateChallengeDialog({
                         Add to Content Library
                       </h4>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Make this challenge available as a template for future POVs
+                        Make this challenge available as a template for future POVs for all SE team members to use.
                       </p>
                     </div>
                     <Switch
@@ -181,13 +188,12 @@ export default function CreateChallengeDialog({
               <div className="grid gap-3">
                 {/* Title */}
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Enter challenge title"
-                    required
                     className={inputBaseStyles}
                   />
                 </div>
@@ -196,12 +202,12 @@ export default function CreateChallengeDialog({
                 <div className="space-y-2">
                   <AITextarea
                     label="Challenge Description"
+                    labelSuffix={<span className="text-red-500">*</span>}
                     id="challenge_description"
                     value={formData.challenge_description}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, challenge_description: value }))}
                     placeholder="Describe the challenge"
                     reason="Enhance challenge description to be more precise and highlight key pain points"
-                    required
                     className={inputBaseStyles}
                   />
                 </div>
@@ -210,12 +216,12 @@ export default function CreateChallengeDialog({
                 <div className="space-y-2">
                   <AITextarea
                     label="Business Impact"
+                    labelSuffix={<span className="text-red-500">*</span>}
                     id="business_impact"
                     value={formData.business_impact}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, business_impact: value }))}
                     placeholder="Describe the business impact"
                     reason="Enhance business impact description to focus on the negative impact of not having the solution"
-                    required
                     className={inputBaseStyles}
                   />
                 </div>
@@ -236,7 +242,7 @@ export default function CreateChallengeDialog({
                 {/* Categories */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label className="pr-2">Categories (Required Capabilities)</Label>
+                    <Label className="pr-2">Categories (Required Capabilities) <span className="text-red-500">*</span></Label>
                     <Button
                       type="button"
                       variant="outline"
@@ -291,7 +297,7 @@ export default function CreateChallengeDialog({
                 {/* Outcomes */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label className="pr-2">Desired Outcomes</Label>
+                    <Label className="pr-2">Desired Outcomes <span className="text-red-500">*</span></Label>
                     <Button
                       type="button"
                       variant="outline"

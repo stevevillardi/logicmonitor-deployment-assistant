@@ -8,11 +8,14 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from "react-hot-toast";
 import { getStatusBadgeColor } from '@/app/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface DecisionCriteriaListProps {
   decisionCriteria: POVDecisionCriteria[];
   onEdit: (criteria: POVDecisionCriteria) => void;
 }
+
+const badgeClassName = "pointer-events-none select-none";
 
 export default function DecisionCriteriaList({ 
   decisionCriteria, 
@@ -64,7 +67,10 @@ export default function DecisionCriteriaList({
                   </h4>
                   <Badge
                     variant="secondary"
-                    className={`mt-1 ${getStatusBadgeColor(criteria.status)}`}
+                    className={cn(
+                        `mt-1 ${getStatusBadgeColor(criteria.status)}`,
+                        badgeClassName
+                    )}
                   >
                     {criteria.status}
                   </Badge>
@@ -101,7 +107,10 @@ export default function DecisionCriteriaList({
                         <Badge 
                           key={cat.category} 
                           variant="secondary"
-                          className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800"
+                          className={cn(
+                              "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800",
+                              badgeClassName
+                          )}
                         >
                           {cat.category}
                         </Badge>
@@ -131,7 +140,10 @@ export default function DecisionCriteriaList({
                           >
                             <Badge 
                               variant="secondary"
-                              className={getStatusBadgeColor(activity.status)}
+                              className={cn(
+                                  getStatusBadgeColor(activity.status),
+                                  badgeClassName
+                              )}
                             >
                               {activity.status.replace('_', ' ')}
                             </Badge>

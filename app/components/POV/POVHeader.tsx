@@ -2,7 +2,7 @@
 
 import { usePOV } from '@/app/contexts/POVContext';
 import { Button } from '@/components/ui/button';
-import { Send, ArrowLeft, Trash2, Info, AlertCircle, Building2 } from 'lucide-react';
+import { Send, ArrowLeft, Trash2, Info, AlertCircle, Building2, CheckCircle, Clock, XCircle, Star, Ban, CheckCircle2, CircleSlash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import {
@@ -16,9 +16,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from 'react';
-import { supabaseBrowser } from '@/app/lib/supabase/client';
 import Link from 'next/link';
-import { POV } from '@/app/types/pov';
+import { getPOVStatusBadgeColor, STATUS_CONFIG } from '@/app/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ValidationSection {
   name: string;
@@ -28,10 +33,10 @@ interface ValidationSection {
 }
 
 export default function POVHeader() {
-  const { state, dispatch } = usePOV();
+  const { state } = usePOV();
   const { pov } = state;
   const router = useRouter();
-  const { deletePOV } = usePOVOperations();
+  const { deletePOV, updatePOVStatus } = usePOVOperations();
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showValidationAlert, setShowValidationAlert] = useState(false);
@@ -116,43 +121,10 @@ export default function POVHeader() {
     }
 
     try {
-      const { data, error } = await supabaseBrowser
-        .from('pov')
-        .update({ 
-          status: 'SUBMITTED',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', pov?.id)
-        .select()
-        .single();
-        
-      if (error) throw error;
-
-      // Update the POV in context
-      if (data) {
-        dispatch({
-          type: 'UPDATE_POV',
-          payload: {
-            ...pov!,
-            status: 'SUBMITTED' as const,
-            updated_at: new Date().toISOString()
-          } as POV
-        });
-
-        // Also update the POV in the POVs list
-        dispatch({
-          type: 'UPDATE_POV_IN_LIST',
-          payload: {
-            id: pov!.id,
-            updates: {
-              status: 'SUBMITTED',
-              updated_at: new Date().toISOString()
-            }
-          }
-        });
-      }
+        if (!pov?.id) throw new Error('POV ID not found');
+        await updatePOVStatus(pov.id, 'SUBMITTED');
     } catch (error) {
-      console.error('Error submitting POV:', error);
+        console.error('Error submitting POV:', error);
     }
   };
 
@@ -175,7 +147,7 @@ export default function POVHeader() {
                   {pov ? pov.customer_name : 'New POV'}
                 </h1>
                 <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-sm font-medium
-                  ${getStatusColor(pov?.status)}`}>
+                  ${getPOVStatusBadgeColor(pov?.status)}`}>
                   {pov?.status?.replace(/_/g, ' ') || 'DRAFT'}
                 </span>
               </div>
@@ -199,21 +171,52 @@ export default function POVHeader() {
               </Button>
             ) : (
               <>
+                <div className="flex items-center gap-2">
                 <Button
-                  variant="outline"
-                  onClick={() => setShowDeleteAlert(true)}
-                  className="bg-white dark:bg-gray-900 border-red-200 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete POV
-                </Button>
-                <Button
-                  onClick={handleSubmitPOV}
-                  className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                >
-                  <Send className="h-4 w-4" />
-                  Submit POV
-                </Button>
+                    variant="outline"
+                    onClick={() => setShowDeleteAlert(true)}
+                    className="bg-white dark:bg-gray-900 border-red-200 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete POV
+                  </Button>
+                  {pov?.status === 'DRAFT' ? (
+                    <Button
+                      onClick={handleSubmitPOV}
+                      className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Submit POV
+                    </Button>
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button className="bg-[#040F4B] hover:bg-[#0A1B6F] text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
+                          <Send className="h-4 w-4 mr-2" />
+                          Update Status
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent 
+                        align="end" 
+                        className="w-56 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                      >
+                        {Object.entries(STATUS_CONFIG).map(([status, config]) => {
+                          const Icon = config.icon;
+                          return (
+                            <DropdownMenuItem
+                              key={status}
+                              onClick={() => updatePOVStatus(pov?.id || '', status)}
+                              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            >
+                              <Icon className={`h-4 w-4 ${config.color}`} />
+                              <span>{status.replace(/_/g, ' ')}</span>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -309,20 +312,3 @@ export default function POVHeader() {
     </>
   );
 }
-
-function getStatusColor(status?: string) {
-  switch (status) {
-    case 'COMPLETE':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400';
-    case 'IN_PROGRESS':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
-    case 'BLOCKED':
-      return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400';
-    case 'TECHNICALLY_SELECTED':
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
-    case 'NOT_SELECTED':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400';
-    default:
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400';
-  }
-} 

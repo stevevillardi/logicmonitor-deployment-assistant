@@ -189,6 +189,7 @@ export default function AddDeviceScopeDialog({
                                     onSelect={() => {
                                         setFormData({
                                             ...formData,
+                                            onboarding_template_device: true,
                                             device_type: cred.name,
                                             category: cred.category
                                         });

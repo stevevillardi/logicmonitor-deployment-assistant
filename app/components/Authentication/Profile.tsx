@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, User, Folder, Layout, Moon, Sun, Users } from 'lucide-react'
+import { LogOut, User, Folder, Layout, Moon, Sun, Users, FileText } from 'lucide-react'
 import ManageDeploymentsDialog from './ManageDeploymentsDialog'
 import ManageDashboardsDialog from './ManageDashboardsDialog'
 import ManageUsersDialog from './ManageUsersDialog'
@@ -56,6 +56,13 @@ export const Profile = memo(() => {
 
     const handleThemeToggle = () => {
         setTheme(theme === 'light' ? 'dark' : 'light');
+    };
+
+    const handleManagePOVs = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        router.push('/pov?tab=pov-management');
+        setDropdownOpen(false);
     };
 
     const getSecureAvatarUrl = () => {
@@ -158,6 +165,18 @@ export const Profile = memo(() => {
                         >
                             <Users className="mr-2 h-4 w-4" />
                             <span>Manage Users</span>
+                        </DropdownMenuItem>
+                    )}
+                    {hasPermission({ action: 'manage', resource: 'pov' }) && (
+                        <DropdownMenuItem 
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                handleManagePOVs(e as unknown as React.MouseEvent);
+                            }}
+                            className="text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                            <FileText className="mr-2 h-4 w-4" />
+                            <span>Manage POVs</span>
                         </DropdownMenuItem>
                     )}
                     <DropdownMenuItem 

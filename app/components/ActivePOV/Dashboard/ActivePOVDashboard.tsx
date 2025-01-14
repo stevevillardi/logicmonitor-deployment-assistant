@@ -24,73 +24,56 @@ import {
     Target,
     ChevronLeft,
     ChevronRight,
-    Building2
+    Building2,
+    XCircle,
+    Ban,
+    ChevronUp
 } from 'lucide-react';
 import Link from 'next/link';
 import { POVActivity, DeviceScope } from '@/app/types/pov';
 import { formatDistanceToNow } from 'date-fns';
-import { formatDate, calculateProgress } from '@/app/lib/utils';
+import { formatDate } from '@/app/lib/utils';
 import { devLog } from '../../Shared/utils/debug';
 import ActivePOVChallenges from '../Challenges/ActivePOVChallenges';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import DashboardDecisionCriteriaList from '@/app/components/POV/DecisionCriteria/DashboardDecisionCriteriaList';
+import { StatusDropdown } from "@/app/components/Shared/StatusDropdown";
+import { Button } from "@/components/ui/button";
+import { calculateProgress } from '@/app/lib/utils';
 
 const MAX_VISIBLE_SESSIONS = 3;
+
+// Progress bar component
+const ProgressBar = ({ progress, label, color = "bg-blue-600" }: { 
+    progress: number; 
+    label: string;
+    color?: string;
+}) => (
+    <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+            <span className="font-medium text-gray-700 dark:text-gray-300">{label}</span>
+            <span className="text-gray-500 dark:text-gray-400">{Math.round(progress)}%</span>
+        </div>
+        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div 
+                className={`h-full ${color} transition-all duration-300`} 
+                style={{ width: `${progress}%` }}
+            />
+        </div>
+    </div>
+);
 
 export default function ActivePOVDashboard() {
     const { state } = usePOV();
     const { pov } = state;
     const { updateDeviceStatus } = usePOVOperations();
 
-    // Move all useState declarations to the top
-    const [stats, setStats] = useState({
-        total: 0,
-        completed: 0,
-        inProgress: 0,
-        skipped: 0,
-        percentage: 0
-    });
     const [currentDevicePage, setCurrentDevicePage] = useState(0);
     const [currentServicePage, setCurrentServicePage] = useState(0);
-
-    // Move calculateOverallProgress outside useEffect
-    const calculateOverallProgress = useCallback(() => {
-        if (!pov?.working_sessions) return {
-            total: 0,
-            completed: 0,
-            inProgress: 0,
-            skipped: 0,
-            percentage: 0
-        };
-
-        const allActivities = pov.working_sessions?.flatMap(session => session.session_activities || []) || [];
-        const totalActivities = allActivities.length;
-        const completedActivities = allActivities.filter(activity => activity.status === 'COMPLETED').length;
-        const inProgressActivities = allActivities.filter(activity => activity.status === 'IN_PROGRESS').length;
-        const skippedActivities = allActivities.filter(activity => activity.status === 'SKIPPED').length;
-        
-        const completionPercentage = totalActivities > 0 
-            ? Math.round((completedActivities / totalActivities) * 100)
-            : 0;
-
-        return {
-            total: totalActivities,
-            completed: completedActivities,
-            inProgress: inProgressActivities,
-            skipped: skippedActivities,
-            percentage: completionPercentage
-        };
-    }, [pov?.working_sessions]);
-
-    useEffect(() => {
-        const newStats = calculateOverallProgress();
-        setStats(newStats);
-    }, [calculateOverallProgress]);
+    const [showDetails, setShowDetails] = useState(true);
 
     if (!pov) return null;
 
@@ -160,20 +143,28 @@ export default function ActivePOVDashboard() {
         }
     };
 
-    const getStatusColor = (status: DeviceScope['status']) => {
-        switch (status) {
+    const deviceStatuses = [
+        { value: 'NOT_ONBOARDED', icon: AlertCircle, label: 'Not Onboarded' },
+        { value: 'IN_PROGRESS', icon: Clock, label: 'In Progress' },
+        { value: 'ONBOARDED', icon: CheckCircle2, label: 'Onboarded' },
+        { value: 'SKIPPED', icon: XCircle, label: 'Skipped' },
+        { value: 'WAIVED', icon: Ban, label: 'Waived' }
+    ];
+
+    const getStatusColor = (status: string) => {
+        switch (status as DeviceScope['status']) {
             case 'ONBOARDED':
-                return 'text-green-500 dark:text-green-400';
+                return 'text-green-600 dark:text-green-400';
             case 'IN_PROGRESS':
-                return 'text-blue-500 dark:text-blue-400';
+                return 'text-blue-600 dark:text-blue-400';
             case 'NOT_ONBOARDED':
-                return 'text-gray-500 dark:text-gray-400';
+                return 'text-gray-600 dark:text-gray-400';
             case 'SKIPPED':
-                return 'text-red-500 dark:text-red-400';
+                return 'text-yellow-600 dark:text-yellow-400';
             case 'WAIVED':
-                return 'text-yellow-500 dark:text-yellow-400';
+                return 'text-red-600 dark:text-red-400';
             default:
-                return 'text-gray-500 dark:text-gray-400';
+                return 'text-gray-600 dark:text-gray-400';
         }
     };
 
@@ -212,6 +203,15 @@ export default function ActivePOVDashboard() {
         (currentServicePage + 1) * SERVICES_PER_PAGE
     ) || [];
 
+    // Calculate individual progress
+    const workingSessionsProgress = calculateProgress(pov?.working_sessions || []) * 0.25;
+    const deviceScopesProgress = calculateProgress(pov?.device_scopes || []) * 0.25;
+    const challengesProgress = calculateProgress(pov?.challenges || []) * 0.25;
+    const decisionCriteriaProgress = calculateProgress(pov?.decision_criteria || []) * 0.25;
+
+    // Calculate overall progress
+    const overallProgress = workingSessionsProgress + deviceScopesProgress + challengesProgress + decisionCriteriaProgress;
+
     return (
         <div className="space-y-6 p-6">
             {/* Progress Overview */}
@@ -219,53 +219,177 @@ export default function ActivePOVDashboard() {
                 {/* Overall Progress - Takes 2 columns */}
                 <div className="md:col-span-2">
                     <Card className="h-full p-6 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                        <div className="flex items-center gap-2 mb-4">
-                            <BarChart2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                                Overall Progress
-                            </h3>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                                        {stats.completed} of {stats.total} activities completed
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-3 w-3 rounded-full bg-green-500" />
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            {stats.completed} Completed
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-3 w-3 rounded-full bg-blue-500" />
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            {stats.inProgress} In Progress
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-3 w-3 rounded-full bg-red-500" />
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            {stats.skipped} Skipped
-                                        </span>
-                                    </div>
-                                </div>
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <BarChart2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                                    Overall Progress
+                                </h3>
                             </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowDetails(!showDetails)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </Button>
+                        </div>
+
+                        <div className="space-y-4">
+
                             <div className="space-y-2">
                                 <div className="relative">
                                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                         <div 
                                             className="absolute left-0 top-0 h-full bg-green-500 transition-all duration-300 ease-in-out"
-                                            style={{ width: `${stats.percentage}%` }}
+                                            style={{ width: `${overallProgress}%` }}
                                         />
                                     </div>
                                 </div>
                                 <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {stats.percentage}% Complete
+                                    {overallProgress.toFixed(0)}% Complete
                                 </div>
                             </div>
+
+                            {/* Detailed Progress Sections */}
+                            {showDetails && (
+                                <div className="space-y-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    {/* Working Sessions Progress */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4 text-green-500 dark:text-green-400" />
+                                                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    Working Sessions ({(workingSessionsProgress * 4).toFixed(0)}% Complete)
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.working_sessions?.filter(s => s.status === 'COMPLETED').length || 0} Complete
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.working_sessions?.filter(s => s.status === 'SCHEDULED').length || 0} Scheduled
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-green-500 transition-all duration-300"
+                                                style={{ width: `${workingSessionsProgress * 4}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Device Scope Progress */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <HardDrive className="h-4 w-4 text-purple-500 dark:text-purple-400" />
+                                                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    Device Scope Onboarding ({(deviceScopesProgress * 4).toFixed(0)}% Complete)
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.device_scopes?.filter(d => d.status === 'ONBOARDED').length || 0} Onboarded
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.device_scopes?.filter(d => d.status === 'IN_PROGRESS').length || 0} In Progress
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-purple-500 transition-all duration-300"
+                                                style={{ width: `${deviceScopesProgress * 4}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Challenges Progress */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <AlertCircle className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />
+                                                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    Challenges ({(challengesProgress * 4).toFixed(0)}% Complete)
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.challenges?.filter(c => c.status === 'COMPLETED').length || 0} Complete
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.challenges?.filter(c => c.status === 'IN_PROGRESS').length || 0} In Progress
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.challenges?.filter(c => c.status === 'OPEN').length || 0} Open
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-yellow-500 transition-all duration-300"
+                                                style={{ width: `${challengesProgress * 4}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Decision Criteria Progress */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Target className="h-4 w-4 text-red-500 dark:text-red-400" />
+                                                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    Decision Criteria ({(decisionCriteriaProgress * 4).toFixed(0)}% Complete)
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.decision_criteria?.filter(c => c.status === 'COMPLETE').length || 0} Complete
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        {pov.decision_criteria?.filter(c => c.status === 'IN_PROGRESS').length || 0} In Progress
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-red-500 transition-all duration-300"
+                                                style={{ width: `${decisionCriteriaProgress * 4}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </Card>
                 </div>
@@ -435,38 +559,14 @@ export default function ActivePOVDashboard() {
                                             </p>
                                         </div>
                                     </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="sm"
-                                                className={cn(
-                                                    "text-xs font-medium dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-700 hover:bg-gray-100",
-                                                    getStatusColor(device.status)
-                                                )}
-                                            >
-                                                {device.status.replace(/_/g, ' ')}
-                                                <ChevronDown className="ml-1 h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent 
-                                            align="end"
-                                            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                                        >
-                                            {['NOT_ONBOARDED', 'IN_PROGRESS', 'ONBOARDED', 'SKIPPED', 'WAIVED'].map((status) => (
-                                                <DropdownMenuItem
-                                                    key={status}
-                                                    onClick={() => handleDeviceStatusChange(device.id, status as DeviceScope['status'])}
-                                                    className={cn(
-                                                        "gap-2 cursor-pointer hover:text-gray-900 dark:hover:text-gray-100",
-                                                        getStatusColor(status as DeviceScope['status'])
-                                                    )}
-                                                >
-                                                    {status.replace(/_/g, ' ')}
-                                                </DropdownMenuItem>
-                                            ))}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <StatusDropdown
+                                        currentStatus={device.status}
+                                        statuses={deviceStatuses}
+                                        onStatusChange={(status) => handleDeviceStatusChange(device.id, status as DeviceScope['status'])}
+                                        getStatusColor={getStatusColor}
+                                        showIcon={true}
+                                        buttonSize="sm"
+                                    />
                                 </div>
                                 <div className="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                     <div className="flex items-center gap-1">
@@ -528,7 +628,7 @@ export default function ActivePOVDashboard() {
                             </h3>
                         </div>
                         <Link 
-                            href={`/active-pov/${pov.id}/timeline`}
+                            href={`/active-pov/${pov.id}/activities`}
                             className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                         >
                             View All
@@ -704,10 +804,10 @@ export default function ActivePOVDashboard() {
                         </h3>
                     </div>
                     <Link 
-                        href={`/active-pov/${pov.id}/criteria`}
+                        href={`/active-pov/${pov.id}/sessions`}
                         className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                     >
-                        View All
+                        View Related Sessions
                         <ArrowRight className="h-4 w-4" />
                     </Link>
                 </div>
@@ -716,6 +816,54 @@ export default function ActivePOVDashboard() {
                     decisionCriteria={pov.decision_criteria || []}
                 />
             </Card>
+
+            {/* Progress Overview */}
+            <div className="space-y-4 p-6 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        Overall Progress
+                    </h3>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowDetails(!showDetails)}
+                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                        {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </Button>
+                </div>
+                
+                <ProgressBar 
+                    progress={overallProgress} 
+                    label="Overall Completion" 
+                    color="bg-[#040F4B] dark:bg-blue-600"
+                />
+
+                {showDetails && (
+                    <div className="space-y-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <ProgressBar 
+                            progress={workingSessionsProgress * 4} 
+                            label="Working Sessions" 
+                            color="bg-green-600 dark:bg-green-500"
+                        />
+                        <ProgressBar 
+                            progress={deviceScopesProgress * 4} 
+                            label="Device Scope Onboarding" 
+                            color="bg-purple-600 dark:bg-purple-500"
+                        />
+                        <ProgressBar 
+                            progress={challengesProgress * 4} 
+                            label="Challenges" 
+                            color="bg-yellow-600 dark:bg-yellow-500"
+                        />
+                        <ProgressBar 
+                            progress={decisionCriteriaProgress * 4} 
+                            label="Decision Criteria" 
+                            color="bg-red-600 dark:bg-red-500"
+                        />
+                    </div>
+                )}
+            </div>
 
         </div>
     );

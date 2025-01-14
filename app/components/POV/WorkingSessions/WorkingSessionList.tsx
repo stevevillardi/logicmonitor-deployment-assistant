@@ -1,7 +1,7 @@
 'use client'
 
 import { WorkingSession } from '@/app/types/pov';
-import { Pencil, Trash, Calendar, Clock, FileText, CheckCircle2, Circle, ArrowUpRight, StickyNote, Link2, Link } from 'lucide-react';
+import { Pencil, Trash, Calendar, Clock, FileText, CheckCircle2, Circle, ArrowUpRight, StickyNote, Link2, Link, CircleDot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
@@ -121,7 +121,7 @@ export default function WorkingSessionList({ sessions, onEdit }: WorkingSessionL
 
                 {/* Title */}
                 <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                  {session.title}
+                  Session: {session.title}
                 </h3>
 
                 {/* Duration */}
@@ -176,7 +176,7 @@ export default function WorkingSessionList({ sessions, onEdit }: WorkingSessionL
                                 ) : activity.status === 'IN_PROGRESS' ? (
                                   <ArrowUpRight className="h-4 w-4 text-blue-500 dark:text-blue-400" />
                                 ) : (
-                                  <Circle className="h-4 w-4 text-gray-400 dark:text-gray-600" />
+                                  <CircleDot className="h-4 w-4 text-gray-400 dark:text-gray-600" />
                                 )}
                                 <span className="text-gray-700 dark:text-gray-300">
                                   {activityText}
@@ -200,7 +200,7 @@ export default function WorkingSessionList({ sessions, onEdit }: WorkingSessionL
                                     ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400'
                                     : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
                                 }`}>
-                                  {activity.status}
+                                  {activity.status.replace("_", " ")}
                                 </span>
                               </div>
                             );

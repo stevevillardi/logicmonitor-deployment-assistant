@@ -24,6 +24,9 @@ import { getStatusBadgeColor } from '@/app/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { StatusDropdown } from "@/app/components/Shared/StatusDropdown";
+
+const badgeClassName = "pointer-events-none select-none";
 
 export default function ActivePOVChallenges() {
     const { state } = usePOV();
@@ -32,6 +35,30 @@ export default function ActivePOVChallenges() {
     const [expandedId, setExpandedId] = useState<string[]>(
         pov?.challenges?.map(c => c.id) || []
     );
+
+    const challengeStatuses = [
+        { value: 'OPEN', icon: PlayCircle, label: 'Open' },
+        { value: 'IN_PROGRESS', icon: Clock, label: 'In Progress' },
+        { value: 'COMPLETED', icon: CheckCircle2, label: 'Completed' },
+        { value: 'UNABLE_TO_COMPLETE', icon: XCircle, label: 'Unable to Complete' },
+        { value: 'WAIVED', icon: Ban, label: 'Waived' },
+    ];
+
+    const getStatusColor = (status: string) => {
+        switch (status as POVChallenge['status']) {
+            case 'COMPLETED':
+                return 'text-green-600 hover:text-green-700';
+            case 'IN_PROGRESS':
+                return 'text-blue-600 hover:text-blue-700';
+            case 'UNABLE_TO_COMPLETE':
+                return 'text-red-600 hover:text-red-700';
+            case 'WAIVED':
+                return 'text-gray-600 hover:text-gray-700';
+            case 'OPEN':
+            default:
+                return 'text-gray-500 hover:text-gray-600';
+        }
+    };
 
     if (!pov?.challenges?.length) return null;
 
@@ -62,20 +89,7 @@ export default function ActivePOVChallenges() {
         }
     };
 
-    const getStatusIcon = (status: POVChallenge['status']) => {
-        switch (status) {
-            case 'COMPLETED':
-                return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-            case 'IN_PROGRESS':
-                return <Clock className="h-4 w-4 text-blue-500" />;
-            case 'UNABLE_TO_COMPLETE':
-                return <XCircle className="h-4 w-4 text-red-500" />;
-            case 'WAIVED':
-                return <Ban className="h-4 w-4 text-gray-500" />;
-            default:
-                return <PlayCircle className="h-4 w-4 text-gray-500" />;
-        }
-    };
+
 
     const handleToggle = (id: string) => {
         setExpandedId(current => 
@@ -130,7 +144,8 @@ export default function ActivePOVChallenges() {
                                     </h4>
                                     <Badge className={cn(
                                         getStatusBadgeColor(challenge.status),
-                                        "font-medium"
+                                        "font-medium",
+                                        badgeClassName
                                     )}>
                                         {challenge.status.replace(/_/g, ' ')}
                                     </Badge>
@@ -146,86 +161,15 @@ export default function ActivePOVChallenges() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 ml-4">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className={cn(
-                                                "transition-all duration-200 gap-2 min-w-[120px] -mr-2",
-                                                "hover:bg-gray-100 dark:hover:bg-gray-800",
-                                                challenge.status === 'COMPLETED' && "text-green-600 hover:text-green-700",
-                                                challenge.status === 'IN_PROGRESS' && "text-blue-600 hover:text-blue-700",
-                                                challenge.status === 'UNABLE_TO_COMPLETE' && "text-red-600 hover:text-red-700",
-                                                challenge.status === 'WAIVED' && "text-gray-600 hover:text-gray-700",
-                                                challenge.status === 'OPEN' && "text-gray-500 hover:text-gray-600"
-                                            )}
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            {getStatusIcon(challenge.status)}
-                                            <span className="text-sm font-medium">
-                                                {challenge.status === 'OPEN' ? 'Set Status' : challenge.status.replace(/_/g, ' ')}
-                                            </span>
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent 
-                                        align="end" 
-                                        className="w-[200px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg"
-                                    >
-                                        <DropdownMenuItem 
-                                            className="gap-2 focus:bg-gray-100 dark:focus:bg-gray-800"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleStatusChange(challenge, 'IN_PROGRESS');
-                                            }}
-                                        >
-                                            <Clock className="h-4 w-4 text-blue-500" />
-                                            <span>In Progress</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            className="gap-2 focus:bg-gray-100 dark:focus:bg-gray-800"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleStatusChange(challenge, 'COMPLETED');
-                                            }}
-                                        >
-                                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                            <span>Completed</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            className="gap-2 focus:bg-gray-100 dark:focus:bg-gray-800"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleStatusChange(challenge, 'UNABLE_TO_COMPLETE');
-                                            }}
-                                        >
-                                            <XCircle className="h-4 w-4 text-red-500" />
-                                            <span>Unable to Complete</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                            className="gap-2 focus:bg-gray-100 dark:focus:bg-gray-800"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleStatusChange(challenge, 'WAIVED');
-                                            }}
-                                        >
-                                            <Ban className="h-4 w-4 text-gray-500" />
-                                            <span>Waived</span>
-                                        </DropdownMenuItem>
-                                        {challenge.status !== 'OPEN' && (
-                                            <DropdownMenuItem 
-                                                className="gap-2 focus:bg-gray-100 dark:focus:bg-gray-800"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleStatusChange(challenge, 'OPEN');
-                                                }}
-                                            >
-                                                <PlayCircle className="h-4 w-4 text-gray-500" />
-                                                <span>Reset to Open</span>
-                                            </DropdownMenuItem>
-                                        )}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                <StatusDropdown
+                                    currentStatus={challenge.status}
+                                    statuses={challengeStatuses}
+                                    onStatusChange={(status) => handleStatusChange(challenge, status as POVChallenge['status'])}
+                                    getStatusColor={getStatusColor}
+                                    showIcon={true}
+                                    buttonSize="sm"
+                                    formatStatus={(status) => status.replace(/_/g, ' ')}
+                                />
                                 <Button
                                     variant="ghost"
                                     size="sm"

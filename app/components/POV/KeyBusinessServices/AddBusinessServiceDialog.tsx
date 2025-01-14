@@ -10,6 +10,7 @@ import { usePOV } from '@/app/contexts/POVContext';
 import { KeyBusinessService } from '@/app/types/pov';
 import { Building2, User, Target, ClipboardList, Plus, Minus } from 'lucide-react';
 import { usePOVOperations } from '@/app/hooks/usePOVOperations';
+import { toast } from 'react-hot-toast';
 
 interface AddBusinessServiceDialogProps {
   open: boolean;
@@ -69,6 +70,12 @@ export default function AddBusinessServiceDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    // Validate required fields
+    if (!formData.name || !formData.description || !formData.tech_owner) {
+        toast.error('Please fill in all required fields: Service Name, Description, and Technical Owner');
+        return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -138,7 +145,9 @@ export default function AddBusinessServiceDialog({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Building2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <Label htmlFor="name" className="text-gray-900 dark:text-gray-100">Service Name</Label>
+                  <Label htmlFor="name" className="text-gray-900 dark:text-gray-100">
+                    Service Name <span className="text-red-500">*</span>
+                  </Label>
                 </div>
                 <Input
                   id="name"
@@ -147,14 +156,16 @@ export default function AddBusinessServiceDialog({
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Enter service name"
-                  required
+                  
                 />
               </div>
 
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <ClipboardList className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <Label htmlFor="description" className="text-gray-900 dark:text-gray-100">Description</Label>
+                  <Label htmlFor="description" className="text-gray-900 dark:text-gray-100">
+                    Description <span className="text-red-500">*</span>
+                  </Label>
                 </div>
                 <Textarea
                   id="description"
@@ -169,7 +180,9 @@ export default function AddBusinessServiceDialog({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <Label htmlFor="tech_owner" className="text-gray-900 dark:text-gray-100">Technical Owner</Label>
+                  <Label htmlFor="tech_owner" className="text-gray-900 dark:text-gray-100">
+                    Technical Owner <span className="text-red-500">*</span>
+                  </Label>
                 </div>
                 <Input
                   id="tech_owner"
@@ -177,7 +190,7 @@ export default function AddBusinessServiceDialog({
                   onChange={(e) => setFormData({ ...formData, tech_owner: e.target.value })}
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Enter technical owner"
-                  required
+                  
                 />
               </div>
 

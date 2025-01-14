@@ -7,11 +7,14 @@ import { usePOVOperations } from '@/app/hooks/usePOVOperations';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { devLog } from '../../Shared/utils/debug';
+import { cn } from '@/lib/utils';
 
 interface ChallengeListProps {
   challenges: POVChallenge[];
   onEdit: (challenge: POVChallenge) => void;
 }
+
+const badgeClassName = "pointer-events-none select-none";
 
 export default function ChallengeList({ challenges, onEdit }: ChallengeListProps) {
   devLog('Challenges passed to list:', challenges);
@@ -57,15 +60,18 @@ export default function ChallengeList({ challenges, onEdit }: ChallengeListProps
                   </h4>
                   <Badge
                     variant="secondary"
-                    className={`mt-1 ${
-                      challenge.status === 'COMPLETED' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800'
-                        : challenge.status === 'IN_PROGRESS'
-                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-                    }`}
+                    className={cn(
+                        `mt-1 ${
+                            challenge.status === 'COMPLETED' 
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800'
+                                : challenge.status === 'IN_PROGRESS'
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
+                        }`,
+                        badgeClassName
+                    )}
                   >
-                    {challenge.status}
+                    {challenge.status.replace('_', ' ')}
                   </Badge>
                 </div>
               </div>
@@ -112,7 +118,10 @@ export default function ChallengeList({ challenges, onEdit }: ChallengeListProps
                         <Badge
                           key={cat.id}
                           variant="secondary"
-                          className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800"
+                          className={cn(
+                            "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-100 border border-blue-100 dark:border-blue-800",
+                            badgeClassName
+                          )}
                         >
                           {cat.category}
                         </Badge>

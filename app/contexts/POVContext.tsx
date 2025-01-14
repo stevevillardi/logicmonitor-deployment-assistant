@@ -55,7 +55,9 @@ type POVAction =
   | { type: 'UPDATE_COMMENT'; payload: POVComment }
   | { type: 'DELETE_COMMENT'; payload: string }
   | { type: 'UPDATE_DEVICE_STATUS'; payload: { deviceId: string; status: DeviceScope['status'] } }
-
+  | { type: 'UPDATE_POV_STATUS'; payload: POV['status'] }
+  | { type: 'UPDATE_DECISION_CRITERIA_ACTIVITY_STATUS'; payload: { id: string; status: POVDecisionCriteria['status'] } }
+  | { type: 'UPDATE_DECISION_CRITERIA_STATUS'; payload: { id: string; status: POVDecisionCriteria['status'] } }
 
 const POVContext = createContext<{
   state: POVState;
@@ -427,6 +429,46 @@ function povReducer(state: POVState, action: POVAction): POVState {
             device.id === action.payload.deviceId
               ? { ...device, status: action.payload.status }
               : device
+          )
+        }
+      };
+
+    case 'UPDATE_DECISION_CRITERIA_ACTIVITY_STATUS':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          decision_criteria: state.pov.decision_criteria?.map(criteria => ({
+            ...criteria,
+            activities: criteria.activities?.map(activity => 
+              activity.id === action.payload.id 
+                ? { ...activity, status: action.payload.status as "IN_PROGRESS" | "NOT_STARTED" | "COMPLETE" | "PENDING" }
+                : activity
+            )
+          }))
+        }
+      };
+
+    case 'UPDATE_POV_STATUS':
+      return {
+        ...state,
+        pov: state.pov ? {
+          ...state.pov,
+          status: action.payload
+        } : null
+      };
+
+    case 'UPDATE_DECISION_CRITERIA_STATUS':
+      if (!state.pov) return state;
+      return {
+        ...state,
+        pov: {
+          ...state.pov,
+          decision_criteria: state.pov.decision_criteria?.map(criteria =>
+            criteria.id === action.payload.id
+              ? { ...criteria, status: action.payload.status }
+              : criteria
           )
         }
       };

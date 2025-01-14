@@ -61,7 +61,7 @@ export interface POVDecisionCriteriaActivity {
     pov_decision_criteria_id: string;
     activity: string;
     order_index: number;
-    status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETE';
+    status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETE' | 'PENDING';
     created_at: string;
 }
 
@@ -191,6 +191,7 @@ export interface DeviceScope {
     pov_id: string;
     device_type: string;
     category: string;
+    onboarding_template_device: boolean;
     count: number;
     specifications: {
         os?: string;

@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Building2, Calendar, ArrowRight, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
-import { calculateDuration, formatDate, getStatusBadgeColor } from '@/app/lib/utils';
+import { calculateDuration, formatDate, getPOVStatusBadgeColor } from '@/app/lib/utils';
 import { parseISO } from 'date-fns';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getEffectiveMemberDetails, getInitials } from '@/app/lib/utils';
 import Link from 'next/link';
 import { POVTeamMemberWithDetails } from '@/app/types/pov';
+import { cn } from '@/lib/utils';
 
 const MAX_VISIBLE_MEMBERS = 5;
 
@@ -88,6 +89,8 @@ export default function ActivePOVHeader() {
         router.push('/pov?tab=pov-tracker');
     };
 
+    const badgeClassName = "pointer-events-none select-none";
+
     return (
         <header className="border-b border-blue-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -105,7 +108,11 @@ export default function ActivePOVHeader() {
                             <h1 className="text-2xl font-semibold text-[#040F4B] dark:text-gray-100">
                                 {pov ? pov.customer_name : 'Loading...'}
                             </h1>
-                            <Badge className={`font-bold ${getStatusBadgeColor(pov?.status)}`}>
+                            <Badge className={cn(
+                                getPOVStatusBadgeColor(pov?.status),
+                                "font-bold",
+                                badgeClassName
+                            )}>
                                 {pov?.status?.replace(/_/g, ' ') || 'LOADING'}
                             </Badge>
                         </div>
