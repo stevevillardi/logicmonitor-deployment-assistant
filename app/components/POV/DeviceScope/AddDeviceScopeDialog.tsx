@@ -66,6 +66,7 @@ export default function AddDeviceScopeDialog({
       notes: '',
       specifications: {},
     });
+    setSystemCredentials([]);
     setIsSubmitting(false);
   };
 

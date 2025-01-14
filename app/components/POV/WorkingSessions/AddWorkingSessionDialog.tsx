@@ -76,6 +76,7 @@ export default function AddWorkingSessionDialog({
   const resetForm = () => {
     setFormData(initialFormState);
     setActivities([]);
+    setFilteredActivities(null);
     setIsSubmitting(false);
   };
 

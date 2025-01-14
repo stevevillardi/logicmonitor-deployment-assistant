@@ -128,6 +128,7 @@ export default function AddFromLibraryDialog({
 
   const handleClose = () => {
     setSelectedTemplateId(null);
+    setFilteredTemplates(libraryTemplates);
     onClose?.();
     onOpenChange(false);
   };
