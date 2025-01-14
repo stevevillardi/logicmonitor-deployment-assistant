@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
     ClipboardList, 
@@ -86,13 +86,23 @@ const POVTracker = () => {
     const router = useRouter();
     const { state } = usePOV();
     const [searchTerm, setSearchTerm] = React.useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const povsPerPage = 5;
 
-    // Filter out draft POVs and apply search
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     const activePOVs = state.povs?.filter(pov => 
         pov.status !== 'DRAFT' && 
         (pov.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
          pov.customer_name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+    const indexOfLastPOV = currentPage * povsPerPage;
+    const indexOfFirstPOV = indexOfLastPOV - povsPerPage;
+    const currentPOVs = activePOVs?.slice(indexOfFirstPOV, indexOfLastPOV);
+    const totalPages = Math.ceil((activePOVs?.length || 0) / povsPerPage);
 
     const handleViewPOV = (povId: string) => {
         router.push(`/active-pov/${povId}`);
@@ -113,6 +123,14 @@ const POVTracker = () => {
             </CardHeader>
             <CardContent className="p-6 bg-white dark:bg-gray-800">
                 <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Search and Filter
+                        </label>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            
+                        </span>
+                    </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
                         <Input
@@ -124,9 +142,9 @@ const POVTracker = () => {
                     </div>
                 </div>
 
-                {activePOVs && activePOVs.length > 0 ? (
+                {currentPOVs && currentPOVs.length > 0 ? (
                     <div className="space-y-4">
-                        {activePOVs.map((pov: POV) => (
+                        {currentPOVs.map((pov: POV) => (
                             <div
                                 key={pov.id}
                                 className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 
@@ -284,6 +302,30 @@ const POVTracker = () => {
                 ) : (
                     <EmptyState />
                 )}
+
+                <div className="mt-8">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md 
+                                disabled:opacity-50 text-gray-900 dark:text-gray-100"
+                        >
+                            Previous
+                        </button>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 order-first sm:order-none">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md 
+                                disabled:opacity-50 text-gray-900 dark:text-gray-100"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
             </CardContent>
         </Card>
     );
