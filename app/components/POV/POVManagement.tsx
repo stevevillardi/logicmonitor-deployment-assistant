@@ -269,7 +269,8 @@ export default function POVManagement() {
                                                         Decision Criteria
                                                     </span>
                                                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {calculateProgress(pov.decision_criteria)}%
+                                                        {pov.decision_criteria?.filter(c => c.status === 'MET').length || 0}/
+                                                        {pov.decision_criteria?.length || 0}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
@@ -278,7 +279,8 @@ export default function POVManagement() {
                                                         Challenges
                                                     </span>
                                                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {pov.challenges?.filter(c => c.status === 'COMPLETED').length || 0}/{pov.challenges?.length || 0}
+                                                        {pov.challenges?.filter(c => c.status === 'COMPLETED').length || 0}/
+                                                        {pov.challenges?.length || 0}
                                                     </span>
                                                 </div>
                                             </div>
