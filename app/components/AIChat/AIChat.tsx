@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { SendHorizontal, Loader2, ExternalLink, Bot, MinusCircle, Copy, Check, GripHorizontal } from 'lucide-react';
+import { SendHorizontal, Loader2, ExternalLink, Bot, CircleChevronDown, Copy, Check, GripHorizontal } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -252,7 +252,7 @@ export default function RAGChat() {
                 onClick={() => setIsMinimized(true)}
                 className="text-white hover:text-gray-200 transition-colors"
               >
-                <MinusCircle className="w-5 h-5" />
+                <CircleChevronDown className="w-5 h-5" />
               </button>
             </div>
           </div>
