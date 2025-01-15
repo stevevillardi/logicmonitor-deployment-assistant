@@ -103,7 +103,7 @@ export default function LandingPage() {
                         >
                             {user ? (
                                 <>
-                                    Back to Dashboard
+                                    Back to Home
                                     <ArrowRight className="w-4 h-4" />
                                 </>
                             ) : (
