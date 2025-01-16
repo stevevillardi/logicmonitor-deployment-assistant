@@ -11,6 +11,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Save, Check, Building2, User, Briefcase, CalendarRange, Building, Globe, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
+import { Textarea } from "@/components/ui/textarea";
 
 const formatDateForInput = (dateString: string | undefined) => {
   if (!dateString) return '';
@@ -30,6 +31,7 @@ export default function POVDetailsForm() {
     business_unit: '',
     start_date: '',
     end_date: '',
+    customer_notes: '',
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -44,6 +46,7 @@ export default function POVDetailsForm() {
         business_unit: pov.business_unit,
         start_date: formatDateForInput(pov.start_date),
         end_date: formatDateForInput(pov.end_date),
+        customer_notes: pov.customer_notes || '',
       });
     }
   }, [pov]);
@@ -267,6 +270,23 @@ export default function POVDetailsForm() {
                   className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
+            </div>
+
+            <div>
+              <Label 
+                htmlFor="customer_notes" 
+                className="text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2"
+              >
+                <Info className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                Customer Notes (used to make AI recommendations)
+              </Label>
+              <Textarea
+                id="customer_notes"
+                value={formData.customer_notes}
+                onChange={(e) => updateFormData({ customer_notes: e.target.value })}
+                placeholder="Enter any relevant customer notes or meeting minutes"
+                className="h-32 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+              />
             </div>
           </div>
         </Card>

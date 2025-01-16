@@ -6,6 +6,7 @@ export interface POV {
     customer_name: string;
     customer_industry: string;
     customer_region: string;
+    customer_notes: string;
     business_unit: string;
     start_date: string;
     end_date: string;
