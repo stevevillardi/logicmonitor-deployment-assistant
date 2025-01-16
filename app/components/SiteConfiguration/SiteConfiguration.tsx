@@ -451,7 +451,7 @@ export const SiteConfiguration = ({ sites, onUpdateSites, onUpdateConfig, config
                                                 Logs, Traps & NetFlow
                                             </TabsTrigger>
                                             <TabsTrigger className="rounded px-4 py-2 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-400" value="collectors">
-                                                Collectors
+                                                Collector Preview
                                             </TabsTrigger>
                                         </TabsList>
 

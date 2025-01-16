@@ -1,155 +1,145 @@
 import { useState, useEffect } from 'react';
 import VideoGuide from './VideoGuide';
-import { VideoGuideData } from '../DeploymentAssistant/types/types';
-import { AlertTriangle, Search, Filter, PlayCircle, Info } from 'lucide-react';
+import { AlertTriangle, Search, Filter, PlayCircle, Info, PlusCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { devError, devLog } from '../Shared/utils/debug';
+import { supabaseBrowser } from '@/app/lib/supabase/client';
+import SubmitVideoDialog from './SubmitVideoDialog';
+import { usePermissions } from '@/app/hooks/usePermissions';
 
 // Define the structure of the video categories
-interface VideoCategory {
-    category: string;
-    videos: VideoGuideData[];
+interface Video {
+  id: string;
+  category_id: string;
+  title: string;
+  description: string;
+  video_id: string;
+  duration: string;
+  created_at: string;
+  updated_at: string;
 }
 
-// Fallback videos if remote fetch fails
-const localVideoCategories: VideoCategory[] = [
-    {
-        category: "Monitoring",
-        videos: [
-            {
-                title: 'PowerShell Series: Setting up LogicMonitor with multiple SSH/SNMP Credentials',
-                description: 'Learn how to setup LogicMonitor with multiple SSH/SNMP credentials',
-                videoId: 'DR63mbIXeB0',
-                duration: '12:29'
-            },
-        ]
-    },
-    {
-        category: "Automation",
-        videos: [
-            {
-                title: 'PowerShell Series: Filtering and Delta Usage',
-                description: 'Learn how to use PowerShell module for advanced filtering and delta usage',
-                videoId: 'tJqbfAd9sqU',
-                duration: '18:24'
-            },
-        ]
-    },
-    {
-        category: "Resource Management",
-        videos: [
-            {
-                title: 'PowerShell Series: Onboarding and Configuring Devices',
-                description: 'Learn how to use PowerShell module for onboarding and configuring devices',
-                videoId: 'mMGadMsu1Qo',
-                duration: '12:11'
-            },
-        ]
-    }
-];
-
-// URL for remote videos JSON
-const VIDEOS_URL = process.env.NEXT_PUBLIC_VIDEO_JSON || '';
+interface VideoCategory {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  videos?: Video[];
+}
 
 const VideoLibrary = () => {
-    const [videoCategories, setVideoCategories] = useState<VideoCategory[]>(localVideoCategories);
+    const [videoCategories, setVideoCategories] = useState<VideoCategory[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const videosPerPage = 5; // Adjustable number of videos per page
     const [searchTerm, setSearchTerm] = useState('');
+    const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
+    const { hasPermission } = usePermissions();
 
-    useEffect(() => {
-        const fetchVideos = async () => {
-            try {
-                devLog('Attempting to fetch videos from:', VIDEOS_URL);
-                const response = await fetch(VIDEOS_URL);
-                devLog('Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch videos: ${response.status} ${response.statusText}`);
-                }
+    const fetchVideosFromSupabase = async () => {
+        try {
+            // First fetch categories
+            const { data: categories, error: categoriesError } = await supabaseBrowser
+                .from('video_categories')
+                .select('*')
+                .order('name');
 
-                const data = await response.json();
-                devLog('Fetched data:', data);
+            if (categoriesError) throw categoriesError;
 
-                if (!Array.isArray(data)) {
-                    devError('Invalid data format received:', data);
-                    throw new Error('Invalid data format: expected an array');
-                }
+            // Then fetch videos with category information
+            const { data: videos, error: videosError } = await supabaseBrowser
+                .from('videos')
+                .select(`
+                    *,
+                    video_categories (
+                        id,
+                        name
+                    )
+                `)
+                .order('title');
 
-                // Validate data structure
-                const isValidData = data.every(item => 
-                    item.category && 
-                    Array.isArray(item.videos) && 
-                    item.videos.every((video: any) => 
+            if (videosError) throw videosError;
+
+            // Group videos by category
+            const organizedData = categories.map(category => ({
+                ...category,
+                videos: videos
+                    .filter(video => 
+                        video.category_id === category.id && 
                         video.title && 
                         video.description && 
-                        (video.videoId || video.videoUrl)
+                        video.video_id && 
+                        video.duration
                     )
-                );
+                    .map(video => ({
+                        id: video.id,
+                        category_id: video.category_id,
+                        title: video.title,
+                        description: video.description,
+                        video_id: video.video_id,
+                        duration: video.duration,
+                        created_at: video.created_at,
+                        updated_at: video.updated_at
+                    }))
+            }));
 
-                if (!isValidData) {
-                    throw new Error('Invalid data structure in JSON');
-                }
+            setVideoCategories(organizedData);
+        } catch (err: any) {
+            devError('Error fetching videos from Supabase:', err);
+            setError('Unable to load video content. Showing default videos.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    useEffect(() => {
 
-                setVideoCategories(data);
-                setError(null);
-            } catch (err: any) {
-                devError('Error fetching videos:', err);
-                setVideoCategories(localVideoCategories);
-                setError(`Unable to load remote video content (${err.message}). Showing default videos.`);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchVideos();
+        fetchVideosFromSupabase();
     }, []);
 
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, selectedCategory]);
 
-    const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedCategory(event.target.value);
-        setCurrentPage(1); // Reset to first page on category change
-    };
-
     // Get unique categories
     const uniqueCategories = Array.from(
-        new Set(videoCategories.map(category => category.category))
+        new Set(videoCategories.map(category => category.name))
     );
 
     // Filter videos based on selected category
     const filteredCategories = selectedCategory === 'All Categories'
         ? videoCategories
-        : videoCategories.filter(category => category.category === selectedCategory);
+        : videoCategories.filter(category => category.name === selectedCategory);
 
     // Add this filtering logic after the category filtering
     const filteredVideos = filteredCategories
         .map(category => ({
             ...category,
-            videos: category.videos.filter(video =>
-                video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                video.description.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+            videos: category.videos?.filter(video => {
+                if (!video.title || !video.description) return false;
+                return (
+                    video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    video.description.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }) || []
         }))
-        .filter(category => category.videos.length > 0);
+        .filter(category => (category.videos?.length || 0) > 0);
 
     // Pagination logic
     const indexOfLastVideo = currentPage * videosPerPage;
     const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
     const currentVideos = filteredVideos
-        .flatMap(category => category.videos)
+        .flatMap(category => category.videos || [])
+        .filter((video): video is Video => !!video) // Type guard to ensure non-null
         .slice(indexOfFirstVideo, indexOfLastVideo);
     const totalPages = Math.ceil(
-        filteredVideos.flatMap(category => category.videos).length / videosPerPage
+        filteredVideos.reduce((sum, category) => sum + (category.videos?.length || 0), 0) / videosPerPage
     );
 
     const handleNextPage = () => {
@@ -164,7 +154,7 @@ const VideoLibrary = () => {
         }
     };
 
-    const totalVideos = filteredVideos.reduce((sum, category) => sum + category.videos.length, 0);
+    const totalVideos = filteredVideos.reduce((sum, category) => sum + (category.videos?.length || 0), 0);
 
     if (isLoading) {
         return (
@@ -228,6 +218,15 @@ const VideoLibrary = () => {
                                             className="w-full pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                         />
                                     </div>
+                                    {hasPermission({ action: 'create', resource: 'video' }) && (
+                                        <Button
+                                            onClick={() => setIsSubmitDialogOpen(true)}
+                                            className="flex items-center gap-2 bg-[#040F4B] hover:bg-[#0A1B6F] text-white"
+                                        >
+                                            <PlusCircle className="h-4 w-4" />
+                                            Submit Video
+                                        </Button>
+                                    )}
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button 
@@ -269,15 +268,16 @@ const VideoLibrary = () => {
 
                             {/* Video List */}
                             <div className="space-y-6">
-                                {currentVideos.map((video, index) => (
+                                {currentVideos.map((video) => (
                                     <VideoGuide
-                                        key={index}
+                                        key={video.id}
                                         title={video.title}
                                         description={video.description}
-                                        videoId={video.videoId}
-                                        videoUrl={video.videoUrl}
+                                        videoId={video.video_id}
                                         duration={video.duration}
-                                        category={filteredCategories.find(cat => cat.videos.includes(video))?.category}
+                                        category={filteredCategories.find(
+                                            cat => cat.videos?.some(v => v.id === video.id)
+                                        )?.name || 'Uncategorized'}
                                     />
                                 ))}
                             </div>
@@ -308,6 +308,12 @@ const VideoLibrary = () => {
                     </div>
                 </CardContent>
             </Card>
+            <SubmitVideoDialog
+                open={isSubmitDialogOpen}
+                onOpenChange={setIsSubmitDialogOpen}
+                categories={uniqueCategories}
+                onSuccess={fetchVideosFromSupabase}
+            />
         </div>
     );
 };

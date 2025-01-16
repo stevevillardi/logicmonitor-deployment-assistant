@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'lm_user' | 'viewer';
 
 export type Permission = {
   action: 'view' | 'manage' | 'create' | 'delete';
-  resource: 'users' | 'pov' | 'team' | 'working_sessions' | 'device_scope' | 'challenges' | 'decision_criteria' | 'documents' | 'pov_details' | 'key_business_services';
+  resource: 'users' | 'video' | 'pov' | 'team' | 'working_sessions' | 'device_scope' | 'challenges' | 'decision_criteria' | 'documents' | 'pov_details' | 'key_business_services';
 };
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -19,6 +19,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     { action: 'manage', resource: 'decision_criteria' },
     { action: 'manage', resource: 'key_business_services' },
     { action: 'manage', resource: 'pov_details' },
+    { action: 'manage', resource: 'video' },
 
   ],
   lm_user: [
