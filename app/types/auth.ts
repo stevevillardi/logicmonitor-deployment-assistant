@@ -8,6 +8,7 @@ export type Permission = {
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
     { action: 'manage', resource: 'users' },
+    { action: 'manage', resource: 'video' },
 
     { action: 'manage', resource: 'pov' },
     { action: 'manage', resource: 'team' },
@@ -19,7 +20,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     { action: 'manage', resource: 'decision_criteria' },
     { action: 'manage', resource: 'key_business_services' },
     { action: 'manage', resource: 'pov_details' },
-    { action: 'manage', resource: 'video' },
 
   ],
   lm_user: [

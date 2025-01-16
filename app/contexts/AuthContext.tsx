@@ -4,11 +4,11 @@ import { createContext, useContext, ReactNode, useCallback, useEffect, useState 
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 import { UserRole, Permission, ROLE_PERMISSIONS } from '../types/auth';
 import { useRouter } from 'next/navigation';
-import { debug, devError } from '@/app/components/Shared/utils/debug';
+import { debug, devError, devLog } from '@/app/components/Shared/utils/debug';
 
 interface AuthContextType {
   user: any | null;
-  userRole: UserRole;
+  userRole: UserRole | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   hasPermission: (permission: Permission) => boolean;
@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>('viewer');
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -39,21 +39,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       debug.error('Failed to fetch user role', error);
       return 'viewer';
     }
-  }, []);
+  }, [userRole]);
 
   useEffect(() => {
     let mounted = true;
-    debug.auth('Setting up auth state');
-
     const handleAuthStateChange = async (session: any) => {
       try {
         if (!mounted) return;
 
         if (session?.user) {
           setUser(session.user);
-          const role = await fetchUserRole(session.user.id);
-          if (mounted) {
-            setUserRole(role);
+          if (!userRole) {
+            const role = await fetchUserRole(session.user.id);
+            if (mounted) {
+              setUserRole(role);
+            }
+          } else {
+            devLog('Using cached role:', userRole);
+            return userRole;
           }
         } else {
           setUser(null);
@@ -67,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         debug.error('Auth state change handler failed', error);
         if (mounted) {
           setUser(null);
-          setUserRole('viewer');
+          setUserRole(null);
         }
       } finally {
         if (mounted) {
@@ -78,9 +81,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Initial session check
     supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
-      debug.auth('Initial session check', { 
+      debug.auth('Initial session check', {
         hasSession: !!session,
-        userId: session?.user?.id 
+        userId: session?.user?.id
       });
       handleAuthStateChange(session);
     });
@@ -88,8 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Subscribe to auth changes
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
       async (_event, session) => {
-        debug.auth('Auth state changed', { 
-          event: _event, 
+        debug.auth('Auth state changed', {
+          event: _event,
           userId: session?.user?.id,
           hasSession: !!session
         });
@@ -105,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchUserRole, router]);
 
   const hasPermission = useCallback((permission: Permission): boolean => {
+    if (!userRole) return false;
     return ROLE_PERMISSIONS[userRole].some(
       p => p.action === permission.action && p.resource === permission.resource
     );
@@ -115,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await supabaseBrowser.auth.signOut();
       setUser(null);
-      setUserRole('viewer');
+      setUserRole(null);
       router.push('/login');
     } catch (error) {
       devError('Sign out error:', error);
@@ -127,7 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     userRole,
-    isAuthenticated: !!user && user.id != null, // More strict check
+    isAuthenticated: !!user && user.id != null,
     isLoading,
     hasPermission,
     signOut

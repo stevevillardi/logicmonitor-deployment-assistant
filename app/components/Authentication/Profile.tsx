@@ -134,7 +134,7 @@ export const Profile = memo(() => {
                                 {user.email}
                             </p>
                             <p className="text-xs leading-none text-blue-600 dark:text-blue-400 mt-1">
-                                Role: {getRoleDisplay(userRole)}
+                                Role: { userRole ? getRoleDisplay(userRole) : 'Unknown Role' }
                             </p>
                         </div>
                     </DropdownMenuLabel>
