@@ -19,10 +19,10 @@ import {
 import { RxReset } from "react-icons/rx";
 import { Switch } from "@/components/ui/switch"
 import { CollectorCalcMethodSelect } from './CollectorCalcMethodSelect';
-import { useDeploymentsContext } from '@/app/contexts/DeploymentsContext';
-import { devError, devLog } from '../Shared/utils/debug';
+import { devLog } from '../Shared/utils/debug';
 import { SaveDeploymentDialog } from './SaveDeploymentDialog';
 import { LoadDeploymentDialog } from './LoadDeploymentDialog';
+import { toast } from 'react-hot-toast';
 
 interface DeploymentNameInputProps {
     value: string;
@@ -40,8 +40,6 @@ interface DeploymentNameInputProps {
 const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateConfig, onUpdateSites, onSiteExpand, showDetails, onShowDetailsChange, onShowAdvancedSettingsChange, sites }: DeploymentNameInputProps) => {
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
     const [saveName, setSaveName] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
-    const { saveDeployment } = useDeploymentsContext();
 
     const handleReset = () => {
         devLog('Reset initiated');
@@ -65,6 +63,7 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
 
         // Now update the config once with all changes
         onUpdateConfig(defaultConfig);
+        toast.success('Deployment reset successfully');
     };
 
     // Handle show details change
@@ -76,42 +75,12 @@ const DeploymentNameInput = ({ value, onDeploymentNameChange, config, onUpdateCo
         });
     };
 
-    // Add a useEffect to monitor value changes
-    React.useEffect(() => {
-        devLog('Deployment name value changed to:', value);
-    }, [value]);
-
-    // Add this effect to track prop changes
-    useEffect(() => {
-        devLog('DeploymentNameInput props updated:', {
-            value,
-            config: config.deploymentName,
-            showDetails,
-            showAdvancedSettings: config.showAdvancedSettings
-        });
-    }, [value, config, showDetails]);
-
     // Add this useEffect to update saveName when the dialog opens
     useEffect(() => {
         if (saveDialogOpen) {
             setSaveName(value || 'New Deployment'); // Use the current deployment name or default
         }
     }, [saveDialogOpen, value]);
-
-    const handleSave = async () => {
-        if (!saveName.trim()) return;
-        
-        setIsSaving(true);
-        try {
-            await saveDeployment(saveName, config, sites);
-            setSaveDialogOpen(false);
-            setSaveName('');
-        } catch (error) {
-            devError('Failed to save deployment:', error);
-        } finally {
-            setIsSaving(false);
-        }
-    };
 
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">

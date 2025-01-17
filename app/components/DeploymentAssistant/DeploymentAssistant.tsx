@@ -7,11 +7,9 @@ import { SystemConfiguration } from '../SystemSettings/SystemConfiguration';
 import SiteOverview from '../SiteOverview/SiteOverview';
 import CollectorInfo from '../CollectorInfo/CollectorInfo';
 import { Config, Site } from './types/types';
-import Image from 'next/image';
 import { Rocket } from 'lucide-react';
 import { FirstTimeVisit } from '../SiteConfiguration/FirstTimeVisit';
 import DeviceOnboarding from '../DeviceInfo/DeviceOnboarding';
-import { useRouter, usePathname } from 'next/navigation';
 import VideoLibrary from '../VideoLibrary/VideoLibrary';
 import { devLog } from '../Shared/utils/debug';
 import { getInitialConfig, getInitialSites } from './utils/storage';
@@ -25,14 +23,14 @@ import POVReadiness from '../POV/POVReadiness';
 import { Navigation } from './Navigation';
 import HomePage from '../Home/Home';
 import ReportsExplorer from '../ReportsExplorer/ReportsExplorer';
+import { usePathname } from 'next/navigation';
 
 const DeploymentAssistant = () => {
     const [config, setConfig] = useState<Config>(getInitialConfig);
     const [sites, setSites] = useState<Site[]>(getInitialSites);
     const [expandedSites, setExpandedSites] = useState<Set<number>>(new Set());
     const [helpDialogOpen, setHelpDialogOpen] = useState(false);
-    
-    const router = useRouter();
+
     const pathname = usePathname();
 
     // Save state to localStorage whenever it changes

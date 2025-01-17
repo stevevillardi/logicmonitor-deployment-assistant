@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDate } from '@/lib/utils';
+import { toast } from 'react-hot-toast';
 
 interface LoadDeploymentDialogProps {
   onLoadConfig: (config: Config, sites: Site[]) => void;
@@ -90,11 +91,13 @@ export function LoadDeploymentDialog({ onLoadConfig, className }: LoadDeployment
     if (warnings.length > 0) {
         setWarnings(warnings);
         setWarningDialogOpen(true);
+        toast.error('Deployment loaded with warnings');
     }
 
     // Pass the updated config with the correct name
     onLoadConfig(configWithName, deployment.sites);
     setOpen(false);
+    toast.success('Deployment loaded successfully');
   };
 
   return (

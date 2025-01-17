@@ -25,6 +25,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { devError } from '../Shared/utils/debug';
+import { toast } from 'react-hot-toast';
+
 interface SaveDeploymentDialogProps {
   config: Config;
   sites: Site[];
@@ -84,8 +86,10 @@ export function SaveDeploymentDialog({ config, sites, onSaved, className }: Save
       onSaved?.();
     } catch (error) {
       devError('Failed to save deployment:', error);
+      toast.error('Failed to save deployment');
     } finally {
       setIsSaving(false);
+      toast.success('Deployment saved successfully');
     }
   };
 

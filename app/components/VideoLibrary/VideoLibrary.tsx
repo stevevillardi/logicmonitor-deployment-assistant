@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { devError, devLog } from '../Shared/utils/debug';
+import { devError } from '../Shared/utils/debug';
 import { supabaseBrowser } from '@/app/lib/supabase/client';
 import SubmitVideoDialog from './SubmitVideoDialog';
 import { usePermissions } from '@/app/hooks/usePermissions';

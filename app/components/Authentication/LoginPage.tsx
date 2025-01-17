@@ -17,13 +17,6 @@ const LoginPage = () => {
         const checkAuth = async () => {
             // Check both context and Supabase session
             const { data: { session } } = await supabaseBrowser.auth.getSession();
-            
-            console.log('Auth State:', {
-                contextAuth: isAuthenticated,
-                hasSupabaseSession: !!session,
-                sessionUser: session?.user,
-                timestamp: new Date().toISOString()
-            });
 
             // Only redirect if both are true
             if (isAuthenticated && session) {

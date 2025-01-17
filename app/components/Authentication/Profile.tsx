@@ -1,5 +1,5 @@
 'use client';
-import { supabaseBrowser } from '@/app/lib/supabase/client'
+
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import {
@@ -22,7 +22,6 @@ import { UserRole } from '@/app/types/auth'
 export const Profile = memo(() => {
     const { user, userRole, hasPermission, signOut } = useAuth()
     const router = useRouter()
-    const supabase = supabaseBrowser;
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dashboardsDialogOpen, setDashboardsDialogOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
