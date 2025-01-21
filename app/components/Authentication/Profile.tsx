@@ -11,13 +11,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, User, Folder, Layout, Moon, Sun, Users, FileText } from 'lucide-react'
+import { LogOut, User, Folder, Layout, Moon, Sun, Users, FileText, PlayCircle } from 'lucide-react'
 import ManageDeploymentsDialog from './ManageDeploymentsDialog'
 import ManageDashboardsDialog from './ManageDashboardsDialog'
 import ManageUsersDialog from './ManageUsersDialog'
 import { useState, memo } from 'react'
 import { useTheme } from 'next-themes'
 import { UserRole } from '@/app/types/auth'
+import ManageVideosDialog from '../VideoLibrary/ManageVideosDialog'
 
 export const Profile = memo(() => {
     const { user, userRole, hasPermission, signOut } = useAuth()
@@ -27,6 +28,7 @@ export const Profile = memo(() => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { theme, setTheme } = useTheme();
     const [usersDialogOpen, setUsersDialogOpen] = useState(false);
+    const [isManageVideosOpen, setIsManageVideosOpen] = useState(false);
 
     const handleSignOut = async () => {
         // Navigate first, then sign out
@@ -65,6 +67,13 @@ export const Profile = memo(() => {
         e.preventDefault();
         e.stopPropagation();
         router.push('/pov?tab=pov-management');
+        setDropdownOpen(false);
+    };
+
+    const handleManageVideos = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsManageVideosOpen(true);
         setDropdownOpen(false);
     };
 
@@ -182,6 +191,18 @@ export const Profile = memo(() => {
                             <span>Manage POVs</span>
                         </DropdownMenuItem>
                     )}
+                    {hasPermission({ action: 'manage', resource: 'video' }) && (
+                        <DropdownMenuItem 
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                handleManageVideos(e as unknown as React.MouseEvent);
+                            }}
+                            className="text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                            <PlayCircle className="mr-2 h-4 w-4" />
+                            <span>Manage Videos</span>
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem 
                         onClick={handleThemeToggle}
                         className="text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -214,6 +235,10 @@ export const Profile = memo(() => {
             <ManageUsersDialog 
                 open={usersDialogOpen}
                 onOpenChange={setUsersDialogOpen}
+            />
+            <ManageVideosDialog
+                open={isManageVideosOpen}
+                onOpenChange={setIsManageVideosOpen}
             />
         </>
     )
